@@ -19,8 +19,93 @@ env:
   AR_REPO: driftguard
 
 jobs:
-  deploy:
+  ci:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: driftguard
+          POSTGRES_PASSWORD: driftguard
+          POSTGRES_DB: driftguard
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U driftguard"
+          --health-interval 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: latest
+
+      - name: Sync deps
+        working-directory: apps/api
+        run: uv sync --all-extras
+
+      - name: Lint
+        working-directory: apps/api
+        run: uv run ruff check .
+
+      - name: Format check
+        working-directory: apps/api
+        run: uv run ruff format --check .
+
+      - name: Test
+        working-directory: apps/api
+        env:
+          DATABASE_URL: postgresql+asyncpg://driftguard:driftguard@localhost:5432/driftguard
+          REDIS_URL: redis://localhost:6379/0
+          SECRET_KEY: ci
+          ENVIRONMENT: ci
+        run: uv run pytest -v --ignore=tests/eval
+
+      - name: Checkov (API)
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: apps/api
+          framework: dockerfile
+          quiet: false
+          soft_fail: false
+
+  infra-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+
+      - name: Terraform fmt check
+        working-directory: infra/terraform
+        run: terraform fmt -check -recursive
+
+      - name: Terraform validate
+        working-directory: infra/terraform/envs/dev
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+      - name: Checkov (Terraform)
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: infra/terraform
+          framework: terraform
+          quiet: false
+          soft_fail: false
+          skip-check: CKV_GCP_12,CKV_GCP_68
+
+  deploy:
+    needs: [ci, infra-check]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
 

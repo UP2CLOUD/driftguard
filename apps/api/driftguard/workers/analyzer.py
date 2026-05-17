@@ -114,14 +114,44 @@ async def _analyze_dir(tf_dir: Path) -> list[Finding]:
 
     cost_task = asyncio.to_thread(_safe_infracost, plan_json_path)
     sec_task = asyncio.to_thread(_safe_checkov, plan_json_path)
-    cost_diff, sec_results = await asyncio.gather(cost_task, sec_task)
+    drift_task = asyncio.to_thread(_safe_drift, tf_dir, plan_json)
+    cost_diff, sec_results, drift_findings = await asyncio.gather(cost_task, sec_task, drift_task)
 
     if cost_diff:
         findings.extend(from_infracost(cost_diff))
     if sec_results:
         findings.extend(from_checkov(sec_results))
+    if drift_findings:
+        findings.extend(drift_findings)
 
     return findings
+
+
+def _safe_drift(tf_dir: Path, plan_json: dict) -> list[Finding] | None:
+    try:
+        from driftguard.integrations.drift import DriftAnalyzer
+
+        state_file = tf_dir / "terraform.tfstate"
+        state_resources = DriftAnalyzer.analyze_state_file(state_file)
+        if state_resources is None:
+            return []
+
+        planned_resources = set(DriftAnalyzer.from_plan_json(plan_json))
+        drift_results = DriftAnalyzer.detect_drift(planned_resources=planned_resources, state_resources=state_resources)
+        return [
+            Finding(
+                type=d["type"],
+                severity=d["severity"],
+                resource=d["resource"],
+                message=d["message"],
+                suggestion=d.get("suggestion"),
+                controls=tuple(d.get("controls", [])),
+            )
+            for d in drift_results
+        ]
+    except Exception as exc:
+        log.warning("drift_detection_failed", error=str(exc))
+        return []
 
 
 def _safe_infracost(path: Path) -> dict | None:

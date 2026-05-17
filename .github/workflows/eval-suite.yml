@@ -1,0 +1,33 @@
+name: eval-suite
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'YOUR_ORG'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: latest
+
+      - name: Sync deps
+        working-directory: apps/api
+        run: uv sync --all-extras
+
+      - name: Run eval suite (costs $)
+        working-directory: apps/api
+        env:
+          DRIFTGUARD_RUN_EVAL: "1"
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: uv run pytest tests/eval -v --tb=short
+
+      - name: Report results
+        if: always()
+        run: echo "Eval suite completed. Check logs for regressions."
