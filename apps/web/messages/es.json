@@ -39,5 +39,18 @@
   "footer": {
     "privacy": "Privacidad",
     "terms": "Términos"
+  },
+  "settings": {
+    "title": "Configuración",
+    "preferencesTitle": "Preferencias regionales",
+    "preferencesSubtitle": "Elige la moneda de costes y el idioma de DriftGuard.",
+    "language": "Idioma",
+    "languageHint": "Anula la detección del navegador.",
+    "currency": "Moneda de visualización",
+    "currencyHint": "Conversión diaria desde USD (Infracost).",
+    "saving": "Guardando…",
+    "billingTitle": "Suscripción y facturación",
+    "billingCurrent": "Plan actual:",
+    "activePlan": "Plan activo"
   }
 }

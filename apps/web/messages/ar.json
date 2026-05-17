@@ -39,5 +39,18 @@
   "footer": {
     "privacy": "الخصوصية",
     "terms": "الشروط"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "preferencesTitle": "التفضيلات الإقليمية",
+    "preferencesSubtitle": "اختر عملة عرض التكاليف ولغة DriftGuard.",
+    "language": "اللغة",
+    "languageHint": "يتجاوز اكتشاف المتصفح.",
+    "currency": "عملة العرض",
+    "currencyHint": "تحويل يومي من USD (Infracost).",
+    "saving": "جارٍ الحفظ…",
+    "billingTitle": "الاشتراك والفوترة",
+    "billingCurrent": "الخطة الحالية:",
+    "activePlan": "الخطة النشطة"
   }
 }

@@ -127,6 +127,7 @@ export async function internalOpenPortal(orgId: string): Promise<string> {
   return url;
 }
 
+/** @deprecated Use formatCostDeltaCentsForUser from @/lib/currency/format */
 export function formatCents(cents: number | null): string {
   if (cents === null) return "—";
   return `${cents >= 0 ? "+" : ""}$${(cents / 100).toFixed(2)}/mo`;

@@ -39,5 +39,18 @@
   "footer": {
     "privacy": "隐私",
     "terms": "条款"
+  },
+  "settings": {
+    "title": "设置",
+    "preferencesTitle": "区域偏好",
+    "preferencesSubtitle": "选择费用显示货币和 DriftGuard 界面语言。",
+    "language": "语言",
+    "languageHint": "覆盖浏览器检测，适用于营销页和控制台。",
+    "currency": "显示货币",
+    "currencyHint": "费用从 USD 按每日汇率转换（Infracost）。",
+    "saving": "保存中…",
+    "billingTitle": "订阅与账单",
+    "billingCurrent": "当前方案：",
+    "activePlan": "当前方案"
   }
 }

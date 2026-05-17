@@ -39,5 +39,18 @@
   "footer": {
     "privacy": "गोपनीयता",
     "terms": "शर्तें"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "preferencesTitle": "क्षेत्रीय प्राथमिकताएँ",
+    "preferencesSubtitle": "लागत प्रदर्शन और भाषा चुनें।",
+    "language": "भाषा",
+    "languageHint": "ब्राउज़र पहचान को ओवरराइड करता है।",
+    "currency": "प्रदर्शन मुद्रा",
+    "currencyHint": "USD से दैनिक दर पर रूपांतरण।",
+    "saving": "सहेजा जा रहा है…",
+    "billingTitle": "सदस्यता और बिलिंग",
+    "billingCurrent": "वर्तमान योजना:",
+    "activePlan": "सक्रिय योजना"
   }
 }
