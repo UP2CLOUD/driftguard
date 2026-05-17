@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { DriftguardLogo } from "@/components/DriftguardLogo";
+import { getGitHubAppInstallUrl } from "@/lib/github-app";
 
 export function InstallationNotFoundView({ installationId }: { installationId?: string }) {
-  const githubAppUrl =
-    process.env.NEXT_PUBLIC_GITHUB_APP_URL ||
-    "https://github.com/apps/driftguard-dev/installations/new";
+  const githubAppUrl = getGitHubAppInstallUrl();
 
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col">
