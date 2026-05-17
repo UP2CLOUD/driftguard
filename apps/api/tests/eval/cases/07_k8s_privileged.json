@@ -1,0 +1,15 @@
+{
+  "name": "k8s_privileged",
+  "description": "K8s deployment with privileged container — container_security control.",
+  "findings": [
+    {"type": "security", "severity": "critical", "resource": "Deployment.production.api", "message": "Container should not be privileged", "rule_id": "CKV_K8S_16", "controls": ["container_security"]},
+    {"type": "security", "severity": "high", "resource": "Deployment.production.api", "message": "Container should run as non-root", "rule_id": "CKV_K8S_22", "controls": ["container_security"]},
+    {"type": "security", "severity": "medium", "resource": "Deployment.production.api", "message": "Container should set allowPrivilegeEscalation to false", "rule_id": "CKV_K8S_20", "controls": ["container_security"]}
+  ],
+  "pr_context": {"repo": "example/platform", "pr_number": 77, "head_sha": "1a2b3c4d5e6f7890abcdef1234567890abcdef12"},
+  "expectations": {
+    "must_contain_phrases": ["Deployment.production.api"],
+    "must_contain_any_of": ["NIS2", "ISO 27001", "ISO27001", "CIS"],
+    "must_not_invent_resources": ["Pod.fictional"]
+  }
+}

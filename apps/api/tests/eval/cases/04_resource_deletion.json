@@ -1,0 +1,14 @@
+{
+  "name": "resource_deletion",
+  "description": "Production resources being deleted — review must flag blast radius prominently.",
+  "findings": [
+    {"type": "change", "severity": "high", "resource": "aws_db_instance.prod_primary", "message": "delete: aws_db_instance", "controls": []},
+    {"type": "change", "severity": "high", "resource": "aws_s3_bucket.audit_logs", "message": "delete: aws_s3_bucket", "controls": []},
+    {"type": "change", "severity": "low", "resource": "aws_iam_role.replacement", "message": "create: aws_iam_role", "controls": []}
+  ],
+  "pr_context": {"repo": "example/banking", "pr_number": 88, "head_sha": "deadbeef1234567890abcdef1234567890abcdef"},
+  "expectations": {
+    "must_contain_phrases": ["aws_db_instance.prod_primary", "aws_s3_bucket.audit_logs", "delete"],
+    "must_not_invent_resources": ["aws_kms_key.fictional"]
+  }
+}

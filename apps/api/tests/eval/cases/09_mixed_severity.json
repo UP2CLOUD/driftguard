@@ -1,0 +1,18 @@
+{
+  "name": "mixed_severity_realistic",
+  "description": "Realistic PR with diverse findings — must prioritize critical/high, avoid burying them.",
+  "findings": [
+    {"type": "change", "severity": "low", "resource": "aws_lb.web", "message": "create: aws_lb", "controls": []},
+    {"type": "change", "severity": "low", "resource": "aws_s3_bucket.assets", "message": "create: aws_s3_bucket", "controls": []},
+    {"type": "cost", "severity": "medium", "resource": "aws_lb.web", "message": "monthly cost delta: $22.50", "extra": {"cents": 2250}, "controls": []},
+    {"type": "security", "severity": "critical", "resource": "aws_security_group.web", "message": "SG allows 0.0.0.0/0 on port 22 (SSH)", "rule_id": "CKV_AWS_24", "controls": ["public_exposure"]},
+    {"type": "security", "severity": "high", "resource": "aws_lb.web", "message": "ELB not using TLS 1.2+", "rule_id": "CKV_AWS_103", "controls": ["encryption_in_transit"]},
+    {"type": "security", "severity": "medium", "resource": "aws_s3_bucket.assets", "message": "S3 versioning not enabled", "rule_id": "CKV_AWS_21", "controls": ["backup_retention"]}
+  ],
+  "pr_context": {"repo": "example/web", "pr_number": 134, "head_sha": "bbbbcccc1234567890abcdef1234567890abcdef"},
+  "expectations": {
+    "must_contain_phrases": ["aws_security_group.web", "22.50"],
+    "must_contain_any_of": ["DORA", "NIS2", "ISO"],
+    "must_not_invent_resources": ["aws_kms_key.fictional", "aws_route53_zone.fake"]
+  }
+}

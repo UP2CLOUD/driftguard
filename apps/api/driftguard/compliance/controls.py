@@ -104,6 +104,16 @@ CATALOG: dict[str, Control] = {
             ControlRef("ISO27001", "A.8.32", "Change management"),
         ),
     ),
+    "container_security": Control(
+        id="container_security",
+        category="hardening",
+        description="Containers must run least-privilege, non-root, read-only fs where possible.",
+        refs=(
+            ControlRef("NIS2", "Art.21(2)(e)", "Network and information systems security"),
+            ControlRef("ISO27001", "A.8.9", "Configuration management"),
+            ControlRef("CIS", "K8S-CB", "CIS Kubernetes Benchmark"),
+        ),
+    ),
 }
 
 

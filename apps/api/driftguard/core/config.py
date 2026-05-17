@@ -23,6 +23,12 @@ class Settings(BaseSettings):
     s3_access_key: str = ""
     s3_secret_key: str = ""
 
+    stripe_api_key: str = ""
+    stripe_webhook_secret: str = ""
+    stripe_price_pro: str = ""
+    stripe_price_team: str = ""
+    public_base_url: str = "http://localhost:3000"
+
     cors_origins: list[str] = ["http://localhost:3000"]
 
 

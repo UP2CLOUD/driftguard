@@ -1,0 +1,15 @@
+{
+  "name": "unencrypted_database",
+  "description": "RDS instance without storage encryption — must surface encryption_at_rest + DORA/NIS2 refs.",
+  "findings": [
+    {"type": "change", "severity": "low", "resource": "aws_db_instance.customer_data", "message": "create: aws_db_instance", "controls": []},
+    {"type": "security", "severity": "high", "resource": "aws_db_instance.customer_data", "message": "RDS storage encryption is not enabled", "rule_id": "CKV_AWS_16", "controls": ["encryption_at_rest"]},
+    {"type": "cost", "severity": "high", "resource": "aws_db_instance.customer_data", "message": "monthly cost delta: $180.00", "extra": {"cents": 18000}, "controls": []}
+  ],
+  "pr_context": {"repo": "example/payments", "pr_number": 55, "head_sha": "abc987654321fedcba0987654321fedcba098765"},
+  "expectations": {
+    "must_contain_phrases": ["aws_db_instance.customer_data", "180.00"],
+    "must_contain_any_of": ["DORA", "NIS2", "ISO 27001", "ISO27001"],
+    "must_not_invent_resources": ["aws_kms_key.fake"]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "logging_audit_disabled",
+  "description": "CloudTrail/S3 access logging disabled — DORA Art.10 + NIS2 Art.21 logging.",
+  "findings": [
+    {"type": "security", "severity": "high", "resource": "aws_cloudtrail.main", "message": "CloudTrail log file validation should be enabled", "rule_id": "CKV_AWS_67", "controls": ["logging_audit"]},
+    {"type": "security", "severity": "high", "resource": "aws_s3_bucket.app_data", "message": "S3 bucket access logging is not enabled", "rule_id": "CKV_AWS_18", "controls": ["logging_audit"]}
+  ],
+  "pr_context": {"repo": "example/finserv", "pr_number": 23, "head_sha": "fedcba0987654321abcdef1234567890abcdef12"},
+  "expectations": {
+    "must_contain_phrases": ["aws_cloudtrail.main", "aws_s3_bucket.app_data"],
+    "must_contain_any_of": ["DORA", "NIS2", "ISO 27001", "ISO27001"]
+  }
+}

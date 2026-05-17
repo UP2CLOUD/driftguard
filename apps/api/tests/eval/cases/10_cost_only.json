@@ -1,0 +1,14 @@
+{
+  "name": "cost_only_no_security",
+  "description": "Pure cost change — compliance notes must state None plainly without inventing controls.",
+  "findings": [
+    {"type": "change", "severity": "low", "resource": "aws_instance.worker", "message": "update: aws_instance (instance_type)", "controls": []},
+    {"type": "cost", "severity": "medium", "resource": "aws_instance.worker", "message": "monthly cost delta: $45.00", "extra": {"cents": 4500}, "controls": []}
+  ],
+  "pr_context": {"repo": "example/workers", "pr_number": 8, "head_sha": "9999888877776666555544443333222211110000"},
+  "expectations": {
+    "must_contain_phrases": ["aws_instance.worker", "45.00"],
+    "must_not_contain_phrases": ["DORA Art.", "NIS2 Art.", "ISO 27001 A."],
+    "must_not_invent_resources": ["aws_kms_key.fake"]
+  }
+}
