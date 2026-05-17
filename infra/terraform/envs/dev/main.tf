@@ -7,10 +7,11 @@ terraform {
     }
   }
 
-  backend "gcs" {
-    bucket = "driftguard-tfstate-dev"
-    prefix = "envs/dev"
-  }
+  # Backend bucket passed at init:
+  #   terraform init \
+  #     -backend-config="bucket=<project>-tfstate" \
+  #     -backend-config="prefix=envs/dev"
+  backend "gcs" {}
 }
 
 provider "google" {
@@ -34,13 +35,13 @@ module "api" {
   }
 
   secret_env = {
-    DATABASE_URL          = "driftguard-database-url"
-    REDIS_URL             = "driftguard-redis-url"
-    SECRET_KEY            = "driftguard-secret-key"
-    GITHUB_APP_ID         = "driftguard-gh-app-id"
+    DATABASE_URL           = "driftguard-database-url"
+    REDIS_URL              = "driftguard-redis-url"
+    SECRET_KEY             = "driftguard-secret-key"
+    GITHUB_APP_ID          = "driftguard-gh-app-id"
     GITHUB_APP_PRIVATE_KEY = "driftguard-gh-app-pk"
-    GITHUB_WEBHOOK_SECRET = "driftguard-gh-webhook-secret"
-    ANTHROPIC_API_KEY     = "driftguard-anthropic-key"
-    INFRACOST_API_KEY     = "driftguard-infracost-key"
+    GITHUB_WEBHOOK_SECRET  = "driftguard-gh-webhook-secret"
+    ANTHROPIC_API_KEY      = "driftguard-anthropic-key"
+    INFRACOST_API_KEY      = "driftguard-infracost-key"
   }
 }

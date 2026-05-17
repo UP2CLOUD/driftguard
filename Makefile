@@ -39,4 +39,11 @@ tf-fmt:
 	cd infra/terraform && terraform fmt -recursive
 
 tf-validate:
+	cd infra/terraform/bootstrap && terraform init -backend=false && terraform validate
 	cd infra/terraform/envs/dev && terraform init -backend=false && terraform validate
+
+tf-bootstrap: ## one-time GCP foundations setup
+	cd infra/terraform/bootstrap && terraform init && terraform apply
+
+bootstrap: ## local environment bootstrap
+	./bootstrap.sh

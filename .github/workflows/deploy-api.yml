@@ -46,14 +46,16 @@ jobs:
         with:
           terraform_version: 1.9.8
 
-      - name: Terraform apply
+      - name: Terraform init + apply
         working-directory: infra/terraform/envs/dev
         env:
           TF_VAR_gcp_project: ${{ env.GCP_PROJECT }}
           TF_VAR_region: ${{ env.REGION }}
           TF_VAR_api_image: ${{ env.IMAGE }}
         run: |
-          terraform init
+          terraform init \
+            -backend-config="bucket=${GCP_PROJECT}-tfstate" \
+            -backend-config="prefix=envs/dev"
           terraform apply -auto-approve
 
       - name: Smoke test

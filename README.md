@@ -27,7 +27,15 @@ Driftguard is a GitHub App. On every Terraform PR it:
 
 ## Local dev
 
-Requirements: Docker, Node 20+, Python 3.12+, [uv](https://docs.astral.sh/uv/), pnpm.
+Requirements: Docker, Node 20+, Python 3.12+, [uv](https://docs.astral.sh/uv/), pnpm, gh.
+
+One command:
+
+```bash
+./bootstrap.sh
+```
+
+Or manually:
 
 ```bash
 cp .env.example .env
@@ -37,6 +45,10 @@ make api-dev      # http://localhost:8000
 make web-install
 make web-dev      # http://localhost:3000
 ```
+
+## Deploy to production
+
+See `docs/DEPLOY.md` (end-to-end ~30-60 min: GCP project → bootstrap terraform → secrets → first deploy → GitHub App).
 
 ## Repo layout
 
