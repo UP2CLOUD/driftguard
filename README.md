@@ -1,16 +1,18 @@
 # Driftguard
 
-AI code review for infrastructure. Catches cost, drift, and security issues in Terraform PRs before merge.
+AI code review for OpenTofu / Terraform PRs, with EU compliance evidence baked in.
 
-> Status: MVP scaffold. Do not deploy to prod.
+> Status: MVP scaffold. Pivot in progress (OpenTofu-first, DORA/NIS2 angle). Not for prod.
 
 ## What it does
 
-Driftguard is a GitHub App. On every Terraform PR it:
+GitHub App. On every OpenTofu/Terraform PR:
 
-1. Runs `terraform plan` in an isolated sandbox.
-2. Computes cost delta (Infracost), state drift, and security misconfig (Checkov).
-3. Generates a structured AI review (Claude Sonnet) and posts it as a PR comment.
+1. Runs `tofu plan` (or `terraform plan`) in an isolated sandbox.
+2. Parses the plan, computes cost delta (Infracost), security findings (Checkov).
+3. Maps findings to EU compliance controls (DORA, NIS2, ISO 27001) when applicable.
+4. AI synthesizes a prioritized review (Claude Sonnet) with hard guardrails (no invented numbers).
+5. Posts a structured PR comment.
 
 ## Stack
 

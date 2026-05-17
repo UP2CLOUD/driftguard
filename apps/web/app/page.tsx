@@ -19,23 +19,23 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-6 py-24">
         <div className="max-w-3xl">
           <div className="mb-4 inline-block rounded-full border border-ink/20 px-3 py-1 text-xs uppercase tracking-widest">
-            beta · invite only
+            beta · invite only · EU
           </div>
           <h1 className="font-display text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl">
-            Stop merging
+            OpenTofu PR reviews.
             <br />
-            <span className="text-accent">€10k/month</span> surprises.
+            <span className="text-accent">EU compliance baked in.</span>
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted">
-            Driftguard is a GitHub App that reviews every Terraform PR in 30 seconds. Cost delta,
-            drift risk, security misconfigs, policy violations — unified, prioritized, with
-            autofix.
+            Driftguard reviews every OpenTofu and Terraform PR in 30 seconds. Cost delta,
+            drift risk, security misconfigs, and DORA / NIS2 / ISO 27001 evidence — unified
+            in one PR comment.
           </p>
           <div className="mt-10">
             <WaitlistForm />
           </div>
           <p className="mt-4 text-xs text-muted">
-            No spam. We&apos;ll only email you when the GitHub App is ready.
+            EU-hosted. GDPR-native. No spam.
           </p>
         </div>
       </section>
@@ -59,12 +59,16 @@ export default function Home() {
             body="Claude Sonnet synthesizes findings into a high-signal PR review. No hallucination — every claim cites a resource."
           />
           <Feature
+            title="EU compliance"
+            body="DORA, NIS2, ISO 27001 control mapping per resource. Audit-ready evidence collected on every PR — without questionnaires."
+          />
+          <Feature
             title="Policy-as-code"
             body="Bring your OPA or YAML policies. Driftguard enforces them per repo, with audit trail."
           />
           <Feature
-            title="Autofix PRs"
-            body="For low-risk issues (tags, lifecycle blocks, deprecated args), Driftguard opens a follow-up PR with the fix."
+            title="OpenTofu native"
+            body="OpenTofu first-class, Terraform supported. Multi-cloud (AWS, GCP, Azure). No HashiCorp Cloud lock-in."
           />
         </div>
       </section>

@@ -11,7 +11,4 @@ router = APIRouter()
 @router.get("")
 async def list_repos(db: AsyncSession = Depends(get_db)) -> list[dict]:
     result = await db.execute(select(Repository).where(Repository.enabled.is_(True)))
-    return [
-        {"id": r.id, "full_name": r.full_name, "default_branch": r.default_branch}
-        for r in result.scalars()
-    ]
+    return [{"id": r.id, "full_name": r.full_name, "default_branch": r.default_branch} for r in result.scalars()]
