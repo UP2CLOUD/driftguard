@@ -50,7 +50,7 @@ export default async function Dashboard({ params }: { params: Promise<{ installa
     <main className="min-h-screen bg-zinc-950 text-zinc-100 pb-16">
       <DashboardNav installationId={installationId} planLabel={org.plan} />
 
-      <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mx-auto max-w-7xl px-[var(--dg-space-page-x)] py-[var(--dg-space-page-y)]">
         {/* Dynamic Metric Overview Row */}
         <section className="mb-8 grid gap-4 grid-cols-2 lg:grid-cols-4">
           <StatCard
