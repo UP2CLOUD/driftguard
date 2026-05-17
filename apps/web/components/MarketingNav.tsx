@@ -3,13 +3,16 @@ import { NavAnchor, NavLink, NavSubmitButton } from "@/components/NavButton";
 import { auth, signIn } from "@/auth";
 import { getLocale, getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
+import { NavPreferencesControls } from "@/components/NavPreferencesControls";
 import { signOutToHome } from "@/lib/auth-actions";
+import { getUserPreferences } from "@/lib/preferences/server";
 
 export async function MarketingNav() {
   const session = await auth();
   const locale = await getLocale();
   const messages = await getMessages(locale);
   const t = createTranslator(messages);
+  const preferences = await getUserPreferences();
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-canvas/95 backdrop-blur-md">
@@ -18,6 +21,7 @@ export async function MarketingNav() {
         <div className="flex items-center gap-1 sm:gap-2">
           <NavAnchor href="/#features">{t("nav.features")}</NavAnchor>
           <NavAnchor href="/#pricing">{t("nav.pricing")}</NavAnchor>
+          <NavPreferencesControls initialPreferences={preferences} />
           {session ? (
             <>
               <NavLink href="/dashboard">{t("nav.dashboard")}</NavLink>

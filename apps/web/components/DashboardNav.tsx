@@ -2,10 +2,20 @@
 
 import { DriftguardLogo } from "@/components/DriftguardLogo";
 import { NavLink } from "@/components/NavButton";
+import { NavPreferencesControls } from "@/components/NavPreferencesControls";
 import { useT } from "@/components/I18nProvider";
+import type { UserPreferences } from "@/lib/preferences/config";
 import { usePathname } from "next/navigation";
 
-export function DashboardNav({ installationId, planLabel }: { installationId: string; planLabel?: string }) {
+export function DashboardNav({
+  installationId,
+  planLabel,
+  initialPreferences,
+}: {
+  installationId: string;
+  planLabel?: string;
+  initialPreferences?: UserPreferences;
+}) {
   const pathname = usePathname();
   const t = useT();
 
@@ -36,6 +46,10 @@ export function DashboardNav({ installationId, planLabel }: { installationId: st
               <span className="absolute bottom-[-13px] left-0 h-[2px] w-full rounded-full bg-orange-500" />
             )}
           </NavLink>
+
+          {initialPreferences && (
+            <NavPreferencesControls initialPreferences={initialPreferences} />
+          )}
 
           {planLabel && (
             <span

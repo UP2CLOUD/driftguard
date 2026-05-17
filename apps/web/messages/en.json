@@ -39,5 +39,18 @@
   "footer": {
     "privacy": "Privacy",
     "terms": "Terms"
+  },
+  "settings": {
+    "title": "Settings",
+    "preferencesTitle": "Regional preferences",
+    "preferencesSubtitle": "Choose how costs are displayed and which language DriftGuard uses.",
+    "language": "Language",
+    "languageHint": "Overrides browser detection. Applies across marketing and dashboard.",
+    "currency": "Display currency",
+    "currencyHint": "Cost deltas from Infracost are converted from USD using daily exchange rates.",
+    "saving": "Saving…",
+    "billingTitle": "Subscription & Billing",
+    "billingCurrent": "Current active tier:",
+    "activePlan": "Active Plan"
   }
 }
