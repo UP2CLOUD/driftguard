@@ -40,6 +40,15 @@
     "privacy": "隐私",
     "terms": "条款"
   },
+  "notFound": {
+    "code": "404",
+    "title": "页面未找到",
+    "description": "该资源已偏离映射。您请求的路由未在此环境中配置。",
+    "statusLabel": "路由状态",
+    "statusValue": "未配置",
+    "backHome": "返回首页",
+    "goDashboard": "前往控制台"
+  },
   "settings": {
     "title": "设置",
     "preferencesTitle": "区域偏好",

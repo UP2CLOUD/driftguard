@@ -40,6 +40,15 @@
     "privacy": "Privacy",
     "terms": "Terms"
   },
+  "notFound": {
+    "code": "404",
+    "title": "Page not found",
+    "description": "This resource drifted off the map. The route you requested was never provisioned in this environment.",
+    "statusLabel": "Route status",
+    "statusValue": "UNPROVISIONED",
+    "backHome": "Back to home",
+    "goDashboard": "Go to dashboard"
+  },
   "settings": {
     "title": "Settings",
     "preferencesTitle": "Regional preferences",

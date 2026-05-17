@@ -68,6 +68,20 @@ const config: Config = {
       boxShadow: {
         panel: "0 1px 0 0 var(--dg-border) inset",
       },
+      keyframes: {
+        "fade-up": {
+          "0%": { opacity: "0", transform: "translateY(0.5rem)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+      },
+      animation: {
+        "fade-up": "fade-up 0.55s ease-out forwards",
+        "fade-in": "fade-in 0.45s ease-out forwards",
+      },
     },
   },
   plugins: [],

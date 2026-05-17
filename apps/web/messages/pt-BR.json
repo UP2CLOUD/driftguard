@@ -40,6 +40,15 @@
     "privacy": "Privacidade",
     "terms": "Termos"
   },
+  "notFound": {
+    "code": "404",
+    "title": "Página não encontrada",
+    "description": "Este recurso saiu do mapa. A rota solicitada nunca foi provisionada neste ambiente.",
+    "statusLabel": "Status da rota",
+    "statusValue": "NÃO PROVISIONADA",
+    "backHome": "Voltar ao início",
+    "goDashboard": "Ir ao painel"
+  },
   "settings": {
     "title": "Configurações",
     "preferencesTitle": "Preferências regionais",

@@ -40,6 +40,15 @@
     "privacy": "Privacidad",
     "terms": "Términos"
   },
+  "notFound": {
+    "code": "404",
+    "title": "Página no encontrada",
+    "description": "Este recurso se desvió del mapa. La ruta solicitada nunca se aprovisionó en este entorno.",
+    "statusLabel": "Estado de ruta",
+    "statusValue": "NO APROVISIONADA",
+    "backHome": "Volver al inicio",
+    "goDashboard": "Ir al panel"
+  },
   "settings": {
     "title": "Configuración",
     "preferencesTitle": "Preferencias regionales",
