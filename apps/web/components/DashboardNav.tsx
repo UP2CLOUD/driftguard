@@ -10,8 +10,8 @@ export function DashboardNav({ installationId, planLabel }: { installationId: st
   const isRepos = !isSettings;
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+    <nav className="sticky top-0 z-50 border-b border-border bg-canvas/95">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-[var(--dg-space-page-x)] py-2">
         {/* Brand Logo with modern design */}
         <Link
           href={`/dashboard/${installationId}`}
