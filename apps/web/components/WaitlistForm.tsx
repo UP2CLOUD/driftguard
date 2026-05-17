@@ -21,6 +21,7 @@ export function WaitlistForm({ theme = "light" }: { theme?: "light" | "dark" }) 
     }
   }
 
+  // We are forcing dark mode in the new layout, but we keep the logic just in case
   const dark = theme === "dark";
 
   return (
@@ -31,16 +32,16 @@ export function WaitlistForm({ theme = "light" }: { theme?: "light" | "dark" }) 
         placeholder="you@company.com"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className={`flex-1 rounded-full px-5 py-3 text-sm outline-none ring-1 transition focus:ring-2 ${
+        className={`flex-1 rounded px-4 py-2.5 text-sm outline-none border transition focus:ring-1 focus:ring-orange-500 focus:border-orange-500 ${
           dark
-            ? "bg-white/10 text-paper ring-white/20 placeholder:text-paper/50 focus:ring-accent"
-            : "bg-white text-ink ring-ink/15 focus:ring-accent"
+            ? "bg-zinc-900 text-zinc-100 border-zinc-800 placeholder:text-zinc-500"
+            : "bg-white text-zinc-900 border-zinc-200 placeholder:text-zinc-400"
         }`}
       />
       <button
         type="submit"
         disabled={status === "loading"}
-        className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-paper transition hover:bg-ink disabled:opacity-60"
+        className="rounded bg-orange-500 px-6 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-orange-600 disabled:opacity-60"
       >
         {status === "loading" ? "..." : status === "ok" ? "✓ In" : "Join"}
       </button>

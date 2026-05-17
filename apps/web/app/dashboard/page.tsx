@@ -18,14 +18,14 @@ export default async function DashboardRoot() {
   const githubAppUrl = process.env.NEXT_PUBLIC_GITHUB_APP_URL || "https://github.com/apps/driftguard-dev/installations/new";
 
   return (
-    <main className="min-h-screen bg-paper flex flex-col justify-between">
-      <nav className="border-b border-ink/10 bg-white/40 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/" className="font-display text-lg font-bold tracking-tight">
+    <main className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col justify-between">
+      <nav className="border-b border-zinc-800 bg-zinc-950">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+          <Link href="/" className="text-base font-bold tracking-tight text-zinc-100 hover:opacity-90">
             driftguard
           </Link>
           <div className="flex items-center gap-4">
-            <span className="text-xs text-muted font-mono">{session.user?.email}</span>
+            <span className="text-xs text-zinc-400 font-mono">{session.user?.email}</span>
             <form
               action={async () => {
                 "use server";
@@ -34,7 +34,7 @@ export default async function DashboardRoot() {
             >
               <button
                 type="submit"
-                className="rounded-full border border-ink/10 hover:border-accent hover:text-accent px-4 py-1.5 text-xs transition"
+                className="rounded border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:bg-zinc-900 px-3 py-1 text-xs transition"
               >
                 Sign out
               </button>
@@ -43,17 +43,17 @@ export default async function DashboardRoot() {
         </div>
       </nav>
 
-      <div className="flex-1 flex items-center justify-center p-6">
+      <div className="flex-1 flex items-center justify-center p-4">
         {installations.length === 0 ? (
-          <div className="max-w-md w-full bg-white/60 border border-ink/10 rounded-2xl p-8 shadow-xl shadow-ink/5 backdrop-blur-md text-center transform transition duration-500 hover:scale-[1.01]">
-            <div className="w-16 h-16 bg-accent/10 text-accent rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-center">
+            <div className="w-12 h-12 bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded flex items-center justify-center mx-auto mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="w-8 h-8"
+                className="w-6 h-6"
               >
                 <path
                   strokeLinecap="round"
@@ -62,37 +62,37 @@ export default async function DashboardRoot() {
                 />
               </svg>
             </div>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-ink">
+            <h1 className="text-lg font-bold tracking-tight text-zinc-100">
               Connect to GitHub
             </h1>
-            <p className="mt-3 text-sm text-muted leading-relaxed">
+            <p className="mt-2 text-xs text-zinc-400 leading-relaxed">
               Driftguard needs access to your GitHub repositories to review your OpenTofu/Terraform code and detect drift.
             </p>
-            <div className="mt-8 flex flex-col gap-3">
+            <div className="mt-6">
               <a
                 href={githubAppUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full inline-block rounded-full bg-accent px-6 py-3 text-sm font-semibold text-paper hover:bg-ink transition shadow-lg shadow-accent/20 hover:shadow-ink/20"
+                className="w-full inline-block rounded bg-orange-500 hover:bg-orange-600 px-4 py-2 text-sm font-semibold text-zinc-950 transition"
               >
                 Install Driftguard App
               </a>
             </div>
           </div>
         ) : (
-          <div className="max-w-xl w-full bg-white/60 border border-ink/10 rounded-2xl p-8 shadow-xl shadow-ink/5 backdrop-blur-md">
-            <h1 className="font-display text-2xl font-bold tracking-tight text-ink mb-6 text-center">
+          <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+            <h1 className="text-lg font-bold tracking-tight text-zinc-100 mb-4 text-center">
               Select Organization
             </h1>
-            <p className="text-sm text-muted mb-6 text-center">
+            <p className="text-xs text-zinc-400 mb-4 text-center">
               Choose the GitHub organization or account you want to manage.
             </p>
-            <div className="grid gap-3">
+            <div className="grid gap-2">
               {installations.map((inst: any) => (
                 <Link
                   key={inst.id}
                   href={`/dashboard/${inst.id}`}
-                  className="flex items-center justify-between p-4 rounded-xl border border-ink/10 bg-white/40 hover:border-accent hover:bg-accent/5 transition group"
+                  className="flex items-center justify-between p-3 rounded border border-zinc-800 bg-zinc-950 hover:border-zinc-700 hover:bg-zinc-900 transition group"
                 >
                   <div className="flex items-center gap-3">
                     {inst.account.avatar_url && (
@@ -100,14 +100,14 @@ export default async function DashboardRoot() {
                       <img
                         src={inst.account.avatar_url}
                         alt={inst.account.login}
-                        className="w-8 h-8 rounded-full border border-ink/10"
+                        className="w-6 h-6 rounded border border-zinc-800"
                       />
                     )}
-                    <span className="font-mono text-sm font-semibold text-ink group-hover:text-accent transition">
+                    <span className="font-mono text-xs font-semibold text-zinc-200 group-hover:text-orange-400 transition">
                       {inst.account.login}
                     </span>
                   </div>
-                  <span className="text-xs text-muted group-hover:text-accent font-mono transition">
+                  <span className="text-[10px] text-zinc-500 group-hover:text-orange-400 font-mono transition">
                     Enter →
                   </span>
                 </Link>
@@ -117,14 +117,14 @@ export default async function DashboardRoot() {
         )}
       </div>
 
-      <footer className="border-t border-ink/10 py-6 bg-white/10">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 text-xs text-muted font-mono">
+      <footer className="border-t border-zinc-900 py-4 bg-zinc-950">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 text-[10px] text-zinc-500 font-mono">
           <div>© 2026 Driftguard</div>
           <div className="flex gap-4">
-            <a href="/privacy" className="hover:text-accent">
+            <a href="/privacy" className="hover:text-zinc-300">
               Privacy
             </a>
-            <a href="/terms" className="hover:text-accent">
+            <a href="/terms" className="hover:text-zinc-300">
               Terms
             </a>
           </div>

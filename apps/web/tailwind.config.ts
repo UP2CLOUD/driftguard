@@ -5,14 +5,15 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        display: ["JetBrains Mono", "ui-monospace", "monospace"],
-        sans: ["Geist", "ui-sans-serif", "system-ui"],
+        display: ["Inter", "Geist", "ui-sans-serif", "system-ui"],
+        sans: ["Inter", "Geist", "ui-sans-serif", "system-ui"],
+        mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       colors: {
-        ink: "#0a0a0a",
-        paper: "#fafaf7",
-        accent: "#ff5c1a",
-        muted: "#6b7280",
+        ink: "#f4f4f5",      // Bright zinc-100 for high-density dark mode
+        paper: "#09090b",    // Operational zinc-950 obsidian canvas
+        accent: "#f97316",   // Restrained amber-orange for controlled highlights
+        muted: "#a1a1aa",    // Zinc-400 for structural secondary tags
       },
     },
   },

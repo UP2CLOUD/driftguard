@@ -7,15 +7,15 @@ export default async function Settings({ params }: { params: Promise<{ installat
   const org = await getOrg(installationId);
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-zinc-950 text-zinc-100">
       <DashboardNav installationId={installationId} planLabel={org.plan} />
-      <div className="mx-auto max-w-3xl px-6 py-12">
-        <h1 className="font-display text-3xl font-bold">Settings</h1>
+      <div className="mx-auto max-w-4xl px-4 py-8">
+        <h1 className="text-xl font-bold tracking-tight text-zinc-100">Settings</h1>
 
-        <section className="mt-10">
-          <h2 className="font-display text-xl font-bold">Billing</h2>
-          <p className="mt-2 text-sm text-muted">
-            Current plan: <strong className="text-ink">{org.plan}</strong>
+        <section className="mt-8 border-t border-zinc-800 pt-6">
+          <h2 className="text-lg font-semibold tracking-tight text-zinc-100">Subscription & Billing</h2>
+          <p className="mt-2 text-sm text-zinc-400">
+            Current active tier: <span className="text-orange-400 font-mono font-semibold uppercase">{org.plan}</span>
           </p>
 
           <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -60,12 +60,14 @@ function PlanCard({
   current: boolean;
 }) {
   return (
-    <div className={`rounded-lg border p-5 ${current ? "border-accent bg-accent/5" : "border-ink/15 bg-white/40"}`}>
-      <div className="font-display text-xs uppercase tracking-widest text-muted">{name}</div>
-      <div className="mt-2 font-display text-2xl font-bold">{price}</div>
-      <p className="mt-2 text-sm text-muted">{detail}</p>
+    <div className={`rounded-lg border p-4 transition-all duration-150 ${current ? "border-orange-500/30 bg-orange-500/5" : "border-zinc-800 bg-zinc-900/50"}`}>
+      <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">{name}</div>
+      <div className="mt-1 text-xl font-extrabold tracking-tight text-zinc-100">{price}</div>
+      <p className="mt-2 text-xs text-zinc-400 leading-relaxed">{detail}</p>
       {current && (
-        <div className="mt-3 text-xs font-semibold uppercase tracking-widest text-accent">current</div>
+        <span className="inline-flex mt-3 text-[9px] font-mono font-bold uppercase tracking-wider text-orange-400 bg-orange-500/10 border border-orange-500/20 px-2 py-0.5 rounded">
+          Active Plan
+        </span>
       )}
     </div>
   );
