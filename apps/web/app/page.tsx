@@ -1,53 +1,48 @@
+import { DriftguardLogo } from "@/components/DriftguardLogo";
+import { HashScroll } from "@/components/HashScroll";
+import { NavAnchor, NavLink, NavSubmitButton } from "@/components/NavButton";
 import { WaitlistForm } from "@/components/WaitlistForm";
-import { auth, signIn, signOut } from "@/auth";
+import { auth, signIn } from "@/auth";
+import { getLocale, getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { signOutToHome } from "@/lib/auth-actions";
 import Link from "next/link";
 
 export default async function Home() {
   const session = await auth();
+  const locale = await getLocale();
+  const messages = await getMessages(locale);
+  const t = createTranslator(messages);
 
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
-      <nav className="border-b border-zinc-800 bg-zinc-950/85 backdrop-blur-md sticky top-0 z-50">
+      <HashScroll />
+      <nav className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-orange-500/10 text-orange-400 border border-orange-500/20">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5">
-                <path fillRule="evenodd" d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 6a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <span className="text-base font-bold tracking-tight text-zinc-100 lowercase">
-              driftguard
-            </span>
-          </Link>
-          <div className="flex gap-5 text-sm items-center">
-            <a href="#features" className="text-zinc-400 hover:text-zinc-100 font-medium transition-colors">features</a>
-            <a href="#pricing" className="text-zinc-400 hover:text-zinc-100 font-medium transition-colors">pricing</a>
+          <DriftguardLogo href="/" />
+          <div className="flex items-center gap-1 sm:gap-2">
+            <NavAnchor href="#features">{t("nav.features")}</NavAnchor>
+            <NavAnchor href="#pricing">{t("nav.pricing")}</NavAnchor>
             {session ? (
               <>
-                <Link href="/dashboard" className="text-zinc-400 hover:text-zinc-100 font-medium transition-colors">
-                  Dashboard
-                </Link>
-                <form
-                  action={async () => {
-                    "use server";
-                    await signOut({ redirectTo: "/" });
-                  }}
-                >
-                  <button type="submit" className="text-zinc-400 hover:text-zinc-100 font-medium transition-colors">
-                    Sign out
-                  </button>
+                <NavLink href="/dashboard">{t("nav.dashboard")}</NavLink>
+                <form action={signOutToHome}>
+                  <NavSubmitButton>{t("nav.signOut")}</NavSubmitButton>
                 </form>
               </>
             ) : (
-              <div className="flex gap-2 items-center">
+              <div className="flex items-center gap-2">
                 <form
                   action={async () => {
                     "use server";
                     await signIn("github", { redirectTo: "/dashboard" });
                   }}
                 >
-                  <button type="submit" className="rounded bg-zinc-100 px-3 py-1.5 text-xs font-semibold text-zinc-950 hover:bg-zinc-200 transition">
-                    Sign in with GitHub
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center rounded-md bg-zinc-100 px-3 py-1.5 text-sm font-semibold text-zinc-950 transition duration-150 ease-out hover:bg-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 active:scale-[0.98] active:opacity-90"
+                  >
+                    {t("nav.signInGithub")}
                   </button>
                 </form>
                 <form
@@ -56,8 +51,11 @@ export default async function Home() {
                     await signIn("developer-login", { redirectTo: "/dashboard" });
                   }}
                 >
-                  <button type="submit" className="rounded border border-zinc-800 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:border-zinc-700 hover:bg-zinc-900 transition">
-                    Dev Bypass
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center rounded-md border border-zinc-800 px-3 py-1.5 text-sm font-semibold text-zinc-300 transition duration-150 ease-out hover:border-zinc-700 hover:bg-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 active:scale-[0.98] active:opacity-90"
+                  >
+                    {t("nav.devBypass")}
                   </button>
                 </form>
               </div>
@@ -69,29 +67,25 @@ export default async function Home() {
       <section className="mx-auto max-w-7xl px-4 py-20">
         <div className="max-w-3xl">
           <div className="mb-4 inline-flex items-center rounded border border-orange-500/20 bg-orange-500/10 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-orange-400">
-            beta · invite only · EU
+            {t("home.badge")}
           </div>
-          <h1 className="text-4xl font-extrabold leading-tight tracking-tight md:text-6xl text-zinc-100">
-            OpenTofu PR reviews.
+          <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-zinc-100 md:text-6xl">
+            {t("home.titleLine1")}
             <br />
-            <span className="text-zinc-400">EU compliance baked in.</span>
+            <span className="text-zinc-400">{t("home.titleLine2")}</span>
           </h1>
-          <p className="mt-6 max-w-2xl text-base text-zinc-400 leading-relaxed">
-            Driftguard reviews every OpenTofu and Terraform PR in 30 seconds. Cost delta,
-            drift risk, security misconfigs, and DORA / NIS2 / ISO 27001 evidence — unified
-            in one PR comment.
-          </p>
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-zinc-400">{t("home.subtitle")}</p>
           {session ? (
             <div className="mt-8">
               <Link
                 href="/dashboard"
-                className="inline-block rounded bg-orange-500 px-6 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-orange-600 transition"
+                className="inline-block rounded bg-orange-500 px-6 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-orange-600"
               >
-                Go to Dashboard →
+                {t("auth.goToDashboard")}
               </Link>
             </div>
           ) : (
-            <div className="mt-8 flex flex-wrap gap-4 items-center">
+            <div className="mt-8 flex flex-wrap items-center gap-4">
               <form
                 action={async () => {
                   "use server";
@@ -100,9 +94,9 @@ export default async function Home() {
               >
                 <button
                   type="submit"
-                  className="rounded bg-orange-500 px-6 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-orange-600 transition"
+                  className="rounded bg-orange-500 px-6 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-orange-600"
                 >
-                  Get Started with GitHub
+                  {t("auth.getStartedGithub")}
                 </button>
               </form>
               <form
@@ -113,18 +107,16 @@ export default async function Home() {
               >
                 <button
                   type="submit"
-                  className="rounded border border-zinc-800 bg-zinc-900 px-6 py-2.5 text-sm font-semibold text-zinc-300 hover:border-zinc-700 hover:bg-zinc-800 transition"
+                  className="rounded border border-zinc-800 bg-zinc-900 px-6 py-2.5 text-sm font-semibold text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800"
                 >
-                  Developer Bypass (No GitHub Credentials)
+                  {t("auth.developerBypass")}
                 </button>
               </form>
-              <div className="text-xs text-zinc-500 font-mono">or join waitlist:</div>
+              <div className="font-mono text-xs text-zinc-500">{t("auth.joinWaitlist")}</div>
               <WaitlistForm theme="dark" />
             </div>
           )}
-          <p className="mt-4 text-[11px] font-mono uppercase tracking-widest text-zinc-600">
-            EU-hosted. GDPR-native. No spam.
-          </p>
+          <p className="mt-4 text-[11px] font-mono uppercase tracking-widest text-zinc-600">{t("home.footerTagline")}</p>
         </div>
       </section>
 
@@ -162,8 +154,8 @@ export default async function Home() {
       </section>
 
       <section id="pricing" className="mx-auto max-w-7xl px-4 py-20">
-        <h2 className="text-2xl font-bold tracking-tight text-zinc-100">Pricing</h2>
-        <p className="mt-2 text-sm text-zinc-400">Per-repo. Annual saves 15%.</p>
+        <h2 className="text-2xl font-bold tracking-tight text-zinc-100">{t("home.pricingTitle")}</h2>
+        <p className="mt-2 text-sm text-zinc-400">{t("home.pricingSubtitle")}</p>
         <div className="mt-8 grid gap-4 md:grid-cols-4">
           <Plan name="Free" price="€0" detail="1 repo · 50 PRs/mo · cost + drift" cta="Start free" />
           <Plan name="Pro" price="€29" detail="per repo / mo · unlimited PRs · security · Slack" cta="Start trial" featured />
@@ -174,25 +166,27 @@ export default async function Home() {
 
       <section id="waitlist" className="border-t border-zinc-900 bg-zinc-950 py-20 text-zinc-100">
         <div className="mx-auto max-w-3xl px-4 text-center">
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl text-zinc-100">
-            Be the first to ship safer infra.
-          </h2>
-          <p className="mt-4 text-sm text-zinc-400">
-            Early access opens to 50 platform teams. First 20 get lifetime 50% off.
-          </p>
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-100 md:text-4xl">{t("home.waitlistTitle")}</h2>
+          <p className="mt-4 text-sm text-zinc-400">{t("home.waitlistSubtitle")}</p>
           <div className="mt-8 flex justify-center">
             <WaitlistForm theme="dark" />
           </div>
         </div>
       </section>
 
-      <footer className="border-t border-zinc-900 py-6 bg-zinc-950">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 text-[10px] text-zinc-500 font-mono">
+      <footer className="border-t border-zinc-900 bg-zinc-950 py-6">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 font-mono text-[10px] text-zinc-500">
           <div>© 2026 Driftguard</div>
           <div className="flex gap-4">
-            <a href="https://github.com" className="hover:text-zinc-300">GitHub</a>
-            <a href="/privacy" className="hover:text-zinc-300">Privacy</a>
-            <a href="/terms" className="hover:text-zinc-300">Terms</a>
+            <a href="https://github.com/UP2CLOUD/driftguard" className="hover:text-zinc-300">
+              GitHub
+            </a>
+            <Link href="/privacy" className="hover:text-zinc-300">
+              {t("footer.privacy")}
+            </Link>
+            <Link href="/terms" className="hover:text-zinc-300">
+              {t("footer.terms")}
+            </Link>
           </div>
         </div>
       </footer>
@@ -204,7 +198,7 @@ function Feature({ title, body }: { title: string; body: string }) {
   return (
     <div className="rounded border border-zinc-900 bg-zinc-900/20 p-5">
       <div className="mb-2 text-[10px] font-mono font-bold uppercase tracking-wider text-orange-400">{title}</div>
-      <p className="text-sm text-zinc-400 leading-relaxed">{body}</p>
+      <p className="text-sm leading-relaxed text-zinc-400">{body}</p>
     </div>
   );
 }
@@ -230,10 +224,10 @@ function Plan({
     >
       <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">{name}</div>
       <div className="mt-2 text-2xl font-extrabold tracking-tight text-zinc-100">{price}</div>
-      <p className="mt-2 min-h-12 text-xs text-zinc-400 leading-relaxed">{detail}</p>
+      <p className="mt-2 min-h-12 text-xs leading-relaxed text-zinc-400">{detail}</p>
       <a
         href="#waitlist"
-        className={`mt-6 inline-block w-full rounded px-4 py-2 text-center text-sm font-semibold transition ${
+        className={`mt-6 inline-block w-full rounded px-4 py-2 text-center text-sm font-semibold transition duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 active:scale-[0.98] active:opacity-90 ${
           featured ? "bg-orange-500 text-zinc-950 hover:bg-orange-600" : "bg-zinc-100 text-zinc-950 hover:bg-zinc-200"
         }`}
       >

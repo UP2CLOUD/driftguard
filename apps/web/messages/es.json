@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "features": "Funciones",
+    "pricing": "Precios",
+    "dashboard": "Panel",
+    "signOut": "Cerrar sesión",
+    "signInGithub": "Iniciar sesión con GitHub",
+    "devBypass": "Bypass de desarrollo",
+    "repos": "Repos",
+    "settings": "Ajustes"
+  },
+  "auth": {
+    "goToDashboard": "Ir al panel →",
+    "getStartedGithub": "Empezar con GitHub",
+    "developerBypass": "Bypass de desarrollador (sin credenciales de GitHub)",
+    "joinWaitlist": "o únete a la lista de espera:"
+  },
+  "home": {
+    "badge": "beta · solo invitación · UE",
+    "titleLine1": "Revisiones de PR de OpenTofu.",
+    "titleLine2": "Cumplimiento UE integrado.",
+    "subtitle": "Driftguard revisa cada PR de OpenTofu y Terraform en 30 segundos. Delta de coste, riesgo de drift, misconfigs de seguridad y evidencia DORA / NIS2 / ISO 27001 — en un solo comentario de PR.",
+    "footerTagline": "Alojado en la UE. Nativo GDPR. Sin spam.",
+    "pricingTitle": "Precios",
+    "pricingSubtitle": "Por repositorio. Anual ahorra 15%.",
+    "waitlistTitle": "Sé el primero en desplegar infra más segura.",
+    "waitlistSubtitle": "Acceso anticipado para 50 equipos de plataforma. Los 20 primeros obtienen 50% de por vida."
+  },
+  "dashboard": {
+    "selectOrg": "Seleccionar organización",
+    "connectGithub": "Conectar con GitHub"
+  },
+  "waitlist": {
+    "placeholder": "you@company.com",
+    "join": "Unirse",
+    "loading": "...",
+    "success": "✓ Listo"
+  },
+  "footer": {
+    "privacy": "Privacidad",
+    "terms": "Términos"
+  }
+}

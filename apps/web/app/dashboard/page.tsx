@@ -1,10 +1,18 @@
-import { auth, signOut } from "@/auth";
+import { DriftguardLogo } from "@/components/DriftguardLogo";
+import { NavSubmitButton } from "@/components/NavButton";
+import { auth } from "@/auth";
+import { getLocale, getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
 import { checkInstallationAccess } from "@/lib/auth-utils";
+import { signOutToHome } from "@/lib/auth-actions";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function DashboardRoot() {
   const session = await auth();
+  const locale = await getLocale();
+  const messages = await getMessages(locale);
+  const t = createTranslator(messages);
   if (!session) {
     redirect("/");
   }
@@ -21,23 +29,11 @@ export default async function DashboardRoot() {
     <main className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col justify-between">
       <nav className="border-b border-zinc-800 bg-zinc-950">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          <Link href="/" className="text-base font-bold tracking-tight text-zinc-100 hover:opacity-90">
-            driftguard
-          </Link>
+          <DriftguardLogo href="/" />
           <div className="flex items-center gap-4">
-            <span className="text-xs text-zinc-400 font-mono">{session.user?.email}</span>
-            <form
-              action={async () => {
-                "use server";
-                await signOut({ redirectTo: "/" });
-              }}
-            >
-              <button
-                type="submit"
-                className="rounded border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:bg-zinc-900 px-3 py-1 text-xs transition"
-              >
-                Sign out
-              </button>
+            <span className="font-mono text-xs text-zinc-400">{session.user?.email}</span>
+            <form action={signOutToHome}>
+              <NavSubmitButton>{t("nav.signOut")}</NavSubmitButton>
             </form>
           </div>
         </div>

@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { I18nProvider } from "@/components/I18nProvider";
+import { isRtlLocale } from "@/i18n/config";
+import { getLocale, getMessages } from "@/i18n/get-locale";
 import "./globals.css";
 
 const inter = Inter({
@@ -25,10 +28,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
+  const messages = await getMessages(locale);
+  const dir = isRtlLocale(locale) ? "rtl" : "ltr";
+
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="min-h-screen font-sans text-sm antialiased">{children}</body>
+    <html lang={locale} dir={dir} className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className="min-h-screen font-sans text-sm antialiased">
+        <I18nProvider locale={locale} messages={messages}>
+          {children}
+        </I18nProvider>
+      </body>
     </html>
   );
 }

@@ -1,6 +1,10 @@
+import { DriftguardLogo } from "@/components/DriftguardLogo";
+import { NavSubmitButton } from "@/components/NavButton";
 import { checkInstallationAccess } from "@/lib/auth-utils";
+import { signOutToHome } from "@/lib/auth-actions";
+import { getLocale, getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
 import Link from "next/link";
-import { signOut } from "@/auth";
 
 export default async function DashboardLayout({
   children,
@@ -11,28 +15,19 @@ export default async function DashboardLayout({
 }) {
   const { installationId } = await params;
   const { authorized } = await checkInstallationAccess(installationId);
+  const locale = await getLocale();
+  const messages = await getMessages(locale);
+  const t = createTranslator(messages);
 
   if (!authorized) {
     return (
       <main className="min-h-screen bg-paper flex flex-col justify-between">
         <nav className="border-b border-ink/10 bg-white/40 backdrop-blur-md">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-            <Link href="/" className="font-display text-lg font-bold tracking-tight">
-              driftguard
-            </Link>
+            <DriftguardLogo href="/" />
             <div className="flex items-center gap-4">
-              <form
-                action={async () => {
-                  "use server";
-                  await signOut({ redirectTo: "/" });
-                }}
-              >
-                <button
-                  type="submit"
-                  className="rounded-full border border-ink/10 hover:border-accent hover:text-accent px-4 py-1.5 text-xs transition"
-                >
-                  Sign out
-                </button>
+              <form action={signOutToHome}>
+                <NavSubmitButton>{t("nav.signOut")}</NavSubmitButton>
               </form>
             </div>
           </div>
