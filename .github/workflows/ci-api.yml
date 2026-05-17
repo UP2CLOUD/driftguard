@@ -1,0 +1,60 @@
+name: ci-api
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/api/**"
+      - ".github/workflows/ci-api.yml"
+  pull_request:
+    paths:
+      - "apps/api/**"
+      - ".github/workflows/ci-api.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: driftguard
+          POSTGRES_PASSWORD: driftguard
+          POSTGRES_DB: driftguard
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U driftguard"
+          --health-interval 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: latest
+
+      - name: Sync deps
+        working-directory: apps/api
+        run: uv sync --all-extras
+
+      - name: Lint
+        working-directory: apps/api
+        run: uv run ruff check .
+
+      - name: Format check
+        working-directory: apps/api
+        run: uv run ruff format --check .
+
+      - name: Test
+        working-directory: apps/api
+        env:
+          DATABASE_URL: postgresql+asyncpg://driftguard:driftguard@localhost:5432/driftguard
+          REDIS_URL: redis://localhost:6379/0
+          SECRET_KEY: ci
+          ENVIRONMENT: ci
+        run: uv run pytest -v
