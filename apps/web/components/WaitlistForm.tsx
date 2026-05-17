@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "@/components/I18nProvider";
 
 export function WaitlistForm({ theme = "light" }: { theme?: "light" | "dark" }) {
+  const t = useT();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">("idle");
 
@@ -21,7 +23,6 @@ export function WaitlistForm({ theme = "light" }: { theme?: "light" | "dark" }) 
     }
   }
 
-  // We are forcing dark mode in the new layout, but we keep the logic just in case
   const dark = theme === "dark";
 
   return (
@@ -29,7 +30,7 @@ export function WaitlistForm({ theme = "light" }: { theme?: "light" | "dark" }) 
       <input
         type="email"
         required
-        placeholder="you@company.com"
+        placeholder={t("waitlist.placeholder")}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         className={`flex-1 rounded px-4 py-2.5 text-sm outline-none border transition focus:ring-1 focus:ring-orange-500 focus:border-orange-500 ${
@@ -41,9 +42,9 @@ export function WaitlistForm({ theme = "light" }: { theme?: "light" | "dark" }) 
       <button
         type="submit"
         disabled={status === "loading"}
-        className="rounded bg-orange-500 px-6 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-orange-600 disabled:opacity-60"
+        className="rounded bg-orange-500 px-6 py-2.5 text-sm font-semibold text-zinc-950 transition duration-150 ease-out hover:bg-orange-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 active:scale-[0.98] active:opacity-90 disabled:opacity-60"
       >
-        {status === "loading" ? "..." : status === "ok" ? "✓ In" : "Join"}
+        {status === "loading" ? t("waitlist.loading") : status === "ok" ? t("waitlist.success") : t("waitlist.join")}
       </button>
     </form>
   );

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { DashboardNav } from "@/components/DashboardNav";
 import { FindingsTable } from "@/components/FindingsTable";
-import { formatCents, getAnalysis } from "@/lib/api";
+import { getAnalysis } from "@/lib/api";
+import { formatCostDeltaCentsForUser } from "@/lib/currency/format";
+import { getUserPreferences } from "@/lib/preferences/server";
 
 export default async function AnalysisDetail({
   params,
@@ -9,15 +11,21 @@ export default async function AnalysisDetail({
   params: Promise<{ installationId: string; analysisId: string }>;
 }) {
   const { installationId, analysisId } = await params;
+  const preferences = await getUserPreferences();
   const a = await getAnalysis(analysisId);
 
   const costDelta = a.cost_delta_cents || 0;
+  const costFormatted = await formatCostDeltaCentsForUser(
+    a.cost_delta_cents,
+    preferences.currency,
+    preferences.locale
+  );
   const riskScore = a.risk_score || 0;
   const findingsCount = a.findings.length;
 
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100 pb-16">
-      <DashboardNav installationId={installationId} />
+      <DashboardNav installationId={installationId} initialPreferences={preferences} />
       
       <div className="mx-auto max-w-7xl px-4 py-8">
         {/* Back Link */}
@@ -62,7 +70,7 @@ export default async function AnalysisDetail({
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           <Stat
             label="Cost impact"
-            value={formatCents(costDelta)}
+            value={costFormatted}
             subtext="monthly billing change"
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">

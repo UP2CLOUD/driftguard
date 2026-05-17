@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { DashboardNav } from "@/components/DashboardNav";
-import { formatCents, getOrg, listAnalyses, listRepos } from "@/lib/api";
+import { getOrg, listAnalyses, listRepos } from "@/lib/api";
+import { formatCostDeltaCentsForUser } from "@/lib/currency/format";
+import { getUserPreferences } from "@/lib/preferences/server";
 
 export default async function Dashboard({ params }: { params: Promise<{ installationId: string }> }) {
   const { installationId } = await params;
+  const preferences = await getUserPreferences();
 
   let org;
   try {
@@ -12,7 +15,7 @@ export default async function Dashboard({ params }: { params: Promise<{ installa
     return (
       <main className="min-h-screen bg-paper flex flex-col justify-between relative overflow-hidden">
         <div className="absolute top-0 right-0 -z-10 h-[400px] w-[400px] rounded-full bg-accent/5 blur-[100px]" />
-        <DashboardNav installationId={installationId} />
+        <DashboardNav installationId={installationId} initialPreferences={preferences} />
         <div className="flex-1 flex items-center justify-center px-6 py-24 text-center">
           <div className="max-w-md w-full bg-white/70 border border-ink/10 rounded-3xl p-8 shadow-xl backdrop-blur-md">
             <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto text-amber-500">
@@ -41,14 +44,34 @@ export default async function Dashboard({ params }: { params: Promise<{ installa
   const totalAnalyses = analyses.length;
   
   const totalCostDeltaCents = analyses.reduce((sum, item) => sum + (item.cost_delta_cents || 0), 0);
-  
+  const totalCostFormatted = await formatCostDeltaCentsForUser(
+    totalCostDeltaCents,
+    preferences.currency,
+    preferences.locale
+  );
+
   const avgRisk = analyses.length > 0
     ? Math.round(analyses.reduce((sum, item) => sum + (item.risk_score || 0), 0) / analyses.length)
     : 0;
 
+  const analysesWithCost = await Promise.all(
+    analyses.map(async (a) => ({
+      ...a,
+      costFormatted: await formatCostDeltaCentsForUser(
+        a.cost_delta_cents,
+        preferences.currency,
+        preferences.locale
+      ),
+    }))
+  );
+
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100 pb-16">
-      <DashboardNav installationId={installationId} planLabel={org.plan} />
+      <DashboardNav
+        installationId={installationId}
+        planLabel={org.plan}
+        initialPreferences={preferences}
+      />
 
       <div className="mx-auto max-w-7xl px-[var(--dg-space-page-x)] py-[var(--dg-space-page-y)]">
         {/* Dynamic Metric Overview Row */}
@@ -76,7 +99,7 @@ export default async function Dashboard({ params }: { params: Promise<{ installa
           />
           <StatCard
             label="Total Cost Delta"
-            value={formatCents(totalCostDeltaCents)}
+            value={totalCostFormatted}
             subtext="all pull requests"
             valueColor={totalCostDeltaCents > 0 ? "amber" : totalCostDeltaCents < 0 ? "emerald" : "default"}
             icon={
@@ -192,7 +215,7 @@ export default async function Dashboard({ params }: { params: Promise<{ installa
                       </td>
                     </tr>
                   ) : (
-                    analyses.map((a) => (
+                    analysesWithCost.map((a) => (
                       <tr
                         key={a.id}
                         className="group cursor-pointer hover:bg-zinc-900/60 transition-colors duration-150"
@@ -245,7 +268,7 @@ export default async function Dashboard({ params }: { params: Promise<{ installa
                             : "text-zinc-500"
                         }`}>
                           <Link href={`/dashboard/${installationId}/analyses/${a.id}`} className="block">
-                            {formatCents(a.cost_delta_cents)}
+                            {a.costFormatted}
                           </Link>
                         </td>
                         <td className="px-4 py-3.5 text-right">

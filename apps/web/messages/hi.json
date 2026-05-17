@@ -1,0 +1,56 @@
+{
+  "nav": {
+    "features": "विशेषताएँ",
+    "pricing": "मूल्य",
+    "dashboard": "डैशबोर्ड",
+    "signOut": "साइन आउट",
+    "signInGithub": "GitHub से साइन इन करें",
+    "devBypass": "डेव बायपास",
+    "repos": "रिपॉज़िटरी",
+    "settings": "सेटिंग्स"
+  },
+  "auth": {
+    "goToDashboard": "डैशबोर्ड पर जाएँ →",
+    "getStartedGithub": "GitHub से शुरू करें",
+    "developerBypass": "डेवलपर बायपास (GitHub क्रेडेंशियल नहीं)",
+    "joinWaitlist": "या वेटलिस्ट में शामिल हों:"
+  },
+  "home": {
+    "badge": "बीटा · केवल आमंत्रण · EU",
+    "titleLine1": "OpenTofu PR समीक्षा।",
+    "titleLine2": "EU अनुपालन अंतर्निहित।",
+    "subtitle": "Driftguard हर OpenTofu और Terraform PR की 30 सेकंड में समीक्षा करता है। लागत परिवर्तन, ड्रिफ्ट जोखिम, सुरक्षा misconfig और DORA / NIS2 / ISO 27001 साक्ष्य — एक PR टिप्पणी में।",
+    "footerTagline": "EU-होस्टेड। GDPR-नेटिव। कोई स्पैम नहीं।",
+    "pricingTitle": "मूल्य निर्धारण",
+    "pricingSubtitle": "प्रति रिपॉ। वार्षिक 15% बचत।",
+    "waitlistTitle": "सुरक्षित इन्फ्रास्ट्रक्चर शिप करने वाले पहले बनें।",
+    "waitlistSubtitle": "प्रारंभिक पहुँच 50 प्लेटफ़ॉर्म टीमों के लिए। पहले 20 को आजीवन 50% छूट।"
+  },
+  "dashboard": {
+    "selectOrg": "संगठन चुनें",
+    "connectGithub": "GitHub से कनेक्ट करें"
+  },
+  "waitlist": {
+    "placeholder": "you@company.com",
+    "join": "शामिल हों",
+    "loading": "...",
+    "success": "✓ शामिल"
+  },
+  "footer": {
+    "privacy": "गोपनीयता",
+    "terms": "शर्तें"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "preferencesTitle": "क्षेत्रीय प्राथमिकताएँ",
+    "preferencesSubtitle": "लागत प्रदर्शन और भाषा चुनें।",
+    "language": "भाषा",
+    "languageHint": "ब्राउज़र पहचान को ओवरराइड करता है।",
+    "currency": "प्रदर्शन मुद्रा",
+    "currencyHint": "USD से दैनिक दर पर रूपांतरण।",
+    "saving": "सहेजा जा रहा है…",
+    "billingTitle": "सदस्यता और बिलिंग",
+    "billingCurrent": "वर्तमान योजना:",
+    "activePlan": "सक्रिय योजना"
+  }
+}

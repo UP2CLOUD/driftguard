@@ -1,0 +1,56 @@
+{
+  "nav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "dashboard": "Dashboard",
+    "signOut": "Sign out",
+    "signInGithub": "Sign in with GitHub",
+    "devBypass": "Dev Bypass",
+    "repos": "Repos",
+    "settings": "Settings"
+  },
+  "auth": {
+    "goToDashboard": "Go to Dashboard →",
+    "getStartedGithub": "Get Started with GitHub",
+    "developerBypass": "Developer Bypass (No GitHub Credentials)",
+    "joinWaitlist": "or join waitlist:"
+  },
+  "home": {
+    "badge": "beta · invite only · EU",
+    "titleLine1": "OpenTofu PR reviews.",
+    "titleLine2": "EU compliance baked in.",
+    "subtitle": "Driftguard reviews every OpenTofu and Terraform PR in 30 seconds. Cost delta, drift risk, security misconfigs, and DORA / NIS2 / ISO 27001 evidence — unified in one PR comment.",
+    "footerTagline": "EU-hosted. GDPR-native. No spam.",
+    "pricingTitle": "Pricing",
+    "pricingSubtitle": "Per-repo. Annual saves 15%.",
+    "waitlistTitle": "Be the first to ship safer infra.",
+    "waitlistSubtitle": "Early access opens to 50 platform teams. First 20 get lifetime 50% off."
+  },
+  "dashboard": {
+    "selectOrg": "Select Organization",
+    "connectGithub": "Connect to GitHub"
+  },
+  "waitlist": {
+    "placeholder": "you@company.com",
+    "join": "Join",
+    "loading": "...",
+    "success": "✓ In"
+  },
+  "footer": {
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "settings": {
+    "title": "Settings",
+    "preferencesTitle": "Regional preferences",
+    "preferencesSubtitle": "Choose how costs are displayed and which language DriftGuard uses.",
+    "language": "Language",
+    "languageHint": "Overrides browser detection. Applies across marketing and dashboard.",
+    "currency": "Display currency",
+    "currencyHint": "Cost deltas from Infracost are converted from USD using daily exchange rates.",
+    "saving": "Saving…",
+    "billingTitle": "Subscription & Billing",
+    "billingCurrent": "Current active tier:",
+    "activePlan": "Active Plan"
+  }
+}
