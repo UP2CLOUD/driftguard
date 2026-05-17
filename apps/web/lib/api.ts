@@ -42,6 +42,16 @@ export type Analysis = {
   findings: Finding[];
 };
 
+export class ApiError extends Error {
+  constructor(
+    public readonly status: number,
+    message: string,
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
 async function get<T>(path: string): Promise<T> {
   const headers: HeadersInit = {};
   if (typeof window === "undefined") {
@@ -51,7 +61,7 @@ async function get<T>(path: string): Promise<T> {
     cache: "no-store",
     headers,
   });
-  if (!r.ok) throw new Error(`${path}: ${r.status}`);
+  if (!r.ok) throw new ApiError(r.status, `${path}: ${r.status}`);
   return r.json();
 }
 

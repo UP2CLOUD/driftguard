@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { DashboardNav } from "@/components/DashboardNav";
 import { FindingsTable } from "@/components/FindingsTable";
-import { getAnalysis } from "@/lib/api";
+import { ApiError, getAnalysis } from "@/lib/api";
+import { requireOrg } from "@/lib/org-server";
+import { notFound } from "next/navigation";
 import { formatCostDeltaCentsForUser } from "@/lib/currency/format";
 import { getUserPreferences } from "@/lib/preferences/server";
 
@@ -12,7 +14,17 @@ export default async function AnalysisDetail({
 }) {
   const { installationId, analysisId } = await params;
   const preferences = await getUserPreferences();
-  const a = await getAnalysis(analysisId);
+  await requireOrg(installationId);
+
+  let a;
+  try {
+    a = await getAnalysis(analysisId);
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) {
+      notFound();
+    }
+    throw err;
+  }
 
   const costDelta = a.cost_delta_cents || 0;
   const costFormatted = await formatCostDeltaCentsForUser(

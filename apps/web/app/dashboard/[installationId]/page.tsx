@@ -1,38 +1,15 @@
 import Link from "next/link";
 import { DashboardNav } from "@/components/DashboardNav";
-import { getOrg, listAnalyses, listRepos } from "@/lib/api";
+import { listAnalyses, listRepos } from "@/lib/api";
 import { formatCostDeltaCentsForUser } from "@/lib/currency/format";
+import { requireOrg } from "@/lib/org-server";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 export default async function Dashboard({ params }: { params: Promise<{ installationId: string }> }) {
   const { installationId } = await params;
   const preferences = await getUserPreferences();
 
-  let org;
-  try {
-    org = await getOrg(installationId);
-  } catch {
-    return (
-      <main className="min-h-screen bg-paper flex flex-col justify-between relative overflow-hidden">
-        <div className="absolute top-0 right-0 -z-10 h-[400px] w-[400px] rounded-full bg-accent/5 blur-[100px]" />
-        <DashboardNav installationId={installationId} initialPreferences={preferences} />
-        <div className="flex-1 flex items-center justify-center px-6 py-24 text-center">
-          <div className="max-w-md w-full bg-white/70 border border-ink/10 rounded-3xl p-8 shadow-xl backdrop-blur-md">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto text-amber-500">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.008v.008H12v-.008Z" />
-              </svg>
-            </div>
-            <h1 className="font-display text-2xl font-bold text-ink mt-4">Installation Not Found</h1>
-            <p className="mt-2 text-sm text-muted leading-relaxed">
-              We don&apos;t have a record of this GitHub App installation yet. Install Driftguard
-              on your repository to initiate security reviews.
-            </p>
-          </div>
-        </div>
-      </main>
-    );
-  }
+  const org = await requireOrg(installationId);
 
   const [repos, analyses] = await Promise.all([
     listRepos(org.id),
