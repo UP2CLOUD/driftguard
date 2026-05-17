@@ -40,7 +40,7 @@ export default async function Settings({ params }: { params: Promise<{ installat
           </div>
 
           <div className="mt-8">
-            <BillingActions orgId={org.id} hasCustomer={org.has_stripe_customer} plan={org.plan} />
+            <BillingActions orgId={org.id} installationId={installationId} hasCustomer={org.has_stripe_customer} plan={org.plan} />
           </div>
         </section>
       </div>

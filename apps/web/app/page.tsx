@@ -1,17 +1,58 @@
 import { WaitlistForm } from "@/components/WaitlistForm";
+import { auth, signIn, signOut } from "@/auth";
+import Link from "next/link";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+
   return (
     <main className="min-h-screen">
       <nav className="border-b border-ink/10">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="font-display text-lg font-bold tracking-tight">driftguard</div>
-          <div className="flex gap-6 text-sm">
+          <div className="flex gap-6 text-sm items-center">
             <a href="#features" className="hover:text-accent">features</a>
             <a href="#pricing" className="hover:text-accent">pricing</a>
-            <a href="#waitlist" className="rounded-full bg-ink px-4 py-1.5 text-paper hover:bg-accent">
-              Get early access
-            </a>
+            {session ? (
+              <>
+                <Link href="/dashboard" className="hover:text-accent font-semibold text-ink">
+                  Dashboard
+                </Link>
+                <form
+                  action={async () => {
+                    "use server";
+                    await signOut({ redirectTo: "/" });
+                  }}
+                >
+                  <button type="submit" className="hover:text-accent font-semibold text-muted">
+                    Sign out
+                  </button>
+                </form>
+              </>
+            ) : (
+              <div className="flex gap-2 items-center">
+                <form
+                  action={async () => {
+                    "use server";
+                    await signIn("github", { redirectTo: "/dashboard" });
+                  }}
+                >
+                  <button type="submit" className="rounded-full bg-ink px-4 py-1.5 text-paper hover:bg-accent transition">
+                    Sign in with GitHub
+                  </button>
+                </form>
+                <form
+                  action={async () => {
+                    "use server";
+                    await signIn("developer-login", { redirectTo: "/dashboard" });
+                  }}
+                >
+                  <button type="submit" className="rounded-full border border-ink/20 px-4 py-1.5 text-ink hover:border-accent hover:text-accent transition">
+                    Dev Bypass
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
         </div>
       </nav>
@@ -31,9 +72,47 @@ export default function Home() {
             drift risk, security misconfigs, and DORA / NIS2 / ISO 27001 evidence — unified
             in one PR comment.
           </p>
-          <div className="mt-10">
-            <WaitlistForm />
-          </div>
+          {session ? (
+            <div className="mt-10">
+              <Link
+                href="/dashboard"
+                className="inline-block rounded-full bg-accent px-8 py-3 text-sm font-semibold text-paper hover:bg-ink transition shadow-lg shadow-accent/20 hover:shadow-ink/20"
+              >
+                Go to Dashboard →
+              </Link>
+            </div>
+          ) : (
+            <div className="mt-10 flex flex-wrap gap-4 items-center">
+              <form
+                action={async () => {
+                  "use server";
+                  await signIn("github", { redirectTo: "/dashboard" });
+                }}
+              >
+                <button
+                  type="submit"
+                  className="rounded-full bg-accent px-8 py-3 text-sm font-semibold text-paper hover:bg-ink transition shadow-lg shadow-accent/20 hover:shadow-ink/20"
+                >
+                  Get Started with GitHub
+                </button>
+              </form>
+              <form
+                action={async () => {
+                  "use server";
+                  await signIn("developer-login", { redirectTo: "/dashboard" });
+                }}
+              >
+                <button
+                  type="submit"
+                  className="rounded-full border border-ink/20 px-8 py-3 text-sm font-semibold text-ink hover:border-accent hover:text-accent transition"
+                >
+                  Developer Bypass (No GitHub Credentials)
+                </button>
+              </form>
+              <div className="text-sm text-muted font-mono">or join waitlist:</div>
+              <WaitlistForm />
+            </div>
+          )}
           <p className="mt-4 text-xs text-muted">
             EU-hosted. GDPR-native. No spam.
           </p>

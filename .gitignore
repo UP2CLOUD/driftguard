@@ -55,3 +55,8 @@ htmlcov/
 *.key
 service-account*.json
 gcp-key*.json
+
+# Databases
+*.db
+driftguard.db
+

@@ -1,4 +1,5 @@
 const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_SECRET = process.env.INTERNAL_API_SECRET || process.env.SECRET_KEY || "dev-only-change-me";
 
 export type Org = {
   id: string;
@@ -42,7 +43,14 @@ export type Analysis = {
 };
 
 async function get<T>(path: string): Promise<T> {
-  const r = await fetch(`${BASE}${path}`, { cache: "no-store" });
+  const headers: HeadersInit = {};
+  if (typeof window === "undefined") {
+    headers["Authorization"] = `Bearer ${API_SECRET}`;
+  }
+  const r = await fetch(`${BASE}${path}`, {
+    cache: "no-store",
+    headers,
+  });
   if (!r.ok) throw new Error(`${path}: ${r.status}`);
   return r.json();
 }
@@ -63,24 +71,58 @@ export async function getAnalysis(id: string): Promise<Analysis> {
   return get<Analysis>(`/api/v1/analyses/${id}`);
 }
 
-export async function startCheckout(orgId: string, plan: string): Promise<string> {
-  const r = await fetch(`${BASE}/api/v1/billing/checkout`, {
+export async function startCheckout(orgId: string, plan: string, installationId: string): Promise<string> {
+  const r = await fetch("/api/billing/checkout", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ org_id: orgId, plan }),
+    body: JSON.stringify({ orgId, plan, installationId }),
   });
-  if (!r.ok) throw new Error("checkout failed");
+  if (!r.ok) {
+    const errData = await r.json().catch(() => ({}));
+    throw new Error(errData.error || "checkout failed");
+  }
   const { url } = await r.json();
   return url;
 }
 
-export async function openPortal(orgId: string): Promise<string> {
-  const r = await fetch(`${BASE}/api/v1/billing/portal`, {
+export async function openPortal(orgId: string, installationId: string): Promise<string> {
+  const r = await fetch("/api/billing/portal", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ orgId, installationId }),
+  });
+  if (!r.ok) {
+    const errData = await r.json().catch(() => ({}));
+    throw new Error(errData.error || "portal failed");
+  }
+  const { url } = await r.json();
+  return url;
+}
+
+export async function internalStartCheckout(orgId: string, plan: string): Promise<string> {
+  const r = await fetch(`${BASE}/api/v1/billing/checkout`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${API_SECRET}`,
+    },
+    body: JSON.stringify({ org_id: orgId, plan }),
+  });
+  if (!r.ok) throw new Error("internal checkout failed");
+  const { url } = await r.json();
+  return url;
+}
+
+export async function internalOpenPortal(orgId: string): Promise<string> {
+  const r = await fetch(`${BASE}/api/v1/billing/portal`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${API_SECRET}`,
+    },
     body: JSON.stringify({ org_id: orgId }),
   });
-  if (!r.ok) throw new Error("portal failed");
+  if (!r.ok) throw new Error("internal portal failed");
   const { url } = await r.json();
   return url;
 }

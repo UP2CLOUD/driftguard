@@ -6,10 +6,12 @@ import { openPortal, startCheckout } from "@/lib/api";
 
 export function BillingActions({
   orgId,
+  installationId,
   hasCustomer,
   plan,
 }: {
   orgId: string;
+  installationId: string;
   hasCustomer: boolean;
   plan: string;
 }) {
@@ -18,7 +20,7 @@ export function BillingActions({
   async function upgrade(targetPlan: string) {
     setLoading(targetPlan);
     try {
-      const url = await startCheckout(orgId, targetPlan);
+      const url = await startCheckout(orgId, targetPlan, installationId);
       window.location.href = url;
     } catch (e) {
       setLoading(null);
@@ -29,7 +31,7 @@ export function BillingActions({
   async function manage() {
     setLoading("portal");
     try {
-      const url = await openPortal(orgId);
+      const url = await openPortal(orgId, installationId);
       window.location.href = url;
     } catch (e) {
       setLoading(null);
