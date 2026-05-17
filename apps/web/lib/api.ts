@@ -52,6 +52,30 @@ export class ApiError extends Error {
   }
 }
 
+function messageFromApiBody(data: Record<string, unknown>, fallback: string): string {
+  const detail = data.detail;
+  if (typeof detail === "string" && detail.trim()) return detail;
+  if (Array.isArray(detail)) {
+    const parts = detail
+      .map((item) => {
+        if (typeof item === "string") return item;
+        if (item && typeof item === "object" && "msg" in item) {
+          return String((item as { msg?: string }).msg ?? "");
+        }
+        return "";
+      })
+      .filter(Boolean);
+    if (parts.length) return parts.join("; ");
+  }
+  if (typeof data.error === "string" && data.error.trim()) return data.error;
+  return fallback;
+}
+
+async function throwApiError(r: Response, fallback: string): Promise<never> {
+  const data = (await r.json().catch(() => ({}))) as Record<string, unknown>;
+  throw new ApiError(r.status, messageFromApiBody(data, fallback));
+}
+
 async function get<T>(path: string): Promise<T> {
   const headers: HeadersInit = {};
   if (typeof window === "undefined") {
@@ -118,21 +142,21 @@ export async function internalStartCheckout(orgId: string, plan: string): Promis
     },
     body: JSON.stringify({ org_id: orgId, plan }),
   });
-  if (!r.ok) throw new Error("internal checkout failed");
+  if (!r.ok) await throwApiError(r, "Failed to start checkout");
   const { url } = await r.json();
   return url;
 }
 
-export async function internalOpenPortal(orgId: string): Promise<string> {
+export async function internalOpenPortal(orgId: string, email?: string | null): Promise<string> {
   const r = await fetch(`${BASE}/api/v1/billing/portal`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${API_SECRET}`,
     },
-    body: JSON.stringify({ org_id: orgId }),
+    body: JSON.stringify({ org_id: orgId, email: email ?? undefined }),
   });
-  if (!r.ok) throw new Error("internal portal failed");
+  if (!r.ok) await throwApiError(r, "Failed to open billing portal");
   const { url } = await r.json();
   return url;
 }
