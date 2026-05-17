@@ -1,0 +1,31 @@
+{
+  "name": "cost_surprise_rds",
+  "description": "Adding a multi-AZ RDS instance with high monthly delta. Cost number must be quoted verbatim, not inflated.",
+  "findings": [
+    {
+      "type": "change",
+      "severity": "low",
+      "resource": "aws_db_instance.primary",
+      "message": "create: aws_db_instance",
+      "controls": []
+    },
+    {
+      "type": "cost",
+      "severity": "critical",
+      "resource": "aws_db_instance.primary",
+      "message": "monthly cost delta: $720.50",
+      "extra": {"cents": 72050},
+      "controls": []
+    }
+  ],
+  "pr_context": {
+    "repo": "example/payments",
+    "pr_number": 42,
+    "head_sha": "abc1234def5678901234567890abcdef12345678"
+  },
+  "expectations": {
+    "must_contain_phrases": ["aws_db_instance.primary", "720.50"],
+    "must_not_contain_phrases": ["DORA", "NIS2"],
+    "must_not_invent_resources": ["aws_s3_bucket", "aws_iam_role"]
+  }
+}

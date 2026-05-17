@@ -1,4 +1,5 @@
 from driftguard.ai.findings import Finding, aggregate_cost_cents
+from driftguard.compliance import summarize_frameworks
 
 FOOTER = (
     "\n\n---\n"
@@ -18,22 +19,32 @@ def format_comment(*, findings: list[Finding], ai_review_md: str, summary_meta: 
         counts[f.type] = counts.get(f.type, 0) + 1
         sev_counts[f.severity] = sev_counts.get(f.severity, 0) + 1
 
+    framework_hits = summarize_frameworks([f.rule_id for f in findings])
+    compliance_line = ""
+    if framework_hits:
+        ordered = ["DORA", "NIS2", "ISO27001", "GDPR", "CIS"]
+        badges = [f"{fw}: {framework_hits[fw]}" for fw in ordered if fw in framework_hits]
+        if badges:
+            compliance_line = f"**Compliance hits:** {' · '.join(badges)}\n"
+
     header = (
         f"### 🛡️ Driftguard review\n\n"
         f"**Cost impact:** {cost_str} · "
         f"**Security:** {counts['security']} · "
         f"**Changes:** {counts['change']} · "
         f"**Critical/High:** {sev_counts['critical'] + sev_counts['high']}\n"
+        f"{compliance_line}"
     )
 
     findings_block = ""
     if findings:
         findings_block = "\n<details><summary>All findings (" + str(len(findings)) + ")</summary>\n\n"
-        findings_block += "| Type | Severity | Resource | Message |\n|---|---|---|---|\n"
+        findings_block += "| Type | Severity | Resource | Message | Controls |\n|---|---|---|---|---|\n"
         for f in findings[:50]:
-            msg = f.message.replace("|", "\\|")[:140]
+            msg = f.message.replace("|", "\\|")[:120]
             res = f.resource.replace("|", "\\|")[:60]
-            findings_block += f"| {f.type} | {f.severity} | `{res}` | {msg} |\n"
+            controls = ", ".join(f.controls) if f.controls else "—"
+            findings_block += f"| {f.type} | {f.severity} | `{res}` | {msg} | {controls} |\n"
         if len(findings) > 50:
             findings_block += f"\n_+{len(findings) - 50} more_\n"
         findings_block += "\n</details>\n"

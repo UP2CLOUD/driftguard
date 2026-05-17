@@ -9,8 +9,11 @@ api-install: ## install api deps
 api-dev: ## run api locally with reload
 	cd apps/api && uv run uvicorn driftguard.main:app --reload --port 8000
 
-api-test: ## run api tests
-	cd apps/api && uv run pytest -v
+api-test: ## run api tests (skips eval suite)
+	cd apps/api && uv run pytest -v --ignore=tests/eval
+
+api-eval: ## run AI eval suite (requires ANTHROPIC_API_KEY, costs $)
+	cd apps/api && DRIFTGUARD_RUN_EVAL=1 uv run pytest tests/eval -v
 
 web-install: ## install web deps
 	cd apps/web && pnpm install

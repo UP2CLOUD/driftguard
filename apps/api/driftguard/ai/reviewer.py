@@ -3,6 +3,7 @@ import json
 from anthropic import AsyncAnthropic
 
 from driftguard.ai.findings import Finding
+from driftguard.compliance import control_summary
 from driftguard.core.config import settings
 
 _client: AsyncAnthropic | None = None
@@ -18,32 +19,45 @@ def client() -> AsyncAnthropic:
 SYSTEM_PROMPT = """You are Driftguard, an expert reviewer of OpenTofu and Terraform PRs.
 
 You receive structured findings (cost, change, security, policy) already computed
-by deterministic tools (terraform plan parser, infracost, checkov). Your job:
+by deterministic tools (terraform plan parser, infracost, checkov). Each finding
+may include a precomputed list of `controls` mapping it to compliance domains:
+encryption_at_rest, encryption_in_transit, public_exposure, logging_audit,
+access_control, backup_retention, vulnerability_management, change_management.
 
-1. Synthesize them into a high-signal review.
+Your job:
+1. Synthesize findings into a high-signal review.
 2. Prioritize by blast radius and severity.
-3. Flag EU compliance implications (DORA, NIS2, ISO 27001, GDPR) when relevant.
+3. In "Compliance notes", cite specific framework references from the provided
+   compliance_context — never invent control codes.
 4. Suggest actionable fixes with code blocks when applicable.
 
 Hard rules:
-- NEVER invent cost numbers, resource names, or rule IDs. Only use what's in findings.
+- NEVER invent cost numbers, resource names, control codes, or rule IDs.
 - ALWAYS cite resource addresses exactly as given.
 - If findings list is empty, say so plainly in one line.
 - Be concise. Markdown only. No preamble, no signoff. No emojis.
 - Maximum 5 prioritized actions.
-- Compliance callouts only when a finding maps to a known control area
-  (encryption, public exposure, IAM least-privilege, logging/audit, retention).
 """
 
 
 def _user_prompt(findings: list[Finding], pr_context: dict) -> str:
     head = pr_context.get("head_sha", "")[:12]
+    compliance_ctx = control_summary([f.rule_id for f in findings])
+    compliance_ctx_serializable = {
+        cid: [{"framework": r.framework, "code": r.code, "title": r.title} for r in refs]
+        for cid, refs in compliance_ctx.items()
+    }
     return f"""PR: {pr_context.get("repo")}#{pr_context.get("pr_number")}
 Head: {head}
 
 Findings:
 ```json
 {json.dumps([f.to_dict() for f in findings], indent=2)}
+```
+
+Compliance context (use ONLY these refs in compliance notes):
+```json
+{json.dumps(compliance_ctx_serializable, indent=2)}
 ```
 
 Produce markdown with sections:

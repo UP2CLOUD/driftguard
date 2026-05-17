@@ -1,0 +1,32 @@
+{
+  "name": "public_s3_compliance",
+  "description": "S3 bucket with public read + no encryption — must cite specific framework refs from compliance_context.",
+  "findings": [
+    {
+      "type": "security",
+      "severity": "critical",
+      "resource": "aws_s3_bucket.audit_logs",
+      "message": "S3 bucket allows public read",
+      "rule_id": "CKV_AWS_57",
+      "controls": ["public_exposure"]
+    },
+    {
+      "type": "security",
+      "severity": "high",
+      "resource": "aws_s3_bucket.audit_logs",
+      "message": "S3 bucket encryption not enabled",
+      "rule_id": "CKV_AWS_19",
+      "controls": ["encryption_at_rest"]
+    }
+  ],
+  "pr_context": {
+    "repo": "example/banking",
+    "pr_number": 99,
+    "head_sha": "f00d1234567890abcdef1234567890abcdef1234"
+  },
+  "expectations": {
+    "must_contain_phrases": ["aws_s3_bucket.audit_logs"],
+    "must_contain_any_of": ["DORA", "NIS2", "ISO 27001", "ISO27001"],
+    "must_not_invent_resources": ["aws_iam_role.fictional"]
+  }
+}

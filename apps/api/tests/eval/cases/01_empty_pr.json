@@ -1,0 +1,15 @@
+{
+  "name": "empty_pr",
+  "description": "No material changes — review must say so plainly without inventing findings.",
+  "findings": [],
+  "pr_context": {
+    "repo": "example/empty",
+    "pr_number": 1,
+    "head_sha": "0000000000000000000000000000000000000000"
+  },
+  "expectations": {
+    "must_contain_phrases": ["No material changes"],
+    "must_not_contain_phrases": ["$", "DORA", "NIS2", "ISO"],
+    "must_not_invent_resources": []
+  }
+}

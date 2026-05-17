@@ -13,6 +13,7 @@ class Finding:
     message: str
     suggestion: str | None = None
     rule_id: str | None = None
+    controls: tuple[str, ...] = ()
     extra: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
@@ -23,6 +24,7 @@ class Finding:
             "message": self.message,
             "suggestion": self.suggestion,
             "rule_id": self.rule_id,
+            "controls": list(self.controls),
             "extra": self.extra,
         }
 
@@ -80,6 +82,8 @@ def from_infracost(diff: dict) -> list[Finding]:
 
 
 def from_checkov(results: list[dict]) -> list[Finding]:
+    from driftguard.compliance.mappings import controls_for_rule
+
     findings: list[Finding] = []
     for r in results:
         failed = r.get("results", {}).get("failed_checks", []) if isinstance(r, dict) else []
@@ -92,6 +96,7 @@ def from_checkov(results: list[dict]) -> list[Finding]:
                 "INFO": "info",
             }
             sev = sev_map.get(str(c.get("severity", "MEDIUM")).upper(), "medium")
+            rule_id = c.get("check_id")
             findings.append(
                 Finding(
                     type="security",
@@ -99,7 +104,8 @@ def from_checkov(results: list[dict]) -> list[Finding]:
                     resource=c.get("resource", "?"),
                     message=c.get("check_name", "security finding"),
                     suggestion=c.get("guideline"),
-                    rule_id=c.get("check_id"),
+                    rule_id=rule_id,
+                    controls=controls_for_rule(rule_id),
                 )
             )
     return findings
