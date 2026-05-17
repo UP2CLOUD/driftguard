@@ -59,7 +59,7 @@ export function BillingActions({
           </button>
         </>
       )}
-      {hasCustomer && (
+      {(hasCustomer || plan !== "free") && (
         <button
           onClick={manage}
           disabled={loading !== null}

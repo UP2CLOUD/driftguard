@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { checkInstallationAccess } from "@/lib/auth-utils";
-import { internalStartCheckout } from "@/lib/api";
+import { ApiError, internalStartCheckout } from "@/lib/api";
 import { auth } from "@/auth";
 
 export async function POST(req: Request) {
@@ -23,8 +23,15 @@ export async function POST(req: Request) {
 
     const url = await internalStartCheckout(orgId, plan);
     return NextResponse.json({ url });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    if (err instanceof ApiError) {
+      console.error("Billing checkout API error:", err.status, err.message);
+      return NextResponse.json({ error: err.message }, { status: err.status });
+    }
     console.error("Error in checkout route:", err);
-    return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

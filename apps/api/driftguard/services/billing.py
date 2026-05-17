@@ -1,4 +1,6 @@
 import stripe
+from fastapi import HTTPException
+from stripe import StripeError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.core.config import settings
@@ -6,9 +8,26 @@ from driftguard.core.logging import log
 from driftguard.db.models import Organization
 
 
+def stripe_configured() -> bool:
+    return bool(settings.stripe_api_key.strip())
+
+
+def require_stripe_configured() -> None:
+    if not stripe_configured():
+        raise HTTPException(503, "Billing is not configured (missing STRIPE_API_KEY)")
+
+
 def _stripe() -> "stripe":
+    require_stripe_configured()
     stripe.api_key = settings.stripe_api_key
     return stripe
+
+
+def stripe_error_message(exc: StripeError) -> str:
+    user_message = getattr(exc, "user_message", None)
+    if user_message:
+        return str(user_message)
+    return str(exc) or "Stripe request failed"
 
 
 def plan_for_price(price_id: str) -> str:
@@ -27,10 +46,15 @@ async def get_or_create_customer(db: AsyncSession, org: Organization, email: str
     if org.stripe_customer_id:
         return org.stripe_customer_id
 
-    customer = _stripe().Customer.create(
-        email=email,
-        metadata={"org_id": org.id, "installation_id": str(org.github_installation_id)},
-    )
+    try:
+        customer = _stripe().Customer.create(
+            email=email,
+            metadata={"org_id": org.id, "installation_id": str(org.github_installation_id)},
+        )
+    except StripeError as exc:
+        log.warning("stripe_customer_create_failed", org_id=org.id, error=str(exc))
+        raise
+
     org.stripe_customer_id = customer.id
     await db.commit()
     log.info("stripe_customer_created", org_id=org.id, customer_id=customer.id)
@@ -39,25 +63,37 @@ async def get_or_create_customer(db: AsyncSession, org: Organization, email: str
 
 def create_checkout_session(*, customer_id: str, price_id: str, org_id: str) -> str:
     base = settings.public_base_url.rstrip("/")
-    session = _stripe().checkout.Session.create(
-        customer=customer_id,
-        mode="subscription",
-        line_items=[{"price": price_id, "quantity": 1}],
-        success_url=f"{base}/dashboard?checkout=success",
-        cancel_url=f"{base}/dashboard?checkout=cancelled",
-        automatic_tax={"enabled": True},
-        client_reference_id=org_id,
-        allow_promotion_codes=True,
-    )
+    try:
+        session = _stripe().checkout.Session.create(
+            customer=customer_id,
+            mode="subscription",
+            line_items=[{"price": price_id, "quantity": 1}],
+            success_url=f"{base}/dashboard?checkout=success",
+            cancel_url=f"{base}/dashboard?checkout=cancelled",
+            automatic_tax={"enabled": True},
+            client_reference_id=org_id,
+            allow_promotion_codes=True,
+        )
+    except StripeError as exc:
+        log.warning("stripe_checkout_failed", customer_id=customer_id, error=str(exc))
+        raise HTTPException(502, stripe_error_message(exc)) from exc
+    if not session.url:
+        raise HTTPException(502, "Stripe checkout did not return a URL")
     return session.url
 
 
 def create_portal_session(*, customer_id: str) -> str:
     base = settings.public_base_url.rstrip("/")
-    session = _stripe().billing_portal.Session.create(
-        customer=customer_id,
-        return_url=f"{base}/dashboard",
-    )
+    try:
+        session = _stripe().billing_portal.Session.create(
+            customer=customer_id,
+            return_url=f"{base}/dashboard",
+        )
+    except StripeError as exc:
+        log.warning("stripe_portal_failed", customer_id=customer_id, error=str(exc))
+        raise HTTPException(502, stripe_error_message(exc)) from exc
+    if not session.url:
+        raise HTTPException(502, "Stripe billing portal did not return a URL")
     return session.url
 
 

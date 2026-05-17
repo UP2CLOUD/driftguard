@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { checkInstallationAccess } from "@/lib/auth-utils";
-import { internalOpenPortal } from "@/lib/api";
+import { ApiError, internalOpenPortal } from "@/lib/api";
 import { auth } from "@/auth";
 
 export async function POST(req: Request) {
@@ -21,10 +21,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const url = await internalOpenPortal(orgId);
+    const email = session.user?.email ?? null;
+    const url = await internalOpenPortal(orgId, email);
     return NextResponse.json({ url });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    if (err instanceof ApiError) {
+      console.error("Billing portal API error:", err.status, err.message);
+      return NextResponse.json({ error: err.message }, { status: err.status });
+    }
     console.error("Error in portal route:", err);
-    return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
