@@ -3,14 +3,14 @@ import { BillingActions } from "@/components/BillingActions";
 import { UserPreferencesSettings } from "@/components/UserPreferencesSettings";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
-import { getOrg } from "@/lib/api";
+import { requireOrg } from "@/lib/org-server";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 export default async function Settings({ params }: { params: Promise<{ installationId: string }> }) {
   const { installationId } = await params;
   const preferences = await getUserPreferences();
   const [org, messages] = await Promise.all([
-    getOrg(installationId),
+    requireOrg(installationId),
     getMessages(preferences.locale),
   ]);
   const t = createTranslator(messages);
