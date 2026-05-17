@@ -310,28 +310,34 @@ function StatCard({
   };
 
   return (
-    <div className="bg-white/50 backdrop-blur-md border border-ink/10 rounded-3xl p-6 shadow-sm hover:shadow-md hover:border-ink/20 transition-all duration-300 flex items-start justify-between relative overflow-hidden group">
+    <div className="bg-white/50 backdrop-blur-md border border-ink/10 rounded-3xl p-6 shadow-sm hover:shadow-md hover:border-ink/20 transition-all duration-300 relative overflow-hidden group">
       <div className="absolute top-0 right-0 -z-10 h-24 w-24 rounded-full bg-accent/2 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
-      <div>
+      
+      {/* Top Row: Label and Icon */}
+      <div className="flex items-center justify-between gap-4">
         <div className="text-xs font-mono uppercase tracking-widest text-muted">{label}</div>
-        <div className="mt-4 flex items-baseline gap-2.5">
-          <span className={`font-display text-4xl font-extrabold tracking-tight ${valueColorClasses[valueColor]}`}>
+        {icon && (
+          <div className="w-10 h-10 rounded-2xl bg-ink/5 border border-ink/10 flex items-center justify-center text-ink/60 group-hover:bg-accent/10 group-hover:text-accent group-hover:border-accent/15 transition-all duration-300 shrink-0">
+            {icon}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Stack: Value, Badge and Subtext */}
+      <div className="mt-5">
+        <div className="flex items-baseline gap-2.5 flex-wrap">
+          <span className={`font-display text-3xl font-extrabold tracking-tight ${valueColorClasses[valueColor]}`}>
             {value}
           </span>
           {badge && (
-            <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border flex items-center gap-1 ${badgeColorClasses[badgeColor]}`}>
+            <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border flex items-center gap-1 shrink-0 ${badgeColorClasses[badgeColor]}`}>
               <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
               {badge}
             </span>
           )}
         </div>
-        {subtext && <div className="mt-1 text-xs text-muted font-sans font-medium">{subtext}</div>}
+        {subtext && <div className="mt-1.5 text-xs text-muted font-sans font-medium">{subtext}</div>}
       </div>
-      {icon && (
-        <div className="w-10 h-10 rounded-2xl bg-ink/5 border border-ink/10 flex items-center justify-center text-ink/60 group-hover:bg-accent/10 group-hover:text-accent group-hover:border-accent/15 transition-all duration-300">
-          {icon}
-        </div>
-      )}
     </div>
   );
 }

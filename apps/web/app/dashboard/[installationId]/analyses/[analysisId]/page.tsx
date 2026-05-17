@@ -104,8 +104,8 @@ export default async function AnalysisDetail({
               </svg>
               AI Insights & Summary
             </h2>
-            <div className="mt-4 overflow-x-auto rounded-xl border border-ink/5 bg-ink/5 p-5 text-sm leading-relaxed text-ink/80 whitespace-pre-wrap font-sans">
-              {a.summary_md}
+            <div className="mt-4 rounded-xl border border-ink/5 bg-ink/5 p-6 text-sm leading-relaxed text-ink/80 font-sans shadow-inner">
+              {renderMarkdown(a.summary_md)}
             </div>
           </section>
         )}
@@ -125,6 +125,60 @@ export default async function AnalysisDetail({
       </div>
     </main>
   );
+}
+
+function renderMarkdown(md: string) {
+  const lines = md.split("\n");
+  return (
+    <div className="space-y-3.5">
+      {lines.map((line, idx) => {
+        const content = line.trim();
+        if (!content) return null;
+
+        // Parse headers
+        if (content.startsWith("### ")) {
+          return (
+            <h3 key={idx} className="font-display text-base font-bold text-ink mt-5 mb-2 first:mt-0 flex items-center gap-2">
+              <span className="w-1.5 h-3.5 rounded-full bg-accent shrink-0"></span>
+              {parseInline(content.slice(4))}
+            </h3>
+          );
+        }
+
+        // Parse list items
+        if (content.startsWith("- ")) {
+          return (
+            <div key={idx} className="flex items-start gap-3 ml-1 mt-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0 shadow-sm shadow-accent/20 animate-pulse"></span>
+              <span className="text-ink/85 leading-relaxed text-sm">{parseInline(content.slice(2))}</span>
+            </div>
+          );
+        }
+
+        // Standard paragraph
+        return (
+          <p key={idx} className="text-ink/85 leading-relaxed text-sm">
+            {parseInline(content)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
+function parseInline(text: string) {
+  const parts = text.split("**");
+  return parts.map((part, index) => {
+    // Odd indexes are inside **...**
+    if (index % 2 === 1) {
+      return (
+        <strong key={index} className="font-extrabold text-ink font-sans tracking-wide">
+          {part}
+        </strong>
+      );
+    }
+    return part;
+  });
 }
 
 function Stat({
@@ -155,17 +209,22 @@ function Stat({
   };
 
   return (
-    <div className={`rounded-2xl border p-5 backdrop-blur-sm flex items-start justify-between shadow-sm hover:shadow-md transition-all duration-300 ${themeClasses[theme]}`}>
-      <div>
+    <div className={`rounded-2xl border p-5 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 ${themeClasses[theme]}`}>
+      {/* Top Row: Label and Icon */}
+      <div className="flex items-center justify-between gap-4">
         <div className="text-xs font-mono uppercase tracking-widest text-muted">{label}</div>
-        <div className="mt-3 font-display text-3xl font-extrabold tracking-tight">{value}</div>
+        {icon && (
+          <div className={`w-9 h-9 rounded-xl flex items-center justify-center border border-current/10 shrink-0 ${iconClasses[theme]}`}>
+            {icon}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Stack: Value and Subtext */}
+      <div className="mt-4">
+        <div className="font-display text-3xl font-extrabold tracking-tight">{value}</div>
         <div className="mt-1 text-xs text-muted font-sans">{subtext}</div>
       </div>
-      {icon && (
-        <div className={`w-9 h-9 rounded-xl flex items-center justify-center border border-current/10 ${iconClasses[theme]}`}>
-          {icon}
-        </div>
-      )}
     </div>
   );
 }
