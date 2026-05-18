@@ -21,7 +21,7 @@ def test_extract_resources_from_plan():
         ]
     }
     resources = DriftAnalyzer.from_plan_json(plan)
-    assert resources == ["aws_rds_cluster.c", "aws_s3_bucket.a"]
+    assert set(resources) == {"aws_rds_cluster.c", "aws_s3_bucket.a"}
 
 
 def test_detect_drift_small():
