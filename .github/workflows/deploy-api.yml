@@ -1,13 +1,14 @@
 name: deploy-api
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "apps/api/**"
-      - "infra/terraform/**"
-      - ".github/workflows/deploy-api.yml"
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "dev"
+        type: choice
+        options: [dev, prod]
 
 permissions:
   contents: read
@@ -36,27 +37,17 @@ jobs:
       redis:
         image: redis:7-alpine
         ports: ["6379:6379"]
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v3
+      - uses: astral-sh/setup-uv@v3
         with:
           version: latest
-
       - name: Sync deps
         working-directory: apps/api
         run: uv sync --all-extras
-
       - name: Lint
         working-directory: apps/api
-        run: uv run ruff check .
-
-      - name: Format check
-        working-directory: apps/api
-        run: uv run ruff format --check .
-
+        run: uv run ruff check . && uv run ruff format --check .
       - name: Test
         working-directory: apps/api
         env:
@@ -65,85 +56,70 @@ jobs:
           SECRET_KEY: ci
           ENVIRONMENT: ci
         run: uv run pytest -v --ignore=tests/eval
-
-      - name: Checkov (API)
+      - name: Checkov (Dockerfile)
         uses: bridgecrewio/checkov-action@master
         with:
           directory: apps/api
           framework: dockerfile
-          quiet: false
           soft_fail: false
 
   infra-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.8
-
       - name: Terraform fmt check
         working-directory: infra/terraform
         run: terraform fmt -check -recursive
-
       - name: Terraform validate
         working-directory: infra/terraform/envs/dev
         run: |
           terraform init -backend=false
           terraform validate
-
       - name: Checkov (Terraform)
         uses: bridgecrewio/checkov-action@master
         with:
           directory: infra/terraform
           framework: terraform
-          quiet: false
           soft_fail: false
           skip_check: CKV_GCP_12,CKV_GCP_68,CKV_GCP_78,CKV_GCP_62,CKV_GCP_63,CKV_GCP_84,CKV_GCP_117,CKV_GCP_46,CKV_GCP_42,CKV_GCP_49,CKV_GCP_41,CKV_GCP_125,CKV_AWS_49,CKV_AWS_108,CKV_AWS_283,CKV_AWS_358,CKV_AWS_1,CKV_AWS_109,CKV_AWS_111,CKV_AWS_107,CKV_AWS_110,CKV_AWS_356,CKV2_AWS_56
 
   deploy:
     needs: [ci, infra-check]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
-
       - uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
           service_account: ${{ secrets.GCP_DEPLOYER_SA }}
-
       - uses: google-github-actions/setup-gcloud@v2
-
       - name: Configure docker auth
         run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
-
-      - name: Build image
+      - name: Build & push image
         working-directory: apps/api
         run: |
-          IMAGE=${REGION}-docker.pkg.dev/${GCP_PROJECT}/${AR_REPO}/api:${GITHUB_SHA}
+          IMAGE=${{ env.REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT }}/${{ env.AR_REPO }}/api:${{ github.sha }}
           docker build -t $IMAGE .
           docker push $IMAGE
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
-
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.8
-
-      - name: Terraform init + apply
-        working-directory: infra/terraform/envs/dev
+      - name: Terraform apply
+        working-directory: infra/terraform/envs/${{ inputs.environment }}
         env:
           TF_VAR_gcp_project: ${{ env.GCP_PROJECT }}
           TF_VAR_region: ${{ env.REGION }}
           TF_VAR_api_image: ${{ env.IMAGE }}
         run: |
           terraform init \
-            -backend-config="bucket=${GCP_PROJECT}-tfstate" \
-            -backend-config="prefix=envs/dev"
+            -backend-config="bucket=${{ env.GCP_PROJECT }}-tfstate" \
+            -backend-config="prefix=envs/${{ inputs.environment }}"
           terraform apply -auto-approve
-
       - name: Smoke test
         run: |
-          URL=$(cd infra/terraform/envs/dev && terraform output -raw api_url)
+          URL=$(cd infra/terraform/envs/${{ inputs.environment }} && terraform output -raw api_url)
           curl -fsS "$URL/api/v1/health"
