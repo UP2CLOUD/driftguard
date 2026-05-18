@@ -1,22 +1,15 @@
-import NextAuth from "next-auth";
-import GitHub from "next-auth/providers/github";
+import type { NextAuthConfig } from "next-auth";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [
-    GitHub({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
-    }),
-  ],
+export const authConfig: NextAuthConfig = {
+  trustHost: true,
   pages: {
-    signIn: "/login",
-    error: "/login",
+    signIn: "/",
   },
   callbacks: {
     async jwt({ token, account, profile }) {
       if (account) {
         token.accessToken = account.access_token;
-        token.id = profile?.id || account.providerAccountId;
+        token.id = profile?.id?.toString() || account.providerAccountId;
       }
       return token;
     },
@@ -25,5 +18,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.accessToken = token.accessToken as string;
       return session;
     },
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
+      if (isOnDashboard) return isLoggedIn;
+      return true;
+    },
   },
-});
+};
