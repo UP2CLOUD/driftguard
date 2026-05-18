@@ -4,8 +4,27 @@ import { DriftguardLogo } from "@/components/DriftguardLogo";
 import { NavLink } from "@/components/NavButton";
 import { NavPreferencesControls } from "@/components/NavPreferencesControls";
 import { useT } from "@/components/I18nProvider";
+import { signOutToHome } from "@/lib/auth-actions";
 import type { UserPreferences } from "@/lib/preferences/config";
 import { usePathname } from "next/navigation";
+
+function LogoutButton() {
+  return (
+    <form action={signOutToHome}>
+      <button
+        type="submit"
+        className="inline-flex items-center gap-1 rounded border border-zinc-800 px-2 py-1 text-[11px] font-medium text-zinc-400 transition hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-200 active:scale-[0.97]"
+        title="Sign out"
+      >
+        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round"
+            d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+        </svg>
+        <span className="hidden sm:inline">Logout</span>
+      </button>
+    </form>
+  );
+}
 
 export function DashboardNav({
   installationId,
@@ -53,7 +72,7 @@ export function DashboardNav({
 
           {planLabel && (
             <span
-              className={`ms-2 inline-flex items-center rounded border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+              className={`inline-flex items-center rounded border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
                 planLabel.toLowerCase() === "pro"
                   ? "border-orange-500/20 bg-orange-500/10 text-orange-400"
                   : "border-zinc-700 bg-zinc-800 text-zinc-400"
@@ -62,6 +81,8 @@ export function DashboardNav({
               {planLabel}
             </span>
           )}
+
+          <LogoutButton />
         </div>
       </div>
     </nav>
