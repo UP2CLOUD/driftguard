@@ -1,4 +1,4 @@
-const DEFAULT_GITHUB_APP_SLUG = "driftguard-dev";
+const DEFAULT_GITHUB_APP_SLUG = "driftguard-app";
 
 /**
  * GitHub App "install" URL for new installations.
