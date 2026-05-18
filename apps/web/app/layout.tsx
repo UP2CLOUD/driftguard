@@ -34,8 +34,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = isRtlLocale(locale) ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} dir={dir} className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="min-h-screen font-sans text-sm antialiased">
+    <html lang={locale} dir={dir} className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+      <body className="min-h-screen font-sans text-sm antialiased" suppressHydrationWarning>
         <I18nProvider locale={locale} messages={messages}>
           {children}
         </I18nProvider>
