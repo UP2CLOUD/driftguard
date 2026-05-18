@@ -257,3 +257,15 @@ export const termsOfService: LegalDocumentContent = {
     },
   ],
 };
+
+
+export async function getLegalContent(locale: string): Promise<{
+  privacy: LegalDocumentContent;
+  terms: LegalDocumentContent;
+}> {
+  if (locale === "pt-BR") {
+    const { privacyPolicyPtBR, termsOfServicePtBR } = await import("./legal-content.pt-BR");
+    return { privacy: privacyPolicyPtBR, terms: termsOfServicePtBR };
+  }
+  return { privacy: privacyPolicy, terms: termsOfService };
+}
