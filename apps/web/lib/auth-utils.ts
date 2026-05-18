@@ -6,11 +6,11 @@ export async function checkInstallationAccess(installationId: string): Promise<{
   accessToken?: string;
 }> {
   const session = await auth();
-  if (!session || !(session as any).accessToken) {
+  if (!session || !session.user?.accessToken) {
     return { authorized: false, installations: [] };
   }
 
-  const token = (session as any).accessToken;
+  const token = session.user?.accessToken;
 
   if (token === "mock_github_token") {
     const mockInstallations = [
