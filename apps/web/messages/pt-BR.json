@@ -61,5 +61,12 @@
     "billingTitle": "Assinatura e cobrança",
     "billingCurrent": "Plano atual:",
     "activePlan": "Plano ativo"
+  },
+  "installApp": {
+    "title": "Instalar o GitHub App",
+    "body": "Para começar a revisar PRs do Terraform, instale o GitHub App do Driftguard na sua organização ou repositório.",
+    "cta": "Instalar GitHub App →",
+    "hint": "Leva 30 segundos. Sem cartão de crédito.",
+    "selectOrg": "Selecionar Organização"
   }
 }

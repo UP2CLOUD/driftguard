@@ -61,5 +61,12 @@
     "billingTitle": "Subscription & Billing",
     "billingCurrent": "Current active tier:",
     "activePlan": "Active Plan"
+  },
+  "installApp": {
+    "title": "Install the GitHub App",
+    "body": "To start reviewing Terraform PRs, install the Driftguard GitHub App on your organization or repository.",
+    "cta": "Install GitHub App →",
+    "hint": "Takes 30 seconds. No credit card required.",
+    "selectOrg": "Select Organization"
   }
 }
