@@ -17,9 +17,9 @@
   },
   "home": {
     "badge": "beta · somente convite · UE",
-    "titleLine1": "Revisões de PR OpenTofu.",
+    "titleLine1": "Revisões de PR Terraform.",
     "titleLine2": "Conformidade UE integrada.",
-    "subtitle": "O Driftguard revisa cada PR OpenTofu e Terraform em 30 segundos. Delta de custo, risco de drift, misconfigs de segurança e evidências DORA / NIS2 / ISO 27001 — em um único comentário de PR.",
+    "subtitle": "O Driftguard revisa cada PR Terraform em 30 segundos. Delta de custo, risco de drift, misconfigs de segurança e evidências DORA / NIS2 / ISO 27001 — em um único comentário de PR.",
     "footerTagline": "Hospedado na UE. Nativo GDPR. Sem spam.",
     "pricingTitle": "Preços",
     "pricingSubtitle": "Por repositório. Anual economiza 15%.",

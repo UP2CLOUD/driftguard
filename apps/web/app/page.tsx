@@ -135,8 +135,8 @@ export default async function Home() {
             body="Bring your OPA or YAML policies. Driftguard enforces them per repo, with audit trail."
           />
           <Feature
-            title="OpenTofu native"
-            body="OpenTofu first-class, Terraform supported. Multi-cloud (AWS, GCP, Azure). No HashiCorp Cloud lock-in."
+            title="OpenTofu & Terraform"
+            body="Terraform and OpenTofu supported. Multi-cloud (AWS, GCP, Azure). No HashiCorp Cloud lock-in."
           />
         </div>
       </section>
