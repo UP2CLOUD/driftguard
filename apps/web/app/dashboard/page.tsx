@@ -5,6 +5,7 @@ import { getLocale, getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { checkInstallationAccess } from "@/lib/auth-utils";
 import { signOutToHome } from "@/lib/auth-actions";
+import { getGitHubAppInstallUrl } from "@/lib/github-app";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -13,9 +14,8 @@ export default async function DashboardRoot() {
   const locale = await getLocale();
   const messages = await getMessages(locale);
   const t = createTranslator(messages);
-  if (!session) {
-    redirect("/");
-  }
+
+  if (!session) redirect("/");
 
   const { installations } = await checkInstallationAccess("dummy");
 
@@ -23,7 +23,7 @@ export default async function DashboardRoot() {
     redirect(`/dashboard/${installations[0].id}`);
   }
 
-  const githubAppUrl = process.env.NEXT_PUBLIC_GITHUB_APP_URL || "https://github.com/apps/driftguard-dev/installations/new";
+  const installUrl = getGitHubAppInstallUrl();
 
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col justify-between">
@@ -41,48 +41,35 @@ export default async function DashboardRoot() {
 
       <div className="flex-1 flex items-center justify-center p-4">
         {installations.length === 0 ? (
-          <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-center">
-            <div className="w-12 h-12 bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded flex items-center justify-center mx-auto mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25"
-                />
+          <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-lg p-8 text-center">
+            <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full border border-orange-500/20 bg-orange-500/10">
+              <svg className="h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                  d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <h1 className="text-lg font-bold tracking-tight text-zinc-100">
-              Connect to GitHub
+            <h1 className="text-lg font-bold tracking-tight text-zinc-100 mb-2">
+              Install the GitHub App
             </h1>
-            <p className="mt-2 text-xs text-zinc-400 leading-relaxed">
-              Driftguard needs access to your GitHub repositories to review your OpenTofu/Terraform code and detect drift.
+            <p className="text-sm text-zinc-400 mb-6 leading-relaxed">
+              To start reviewing Terraform PRs, install the Driftguard GitHub App
+              on your organization or repository.
             </p>
-            <div className="mt-6">
-              <a
-                href={githubAppUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full inline-block rounded bg-orange-500 hover:bg-orange-600 px-4 py-2 text-sm font-semibold text-zinc-950 transition"
-              >
-                Install Driftguard App
-              </a>
-            </div>
+            <a
+              href={installUrl}
+              className="inline-block rounded bg-orange-500 px-6 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-orange-600"
+            >
+              Install GitHub App →
+            </a>
+            <p className="mt-4 text-xs text-zinc-500">
+              Takes 30 seconds. No credit card required.
+            </p>
           </div>
         ) : (
           <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-lg p-6">
             <h1 className="text-lg font-bold tracking-tight text-zinc-100 mb-4 text-center">
               Select Organization
             </h1>
-            <p className="text-xs text-zinc-400 mb-4 text-center">
-              Choose the GitHub organization or account you want to manage.
-            </p>
             <div className="grid gap-2">
               {installations.map((inst: any) => (
                 <Link
@@ -117,12 +104,8 @@ export default async function DashboardRoot() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 text-[10px] text-zinc-500 font-mono">
           <div>© 2026 Driftguard</div>
           <div className="flex gap-4">
-            <a href="/privacy" className="hover:text-zinc-300">
-              Privacy
-            </a>
-            <a href="/terms" className="hover:text-zinc-300">
-              Terms
-            </a>
+            <Link href="/privacy" className="hover:text-zinc-300">Privacy</Link>
+            <Link href="/terms" className="hover:text-zinc-300">Terms</Link>
           </div>
         </div>
       </footer>

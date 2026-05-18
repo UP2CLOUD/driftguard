@@ -2,10 +2,11 @@ import { DriftguardLogo } from "@/components/DriftguardLogo";
 import { HashScroll } from "@/components/HashScroll";
 import { NavAnchor, NavLink, NavSubmitButton } from "@/components/NavButton";
 import { WaitlistForm } from "@/components/WaitlistForm";
-import { auth, signIn } from "@/auth";
+import { AnimatedFeatures } from "@/components/AnimatedFeatures";
+import { auth } from "@/auth";
 import { getLocale, getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
-import { signOutToHome } from "@/lib/auth-actions";
+import { signInWithGitHub, signInWithDevBypass, signOutToHome } from "@/lib/auth-actions";
 import Link from "next/link";
 
 export default async function Home() {
@@ -33,10 +34,7 @@ export default async function Home() {
             ) : (
               <div className="flex items-center gap-2">
                 <form
-                  action={async () => {
-                    "use server";
-                    await signIn("github", { redirectTo: "/dashboard" });
-                  }}
+                  action={signInWithGitHub}
                 >
                   <button
                     type="submit"
@@ -46,10 +44,7 @@ export default async function Home() {
                   </button>
                 </form>
                 <form
-                  action={async () => {
-                    "use server";
-                    await signIn("developer-login", { redirectTo: "/dashboard" });
-                  }}
+                  action={signInWithDevBypass}
                 >
                   <button
                     type="submit"
@@ -87,10 +82,7 @@ export default async function Home() {
           ) : (
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <form
-                action={async () => {
-                  "use server";
-                  await signIn("github", { redirectTo: "/dashboard" });
-                }}
+                action={signInWithGitHub}
               >
                 <button
                   type="submit"
@@ -100,10 +92,7 @@ export default async function Home() {
                 </button>
               </form>
               <form
-                action={async () => {
-                  "use server";
-                  await signIn("developer-login", { redirectTo: "/dashboard" });
-                }}
+                action={signInWithDevBypass}
               >
                 <button
                   type="submit"
@@ -121,36 +110,7 @@ export default async function Home() {
       </section>
 
       <section id="features" className="border-y border-zinc-900 bg-zinc-950/50">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:grid-cols-3">
-          <Feature
-            title="Cost delta"
-            body="Every PR comment shows monthly cost impact, by resource. Powered by terraform plan + cost engine. No surprises."
-          />
-          <Feature
-            title="Drift detection"
-            body="Compares HEAD against real cloud state. Flags drift caused by humans or other agents before merge."
-          />
-          <Feature
-            title="Security findings"
-            body="Curated rules + AI triage. Only the findings that matter, ranked by blast radius."
-          />
-          <Feature
-            title="AI summary"
-            body="Claude Sonnet synthesizes findings into a high-signal PR review. No hallucination — every claim cites a resource."
-          />
-          <Feature
-            title="EU compliance"
-            body="DORA, NIS2, ISO 27001 control mapping per resource. Audit-ready evidence collected on every PR — without questionnaires."
-          />
-          <Feature
-            title="Policy-as-code"
-            body="Bring your OPA or YAML policies. Driftguard enforces them per repo, with audit trail."
-          />
-          <Feature
-            title="OpenTofu native"
-            body="OpenTofu first-class, Terraform supported. Multi-cloud (AWS, GCP, Azure). No HashiCorp Cloud lock-in."
-          />
-        </div>
+        <AnimatedFeatures />
       </section>
 
       <section id="pricing" className="mx-auto max-w-7xl px-4 py-20">
@@ -194,14 +154,6 @@ export default async function Home() {
   );
 }
 
-function Feature({ title, body }: { title: string; body: string }) {
-  return (
-    <div className="rounded border border-zinc-900 bg-zinc-900/20 p-5">
-      <div className="mb-2 text-[10px] font-mono font-bold uppercase tracking-wider text-orange-400">{title}</div>
-      <p className="text-sm leading-relaxed text-zinc-400">{body}</p>
-    </div>
-  );
-}
 
 function Plan({
   name,

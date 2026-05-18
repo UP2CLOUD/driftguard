@@ -17,9 +17,9 @@
   },
   "home": {
     "badge": "beta · invite only · EU",
-    "titleLine1": "OpenTofu PR reviews.",
+    "titleLine1": "Terraform PR reviews.",
     "titleLine2": "EU compliance baked in.",
-    "subtitle": "Driftguard reviews every OpenTofu and Terraform PR in 30 seconds. Cost delta, drift risk, security misconfigs, and DORA / NIS2 / ISO 27001 evidence — unified in one PR comment.",
+    "subtitle": "Driftguard reviews every Terraform PR in 30 seconds. Cost delta, drift risk, security misconfigs, and DORA / NIS2 / ISO 27001 evidence — unified in one PR comment.",
     "footerTagline": "EU-hosted. GDPR-native. No spam.",
     "pricingTitle": "Pricing",
     "pricingSubtitle": "Per-repo. Annual saves 15%.",

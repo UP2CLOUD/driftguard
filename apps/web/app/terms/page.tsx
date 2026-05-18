@@ -1,6 +1,7 @@
 import { LegalDocument } from "@/components/LegalDocument";
 import { LegalPageShell } from "@/components/LegalPageShell";
-import { termsOfService } from "@/lib/legal-content";
+import { getLegalContent } from "@/lib/legal-content";
+import { getLocale } from "@/i18n/get-locale";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,9 +10,11 @@ export const metadata: Metadata = {
 };
 
 export default async function TermsPage() {
+  const locale = await getLocale();
+  const { terms } = await getLegalContent(locale);
   return (
     <LegalPageShell active="terms">
-      <LegalDocument document={termsOfService} />
+      <LegalDocument document={terms} />
     </LegalPageShell>
   );
 }

@@ -1,6 +1,7 @@
 import { LegalDocument } from "@/components/LegalDocument";
 import { LegalPageShell } from "@/components/LegalPageShell";
-import { privacyPolicy } from "@/lib/legal-content";
+import { getLegalContent } from "@/lib/legal-content";
+import { getLocale } from "@/i18n/get-locale";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,9 +11,11 @@ export const metadata: Metadata = {
 };
 
 export default async function PrivacyPage() {
+  const locale = await getLocale();
+  const { privacy } = await getLegalContent(locale);
   return (
     <LegalPageShell active="privacy">
-      <LegalDocument document={privacyPolicy} />
+      <LegalDocument document={privacy} />
     </LegalPageShell>
   );
 }
