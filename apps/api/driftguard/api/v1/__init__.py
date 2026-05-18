@@ -11,4 +11,3 @@ router.include_router(repos.router, prefix="/repos", tags=["repos"], dependencie
 router.include_router(analyses.router, prefix="/analyses", tags=["analyses"], dependencies=[Depends(verify_api_key)])
 router.include_router(orgs.router, prefix="/orgs", tags=["orgs"], dependencies=[Depends(verify_api_key)])
 router.include_router(billing.router, prefix="/billing", tags=["billing"], dependencies=[Depends(verify_api_key)])
-

@@ -11,9 +11,10 @@ class TerraformError(RuntimeError):
 
 async def _run(*args: str, cwd: Path, timeout: int = 180) -> tuple[int, str, str]:
     import os
+
     env = dict(os.environ)
     env.update({"TF_IN_AUTOMATION": "1", "TF_INPUT": "0", "PATH": _path_env()})
-    
+
     proc = await asyncio.create_subprocess_exec(
         *args,
         cwd=str(cwd),

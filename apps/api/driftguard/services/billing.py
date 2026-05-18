@@ -1,7 +1,7 @@
 import stripe
 from fastapi import HTTPException
-from stripe import StripeError
 from sqlalchemy.ext.asyncio import AsyncSession
+from stripe import StripeError
 
 from driftguard.core.config import settings
 from driftguard.core.logging import log

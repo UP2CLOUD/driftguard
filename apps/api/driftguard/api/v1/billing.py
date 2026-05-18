@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
-from stripe import StripeError
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
+from stripe import StripeError
 
 from driftguard.core.db import get_db
 from driftguard.db.models import Organization
