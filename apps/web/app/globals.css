@@ -5,51 +5,52 @@
 :root {
   color-scheme: dark;
 
-  /* Canvas & surfaces */
-  --dg-canvas: #070708;
-  --dg-surface: #0e0e10;
-  --dg-surface-raised: #141416;
-  --dg-surface-overlay: #1a1a1e;
+  /* ── Canvas & surfaces ─────────────────────────────── */
+  --dg-canvas: #07080a;
+  --dg-surface: #0c0e12;
+  --dg-surface-raised: #11141a;
+  --dg-surface-overlay: #161a20;
 
-  /* Borders */
-  --dg-border: #232328;
-  --dg-border-strong: #2e2e35;
+  /* ── Borders ───────────────────────────────────────── */
+  --dg-border: #1a1e25;
+  --dg-border-strong: #262b34;
+  --dg-border-bright: #3a414d;
 
-  /* Foreground */
-  --dg-fg: #ececef;
-  --dg-fg-muted: #9898a4;
-  --dg-fg-subtle: #6b6b76;
+  /* ── Foreground ────────────────────────────────────── */
+  --dg-fg: #e8eaed;
+  --dg-fg-muted: #9aa0a6;
+  --dg-fg-subtle: #525c6b;
+  --dg-fg-faint: #3a3f48;
 
-  /* Accent — restrained blue-violet (not orange) */
-  --dg-accent: #6b8afd;
-  --dg-accent-muted: #4a5f99;
+  /* ── Electric accents (Vercel/Linear/Warp DNA) ──────── */
+  --dg-electric: #3f8cff;
+  --dg-electric-bright: #62a0ff;
+  --dg-electric-dim: #1e4d8e;
+  --dg-cyan: #06b6d4;
 
-  /* Severity (GitHub Advanced Security / Snyk aligned) */
-  --dg-severity-critical: #f85149;
-  --dg-severity-high: #db6d28;
-  --dg-severity-medium: #d29922;
-  --dg-severity-low: #6b6b76;
+  /* ── Operational signals ───────────────────────────── */
+  --dg-blocked: #ff4757;
+  --dg-allowed: #22d38d;
+  --dg-warned: #ffb020;
+  --dg-info: #3f8cff;
 
-  /* Domain signals */
-  --dg-signal-compliant: #3fb950;
-  --dg-signal-drift: #a371f7;
-  --dg-signal-cost: #d29922;
-  --dg-signal-security: #f85149;
-  --dg-signal-infra-deletion: #ff7b72;
+  /* ── Severity ──────────────────────────────────────── */
+  --dg-severity-critical: #ff4757;
+  --dg-severity-high: #ff8800;
+  --dg-severity-medium: #ffb020;
+  --dg-severity-low: #525c6b;
 
-  /* Status */
-  --dg-status-success: #3fb950;
-  --dg-status-warning: #d29922;
-  --dg-status-danger: #f85149;
-  --dg-status-info: #58a6ff;
-
-  /* Density — ~30% tighter than prior defaults */
-  --dg-space-page-x: 1rem;
+  /* ── Density ───────────────────────────────────────── */
+  --dg-space-page-x: 1.5rem;
   --dg-space-page-y: 1.25rem;
-  --dg-space-section: 1.5rem;
-  --dg-space-card: 0.75rem;
+  --dg-space-section: 6rem;
+  --dg-space-card: 1rem;
   --dg-space-row: 0.5rem;
-  --dg-radius: 0.25rem;
+  --dg-radius: 0.375rem;
+
+  /* ── Grid ──────────────────────────────────────────── */
+  --dg-grid-cell: 48px;
+  --dg-grid-color: rgba(154, 160, 166, 0.04);
 }
 
 html,
@@ -57,29 +58,141 @@ body {
   background: var(--dg-canvas);
   color: var(--dg-fg);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-variant-ligatures: contextual;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--dg-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--dg-electric) 30%, transparent);
   color: var(--dg-fg);
 }
 
-#features,
-#pricing,
-#waitlist {
+/* ── Background grid ─────────────────────────────────── */
+.dg-grid {
+  background-image:
+    linear-gradient(to right, var(--dg-grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--dg-grid-color) 1px, transparent 1px);
+  background-size: var(--dg-grid-cell) var(--dg-grid-cell);
+}
+
+/* ── Subtle radial vignette ──────────────────────────── */
+.dg-vignette {
+  background-image:
+    radial-gradient(ellipse 1200px 600px at 50% 0%, color-mix(in srgb, var(--dg-electric) 4%, transparent), transparent 60%);
+}
+
+/* ── Noise grain (procedural) ───────────────────────── */
+.dg-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  mix-blend-mode: overlay;
+}
+
+/* ── Scan line over terminals ───────────────────────── */
+.dg-scanline::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 49.5%,
+    rgba(63, 140, 255, 0.025) 50%,
+    transparent 50.5%,
+    transparent 100%
+  );
+  background-size: 100% 4px;
+  animation: dg-scan 8s linear infinite;
+}
+@keyframes dg-scan {
+  to { background-position: 0 100px; }
+}
+
+/* ── Live pulse dot ──────────────────────────────────── */
+@keyframes dg-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 currentColor; }
+  50% { opacity: 0.7; box-shadow: 0 0 0 5px transparent; }
+}
+.dg-pulse {
+  animation: dg-pulse 2s ease-in-out infinite;
+}
+
+/* ── Cursor blink ────────────────────────────────────── */
+@keyframes dg-cursor {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.dg-cursor {
+  animation: dg-cursor 1s steps(1) infinite;
+}
+
+/* ── Stagger reveal ──────────────────────────────────── */
+@keyframes dg-reveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.dg-reveal {
+  animation: dg-reveal 600ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+/* ── Marquee / ticker ───────────────────────────────── */
+@keyframes dg-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.dg-marquee {
+  animation: dg-marquee 60s linear infinite;
+}
+
+/* ── Number ticker (rolling digits) ─────────────────── */
+@keyframes dg-tick {
+  0%, 90% { transform: translateY(0); }
+  95% { transform: translateY(-2px); opacity: 0.8; }
+  100% { transform: translateY(0); }
+}
+
+/* ── Glow line under important elements ─────────────── */
+.dg-glow-line {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--dg-electric) 50%,
+    transparent 100%
+  );
+}
+
+#features, #architecture, #memory, #integrate, #pricing, #waitlist {
   scroll-margin-top: 4.5rem;
 }
 
 @layer components {
   .dg-panel {
-    @apply rounded-md border border-border bg-surface shadow-panel;
+    @apply rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)];
   }
-
-  .dg-table-header {
-    @apply bg-surface-raised border-b border-border text-2xs font-medium uppercase tracking-wide text-fg-muted;
+  .dg-panel-raised {
+    @apply rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface-raised)];
   }
-
   .dg-mono {
-    @apply font-mono text-xs text-fg-muted;
+    @apply font-mono text-[11px] uppercase tracking-[0.12em] text-[color:var(--dg-fg-subtle)];
+  }
+  .dg-label {
+    @apply font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--dg-fg-subtle)];
+  }
+  .dg-button {
+    @apply inline-flex items-center gap-1.5 rounded-md px-3.5 py-2 text-[13px] font-medium transition-all duration-150;
+  }
+  .dg-button-primary {
+    @apply bg-[color:var(--dg-electric)] text-white hover:bg-[color:var(--dg-electric-bright)] active:scale-[0.98]
+      shadow-[0_0_0_1px_rgba(63,140,255,0.4),0_8px_24px_-6px_rgba(63,140,255,0.4)];
+  }
+  .dg-button-ghost {
+    @apply border border-[color:var(--dg-border-strong)] text-[color:var(--dg-fg)]
+      hover:border-[color:var(--dg-border-bright)] hover:bg-[color:var(--dg-surface)] active:scale-[0.98];
   }
 }

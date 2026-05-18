@@ -41,6 +41,15 @@ const config: Config = {
           DEFAULT: "var(--dg-accent)",
           muted: "var(--dg-accent-muted)",
         },
+        electric: {
+          DEFAULT: "var(--dg-electric)",
+          bright: "var(--dg-electric-bright)",
+          dim: "var(--dg-electric-dim)",
+        },
+        cyan: { DEFAULT: "var(--dg-cyan)" },
+        blocked: "var(--dg-blocked)",
+        allowed: "var(--dg-allowed)",
+        warned: "var(--dg-warned)",
         severity: {
           critical: "var(--dg-severity-critical)",
           high: "var(--dg-severity-high)",

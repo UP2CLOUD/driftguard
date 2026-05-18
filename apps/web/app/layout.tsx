@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Geist } from "next/font/google";
 import { I18nProvider } from "@/components/I18nProvider";
 import { isRtlLocale } from "@/i18n/config";
 import { getLocale, getMessages } from "@/i18n/get-locale";
 import "./globals.css";
 
-const inter = Inter({
+const geist = Geist({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
@@ -18,12 +18,12 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DriftGuard — Infrastructure intelligence for Terraform PRs",
+  title: "DriftGuard — AI runtime safety & semantic memory",
   description:
-    "Operational review for OpenTofu and Terraform pull requests: cost delta, drift, security findings, and compliance evidence.",
+    "DriftGuard sits between agent intent and execution. Remembers failures semantically. Prevents repeat errors. Production-grade governance for AI agents.",
   openGraph: {
     title: "DriftGuard",
-    description: "Infrastructure intelligence for Terraform PRs.",
+    description: "AI runtime safety. Semantic memory. Operational guardrails.",
     type: "website",
   },
 };
@@ -34,8 +34,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = isRtlLocale(locale) ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} dir={dir} className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
-      <body className="min-h-screen font-sans text-sm antialiased" suppressHydrationWarning>
+    <html lang={locale} dir={dir} className={`${geist.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+      <body className="min-h-screen font-sans text-sm antialiased relative" suppressHydrationWarning>
         <I18nProvider locale={locale} messages={messages}>
           {children}
         </I18nProvider>
