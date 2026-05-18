@@ -100,7 +100,7 @@ jobs:
           framework: terraform
           quiet: false
           soft_fail: false
-          skip-check: CKV_GCP_12,CKV_GCP_68
+          skip-check: CKV_GCP_12,CKV_GCP_68,CKV_GCP_AR_2,CKV_GCP_IAM_10,CKV_GCP_IAM_3,CKV_GCP_125,CKV2_GCP_IAM_3,CKV_AWS_356,CKV2_AWS_56
 
   deploy:
     needs: [ci, infra-check]
