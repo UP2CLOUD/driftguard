@@ -2,10 +2,10 @@ import { DriftguardLogo } from "@/components/DriftguardLogo";
 import { HashScroll } from "@/components/HashScroll";
 import { NavAnchor, NavLink, NavSubmitButton } from "@/components/NavButton";
 import { WaitlistForm } from "@/components/WaitlistForm";
-import { auth, signIn } from "@/auth";
+import { auth } from "@/auth";
 import { getLocale, getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
-import { signOutToHome } from "@/lib/auth-actions";
+import { signInWithGitHub, signInWithDevBypass, signOutToHome } from "@/lib/auth-actions";
 import Link from "next/link";
 
 export default async function Home() {
@@ -33,10 +33,7 @@ export default async function Home() {
             ) : (
               <div className="flex items-center gap-2">
                 <form
-                  action={async () => {
-                    "use server";
-                    await signIn("github", { redirectTo: "/dashboard" });
-                  }}
+                  action={signInWithGitHub}
                 >
                   <button
                     type="submit"
@@ -46,10 +43,7 @@ export default async function Home() {
                   </button>
                 </form>
                 <form
-                  action={async () => {
-                    "use server";
-                    await signIn("developer-login", { redirectTo: "/dashboard" });
-                  }}
+                  action={signInWithDevBypass}
                 >
                   <button
                     type="submit"
@@ -87,10 +81,7 @@ export default async function Home() {
           ) : (
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <form
-                action={async () => {
-                  "use server";
-                  await signIn("github", { redirectTo: "/dashboard" });
-                }}
+                action={signInWithGitHub}
               >
                 <button
                   type="submit"
@@ -100,10 +91,7 @@ export default async function Home() {
                 </button>
               </form>
               <form
-                action={async () => {
-                  "use server";
-                  await signIn("developer-login", { redirectTo: "/dashboard" });
-                }}
+                action={signInWithDevBypass}
               >
                 <button
                   type="submit"

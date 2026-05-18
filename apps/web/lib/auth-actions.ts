@@ -1,9 +1,16 @@
 "use server";
 
-import { signOut } from "@/auth";
+import { signIn, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 
-/** Sign out and redirect home without relying on Auth.js redirect URL (avoids /undefined). */
+export async function signInWithGitHub() {
+  await signIn("github", { redirectTo: "/dashboard" });
+}
+
+export async function signInWithDevBypass() {
+  await signIn("developer-login", { redirectTo: "/dashboard" });
+}
+
 export async function signOutToHome() {
   await signOut({ redirectTo: "/", redirect: false });
   redirect("/");
