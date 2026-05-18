@@ -1,4 +1,5 @@
 const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_SECRET = process.env.INTERNAL_API_SECRET || process.env.SECRET_KEY || "dev-only-change-me";
 
 export type Org = {
   id: string;
@@ -41,9 +42,50 @@ export type Analysis = {
   findings: Finding[];
 };
 
+export class ApiError extends Error {
+  constructor(
+    public readonly status: number,
+    message: string,
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
+function messageFromApiBody(data: Record<string, unknown>, fallback: string): string {
+  const detail = data.detail;
+  if (typeof detail === "string" && detail.trim()) return detail;
+  if (Array.isArray(detail)) {
+    const parts = detail
+      .map((item) => {
+        if (typeof item === "string") return item;
+        if (item && typeof item === "object" && "msg" in item) {
+          return String((item as { msg?: string }).msg ?? "");
+        }
+        return "";
+      })
+      .filter(Boolean);
+    if (parts.length) return parts.join("; ");
+  }
+  if (typeof data.error === "string" && data.error.trim()) return data.error;
+  return fallback;
+}
+
+async function throwApiError(r: Response, fallback: string): Promise<never> {
+  const data = (await r.json().catch(() => ({}))) as Record<string, unknown>;
+  throw new ApiError(r.status, messageFromApiBody(data, fallback));
+}
+
 async function get<T>(path: string): Promise<T> {
-  const r = await fetch(`${BASE}${path}`, { cache: "no-store" });
-  if (!r.ok) throw new Error(`${path}: ${r.status}`);
+  const headers: HeadersInit = {};
+  if (typeof window === "undefined") {
+    headers["Authorization"] = `Bearer ${API_SECRET}`;
+  }
+  const r = await fetch(`${BASE}${path}`, {
+    cache: "no-store",
+    headers,
+  });
+  if (!r.ok) throw new ApiError(r.status, `${path}: ${r.status}`);
   return r.json();
 }
 
@@ -63,28 +105,63 @@ export async function getAnalysis(id: string): Promise<Analysis> {
   return get<Analysis>(`/api/v1/analyses/${id}`);
 }
 
-export async function startCheckout(orgId: string, plan: string): Promise<string> {
+export async function startCheckout(orgId: string, plan: string, installationId: string): Promise<string> {
+  const r = await fetch("/api/billing/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ orgId, plan, installationId }),
+  });
+  if (!r.ok) {
+    const errData = await r.json().catch(() => ({}));
+    throw new Error(errData.error || "checkout failed");
+  }
+  const { url } = await r.json();
+  return url;
+}
+
+export async function openPortal(orgId: string, installationId: string): Promise<string> {
+  const r = await fetch("/api/billing/portal", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ orgId, installationId }),
+  });
+  if (!r.ok) {
+    const errData = await r.json().catch(() => ({}));
+    throw new Error(errData.error || "portal failed");
+  }
+  const { url } = await r.json();
+  return url;
+}
+
+export async function internalStartCheckout(orgId: string, plan: string): Promise<string> {
   const r = await fetch(`${BASE}/api/v1/billing/checkout`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${API_SECRET}`,
+    },
     body: JSON.stringify({ org_id: orgId, plan }),
   });
-  if (!r.ok) throw new Error("checkout failed");
+  if (!r.ok) await throwApiError(r, "Failed to start checkout");
   const { url } = await r.json();
   return url;
 }
 
-export async function openPortal(orgId: string): Promise<string> {
+export async function internalOpenPortal(orgId: string, email?: string | null): Promise<string> {
   const r = await fetch(`${BASE}/api/v1/billing/portal`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ org_id: orgId }),
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${API_SECRET}`,
+    },
+    body: JSON.stringify({ org_id: orgId, email: email ?? undefined }),
   });
-  if (!r.ok) throw new Error("portal failed");
+  if (!r.ok) await throwApiError(r, "Failed to open billing portal");
   const { url } = await r.json();
   return url;
 }
 
+/** @deprecated Use formatCostDeltaCentsForUser from @/lib/currency/format */
 export function formatCents(cents: number | null): string {
   if (cents === null) return "—";
   return `${cents >= 0 ? "+" : ""}$${(cents / 100).toFixed(2)}/mo`;

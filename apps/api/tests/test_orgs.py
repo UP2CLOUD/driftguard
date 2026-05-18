@@ -37,7 +37,7 @@ async def db_session():
 @pytest.mark.asyncio
 async def test_get_org_by_installation(db_session):
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
-        r = await c.get("/api/v1/orgs/by-installation/999")
+        r = await c.get("/api/v1/orgs/by-installation/999", headers={"Authorization": "Bearer dev-only-change-me"})
     assert r.status_code == 200
     body = r.json()
     assert body["installation_id"] == 999
@@ -48,7 +48,7 @@ async def test_get_org_by_installation(db_session):
 @pytest.mark.asyncio
 async def test_get_org_not_found(db_session):
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
-        r = await c.get("/api/v1/orgs/by-installation/404404")
+        r = await c.get("/api/v1/orgs/by-installation/404404", headers={"Authorization": "Bearer dev-only-change-me"})
     assert r.status_code == 404
 
 
@@ -56,8 +56,15 @@ async def test_get_org_not_found(db_session):
 async def test_list_org_repos(db_session):
     org_id = db_session
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
-        r = await c.get(f"/api/v1/orgs/{org_id}/repos")
+        r = await c.get(f"/api/v1/orgs/{org_id}/repos", headers={"Authorization": "Bearer dev-only-change-me"})
     assert r.status_code == 200
     body = r.json()
     assert len(body) == 2
     assert {x["full_name"] for x in body} == {"acme/api", "acme/infra"}
+
+
+@pytest.mark.asyncio
+async def test_api_requires_auth(db_session):
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
+        r = await c.get("/api/v1/orgs/by-installation/999")
+    assert r.status_code == 401

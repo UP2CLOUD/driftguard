@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "features": "Recursos",
+    "pricing": "Preços",
+    "dashboard": "Painel",
+    "signOut": "Sair",
+    "signInGithub": "Entrar com GitHub",
+    "devBypass": "Bypass de dev",
+    "repos": "Repositórios",
+    "settings": "Configurações"
+  },
+  "auth": {
+    "goToDashboard": "Ir para o painel →",
+    "getStartedGithub": "Começar com GitHub",
+    "developerBypass": "Bypass de desenvolvedor (sem credenciais GitHub)",
+    "joinWaitlist": "ou entre na lista de espera:"
+  },
+  "home": {
+    "badge": "beta · somente convite · UE",
+    "titleLine1": "Revisões de PR OpenTofu.",
+    "titleLine2": "Conformidade UE integrada.",
+    "subtitle": "O Driftguard revisa cada PR OpenTofu e Terraform em 30 segundos. Delta de custo, risco de drift, misconfigs de segurança e evidências DORA / NIS2 / ISO 27001 — em um único comentário de PR.",
+    "footerTagline": "Hospedado na UE. Nativo GDPR. Sem spam.",
+    "pricingTitle": "Preços",
+    "pricingSubtitle": "Por repositório. Anual economiza 15%.",
+    "waitlistTitle": "Seja o primeiro a entregar infra mais segura.",
+    "waitlistSubtitle": "Acesso antecipado para 50 equipes de plataforma. Os 20 primeiros ganham 50% vitalício."
+  },
+  "dashboard": {
+    "selectOrg": "Selecionar organização",
+    "connectGithub": "Conectar ao GitHub"
+  },
+  "waitlist": {
+    "placeholder": "you@company.com",
+    "join": "Entrar",
+    "loading": "...",
+    "success": "✓ In"
+  },
+  "footer": {
+    "privacy": "Privacidade",
+    "terms": "Termos"
+  },
+  "notFound": {
+    "code": "404",
+    "title": "Página não encontrada",
+    "description": "Este recurso saiu do mapa. A rota solicitada nunca foi provisionada neste ambiente.",
+    "statusLabel": "Status da rota",
+    "statusValue": "NÃO PROVISIONADA",
+    "backHome": "Voltar ao início",
+    "goDashboard": "Ir ao painel"
+  },
+  "settings": {
+    "title": "Configurações",
+    "preferencesTitle": "Preferências regionais",
+    "preferencesSubtitle": "Escolha a moeda de custos e o idioma do DriftGuard.",
+    "language": "Idioma",
+    "languageHint": "Substitui a detecção do navegador.",
+    "currency": "Moeda de exibição",
+    "currencyHint": "Conversão diária a partir de USD (Infracost).",
+    "saving": "Salvando…",
+    "billingTitle": "Assinatura e cobrança",
+    "billingCurrent": "Plano atual:",
+    "activePlan": "Plano ativo"
+  }
+}

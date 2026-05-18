@@ -3,16 +3,83 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
+
+  /* Canvas & surfaces */
+  --dg-canvas: #070708;
+  --dg-surface: #0e0e10;
+  --dg-surface-raised: #141416;
+  --dg-surface-overlay: #1a1a1e;
+
+  /* Borders */
+  --dg-border: #232328;
+  --dg-border-strong: #2e2e35;
+
+  /* Foreground */
+  --dg-fg: #ececef;
+  --dg-fg-muted: #9898a4;
+  --dg-fg-subtle: #6b6b76;
+
+  /* Accent — restrained blue-violet (not orange) */
+  --dg-accent: #6b8afd;
+  --dg-accent-muted: #4a5f99;
+
+  /* Severity (GitHub Advanced Security / Snyk aligned) */
+  --dg-severity-critical: #f85149;
+  --dg-severity-high: #db6d28;
+  --dg-severity-medium: #d29922;
+  --dg-severity-low: #6b6b76;
+
+  /* Domain signals */
+  --dg-signal-compliant: #3fb950;
+  --dg-signal-drift: #a371f7;
+  --dg-signal-cost: #d29922;
+  --dg-signal-security: #f85149;
+  --dg-signal-infra-deletion: #ff7b72;
+
+  /* Status */
+  --dg-status-success: #3fb950;
+  --dg-status-warning: #d29922;
+  --dg-status-danger: #f85149;
+  --dg-status-info: #58a6ff;
+
+  /* Density — ~30% tighter than prior defaults */
+  --dg-space-page-x: 1rem;
+  --dg-space-page-y: 1.25rem;
+  --dg-space-section: 1.5rem;
+  --dg-space-card: 0.75rem;
+  --dg-space-row: 0.5rem;
+  --dg-radius: 0.25rem;
 }
 
 html,
 body {
-  background: #fafaf7;
-  color: #0a0a0a;
+  background: var(--dg-canvas);
+  color: var(--dg-fg);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 ::selection {
-  background: #ff5c1a;
-  color: #fff;
+  background: color-mix(in srgb, var(--dg-accent) 35%, transparent);
+  color: var(--dg-fg);
+}
+
+#features,
+#pricing,
+#waitlist {
+  scroll-margin-top: 4.5rem;
+}
+
+@layer components {
+  .dg-panel {
+    @apply rounded-md border border-border bg-surface shadow-panel;
+  }
+
+  .dg-table-header {
+    @apply bg-surface-raised border-b border-border text-2xs font-medium uppercase tracking-wide text-fg-muted;
+  }
+
+  .dg-mono {
+    @apply font-mono text-xs text-fg-muted;
+  }
 }

@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "features": "功能",
+    "pricing": "定价",
+    "dashboard": "控制台",
+    "signOut": "退出登录",
+    "signInGithub": "使用 GitHub 登录",
+    "devBypass": "开发者绕过",
+    "repos": "仓库",
+    "settings": "设置"
+  },
+  "auth": {
+    "goToDashboard": "前往控制台 →",
+    "getStartedGithub": "使用 GitHub 开始",
+    "developerBypass": "开发者绕过（无需 GitHub 凭据）",
+    "joinWaitlist": "或加入候补名单："
+  },
+  "home": {
+    "badge": "测试版 · 仅限邀请 · 欧盟",
+    "titleLine1": "OpenTofu PR 审查。",
+    "titleLine2": "内置欧盟合规。",
+    "subtitle": "Driftguard 在 30 秒内审查每个 OpenTofu 和 Terraform PR。成本变化、漂移风险、安全配置错误以及 DORA / NIS2 / ISO 27001 证据 — 统一在一个 PR 评论中。",
+    "footerTagline": "欧盟托管。GDPR 原生。无垃圾邮件。",
+    "pricingTitle": "定价",
+    "pricingSubtitle": "按仓库计费。年付节省 15%。",
+    "waitlistTitle": "率先交付更安全的基础设施。",
+    "waitlistSubtitle": "早期访问向 50 个平台团队开放。前 20 名终身享受 50% 折扣。"
+  },
+  "dashboard": {
+    "selectOrg": "选择组织",
+    "connectGithub": "连接 GitHub"
+  },
+  "waitlist": {
+    "placeholder": "you@company.com",
+    "join": "加入",
+    "loading": "...",
+    "success": "✓ 已加入"
+  },
+  "footer": {
+    "privacy": "隐私",
+    "terms": "条款"
+  },
+  "notFound": {
+    "code": "404",
+    "title": "页面未找到",
+    "description": "该资源已偏离映射。您请求的路由未在此环境中配置。",
+    "statusLabel": "路由状态",
+    "statusValue": "未配置",
+    "backHome": "返回首页",
+    "goDashboard": "前往控制台"
+  },
+  "settings": {
+    "title": "设置",
+    "preferencesTitle": "区域偏好",
+    "preferencesSubtitle": "选择费用显示货币和 DriftGuard 界面语言。",
+    "language": "语言",
+    "languageHint": "覆盖浏览器检测，适用于营销页和控制台。",
+    "currency": "显示货币",
+    "currencyHint": "费用从 USD 按每日汇率转换（Infracost）。",
+    "saving": "保存中…",
+    "billingTitle": "订阅与账单",
+    "billingCurrent": "当前方案：",
+    "activePlan": "当前方案"
+  }
+}

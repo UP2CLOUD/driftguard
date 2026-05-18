@@ -1,47 +1,127 @@
+import { DriftguardLogo } from "@/components/DriftguardLogo";
+import { HashScroll } from "@/components/HashScroll";
+import { NavAnchor, NavLink, NavSubmitButton } from "@/components/NavButton";
 import { WaitlistForm } from "@/components/WaitlistForm";
+import { auth, signIn } from "@/auth";
+import { getLocale, getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { signOutToHome } from "@/lib/auth-actions";
+import Link from "next/link";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+  const locale = await getLocale();
+  const messages = await getMessages(locale);
+  const t = createTranslator(messages);
+
   return (
-    <main className="min-h-screen">
-      <nav className="border-b border-ink/10">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div className="font-display text-lg font-bold tracking-tight">driftguard</div>
-          <div className="flex gap-6 text-sm">
-            <a href="#features" className="hover:text-accent">features</a>
-            <a href="#pricing" className="hover:text-accent">pricing</a>
-            <a href="#waitlist" className="rounded-full bg-ink px-4 py-1.5 text-paper hover:bg-accent">
-              Get early access
-            </a>
+    <main className="min-h-screen bg-zinc-950 text-zinc-100">
+      <HashScroll />
+      <nav className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/85 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+          <DriftguardLogo href="/" />
+          <div className="flex items-center gap-1 sm:gap-2">
+            <NavAnchor href="#features">{t("nav.features")}</NavAnchor>
+            <NavAnchor href="#pricing">{t("nav.pricing")}</NavAnchor>
+            {session ? (
+              <>
+                <NavLink href="/dashboard">{t("nav.dashboard")}</NavLink>
+                <form action={signOutToHome}>
+                  <NavSubmitButton>{t("nav.signOut")}</NavSubmitButton>
+                </form>
+              </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <form
+                  action={async () => {
+                    "use server";
+                    await signIn("github", { redirectTo: "/dashboard" });
+                  }}
+                >
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center rounded-md bg-zinc-100 px-3 py-1.5 text-sm font-semibold text-zinc-950 transition duration-150 ease-out hover:bg-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 active:scale-[0.98] active:opacity-90"
+                  >
+                    {t("nav.signInGithub")}
+                  </button>
+                </form>
+                <form
+                  action={async () => {
+                    "use server";
+                    await signIn("developer-login", { redirectTo: "/dashboard" });
+                  }}
+                >
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center rounded-md border border-zinc-800 px-3 py-1.5 text-sm font-semibold text-zinc-300 transition duration-150 ease-out hover:border-zinc-700 hover:bg-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 active:scale-[0.98] active:opacity-90"
+                  >
+                    {t("nav.devBypass")}
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
         </div>
       </nav>
 
-      <section className="mx-auto max-w-6xl px-6 py-24">
+      <section className="mx-auto max-w-7xl px-4 py-20">
         <div className="max-w-3xl">
-          <div className="mb-4 inline-block rounded-full border border-ink/20 px-3 py-1 text-xs uppercase tracking-widest">
-            beta · invite only · EU
+          <div className="mb-4 inline-flex items-center rounded border border-orange-500/20 bg-orange-500/10 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-orange-400">
+            {t("home.badge")}
           </div>
-          <h1 className="font-display text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl">
-            OpenTofu PR reviews.
+          <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-zinc-100 md:text-6xl">
+            {t("home.titleLine1")}
             <br />
-            <span className="text-accent">EU compliance baked in.</span>
+            <span className="text-zinc-400">{t("home.titleLine2")}</span>
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted">
-            Driftguard reviews every OpenTofu and Terraform PR in 30 seconds. Cost delta,
-            drift risk, security misconfigs, and DORA / NIS2 / ISO 27001 evidence — unified
-            in one PR comment.
-          </p>
-          <div className="mt-10">
-            <WaitlistForm />
-          </div>
-          <p className="mt-4 text-xs text-muted">
-            EU-hosted. GDPR-native. No spam.
-          </p>
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-zinc-400">{t("home.subtitle")}</p>
+          {session ? (
+            <div className="mt-8">
+              <Link
+                href="/dashboard"
+                className="inline-block rounded bg-orange-500 px-6 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-orange-600"
+              >
+                {t("auth.goToDashboard")}
+              </Link>
+            </div>
+          ) : (
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <form
+                action={async () => {
+                  "use server";
+                  await signIn("github", { redirectTo: "/dashboard" });
+                }}
+              >
+                <button
+                  type="submit"
+                  className="rounded bg-orange-500 px-6 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-orange-600"
+                >
+                  {t("auth.getStartedGithub")}
+                </button>
+              </form>
+              <form
+                action={async () => {
+                  "use server";
+                  await signIn("developer-login", { redirectTo: "/dashboard" });
+                }}
+              >
+                <button
+                  type="submit"
+                  className="rounded border border-zinc-800 bg-zinc-900 px-6 py-2.5 text-sm font-semibold text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800"
+                >
+                  {t("auth.developerBypass")}
+                </button>
+              </form>
+              <div className="font-mono text-xs text-zinc-500">{t("auth.joinWaitlist")}</div>
+              <WaitlistForm theme="dark" />
+            </div>
+          )}
+          <p className="mt-4 text-[11px] font-mono uppercase tracking-widest text-zinc-600">{t("home.footerTagline")}</p>
         </div>
       </section>
 
-      <section id="features" className="border-y border-ink/10 bg-white/40">
-        <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-3">
+      <section id="features" className="border-y border-zinc-900 bg-zinc-950/50">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:grid-cols-3">
           <Feature
             title="Cost delta"
             body="Every PR comment shows monthly cost impact, by resource. Powered by terraform plan + cost engine. No surprises."
@@ -73,10 +153,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="pricing" className="mx-auto max-w-6xl px-6 py-24">
-        <h2 className="font-display text-3xl font-bold md:text-4xl">Pricing</h2>
-        <p className="mt-2 text-muted">Per-repo. Annual saves 15%.</p>
-        <div className="mt-12 grid gap-6 md:grid-cols-4">
+      <section id="pricing" className="mx-auto max-w-7xl px-4 py-20">
+        <h2 className="text-2xl font-bold tracking-tight text-zinc-100">{t("home.pricingTitle")}</h2>
+        <p className="mt-2 text-sm text-zinc-400">{t("home.pricingSubtitle")}</p>
+        <div className="mt-8 grid gap-4 md:grid-cols-4">
           <Plan name="Free" price="€0" detail="1 repo · 50 PRs/mo · cost + drift" cta="Start free" />
           <Plan name="Pro" price="€29" detail="per repo / mo · unlimited PRs · security · Slack" cta="Start trial" featured />
           <Plan name="Team" price="€99" detail="per repo / mo · policy · autofix · priority" cta="Talk to us" />
@@ -84,27 +164,29 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="waitlist" className="border-t border-ink/10 bg-ink py-24 text-paper">
-        <div className="mx-auto max-w-3xl px-6 text-center">
-          <h2 className="font-display text-3xl font-bold md:text-5xl">
-            Be the first to ship safer infra.
-          </h2>
-          <p className="mt-4 text-paper/70">
-            Early access opens to 50 platform teams. First 20 get lifetime 50% off.
-          </p>
-          <div className="mt-10 flex justify-center">
+      <section id="waitlist" className="border-t border-zinc-900 bg-zinc-950 py-20 text-zinc-100">
+        <div className="mx-auto max-w-3xl px-4 text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-100 md:text-4xl">{t("home.waitlistTitle")}</h2>
+          <p className="mt-4 text-sm text-zinc-400">{t("home.waitlistSubtitle")}</p>
+          <div className="mt-8 flex justify-center">
             <WaitlistForm theme="dark" />
           </div>
         </div>
       </section>
 
-      <footer className="border-t border-ink/10 py-8">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 text-sm text-muted">
+      <footer className="border-t border-zinc-900 bg-zinc-950 py-6">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 font-mono text-[10px] text-zinc-500">
           <div>© 2026 Driftguard</div>
-          <div className="flex gap-6">
-            <a href="https://github.com" className="hover:text-accent">GitHub</a>
-            <a href="/privacy" className="hover:text-accent">Privacy</a>
-            <a href="/terms" className="hover:text-accent">Terms</a>
+          <div className="flex gap-4">
+            <a href="https://github.com/UP2CLOUD/driftguard" className="hover:text-zinc-300">
+              GitHub
+            </a>
+            <Link href="/privacy" className="hover:text-zinc-300">
+              {t("footer.privacy")}
+            </Link>
+            <Link href="/terms" className="hover:text-zinc-300">
+              {t("footer.terms")}
+            </Link>
           </div>
         </div>
       </footer>
@@ -114,9 +196,9 @@ export default function Home() {
 
 function Feature({ title, body }: { title: string; body: string }) {
   return (
-    <div>
-      <div className="mb-3 font-display text-sm uppercase tracking-widest text-accent">{title}</div>
-      <p className="text-ink/80">{body}</p>
+    <div className="rounded border border-zinc-900 bg-zinc-900/20 p-5">
+      <div className="mb-2 text-[10px] font-mono font-bold uppercase tracking-wider text-orange-400">{title}</div>
+      <p className="text-sm leading-relaxed text-zinc-400">{body}</p>
     </div>
   );
 }
@@ -136,17 +218,17 @@ function Plan({
 }) {
   return (
     <div
-      className={`rounded-lg border p-6 ${
-        featured ? "border-accent bg-accent/5" : "border-ink/15 bg-white/40"
+      className={`rounded-lg border p-5 ${
+        featured ? "border-orange-500/30 bg-orange-500/5" : "border-zinc-800 bg-zinc-900"
       }`}
     >
-      <div className="font-display text-xs uppercase tracking-widest text-muted">{name}</div>
-      <div className="mt-3 font-display text-3xl font-bold">{price}</div>
-      <p className="mt-2 min-h-12 text-sm text-muted">{detail}</p>
+      <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">{name}</div>
+      <div className="mt-2 text-2xl font-extrabold tracking-tight text-zinc-100">{price}</div>
+      <p className="mt-2 min-h-12 text-xs leading-relaxed text-zinc-400">{detail}</p>
       <a
         href="#waitlist"
-        className={`mt-6 inline-block w-full rounded-full px-4 py-2 text-center text-sm ${
-          featured ? "bg-accent text-paper" : "bg-ink text-paper"
+        className={`mt-6 inline-block w-full rounded px-4 py-2 text-center text-sm font-semibold transition duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 active:scale-[0.98] active:opacity-90 ${
+          featured ? "bg-orange-500 text-zinc-950 hover:bg-orange-600" : "bg-zinc-100 text-zinc-950 hover:bg-zinc-200"
         }`}
       >
         {cta}

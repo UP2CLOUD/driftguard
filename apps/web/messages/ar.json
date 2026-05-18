@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "features": "الميزات",
+    "pricing": "الأسعار",
+    "dashboard": "لوحة التحكم",
+    "signOut": "تسجيل الخروج",
+    "signInGithub": "تسجيل الدخول عبر GitHub",
+    "devBypass": "تجاوز المطور",
+    "repos": "المستودعات",
+    "settings": "الإعدادات"
+  },
+  "auth": {
+    "goToDashboard": "الانتقال إلى لوحة التحكم →",
+    "getStartedGithub": "البدء مع GitHub",
+    "developerBypass": "تجاوز المطور (بدون بيانات GitHub)",
+    "joinWaitlist": "أو انضم إلى قائمة الانتظار:"
+  },
+  "home": {
+    "badge": "تجريبي · بدعوة فقط · الاتحاد الأوروبي",
+    "titleLine1": "مراجعات PR لـ OpenTofu.",
+    "titleLine2": "امتثال الاتحاد الأوروبي مدمج.",
+    "subtitle": "يراجع Driftguard كل PR لـ OpenTofu وTerraform في 30 ثانية. فرق التكلفة ومخاطر الانحراف وأخطاء الأمان وأدلة DORA / NIS2 / ISO 27001 — في تعليق PR واحد.",
+    "footerTagline": "مستضاف في الاتحاد الأوروبي. متوافق مع GDPR. بدون رسائل مزعجة.",
+    "pricingTitle": "الأسعار",
+    "pricingSubtitle": "لكل مستودع. الخطة السنوية توفر 15%.",
+    "waitlistTitle": "كن أول من ينشر بنية تحتية أكثر أمانًا.",
+    "waitlistSubtitle": "الوصول المبكر لـ 50 فريق منصة. أول 20 يحصلون على خصم 50% مدى الحياة."
+  },
+  "dashboard": {
+    "selectOrg": "اختر المؤسسة",
+    "connectGithub": "الاتصال بـ GitHub"
+  },
+  "waitlist": {
+    "placeholder": "you@company.com",
+    "join": "انضم",
+    "loading": "...",
+    "success": "✓ تم"
+  },
+  "footer": {
+    "privacy": "الخصوصية",
+    "terms": "الشروط"
+  },
+  "notFound": {
+    "code": "404",
+    "title": "الصفحة غير موجودة",
+    "description": "انحرف هذا المورد عن الخريطة. لم يتم تزويد المسار المطلوب في هذه البيئة.",
+    "statusLabel": "حالة المسار",
+    "statusValue": "غير مزوّد",
+    "backHome": "العودة إلى الرئيسية",
+    "goDashboard": "الانتقال إلى لوحة التحكم"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "preferencesTitle": "التفضيلات الإقليمية",
+    "preferencesSubtitle": "اختر عملة عرض التكاليف ولغة DriftGuard.",
+    "language": "اللغة",
+    "languageHint": "يتجاوز اكتشاف المتصفح.",
+    "currency": "عملة العرض",
+    "currencyHint": "تحويل يومي من USD (Infracost).",
+    "saving": "جارٍ الحفظ…",
+    "billingTitle": "الاشتراك والفوترة",
+    "billingCurrent": "الخطة الحالية:",
+    "activePlan": "الخطة النشطة"
+  }
+}
