@@ -59,16 +59,16 @@ export default async function Page() {
       {/* Final CTA */}
       <section id="waitlist" className="relative overflow-hidden border-b border-[color:var(--dg-border)] dg-grid">
         <div className="absolute inset-0 dg-vignette" />
-        <div className="relative mx-auto max-w-[1400px] px-6 py-24 text-center">
+        <div className="relative mx-auto max-w-[1400px] px-4 sm:px-6 py-20 sm:py-24 text-center">
           <div className="dg-label mb-4">Ship safer infra</div>
-          <h2 className="font-sans text-4xl font-semibold leading-[1.05] tracking-[-0.02em] text-[color:var(--dg-fg)] sm:text-5xl">
-            Your agents are getting faster.
+          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-[color:var(--dg-fg)]">
+            Your Terraform PRs deserve a real review.
             <br />
             <span className="bg-gradient-to-r from-[color:var(--dg-electric)] to-[color:var(--dg-cyan)] bg-clip-text text-transparent">
-              Their memory should be too.
+              Cost, drift, security, compliance — in 30 seconds.
             </span>
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-[15px] text-[color:var(--dg-fg-muted)]">
+          <p className="mx-auto mt-5 max-w-xl text-[14px] sm:text-[15px] text-[color:var(--dg-fg-muted)]">
             Early access opens to 50 platform teams in 2026. First 20 get lifetime 50% off.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">

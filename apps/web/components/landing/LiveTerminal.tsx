@@ -99,20 +99,20 @@ export function LiveTerminal() {
         </div>
 
         {/* Feed */}
-        <div ref={scrollRef} className="h-[340px] overflow-hidden p-3 font-mono text-[11.5px] leading-relaxed">
+        <div ref={scrollRef} className="h-[300px] sm:h-[340px] overflow-hidden p-2.5 sm:p-3 font-mono text-[10px] sm:text-[11.5px] leading-relaxed">
           {feed.map((e, i) => (
             <div
               key={`${e.ts}-${i}`}
-              className={`mb-1.5 flex items-start gap-2 border-l-2 pl-2 dg-reveal ${KIND_STYLES[e.kind]}`}
+              className={`mb-1.5 flex items-start gap-1.5 sm:gap-2 border-l-2 pl-1.5 sm:pl-2 dg-reveal ${KIND_STYLES[e.kind]}`}
               style={{ animationDelay: `${i * 30}ms` }}
             >
-              <span className="text-[color:var(--dg-fg-subtle)] tabular-nums shrink-0">{e.ts}</span>
+              <span className="text-[color:var(--dg-fg-subtle)] tabular-nums shrink-0 hidden sm:inline">{e.ts}</span>
               <span className="shrink-0 w-3 text-center">{KIND_GLYPH[e.kind]}</span>
-              <span className="shrink-0 font-bold tracking-wide">{e.kind}</span>
-              <span className="text-[color:var(--dg-fg-muted)] shrink-0">{e.actor}</span>
+              <span className="shrink-0 font-bold tracking-wide text-[9px] sm:text-[11px]">{e.kind}</span>
+              <span className="text-[color:var(--dg-fg-muted)] shrink-0 hidden md:inline">{e.actor}</span>
               <span className="text-[color:var(--dg-fg)] flex-1 truncate">{e.msg}</span>
               {e.resource && (
-                <span className="text-[color:var(--dg-fg-subtle)] truncate max-w-[140px]">{e.resource}</span>
+                <span className="text-[color:var(--dg-fg-subtle)] truncate max-w-[80px] sm:max-w-[140px] hidden sm:inline">{e.resource}</span>
               )}
             </div>
           ))}
@@ -123,9 +123,9 @@ export function LiveTerminal() {
         </div>
 
         {/* Status bar */}
-        <div className="flex items-center justify-between border-t border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-3 py-1.5 font-mono text-[10px] tracking-wider text-[color:var(--dg-fg-subtle)]">
-          <span>policy.engine: opa-rego ▪ memory: 384‑d embedding ▪ latency p99: 1.2s</span>
-          <span className="text-allowed">● healthy</span>
+        <div className="flex items-center justify-between border-t border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-3 py-1.5 font-mono text-[9px] sm:text-[10px] tracking-wider text-[color:var(--dg-fg-subtle)] gap-2">
+          <span className="truncate">policy.engine: opa ▪ memory: 384‑d ▪ <span className="hidden sm:inline">p99 1.2s</span></span>
+          <span className="text-allowed shrink-0">● healthy</span>
         </div>
       </div>
     </div>

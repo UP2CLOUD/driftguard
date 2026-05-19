@@ -13,9 +13,9 @@ const MEMORY_NODES = [
 ];
 
 const QUERIES = [
-  "agent wants to: terraform apply prod/rds-changes.tf",
-  "agent wants to: aws_iam_policy with wildcard resources",
-  "agent wants to: enable public ingress on k8s service",
+  "new PR diff: terraform plan in prod/rds-changes.tf",
+  "new PR diff: aws_iam_policy with wildcard resources",
+  "new PR diff: kubernetes ingress with public binding",
 ];
 
 export function SemanticMemory() {
@@ -48,12 +48,12 @@ export function SemanticMemory() {
   }, []);
 
   return (
-    <section id="memory" ref={ref} className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-24">
-      <div className="mx-auto max-w-[1400px] px-6">
+    <section id="memory" ref={ref} className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-16 sm:py-24">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
           eyebrow="Semantic memory"
-          title="Every failure becomes context."
-          subtitle="DriftGuard converts each agent failure into a 384-dimensional embedding indexed by intent, blast radius, and resource topology. At runtime, every new action is matched against the corpus — your agents inherit the entire team's incident history."
+          title="Every failure becomes context for the next PR."
+          subtitle="DriftGuard converts each blocked deploy, drift event, and compliance violation into a 384-dimensional embedding. Open a similar PR six months later — the original incident shows up in the comment with a similarity score."
         />
 
         <div className="mt-16 grid gap-8 lg:grid-cols-2 lg:gap-12">

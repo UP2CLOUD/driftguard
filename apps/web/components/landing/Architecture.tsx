@@ -18,21 +18,22 @@ export function Architecture() {
   }, []);
 
   return (
-    <section id="architecture" ref={ref} className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-24">
-      <div className="mx-auto max-w-[1400px] px-6">
+    <section id="architecture" ref={ref} className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-16 sm:py-24">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
           eyebrow="Architecture"
-          title="One intercept layer between intent and execution."
-          subtitle="DriftGuard runs as a sidecar to your agent runtime. Every action passes through a semantic memory lookup and a policy gate before it touches your infrastructure."
+          title="One review layer for every Terraform PR."
+          subtitle="DriftGuard installs as a GitHub App. Every PR — written by your engineers or by Cursor / Devin / Claude Code — passes through a semantic memory lookup and a policy gate before merge."
         />
 
         <div className="mt-16 grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
           {/* Diagram */}
           <div className="relative">
-            <div className="relative rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-6 sm:p-8">
+            <div className="relative rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-4 sm:p-6 md:p-8 overflow-hidden">
               <div className="dg-label mb-6">fig 02 ▸ data flow</div>
 
-              <svg viewBox="0 0 600 380" className="w-full h-auto">
+              <div className="overflow-x-auto -mx-2 px-2">
+                <svg viewBox="0 0 600 380" className="w-full h-auto min-w-[500px]">
                 {/* Grid bg */}
                 <defs>
                   <pattern id="arch-grid" width="20" height="20" patternUnits="userSpaceOnUse">
@@ -95,6 +96,7 @@ export function Architecture() {
                   outcomes feed back into memory →
                 </text>
               </svg>
+              </div>
             </div>
           </div>
 
@@ -102,32 +104,32 @@ export function Architecture() {
           <div className="flex flex-col justify-center">
             <Step
               n="01"
-              title="Agent emits intent"
-              body="Any agent action — terraform plan, k8s manifest, API call — is captured by the DriftGuard SDK before execution."
+              title="PR opens"
+              body="Any Terraform or OpenTofu PR — written by an engineer or AI agent — triggers DriftGuard. We read terraform plan, infracost output, and security scans."
               delay={0} visible={visible}
             />
             <Step
               n="02"
-              title="Semantic recall (sub-10ms)"
-              body="The intent embedding is matched against past failures. If a similar incident exists, the agent gets context — and a warning."
+              title="Semantic recall (sub‑10ms)"
+              body="The change embedding is matched against past failures across your team. If a similar incident exists, the PR comment cites it — with similarity score and link to the original incident."
               delay={150} visible={visible}
             />
             <Step
               n="03"
               title="Policy gate"
-              body="OPA-compatible policies enforce allowed actions per environment, resource class, and risk score."
+              body="OPA‑compatible policies enforce allowed actions per environment, resource class, and risk score. Block merges, warn reviewers, or auto‑approve safe changes."
               delay={300} visible={visible}
             />
             <Step
               n="04"
-              title="Execute or halt"
-              body="Approved actions proceed with full trace. Blocked actions return a structured failure with citations to similar past events."
+              title="Comment on PR"
+              body="Single high‑signal PR comment: cost delta, drift, security findings, compliance evidence (DORA / NIS2 / ISO 27001) — and citations to past failures."
               delay={450} visible={visible}
             />
             <Step
               n="05"
               title="Outcome flows back"
-              body="Success or failure becomes new memory. Your agents get sharper every day."
+              body="Merge result and post‑deploy state become new memory. Your agents and engineers get sharper every day."
               delay={600} visible={visible}
             />
           </div>
@@ -193,10 +195,10 @@ function SectionHeader({ eyebrow, title, subtitle }: { eyebrow: string; title: s
         <span className="h-px w-6 bg-[color:var(--dg-electric)]" />
         {eyebrow}
       </div>
-      <h2 className="mt-4 font-sans text-[32px] font-semibold leading-[1.1] tracking-[-0.02em] text-[color:var(--dg-fg)] sm:text-[40px]">
+      <h2 className="mt-4 font-sans text-[26px] font-semibold leading-[1.1] tracking-[-0.02em] text-[color:var(--dg-fg)] sm:text-[32px] md:text-[40px]">
         {title}
       </h2>
-      <p className="mt-4 text-[15px] leading-relaxed text-[color:var(--dg-fg-muted)]">{subtitle}</p>
+      <p className="mt-4 text-[14px] sm:text-[15px] leading-relaxed text-[color:var(--dg-fg-muted)]">{subtitle}</p>
     </div>
   );
 }

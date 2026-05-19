@@ -1,5 +1,7 @@
-import { MarketingFooter } from "@/components/MarketingFooter";
-import { MarketingNav } from "@/components/MarketingNav";
+import { auth } from "@/auth";
+import { StatusBar } from "@/components/landing/StatusBar";
+import { MarketingNav } from "@/components/landing/MarketingNav";
+import { Footer } from "@/components/landing/Footer";
 import Link from "next/link";
 
 type LegalPageShellProps = {
@@ -8,27 +10,32 @@ type LegalPageShellProps = {
 };
 
 export async function LegalPageShell({ children, active }: LegalPageShellProps) {
+  const session = await auth();
   return (
-    <main className="min-h-screen bg-canvas text-fg">
-      <MarketingNav />
+    <main className="min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
+      <StatusBar />
+      <MarketingNav isLoggedIn={!!session} />
 
-      <div className="mx-auto max-w-4xl px-4 py-10 md:py-14">
-        <nav aria-label="Legal" className="mb-6 flex gap-4 font-mono text-2xs uppercase tracking-wider">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10 sm:py-14">
+        <nav aria-label="Legal" className="mb-8 flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest">
+          <span className="h-px w-4 bg-[color:var(--dg-electric)]" />
           <Link
             href="/privacy"
             className={
               active === "privacy"
-                ? "text-orange-400"
-                : "text-fg-subtle transition hover:text-fg-muted"
+                ? "text-[color:var(--dg-electric-bright)]"
+                : "text-[color:var(--dg-fg-subtle)] transition hover:text-[color:var(--dg-fg)]"
             }
           >
             Privacy
           </Link>
-          <span className="text-fg-subtle">/</span>
+          <span className="text-[color:var(--dg-fg-subtle)]">/</span>
           <Link
             href="/terms"
             className={
-              active === "terms" ? "text-orange-400" : "text-fg-subtle transition hover:text-fg-muted"
+              active === "terms"
+                ? "text-[color:var(--dg-electric-bright)]"
+                : "text-[color:var(--dg-fg-subtle)] transition hover:text-[color:var(--dg-fg)]"
             }
           >
             Terms
@@ -38,7 +45,7 @@ export async function LegalPageShell({ children, active }: LegalPageShellProps) 
         {children}
       </div>
 
-      <MarketingFooter />
+      <Footer />
     </main>
   );
 }

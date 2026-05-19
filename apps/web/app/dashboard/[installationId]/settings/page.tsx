@@ -1,4 +1,3 @@
-import { DashboardNav } from "@/components/DashboardNav";
 import { BillingActions } from "@/components/BillingActions";
 import { UserPreferencesSettings } from "@/components/UserPreferencesSettings";
 import { getMessages } from "@/i18n/get-locale";
@@ -16,91 +15,98 @@ export default async function Settings({ params }: { params: Promise<{ installat
   const t = createTranslator(messages);
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-100">
-      <DashboardNav
-        installationId={installationId}
-        planLabel={org.plan}
-        initialPreferences={preferences}
-      />
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        <h1 className="text-xl font-bold tracking-tight text-zinc-100">{t("settings.title")}</h1>
+    <div className="mx-auto max-w-4xl px-4 sm:px-6 py-8 sm:py-10">
+      <div className="dg-label">Workspace ▸ Settings</div>
+      <h1 className="mt-2 font-sans text-2xl sm:text-3xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
+        {t("settings.title")}
+      </h1>
 
-        <UserPreferencesSettings initialPreferences={preferences} />
+      {/* Preferences */}
+      <section className="mt-10">
+        <div className="dg-label mb-4">Preferences</div>
+        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
+          <UserPreferencesSettings initialPreferences={preferences} />
+        </div>
+      </section>
 
-        <section className="mt-8 border-t border-zinc-800 pt-6">
-          <h2 className="text-lg font-semibold tracking-tight text-zinc-100">
-            {t("settings.billingTitle")}
-          </h2>
-          <p className="mt-2 text-sm text-zinc-400">
-            {t("settings.billingCurrent")}{" "}
-            <span className="font-mono font-semibold uppercase text-orange-400">{org.plan}</span>
-          </p>
+      {/* Plan */}
+      <section className="mt-10">
+        <div className="dg-label mb-4">Plan</div>
+        <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] sm:grid-cols-3">
+          <PlanCard
+            name="Free"
+            price="€0"
+            detail="50 PR analyses/mo · 1 repo"
+            current={org.plan === "free"}
+          />
+          <PlanCard
+            name="Pro"
+            price="€29"
+            period="/repo/mo"
+            detail="Unlimited PRs · security · Slack"
+            current={org.plan === "pro"}
+            highlighted
+          />
+          <PlanCard
+            name="Team"
+            price="€99"
+            period="/repo/mo"
+            detail="Policy · autofix · priority"
+            current={org.plan === "team"}
+          />
+        </div>
+        <div className="mt-4">
+          <BillingActions orgId={org.id} currentPlan={org.plan} />
+        </div>
+      </section>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            <PlanCard
-              name="Free"
-              price="€0"
-              detail="1 repo · 50 PRs/mo · cost + drift"
-              current={org.plan === "free"}
-              activeLabel={t("settings.activePlan")}
-            />
-            <PlanCard
-              name="Pro"
-              price="€29"
-              detail="unlimited PRs · security · Slack"
-              current={org.plan === "pro"}
-              activeLabel={t("settings.activePlan")}
-            />
-            <PlanCard
-              name="Team"
-              price="€99"
-              detail="policy · autofix · priority"
-              current={org.plan === "team"}
-              activeLabel={t("settings.activePlan")}
-            />
-          </div>
+      {/* Org details */}
+      <section className="mt-10">
+        <div className="dg-label mb-4">Organization</div>
+        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
+          <Row k="GitHub installation ID" v={installationId} />
+          <Row k="Plan" v={org.plan} />
+          <Row k="Repos enabled" v={String(org.repo_count ?? 0)} />
+          <Row k="Customer ID" v={org.stripe_customer_id || "—"} mono />
+        </div>
+      </section>
+    </div>
+  );
+}
 
-          <div className="mt-8">
-            <BillingActions
-              orgId={org.id}
-              installationId={installationId}
-              hasCustomer={org.has_stripe_customer}
-              plan={org.plan}
-            />
-          </div>
-        </section>
-      </div>
-    </main>
+function Row({ k, v, mono }: { k: string; v: string; mono?: boolean }) {
+  return (
+    <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] last:border-b-0 px-4 py-3">
+      <span className="text-[12px] text-[color:var(--dg-fg-muted)]">{k}</span>
+      <span className={`text-[12px] text-[color:var(--dg-fg)] ${mono ? "font-mono" : ""}`}>{v}</span>
+    </div>
   );
 }
 
 function PlanCard({
-  name,
-  price,
-  detail,
-  current,
-  activeLabel,
+  name, price, period, detail, current, highlighted,
 }: {
-  name: string;
-  price: string;
-  detail: string;
-  current: boolean;
-  activeLabel: string;
+  name: string; price: string; period?: string; detail: string;
+  current: boolean; highlighted?: boolean;
 }) {
   return (
-    <div
-      className={`rounded-lg border p-4 transition-all duration-150 ${
-        current ? "border-orange-500/30 bg-orange-500/5" : "border-zinc-800 bg-zinc-900/50"
-      }`}
-    >
-      <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">{name}</div>
-      <div className="mt-1 text-xl font-extrabold tracking-tight text-zinc-100">{price}</div>
-      <p className="mt-2 text-xs leading-relaxed text-zinc-400">{detail}</p>
-      {current && (
-        <span className="mt-3 inline-flex rounded border border-orange-500/20 bg-orange-500/10 px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider text-orange-400">
-          {activeLabel}
-        </span>
-      )}
+    <div className={`relative bg-[color:var(--dg-canvas)] p-5 ${
+      highlighted ? "shadow-[inset_0_1px_0_0_var(--dg-electric)]" : ""
+    }`}>
+      <div className="flex items-center justify-between">
+        <div className="dg-label">{name}</div>
+        {current && (
+          <span className="inline-flex items-center gap-1 rounded border border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
+            <span className="h-1 w-1 rounded-full bg-[color:var(--dg-electric)]" />
+            Active
+          </span>
+        )}
+      </div>
+      <div className="mt-3 flex items-baseline gap-1">
+        <span className="font-sans text-2xl font-semibold tracking-tight text-[color:var(--dg-fg)]">{price}</span>
+        {period && <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{period}</span>}
+      </div>
+      <p className="mt-2 text-[12px] text-[color:var(--dg-fg-muted)]">{detail}</p>
     </div>
   );
 }

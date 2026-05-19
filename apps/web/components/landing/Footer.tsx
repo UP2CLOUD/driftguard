@@ -4,8 +4,8 @@ export function Footer() {
   return (
     <footer className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]">
       {/* Top: ASCII signature */}
-      <div className="mx-auto max-w-[1400px] px-6 pt-16 pb-12">
-        <div className="grid gap-10 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 pt-12 sm:pt-16 pb-10 sm:pb-12">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" className="flex items-center gap-2.5">
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none" className="text-[color:var(--dg-electric)]">
@@ -55,7 +55,7 @@ export function Footer() {
 
       {/* Bottom */}
       <div className="border-t border-[color:var(--dg-border)]">
-        <div className="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-4 px-6 py-5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] sm:flex-row sm:items-center">
+        <div className="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-4 px-4 sm:px-6 py-5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] sm:flex-row sm:items-center">
           <div className="flex items-center gap-3">
             <span>© 2026 UP2CLOUD</span>
             <span className="opacity-50">●</span>

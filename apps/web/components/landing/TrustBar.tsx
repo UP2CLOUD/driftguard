@@ -6,10 +6,10 @@ const COMPANIES = [
 export function TrustBar() {
   const items = [...COMPANIES, ...COMPANIES];
   return (
-    <section className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-10">
-      <div className="mx-auto max-w-[1400px] px-6">
+    <section className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-8 sm:py-10">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <div className="flex items-center gap-4 mb-6">
-          <div className="dg-label">In production at</div>
+          <div className="dg-label">Reviewing PRs for</div>
           <div className="h-px flex-1 bg-[color:var(--dg-border)]" />
           <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] tabular-nums">
             est. early 2026 cohort

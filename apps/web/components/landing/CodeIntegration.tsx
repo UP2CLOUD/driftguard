@@ -4,72 +4,79 @@ import { useState } from "react";
 import { SectionHeader } from "./Architecture";
 
 const SAMPLES = {
-  python: `from driftguard import DriftGuard
+  github: `# .github/driftguard.yml
+# DriftGuard config — committed to your repo
 
-dg = DriftGuard(project="prod-infra-agent")
+policy:
+  blast_radius: prod
+  block:
+    - aws_rds_cluster.*.delete
+    - aws_iam_policy.*.resources=*
+  warn:
+    - aws_security_group.ingress.0.0.0.0/0
 
-@dg.intercept
-def execute_action(intent: AgentIntent) -> ExecResult:
-    # 1. Semantic recall — sub-10ms
-    similar = dg.memory.recall(intent, top_k=5)
+memory:
+  retention: 365d
+  cite_in_pr: true     # cite past incidents in PR comments
 
-    # 2. Policy gate — OPA / Rego
-    decision = dg.policy.evaluate(intent, similar)
-    if decision.blocked:
-        return ExecResult.halt(decision.reason, cited=similar)
+compliance:
+  frameworks: [DORA, NIS2, ISO27001]
+  evidence: ./compliance/evidence
 
-    # 3. Execute with full trace
-    return dg.run(intent)`,
+cost:
+  threshold_monthly_usd: 500
+  block_above: 5000`,
 
-  typescript: `import { DriftGuard } from "@driftguard/sdk";
+  cli: `# install
+brew install driftguard/tap/driftguard
+# or: npm install -g @driftguard/cli
 
-const dg = new DriftGuard({ project: "prod-infra-agent" });
+# scan a PR locally before pushing
+$ driftguard review --pr 142
 
-export const executeAction = dg.intercept(async (intent) => {
-  // Semantic recall + policy gate run in parallel
-  const [memory, decision] = await Promise.all([
-    dg.memory.recall(intent, { topK: 5 }),
-    dg.policy.evaluate(intent),
-  ]);
+▸ analyzing 3 changed terraform dirs...
+▸ semantic recall: 2 similar past incidents found
+▸ cost delta: +$245/mo  ▸ drift: 0  ▸ security: 1 high
 
-  if (decision.blocked) {
-    return { halted: true, reason: decision.reason, cited: memory };
-  }
+  HIGH    aws_rds_cluster.prod  ▸ storage_encrypted = false
+  CITED   evt_8x2m (2026-04-22, sim 0.94) — same misconfig
 
-  return dg.run(intent);
-});`,
+✗ Policy: BLOCK
+  recommend: storage_encrypted = true
+  exit: 1`,
 
-  rest: `# Capture an agent intent
-POST https://api.driftguard.io/v1/intercept
+  rest: `# Query past incidents semantically
+POST https://api.driftguard.io/v1/memory/recall
 Authorization: Bearer $DG_API_KEY
 Content-Type: application/json
 
 {
-  "project": "prod-infra-agent",
-  "agent": "terraform-writer",
-  "intent": {
-    "action": "terraform.apply",
-    "plan": "...",
-    "target_resources": ["aws_rds_cluster.prod"]
-  }
+  "project": "acme-platform",
+  "intent": "delete aws_rds_cluster in prod",
+  "top_k": 5
 }
 
 # Response
 HTTP/1.1 200 OK
 {
-  "decision": "BLOCK",
-  "reason": "would delete aws_rds_cluster.prod",
-  "cited_incidents": [
-    { "id": "evt_8x2m", "similarity": 0.94, "date": "2026-04-22" }
+  "matches": [
+    {
+      "id": "evt_8x2m",
+      "similarity": 0.94,
+      "date": "2026-04-22",
+      "summary": "RDS deletion blocked by drift detector",
+      "blast_radius": "prod",
+      "resource": "aws_rds_cluster.prod"
+    }
   ],
-  "trace_url": "https://app.driftguard.io/traces/trc_2k4p"
+  "latency_ms": 9
 }`,
 };
 
 type Lang = keyof typeof SAMPLES;
 
 export function CodeIntegration() {
-  const [lang, setLang] = useState<Lang>("python");
+  const [lang, setLang] = useState<Lang>("github");
   const [copied, setCopied] = useState(false);
 
   const copy = () => {
@@ -79,12 +86,12 @@ export function CodeIntegration() {
   };
 
   return (
-    <section id="integrate" className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-24">
-      <div className="mx-auto max-w-[1400px] px-6">
+    <section id="integrate" className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-16 sm:py-24">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
           eyebrow="Integrate"
-          title="Drop in. Three lines."
-          subtitle="SDK for Python, TypeScript, Go, Rust. REST + gRPC for everything else. No agent retraining, no infrastructure changes."
+          title="Install in 30 seconds."
+          subtitle="GitHub App + repo config. No SDK, no rewrites, no infrastructure changes. Optional CLI for local pre-flight."
         />
 
         <div className="mt-12 rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] overflow-hidden">
@@ -134,8 +141,8 @@ export function CodeIntegration() {
 
         {/* Sub-CTA: framework chips */}
         <div className="mt-6 flex flex-wrap items-center gap-2 text-[11px]">
-          <span className="dg-label">First-class integrations</span>
-          {["LangChain", "LangGraph", "LlamaIndex", "Mastra", "AutoGen", "CrewAI", "Cursor", "Devin"].map((f) => (
+          <span className="dg-label">Works with</span>
+          {["Terraform", "OpenTofu", "Terragrunt", "Atlantis", "Spacelift", "Cursor", "Devin", "Claude Code"].map((f) => (
             <span
               key={f}
               className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)]/60 px-2 py-1 font-mono text-[10px] text-[color:var(--dg-fg-muted)] hover:border-[color:var(--dg-border-bright)] hover:text-[color:var(--dg-fg)] transition cursor-default"

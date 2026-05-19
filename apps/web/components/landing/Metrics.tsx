@@ -39,13 +39,13 @@ export function Metrics() {
   const latency = useCount(1.2, 1800, start);
 
   return (
-    <section ref={ref} className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] py-20">
+    <section ref={ref} className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] py-14 sm:py-20">
       <div className="mx-auto max-w-[1400px] px-6">
-        <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border-strong)] md:grid-cols-4">
-          <MetricCell label="Intercepts / 30d" value={intercepted.toLocaleString()} sub="across pilot cohort" />
+        <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border-strong)] grid-cols-2 md:grid-cols-4">
+          <MetricCell label="PRs reviewed / 30d" value={intercepted.toLocaleString()} sub="across pilot cohort" />
           <MetricCell label="Repeat failures prevented" value={blocked.toLocaleString()} sub="vs. baseline" accent />
           <MetricCell label="Recall accuracy" value={`${recalled.toFixed(2)}%`} sub="precision@5" />
-          <MetricCell label="P99 latency" value={`${latency.toFixed(1)}s`} sub="end-to-end" />
+          <MetricCell label="P99 review latency" value={`${latency.toFixed(1)}s`} sub="plan → PR comment" />
         </div>
       </div>
     </section>

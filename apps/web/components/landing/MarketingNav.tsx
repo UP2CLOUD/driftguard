@@ -3,8 +3,18 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
+const LINKS = [
+  { href: "#product", label: "Product" },
+  { href: "#architecture", label: "Architecture" },
+  { href: "#integrate", label: "Integrate" },
+  { href: "#pricing", label: "Pricing" },
+  { href: "/docs", label: "Docs" },
+];
+
 export function MarketingNav({ isLoggedIn }: { isLoggedIn?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", onScroll);
@@ -19,7 +29,7 @@ export function MarketingNav({ isLoggedIn }: { isLoggedIn?: boolean }) {
           : "border-b border-transparent"
       }`}
     >
-      <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-3.5">
+      <div className="mx-auto flex max-w-[1400px] items-center justify-between px-4 sm:px-6 py-3.5">
         <div className="flex items-center gap-10">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="relative">
@@ -35,11 +45,11 @@ export function MarketingNav({ isLoggedIn }: { isLoggedIn?: boolean }) {
             </span>
           </Link>
           <div className="hidden md:flex items-center gap-7 text-[13px] text-[color:var(--dg-fg-muted)]">
-            <Link href="#product" className="hover:text-[color:var(--dg-fg)] transition">Product</Link>
-            <Link href="#architecture" className="hover:text-[color:var(--dg-fg)] transition">Architecture</Link>
-            <Link href="#integrate" className="hover:text-[color:var(--dg-fg)] transition">Integrate</Link>
-            <Link href="#pricing" className="hover:text-[color:var(--dg-fg)] transition">Pricing</Link>
-            <Link href="/docs" className="hover:text-[color:var(--dg-fg)] transition">Docs</Link>
+            {LINKS.map((l) => (
+              <Link key={l.href} href={l.href} className="hover:text-[color:var(--dg-fg)] transition">
+                {l.label}
+              </Link>
+            ))}
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -53,14 +63,38 @@ export function MarketingNav({ isLoggedIn }: { isLoggedIn?: boolean }) {
             <span className="tabular-nums">★ 1.2k</span>
           </a>
           {isLoggedIn ? (
-            <Link href="/dashboard" className="dg-button dg-button-ghost">Dashboard →</Link>
+            <Link href="/dashboard" className="dg-button dg-button-ghost text-[12px] sm:text-[13px]">Dashboard →</Link>
           ) : (
-            <Link href="/?signin=true" className="dg-button dg-button-primary">
+            <Link href="/?signin=true" className="dg-button dg-button-primary text-[12px] sm:text-[13px]">
               Get started
             </Link>
           )}
+          <button
+            onClick={() => setOpen(!open)}
+            aria-label="Menu"
+            className="md:hidden flex flex-col items-center justify-center gap-1 p-2 -mr-2"
+          >
+            <span className={`h-px w-4 bg-[color:var(--dg-fg)] transition ${open ? "translate-y-[3px] rotate-45" : ""}`} />
+            <span className={`h-px w-4 bg-[color:var(--dg-fg)] transition ${open ? "-translate-y-[3px] -rotate-45" : ""}`} />
+          </button>
         </div>
       </div>
+      {open && (
+        <div className="md:hidden border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]/95 backdrop-blur">
+          <div className="flex flex-col px-4 py-3 text-[14px]">
+            {LINKS.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                onClick={() => setOpen(false)}
+                className="py-2.5 text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] transition border-b border-[color:var(--dg-border)] last:border-b-0"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
