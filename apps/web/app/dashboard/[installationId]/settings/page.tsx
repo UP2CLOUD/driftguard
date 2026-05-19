@@ -59,7 +59,7 @@ export default async function Settings({ params }: { params: Promise<{ installat
           <BillingActions
             orgId={org.id}
             installationId={installationId}
-            hasCustomer={!!org.stripe_customer_id}
+            hasCustomer={!!org.has_stripe_customer}
             plan={org.plan}
           />
         </div>
@@ -71,8 +71,7 @@ export default async function Settings({ params }: { params: Promise<{ installat
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
           <Row k="GitHub installation ID" v={installationId} />
           <Row k="Plan" v={org.plan} />
-          <Row k="Repos enabled" v={String(org.repo_count ?? 0)} />
-          <Row k="Customer ID" v={org.stripe_customer_id || "—"} mono />
+          <Row k="Stripe customer" v={org.has_stripe_customer ? "active" : "—"} />
         </div>
       </section>
     </div>
