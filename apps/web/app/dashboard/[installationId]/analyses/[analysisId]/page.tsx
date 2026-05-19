@@ -72,7 +72,7 @@ export default async function AnalysisDetail({
       <div className="mt-8 grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] grid-cols-2 sm:grid-cols-4">
         <StatCell
           label="Cost delta"
-          value={costFormatted.display}
+          value={costFormatted}
           accent={costDelta > 0 ? "warned" : costDelta < 0 ? "allowed" : undefined}
         />
         <StatCell
