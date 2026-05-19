@@ -2,13 +2,23 @@ import Link from "next/link";
 
 function LogoIcon() {
   return (
-    <div className="flex h-6 w-6 items-center justify-center rounded border border-orange-500/20 bg-orange-500/10 text-orange-400">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5" aria-hidden>
+    <div className="flex h-6 w-6 items-center justify-center rounded border border-[color:var(--dg-electric-dim)] bg-[color:var(--dg-electric-dim)]/30">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden>
+        {/* Shield outline */}
         <path
-          fillRule="evenodd"
-          d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 6a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"
-          clipRule="evenodd"
+          d="M10 2C8.5 2 5.5 3.1 4 4L4 9C4 13 7 15.5 10 17C13 15.5 16 13 16 9L16 4C14.5 3.1 11.5 2 10 2Z"
+          stroke="#3f8cff"
+          strokeWidth="1.1"
+          strokeLinejoin="round"
+          fill="rgba(63,140,255,0.08)"
         />
+        {/* Drift lines */}
+        <line x1="7" y1="7.5" x2="11" y2="7.5" stroke="#3f8cff" strokeWidth="1.1" strokeLinecap="round" />
+        <line x1="7.5" y1="10" x2="12.5" y2="10" stroke="#06b6d4" strokeWidth="1.1" strokeLinecap="round" />
+        <line x1="8" y1="12.5" x2="11.5" y2="12.5" stroke="#3f8cff" strokeWidth="1.1" strokeLinecap="round" opacity="0.6" />
+        {/* Dots */}
+        <circle cx="11.5" cy="7.5" r="1" fill="#3f8cff" />
+        <circle cx="13" cy="10" r="1" fill="#06b6d4" />
       </svg>
     </div>
   );

@@ -49,20 +49,20 @@ export function DashboardNav({
         <div className="flex items-center gap-1 sm:gap-2 text-sm">
           <NavLink
             href={`/dashboard/${installationId}`}
-            className={`relative py-0.5 ${isRepos ? "text-orange-400" : ""}`}
+            className={`relative py-0.5 ${isRepos ? "text-[color:var(--dg-electric-bright)]" : ""}`}
           >
             {t("nav.repos")}
             {isRepos && (
-              <span className="absolute bottom-[-13px] left-0 h-[2px] w-full rounded-full bg-orange-500" />
+              <span className="absolute bottom-[-13px] left-0 h-[2px] w-full rounded-full bg-[color:var(--dg-electric)]" />
             )}
           </NavLink>
           <NavLink
             href={`/dashboard/${installationId}/settings`}
-            className={`relative py-0.5 ${isSettings ? "text-orange-400" : ""}`}
+            className={`relative py-0.5 ${isSettings ? "text-[color:var(--dg-electric-bright)]" : ""}`}
           >
             {t("nav.settings")}
             {isSettings && (
-              <span className="absolute bottom-[-13px] left-0 h-[2px] w-full rounded-full bg-orange-500" />
+              <span className="absolute bottom-[-13px] left-0 h-[2px] w-full rounded-full bg-[color:var(--dg-electric)]" />
             )}
           </NavLink>
 
@@ -74,8 +74,8 @@ export function DashboardNav({
             <span
               className={`inline-flex items-center rounded border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
                 planLabel.toLowerCase() === "pro"
-                  ? "border-orange-500/20 bg-orange-500/10 text-orange-400"
-                  : "border-zinc-700 bg-zinc-800 text-zinc-400"
+                  ? "border-[color:var(--dg-electric-dim)] bg-[color:var(--dg-electric-dim)]/30 text-[color:var(--dg-electric-bright)]"
+                  : "border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface-raised)] text-[color:var(--dg-fg-muted)]"
               }`}
             >
               {planLabel}

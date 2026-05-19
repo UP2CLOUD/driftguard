@@ -49,6 +49,21 @@
     "backHome": "Back to home",
     "goDashboard": "Go to dashboard"
   },
+  "repos": {
+    "title": "Repositories",
+    "addRepo": "+ Add repo",
+    "statsRepos": "Repos",
+    "statsAnalyses": "Analyses 7d",
+    "statsAvgRisk": "Avg risk",
+    "statsPlan": "Plan",
+    "noReposTitle": "No repositories yet",
+    "noReposBody": "Open a Terraform or OpenTofu PR to trigger your first analysis. DriftGuard will comment with cost delta, security findings, and compliance evidence.",
+    "addRepository": "Add a repository →",
+    "readDocs": "Read the docs",
+    "recentAnalyses": "Recent analyses",
+    "statusActive": "active",
+    "statusOff": "off"
+  },
   "settings": {
     "title": "Settings",
     "preferencesTitle": "Regional preferences",
@@ -59,8 +74,10 @@
     "currencyHint": "Cost deltas from Infracost are converted from USD using daily exchange rates.",
     "saving": "Saving…",
     "billingTitle": "Subscription & Billing",
-    "billingCurrent": "Current active tier:",
-    "activePlan": "Active Plan"
+    "billingCurrent": "Current plan:",
+    "activePlan": "Active Plan",
+    "orgTitle": "Organization",
+    "apiUnavailable": "API unavailable — configure NEXT_PUBLIC_API_URL in your Vercel environment variables."
   },
   "installApp": {
     "title": "Install the GitHub App",

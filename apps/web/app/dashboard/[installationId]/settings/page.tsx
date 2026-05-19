@@ -4,26 +4,52 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { requireOrg } from "@/lib/org-server";
 import { getUserPreferences } from "@/lib/preferences/server";
+import type { Org } from "@/lib/api";
 
 export default async function Settings({ params }: { params: Promise<{ installationId: string }> }) {
   const { installationId } = await params;
   const preferences = await getUserPreferences();
-  const [org, messages] = await Promise.all([
-    requireOrg(installationId),
-    getMessages(preferences.locale),
-  ]);
+  const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
+
+  let org: Org | null = null;
+  try {
+    org = await requireOrg(installationId);
+  } catch {
+    return (
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 py-8 sm:py-10">
+        <div className="dg-label">Workspace ▸ {t("nav.settings")}</div>
+        <h1 className="mt-2 font-sans text-2xl sm:text-3xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
+          {t("nav.settings")}
+        </h1>
+        <div className="mt-8 rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-8 text-center">
+          <p className="text-sm text-[color:var(--dg-fg-muted)]">
+            {t("settings.apiUnavailable")}
+          </p>
+          <p className="mt-2 font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">
+            NEXT_PUBLIC_API_URL · {process.env.NEXT_PUBLIC_API_URL ?? "not set"}
+          </p>
+        </div>
+        <section className="mt-10">
+          <div className="dg-label mb-4">{t("settings.preferencesTitle")}</div>
+          <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
+            <UserPreferencesSettings initialPreferences={preferences} />
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 py-8 sm:py-10">
-      <div className="dg-label">Workspace ▸ Settings</div>
+      <div className="dg-label">Workspace ▸ {t("nav.settings")}</div>
       <h1 className="mt-2 font-sans text-2xl sm:text-3xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
         {t("settings.title")}
       </h1>
 
       {/* Preferences */}
       <section className="mt-10">
-        <div className="dg-label mb-4">Preferences</div>
+        <div className="dg-label mb-4">{t("settings.preferencesTitle")}</div>
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
           <UserPreferencesSettings initialPreferences={preferences} />
         </div>
@@ -31,7 +57,7 @@ export default async function Settings({ params }: { params: Promise<{ installat
 
       {/* Plan */}
       <section className="mt-10">
-        <div className="dg-label mb-4">Plan</div>
+        <div className="dg-label mb-4">{t("settings.billingTitle")}</div>
         <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] sm:grid-cols-3">
           <PlanCard
             name="Free"
@@ -67,10 +93,10 @@ export default async function Settings({ params }: { params: Promise<{ installat
 
       {/* Org details */}
       <section className="mt-10">
-        <div className="dg-label mb-4">Organization</div>
+        <div className="dg-label mb-4">{t("settings.orgTitle")}</div>
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
-          <Row k="GitHub installation ID" v={installationId} />
-          <Row k="Plan" v={org.plan} />
+          <Row k="GitHub installation ID" v={installationId} mono />
+          <Row k={t("settings.billingCurrent")} v={org.plan} />
           <Row k="Stripe customer" v={org.has_stripe_customer ? "active" : "—"} />
         </div>
       </section>

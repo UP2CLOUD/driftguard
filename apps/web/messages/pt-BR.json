@@ -49,6 +49,21 @@
     "backHome": "Voltar ao início",
     "goDashboard": "Ir ao painel"
   },
+  "repos": {
+    "title": "Repositórios",
+    "addRepo": "+ Adicionar repo",
+    "statsRepos": "Repos",
+    "statsAnalyses": "Análises 7d",
+    "statsAvgRisk": "Risco médio",
+    "statsPlan": "Plano",
+    "noReposTitle": "Nenhum repositório ainda",
+    "noReposBody": "Abra um PR de Terraform ou OpenTofu para disparar sua primeira análise. O DriftGuard comentará com delta de custo, findings de segurança e evidências de compliance.",
+    "addRepository": "Adicionar repositório →",
+    "readDocs": "Ver documentação",
+    "recentAnalyses": "Análises recentes",
+    "statusActive": "ativo",
+    "statusOff": "inativo"
+  },
   "settings": {
     "title": "Configurações",
     "preferencesTitle": "Preferências regionais",
@@ -60,7 +75,9 @@
     "saving": "Salvando…",
     "billingTitle": "Assinatura e cobrança",
     "billingCurrent": "Plano atual:",
-    "activePlan": "Plano ativo"
+    "activePlan": "Plano ativo",
+    "orgTitle": "Organização",
+    "apiUnavailable": "API indisponível — configure NEXT_PUBLIC_API_URL nas variáveis de ambiente do Vercel."
   },
   "installApp": {
     "title": "Instalar o GitHub App",

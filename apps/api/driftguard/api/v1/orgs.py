@@ -1,19 +1,57 @@
+import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from driftguard.core.config import settings
 from driftguard.core.db import get_db
+from driftguard.core.logging import log
 from driftguard.db.models import Analysis, Organization, PullRequest, Repository
+from driftguard.integrations.github import _app_jwt
+from driftguard.services.onboarding import upsert_installation
 
 router = APIRouter()
+
+GITHUB_API = "https://api.github.com"
+
+
+async def _bootstrap_installation(db: AsyncSession, installation_id: int) -> Organization | None:
+    """Webhook may not have arrived (local dev / race). Pull repos directly from GitHub App API."""
+    if not settings.github_app_id or not settings.github_app_private_key:
+        log.warning("bootstrap_skipped", reason="github_app not configured")
+        return None
+    try:
+        headers = {
+            "Authorization": f"Bearer {_app_jwt()}",
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        }
+        async with httpx.AsyncClient(timeout=10) as client:
+            r = await client.get(
+                f"{GITHUB_API}/app/installations/{installation_id}/repositories",
+                headers=headers,
+            )
+            if r.status_code != 200:
+                log.warning("bootstrap_failed", status=r.status_code, body=r.text[:200])
+                return None
+            repos = r.json().get("repositories", [])
+        log.info("bootstrap_from_github_api", installation_id=installation_id, repos=len(repos))
+        return await upsert_installation(db, installation_id=installation_id, repositories=repos)
+    except Exception as exc:
+        log.warning("bootstrap_error", error=str(exc))
+        return None
 
 
 @router.get("/by-installation/{installation_id}")
 async def get_org_by_installation(installation_id: int, db: AsyncSession = Depends(get_db)) -> dict:
     result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
     org = result.scalar_one_or_none()
+
+    if org is None:
+        org = await _bootstrap_installation(db, installation_id)
     if org is None:
         raise HTTPException(404, "org not found")
+
     return {
         "id": org.id,
         "installation_id": org.github_installation_id,
