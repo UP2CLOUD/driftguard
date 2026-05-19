@@ -40,6 +40,11 @@ export type Analysis = {
   risk_score: number | null;
   summary_md: string | null;
   findings: Finding[];
+  repo_full_name?: string | null;
+  pr_number?: number | null;
+  head_sha?: string | null;
+  started_at?: string | null;
+  finished_at?: string | null;
 };
 
 export class ApiError extends Error {
