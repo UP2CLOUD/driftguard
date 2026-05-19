@@ -60,3 +60,7 @@ gcp-key*.json
 *.db
 driftguard.db
 
+
+# codanna index (rebuilt locally)
+.codanna/index/
+.fastembed_cache/
