@@ -64,7 +64,7 @@ module "worker" {
   memory        = "2Gi"
 
   command = ["celery", "-A", "driftguard.worker.app", "worker",
-             "-Q", "analysis,notifications", "-c", "2", "--loglevel=info"]
+  "-Q", "analysis,notifications", "-c", "2", "--loglevel=info"]
 
   env_vars = {
     ENVIRONMENT = "prod"
