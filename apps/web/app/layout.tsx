@@ -19,13 +19,49 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DriftGuard — AI runtime safety & semantic memory",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://driftguard-blue.vercel.app"),
+  title: {
+    default: "DriftGuard — AI runtime safety for Terraform agents",
+    template: "%s · DriftGuard",
+  },
   description:
-    "DriftGuard sits between agent intent and execution. Remembers failures semantically. Prevents repeat errors. Production-grade governance for AI agents.",
+    "DriftGuard reviews every Terraform PR your AI agents open — cost, drift, security, compliance. Semantic memory of past incidents prevents repeat mistakes.",
+  keywords: [
+    "Terraform", "OpenTofu", "AI agents", "infrastructure as code",
+    "drift detection", "cost analysis", "Infracost", "Checkov",
+    "GitOps", "PR review", "runtime safety", "DORA", "NIS2",
+  ],
+  authors: [{ name: "UP2CLOUD", url: "https://driftguard-blue.vercel.app" }],
+  creator: "UP2CLOUD",
+  publisher: "UP2CLOUD",
+  formatDetection: { email: false, address: false, telephone: false },
   openGraph: {
-    title: "DriftGuard",
-    description: "AI runtime safety. Semantic memory. Operational guardrails.",
     type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: "DriftGuard",
+    title: "DriftGuard — AI runtime safety for Terraform agents",
+    description: "Cost · drift · security · compliance on every Terraform PR. Memory prevents repeat incidents.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DriftGuard",
+    description: "AI runtime safety for Terraform agents.",
+    creator: "@driftguard",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
   },
 };
 
