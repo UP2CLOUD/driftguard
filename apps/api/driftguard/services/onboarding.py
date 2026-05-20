@@ -10,7 +10,8 @@ async def upsert_installation(db: AsyncSession, *, installation_id: int, reposit
     result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
     org = result.scalar_one_or_none()
 
-    if org is None:
+    is_new = org is None
+    if is_new:
         org = Organization(github_installation_id=installation_id, plan="free")
         db.add(org)
         await db.flush()
@@ -43,6 +44,19 @@ async def upsert_installation(db: AsyncSession, *, installation_id: int, reposit
         org_id=org.id,
         repos=len(repositories),
     )
+
+    # Welcome email on first install (fire-and-forget)
+    if is_new and repositories:
+        org_name = repositories[0].get("full_name", "").split("/")[0] or f"installation {installation_id}"
+        try:
+            import asyncio
+
+            from driftguard.services.email import send_welcome
+
+            asyncio.create_task(send_welcome(to=f"team+{installation_id}@driftguard.io", org_name=org_name))
+        except Exception:  # noqa: S110 — email is fire-and-forget, non-critical
+            pass
+
     return org
 
 
