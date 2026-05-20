@@ -11,7 +11,13 @@ const LINKS = [
   { href: "/docs", label: "Docs" },
 ];
 
-export function MarketingNav({ isLoggedIn }: { isLoggedIn?: boolean }) {
+export function MarketingNav({
+  isLoggedIn,
+  cta,
+}: {
+  isLoggedIn?: boolean;
+  cta?: React.ReactNode;
+}) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -52,6 +58,7 @@ export function MarketingNav({ isLoggedIn }: { isLoggedIn?: boolean }) {
             ))}
           </div>
         </div>
+
         <div className="flex items-center gap-3">
           <a
             href="https://github.com/UP2CLOUD/driftguard"
@@ -59,26 +66,32 @@ export function MarketingNav({ isLoggedIn }: { isLoggedIn?: boolean }) {
             rel="noreferrer"
             className="hidden sm:inline-flex items-center gap-1.5 font-mono text-[11px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
           >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 .2a8 8 0 00-2.5 15.6c.4.1.5-.2.5-.4v-1.5c-2.2.5-2.7-1-2.7-1-.4-.9-.9-1.2-.9-1.2-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.2 1.9.9 2.4.7.1-.5.3-.9.5-1.1-1.8-.2-3.6-.9-3.6-3.9 0-.9.3-1.6.8-2.1-.1-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8.6-.2 1.3-.3 2-.3s1.4.1 2 .3c1.5-1 2.2-.8 2.2-.8.4 1.1.2 1.9.1 2.1.5.6.8 1.3.8 2.1 0 3-1.8 3.7-3.6 3.9.3.2.5.7.5 1.5v2.2c0 .2.1.5.6.4A8 8 0 008 .2z"/></svg>
-            <span className="tabular-nums">★ 1.2k</span>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 .2a8 8 0 00-2.5 15.6c.4.1.5-.2.5-.4v-1.5c-2.2.5-2.7-1-2.7-1-.4-.9-.9-1.2-.9-1.2-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.2 1.9.9 2.4.7.1-.5.3-.9.5-1.1-1.8-.2-3.6-.9-3.6-3.9 0-.9.3-1.6.8-2.1-.1-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8.6-.2 1.3-.3 2-.3s1.4.1 2 .3c1.5-1 2.2-.8 2.2-.8.4 1.1.2 1.9.1 2.1.5.6.8 1.3.8 2.1 0 3-1.8 3.7-3.6 3.9.3.2.5.7.5 1.5v2.2c0 .2.1.5.6.4A8 8 0 008 .2z" />
+            </svg>
+            <span className="tabular-nums">★</span>
           </a>
+
           {isLoggedIn ? (
-            <Link href="/dashboard" className="dg-button dg-button-ghost text-[12px] sm:text-[13px]">Dashboard →</Link>
-          ) : (
-            <Link href="/?signin=true" className="dg-button dg-button-primary text-[12px] sm:text-[13px]">
-              Get started
+            <Link href="/dashboard" className="dg-button dg-button-ghost text-[12px] sm:text-[13px]">
+              Dashboard →
             </Link>
+          ) : (
+            /* cta slot — server-rendered SignInButton passed from page.tsx */
+            cta
           )}
+
           <button
             onClick={() => setOpen(!open)}
             aria-label="Menu"
             className="md:hidden flex flex-col items-center justify-center gap-1 p-2 -mr-2"
           >
-            <span className={`h-px w-4 bg-[color:var(--dg-fg)] transition ${open ? "translate-y-[3px] rotate-45" : ""}`} />
-            <span className={`h-px w-4 bg-[color:var(--dg-fg)] transition ${open ? "-translate-y-[3px] -rotate-45" : ""}`} />
+            <span className={`h-px w-4 bg-[color:var(--dg-fg)] transition-transform duration-200 ${open ? "translate-y-[3px] rotate-45" : ""}`} />
+            <span className={`h-px w-4 bg-[color:var(--dg-fg)] transition-transform duration-200 ${open ? "-translate-y-[3px] -rotate-45" : ""}`} />
           </button>
         </div>
       </div>
+
       {open && (
         <div className="md:hidden border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]/95 backdrop-blur">
           <div className="flex flex-col px-4 py-3 text-[14px]">

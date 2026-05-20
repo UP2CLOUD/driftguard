@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { signInWithGitHub } from "@/lib/auth-actions";
 import Link from "next/link";
 
+import { SignInButton } from "@/components/SignInButton";
 import { StatusBar } from "@/components/landing/StatusBar";
 import { MarketingNav } from "@/components/landing/MarketingNav";
 import { Hero } from "@/components/landing/Hero";
@@ -21,7 +22,14 @@ export default async function Page() {
   return (
     <main className="relative min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)] overflow-x-hidden">
       <StatusBar />
-      <MarketingNav isLoggedIn={isLoggedIn} />
+      <MarketingNav
+        isLoggedIn={isLoggedIn}
+        cta={
+          <SignInButton className="dg-button dg-button-primary text-[12px] sm:text-[13px]">
+            Get started
+          </SignInButton>
+        }
+      />
 
       <Hero
         ctaPrimary={

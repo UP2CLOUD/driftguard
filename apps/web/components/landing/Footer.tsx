@@ -36,7 +36,7 @@ export function Footer() {
             { l: "Docs", h: "/docs" },
             { l: "API reference", h: "/docs/api" },
             { l: "SDK / GitHub", h: "https://github.com/UP2CLOUD/driftguard" },
-            { l: "Status", h: "https://status.driftguard.io" },
+            { l: "Status", h: "/status" },
           ]} />
           <FootCol title="Company" links={[
             { l: "Customers", h: "/customers" },

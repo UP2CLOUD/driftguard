@@ -60,7 +60,7 @@ export default function Security() {
         <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
           Status page
         </div>
-        <a href="https://status.driftguard.io" target="_blank" rel="noreferrer"
+        <a href="/status"
           className="flex items-center gap-1.5 font-mono text-[11px] text-allowed hover:underline">
           <span className="h-1.5 w-1.5 rounded-full bg-allowed dg-pulse" />
           status.driftguard.io
