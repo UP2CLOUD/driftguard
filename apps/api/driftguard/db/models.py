@@ -79,3 +79,33 @@ class AuditLog(Base):
     target: Mapped[str | None] = mapped_column(String(255))
     payload: Mapped[dict] = mapped_column(JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class IncidentEmbedding(Base):
+    """Semantic memory row — one per analysis, stores intent text + pgvector embedding."""
+    __tablename__ = "incident_embeddings"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
+    analysis_id: Mapped[str] = mapped_column(ForeignKey("analyses.id", ondelete="CASCADE"), index=True)
+    repo_full_name: Mapped[str] = mapped_column(String(255))
+    pr_number: Mapped[int | None] = mapped_column(Integer)
+    intent_text: Mapped[str] = mapped_column(Text)
+    severity: Mapped[str | None] = mapped_column(String(32))
+    resource: Mapped[str | None] = mapped_column(String(255))
+    outcome: Mapped[str | None] = mapped_column(String(32))
+    blast_radius: Mapped[str | None] = mapped_column(String(32))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    # embedding_vec is a pgvector column — managed via raw SQL / migration
+
+
+class AsyncJob(Base):
+    """Tracks Celery task lifecycle per analysis."""
+    __tablename__ = "async_jobs"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    celery_task_id: Mapped[str | None] = mapped_column(String(64), unique=True)
+    org_id: Mapped[str | None] = mapped_column(String(36))
+    analysis_id: Mapped[str | None] = mapped_column(String(36))
+    status: Mapped[str] = mapped_column(String(32), default="pending")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    error: Mapped[str | None] = mapped_column(Text)
