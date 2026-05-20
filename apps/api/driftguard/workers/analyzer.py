@@ -1,6 +1,14 @@
+"""PR analyzer — core pipeline.
+
+Flow:
+  download tarball → find tf dirs → parallel plan+scan → AI review
+  → post PR comment → persist Analysis+Findings → upload plan to R2
+  → return {analysis_id, status, findings, duration_ms, risk_score}
+"""
 import asyncio
 import json
 import time
+import uuid
 from pathlib import Path
 
 from driftguard.ai.findings import (
@@ -28,25 +36,37 @@ async def enqueue_pr_analysis(payload: dict) -> None:
 
     log.info("analysis_queued", repo=repo, pr=pr_number, sha=head_sha)
     try:
+        from driftguard.worker.app import celery_app
+        celery_app.send_task(
+            "driftguard.worker.tasks.run_analysis",
+            kwargs={
+                "installation_id": installation_id,
+                "repo_full_name": repo,
+                "pr_number": pr_number,
+                "head_sha": head_sha,
+            },
+            queue="analysis",
+        )
+    except Exception:
+        # Celery not available (dev) — run inline
+        log.warning("celery_unavailable_running_inline", repo=repo)
         await analyze_pr(
             installation_id=installation_id,
             repo_full_name=repo,
             pr_number=pr_number,
             head_sha=head_sha,
         )
-    except Exception as exc:
-        log.exception("analysis_failed", repo=repo, pr=pr_number, error=str(exc))
 
 
 async def _load_repo_settings(repo_full_name: str) -> dict:
-    """Load repo AWS settings from DB. Returns empty dict if not configured."""
     try:
         from sqlalchemy import select
 
         from driftguard.db.models import Repository
-
         async with SessionLocal() as session:
-            result = await session.execute(select(Repository).where(Repository.full_name == repo_full_name))
+            result = await session.execute(
+                select(Repository).where(Repository.full_name == repo_full_name)
+            )
             repo = result.scalar_one_or_none()
             if repo and repo.settings:
                 return repo.settings
@@ -56,67 +76,151 @@ async def _load_repo_settings(repo_full_name: str) -> dict:
 
 
 async def _get_aws_env(settings: dict) -> dict[str, str] | None:
-    """Resolve AWS credentials from repo settings via STS AssumeRole."""
     role_arn = settings.get("aws_role_arn")
     if not role_arn:
         return None
-
-    region = settings.get("aws_region", "eu-west-1")
     try:
         from driftguard.integrations.aws import assume_role
-
-        creds = await asyncio.to_thread(assume_role, role_arn, region)
-        log.info("aws_assume_role_ok", role_arn=role_arn, region=region)
-        return creds.as_env()
-    except PermissionError as exc:
-        log.warning("aws_assume_role_failed", role_arn=role_arn, error=str(exc))
+        creds = await asyncio.to_thread(assume_role, role_arn, settings.get("aws_external_id"))
+        return {
+            "AWS_ACCESS_KEY_ID": creds["AccessKeyId"],
+            "AWS_SECRET_ACCESS_KEY": creds["SecretAccessKey"],
+            "AWS_SESSION_TOKEN": creds["SessionToken"],
+        }
+    except Exception as exc:
+        log.warning("sts_assume_role_failed", role_arn=role_arn, error=str(exc))
         return None
 
 
-async def _fetch_real_state(settings: dict, aws_env: dict[str, str]) -> dict[str, set[str]] | None:
-    """Fetch terraform state from S3 and extract resources."""
+async def _fetch_real_state(settings: dict, aws_env: dict) -> set[str] | None:
     bucket = settings.get("state_bucket")
-    key = settings.get("state_key")
-    if not bucket or not key:
+    key = settings.get("state_key", "terraform.tfstate")
+    if not bucket:
         return None
-
-    region = settings.get("aws_region", "eu-west-1")
     try:
         import boto3
-
-        s3 = boto3.client(
-            "s3",
-            region_name=region,
+        region = settings.get("aws_region", "eu-west-1")
+        session = boto3.Session(
             aws_access_key_id=aws_env["AWS_ACCESS_KEY_ID"],
             aws_secret_access_key=aws_env["AWS_SECRET_ACCESS_KEY"],
             aws_session_token=aws_env.get("AWS_SESSION_TOKEN"),
+            region_name=region,
         )
-        resp = s3.get_object(Bucket=bucket, Key=key)
-        state = json.loads(resp["Body"].read())
+        s3 = session.client("s3")
+        obj = await asyncio.to_thread(s3.get_object, Bucket=bucket, Key=key)
+        state = json.loads(obj["Body"].read())
         resources = set()
         for r in state.get("resources", []):
-            rtype = r.get("type", "")
-            name = r.get("name", "")
-            if rtype and name:
-                resources.add(f"{rtype}.{name}")
-        log.info("s3_state_fetched", bucket=bucket, key=key, resources=len(resources))
+            for inst in r.get("instances", []):
+                addr = inst.get("attributes", {}).get("id") or r.get("name", "")
+                if addr:
+                    resources.add(addr)
         return resources
     except Exception as exc:
-        log.warning("s3_state_fetch_failed", bucket=bucket, key=key, error=str(exc))
+        log.warning("fetch_real_state_failed", error=str(exc))
         return None
 
 
-async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: int, head_sha: str) -> dict:
+async def _persist_analysis(
+    *,
+    installation_id: int,
+    repo_full_name: str,
+    pr_number: int,
+    head_sha: str,
+    findings: list[Finding],
+    review_md: str,
+    risk_score: int,
+    duration_ms: int,
+) -> str:
+    """Persist analysis + findings in DB. Returns analysis_id."""
+    try:
+        from sqlalchemy import select
+
+        from driftguard.db.models import (
+            Analysis,
+            PullRequest,
+            Repository,
+        )
+        from driftguard.db.models import (
+            Finding as FindingModel,
+        )
+        analysis_id = str(uuid.uuid4())
+        async with SessionLocal() as session:
+            # Resolve repo
+            repo_row = (
+                await session.execute(
+                    select(Repository).where(Repository.full_name == repo_full_name)
+                )
+            ).scalar_one_or_none()
+            if not repo_row:
+                return analysis_id
+
+            # Upsert PR
+            pr_row = (
+                await session.execute(
+                    select(PullRequest).where(
+                        PullRequest.repo_id == repo_row.id,
+                        PullRequest.github_pr_number == pr_number,
+                    )
+                )
+            ).scalar_one_or_none()
+            if not pr_row:
+                pr_row = PullRequest(
+                    id=str(uuid.uuid4()),
+                    repo_id=repo_row.id,
+                    github_pr_number=pr_number,
+                    head_sha=head_sha,
+                )
+                session.add(pr_row)
+                await session.flush()
+
+            analysis = Analysis(
+                id=analysis_id,
+                pr_id=pr_row.id,
+                status="completed",
+                risk_score=risk_score,
+                cost_delta_cents=None,
+                summary_md=review_md,
+            )
+            session.add(analysis)
+
+            for f in findings:
+                session.add(FindingModel(
+                    id=str(uuid.uuid4()),
+                    analysis_id=analysis_id,
+                    type=f.type,
+                    severity=f.severity,
+                    resource=f.resource,
+                    message=f.message,
+                    suggestion=f.suggestion,
+                ))
+
+            await session.commit()
+        log.info("analysis_persisted", analysis_id=analysis_id)
+        return analysis_id
+    except Exception as exc:
+        log.error("analysis_persist_failed", error=str(exc))
+        return str(uuid.uuid4())
+
+
+def _compute_risk(findings: list[Finding]) -> int:
+    if not findings:
+        return 0
+    weights = {"critical": 40, "high": 20, "medium": 8, "low": 2}
+    score = sum(weights.get(f.severity, 0) for f in findings)
+    return min(100, score)
+
+
+async def analyze_pr(
+    *, installation_id: int, repo_full_name: str, pr_number: int, head_sha: str
+) -> dict:
     started = time.monotonic()
     pr_ctx = {"repo": repo_full_name, "pr_number": pr_number, "head_sha": head_sha}
 
     token = await installation_token(installation_id)
-
-    # Load repo AWS config
     repo_settings = await _load_repo_settings(repo_full_name)
     aws_env = await _get_aws_env(repo_settings)
 
-    # S3 backend config for terraform init (if configured)
     backend_config: dict | None = None
     if aws_env and repo_settings.get("state_bucket"):
         backend_config = {
@@ -133,28 +237,21 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
             log.info("no_terraform", repo=repo_full_name, pr=pr_number)
             return {"status": "skipped", "reason": "no terraform files"}
 
-        # Fetch real state from S3 for drift detection
         real_state: set[str] | None = None
         if aws_env:
-            real_state = await asyncio.to_thread(
-                lambda: (
-                    asyncio.get_event_loop().run_until_complete(_fetch_real_state(repo_settings, aws_env))
-                    if False
-                    else None
-                )
-            )
             real_state = await _fetch_real_state(repo_settings, aws_env)
 
-        findings = await _analyze_all_dirs(
+        findings, plan_bytes = await _analyze_all_dirs(
             tf_dirs,
             aws_env=aws_env,
             backend_config=backend_config,
             real_state=real_state,
         )
 
+    risk_score = _compute_risk(findings)
     review_md = await ai_review(findings, pr_ctx)
-
     duration_ms = int((time.monotonic() - started) * 1000)
+
     body = format_comment(
         findings=findings,
         review_md=review_md,
@@ -164,20 +261,64 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
             "head_sha": head_sha,
             "duration_ms": duration_ms,
             "has_real_aws": bool(aws_env),
+            "risk_score": risk_score,
         },
     )
 
     await post_pr_comment(token, repo_full_name, pr_number, body)
+
+    # Persist to DB
+    analysis_id = await _persist_analysis(
+        installation_id=installation_id,
+        repo_full_name=repo_full_name,
+        pr_number=pr_number,
+        head_sha=head_sha,
+        findings=findings,
+        review_md=review_md,
+        risk_score=risk_score,
+        duration_ms=duration_ms,
+    )
+
+    # Upload plan tarball to R2 (non-blocking)
+    if plan_bytes:
+        try:
+            from driftguard.services.storage import plan_key, upload_plan
+            org_id = repo_full_name.split("/")[0]
+            key = plan_key(org_id, repo_full_name, pr_number, head_sha)
+            upload_plan(key, plan_bytes, content_type="application/gzip")
+        except Exception as exc:
+            log.warning("plan_upload_failed", error=str(exc))
+
+    # Analytics
+    try:
+        from driftguard.services.analytics import track
+        track("pr_analyzed", {
+            "repo": repo_full_name,
+            "pr": pr_number,
+            "findings": len(findings),
+            "risk_score": risk_score,
+            "duration_ms": duration_ms,
+            "has_aws": bool(aws_env),
+        })
+    except Exception as _exc:
+        log.debug("analytics_track_failed", error=str(_exc))
+
     log.info(
         "analysis_complete",
-        repo=repo_full_name,
-        pr=pr_number,
-        findings=len(findings),
-        duration_ms=duration_ms,
-        real_aws=bool(aws_env),
+        repo=repo_full_name, pr=pr_number,
+        findings=len(findings), duration_ms=duration_ms,
+        risk_score=risk_score, analysis_id=analysis_id,
     )
-    return {"status": "ok", "findings": len(findings), "duration_ms": duration_ms}
+    return {
+        "status": "ok",
+        "analysis_id": analysis_id,
+        "findings": len(findings),
+        "risk_score": risk_score,
+        "duration_ms": duration_ms,
+    }
 
+
+# ── Directory-level analysis ──────────────────────────────────────────────────
 
 _semaphore = asyncio.Semaphore(3)
 
@@ -187,19 +328,23 @@ async def _analyze_all_dirs(
     aws_env: dict[str, str] | None = None,
     backend_config: dict | None = None,
     real_state: set[str] | None = None,
-) -> list[Finding]:
-    async def _bounded(d: Path) -> list[Finding]:
+) -> tuple[list[Finding], bytes | None]:
+    async def _bounded(d: Path) -> tuple[list[Finding], bytes | None]:
         async with _semaphore:
             return await _analyze_dir(d, aws_env=aws_env, backend_config=backend_config, real_state=real_state)
 
     results = await asyncio.gather(*[_bounded(d) for d in tf_dirs], return_exceptions=True)
     findings: list[Finding] = []
+    plan_bytes: bytes | None = None
     for r in results:
         if isinstance(r, Exception):
             log.warning("dir_analysis_error", error=str(r))
         else:
-            findings.extend(r)
-    return findings
+            f, pb = r
+            findings.extend(f)
+            if pb and plan_bytes is None:
+                plan_bytes = pb
+    return findings, plan_bytes
 
 
 async def _analyze_dir(
@@ -207,17 +352,16 @@ async def _analyze_dir(
     aws_env: dict[str, str] | None = None,
     backend_config: dict | None = None,
     real_state: set[str] | None = None,
-) -> list[Finding]:
+) -> tuple[list[Finding], bytes | None]:
     plan_json = await terraform.analyze_directory(
-        tf_dir,
-        aws_env=aws_env,
-        backend_config=backend_config,
+        tf_dir, aws_env=aws_env, backend_config=backend_config,
     )
     if plan_json is None:
-        return []
+        return [], None
 
     plan_json_path = tf_dir / "plan.json"
     plan_json_path.write_text(json.dumps(plan_json))
+    plan_bytes = plan_json_path.read_bytes()
 
     findings: list[Finding] = []
     findings.extend(from_plan_changes(plan_json))
@@ -234,42 +378,24 @@ async def _analyze_dir(
     if drift_findings:
         findings.extend(drift_findings)
 
-    return findings
+    return findings, plan_bytes
 
 
-def _safe_drift(
-    tf_dir: Path,
-    plan_json: dict,
-    real_state: set[str] | None = None,
-) -> list[Finding]:
+def _safe_drift(tf_dir: Path, plan_json: dict, real_state: set[str] | None = None) -> list[Finding]:
     try:
         from driftguard.integrations.drift import DriftAnalyzer
-
-        # Prefer real S3 state, fall back to local tfstate file
-        if real_state is not None:
-            state_resources = real_state
-        else:
-            state_file = tf_dir / "terraform.tfstate"
-            state_resources = DriftAnalyzer.analyze_state_file(state_file)
-
+        state_resources = (
+            real_state
+            if real_state is not None
+            else DriftAnalyzer.analyze_state_file(tf_dir / "terraform.tfstate")
+        )
         if not state_resources:
             return []
-
-        planned_resources = set(DriftAnalyzer.from_plan_json(plan_json))
-        drift_results = DriftAnalyzer.detect_drift(
-            planned_resources=planned_resources,
-            state_resources=state_resources,
-        )
+        planned = set(DriftAnalyzer.from_plan_json(plan_json))
         return [
-            Finding(
-                type=d["type"],
-                severity=d["severity"],
-                resource=d["resource"],
-                message=d["message"],
-                suggestion=d.get("suggestion"),
-                controls=tuple(d.get("controls", [])),
-            )
-            for d in drift_results
+            Finding(type=d["type"], severity=d["severity"], resource=d["resource"],
+                    message=d["message"], suggestion=d.get("suggestion"), controls=tuple(d.get("controls", [])))
+            for d in DriftAnalyzer.detect_drift(planned_resources=planned, state_resources=state_resources)
         ]
     except Exception as exc:
         log.warning("drift_detection_failed", error=str(exc))
