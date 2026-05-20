@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { LocaleSwitcher } from "../LocaleSwitcher";
+import { getUserPreferences } from "@/lib/preferences/server";
 
-export function Footer() {
+export async function Footer() {
+  const preferences = await getUserPreferences();
   return (
     <footer className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]">
       {/* Top: ASCII signature */}
@@ -64,6 +67,8 @@ export function Footer() {
             <span>GDPR‑native</span>
           </div>
           <div className="flex items-center gap-4">
+            <LocaleSwitcher initialPreferences={preferences} compact />
+            <span className="opacity-50">●</span>
             <span>v0.1.0‑beta</span>
             <span className="opacity-50">●</span>
             <span>commit a8ebf90</span>
