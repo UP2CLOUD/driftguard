@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Geist } from "next/font/google";
 import { I18nProvider } from "@/components/I18nProvider";
+import { PostHogProvider } from "@/components/PostHogProvider";
 import { isRtlLocale } from "@/i18n/config";
 import { getLocale, getMessages } from "@/i18n/get-locale";
 import "./globals.css";
@@ -37,7 +38,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={locale} dir={dir} className={`${geist.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <body className="min-h-screen font-sans text-sm antialiased relative" suppressHydrationWarning>
         <I18nProvider locale={locale} messages={messages}>
-          {children}
+          <PostHogProvider>
+            {children}
+          </PostHogProvider>
         </I18nProvider>
       </body>
     </html>

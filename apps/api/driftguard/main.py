@@ -13,6 +13,8 @@ from driftguard.db.models import Base
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     setup_logging()
+    from driftguard.services.analytics import init_sentry
+    init_sentry()
     if settings.environment == "dev":
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
