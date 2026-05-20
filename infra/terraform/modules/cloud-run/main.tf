@@ -86,3 +86,10 @@ resource "google_cloud_run_v2_service_iam_member" "public" {
 output "url" {
   value = google_cloud_run_v2_service.this.uri
 }
+
+# Optional command override (for Celery worker vs API)
+variable "command" {
+  type        = list(string)
+  default     = []
+  description = "Override container CMD. Empty = use Dockerfile CMD."
+}

@@ -42,6 +42,15 @@ module "api" {
     GITHUB_APP_PRIVATE_KEY = "driftguard-gh-app-pk"
     GITHUB_WEBHOOK_SECRET  = "driftguard-gh-webhook-secret"
     ANTHROPIC_API_KEY      = "driftguard-anthropic-key"
+    OPENAI_API_KEY         = "driftguard-openai-key"
     INFRACOST_API_KEY      = "driftguard-infracost-key"
+    RESEND_API_KEY         = "driftguard-resend-key"
+    SENTRY_DSN             = "driftguard-sentry-dsn"
+    POSTHOG_API_KEY        = "driftguard-posthog-key"
+    S3_ENDPOINT            = "driftguard-r2-endpoint"
+    S3_ACCESS_KEY          = "driftguard-r2-access-key"
+    S3_SECRET_KEY          = "driftguard-r2-secret-key"
+    STRIPE_SECRET_KEY      = "driftguard-stripe-secret"
+    STRIPE_WEBHOOK_SECRET  = "driftguard-stripe-webhook-secret"
   }
 }
