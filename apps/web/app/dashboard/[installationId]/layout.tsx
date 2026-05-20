@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { DashboardNav } from "@/components/DashboardNav";
+import { DashboardFooter } from "@/components/DashboardFooter";
 import { redirect } from "next/navigation";
-import { Footer } from "@/components/landing/Footer";
 
 export default async function DashboardLayout({
   children,
@@ -17,9 +17,9 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)] flex flex-col">
-      <DashboardNav installationId={installationId} planLabel="free" />
+      <DashboardNav installationId={installationId} />
       <main className="flex-1">{children}</main>
-      <Footer />
+      <DashboardFooter />
     </div>
   );
 }
