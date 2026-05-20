@@ -25,7 +25,7 @@ from driftguard.core.logging import log
 from driftguard.core.workspace import workspace
 from driftguard.integrations import checkov, infracost, terraform
 from driftguard.integrations.git import download_tarball, find_terraform_dirs
-from driftguard.integrations.github import installation_token, post_pr_comment
+from driftguard.integrations.github import installation_token, post_check_run, post_pr_comment
 
 
 async def enqueue_pr_analysis(payload: dict) -> None:
@@ -268,6 +268,29 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
     )
 
     await post_pr_comment(token, repo_full_name, pr_number, body)
+
+    # GitHub Check Run — gates merge button when branch protection requires it
+    if risk_score >= 70:
+        conclusion = "failure"
+        title = f"Blocked — risk {risk_score}/100"
+    elif risk_score >= 40:
+        conclusion = "neutral"
+        title = f"Warnings — risk {risk_score}/100"
+    else:
+        conclusion = "success"
+        title = f"Approved — risk {risk_score}/100"
+
+    try:
+        await post_check_run(
+            token,
+            repo_full_name,
+            head_sha,
+            conclusion=conclusion,
+            title=title,
+            summary=f"{len(findings)} findings across cost, drift, security. See PR comment for details.",
+        )
+    except Exception as exc:  # noqa: BLE001 — check run is non-critical
+        log.warning("check_run_post_failed", error=str(exc))
 
     # Persist to DB
     analysis_id = await _persist_analysis(

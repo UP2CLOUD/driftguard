@@ -4,6 +4,7 @@ import httpx
 import jwt
 
 from driftguard.core.config import settings
+from driftguard.core.logging import log
 
 GITHUB_API = "https://api.github.com"
 
@@ -44,3 +45,53 @@ async def post_pr_comment(token: str, repo_full_name: str, pr_number: int, body:
 
 def tarball_url(repo_full_name: str, ref: str) -> str:
     return f"{GITHUB_API}/repos/{repo_full_name}/tarball/{ref}"
+
+
+async def post_check_run(
+    token: str,
+    repo_full_name: str,
+    head_sha: str,
+    *,
+    name: str = "DriftGuard",
+    conclusion: str,  # success | failure | neutral | action_required
+    title: str,
+    summary: str,
+    details_url: str | None = None,
+) -> None:
+    """Post a GitHub Check Run — appears as a status check in the PR.
+
+    With branch protection rules requiring DriftGuard to pass, this gates merging.
+    """
+    import httpx
+
+    url = f"https://api.github.com/repos/{repo_full_name}/check-runs"
+    payload = {
+        "name": name,
+        "head_sha": head_sha,
+        "status": "completed",
+        "conclusion": conclusion,
+        "output": {
+            "title": title[:200],
+            "summary": summary[:65535],
+        },
+    }
+    if details_url:
+        payload["details_url"] = details_url
+
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        resp = await client.post(
+            url,
+            json=payload,
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28",
+            },
+        )
+        if resp.status_code >= 400:
+            log.warning(
+                "check_run_failed",
+                repo=repo_full_name,
+                status=resp.status_code,
+                body=resp.text[:200],
+            )
