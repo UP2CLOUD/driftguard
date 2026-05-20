@@ -36,7 +36,16 @@ locals {
     "driftguard-gh-app-pk",
     "driftguard-gh-webhook-secret",
     "driftguard-anthropic-key",
+    "driftguard-openai-key",
     "driftguard-infracost-key",
+    "driftguard-resend-key",
+    "driftguard-sentry-dsn",
+    "driftguard-posthog-key",
+    "driftguard-r2-endpoint",
+    "driftguard-r2-access-key",
+    "driftguard-r2-secret-key",
+    "driftguard-stripe-secret",
+    "driftguard-stripe-webhook-secret",
   ]
 
   deployer_roles = [
