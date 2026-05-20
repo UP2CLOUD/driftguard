@@ -5,10 +5,8 @@ Falls back to local /tmp in dev if R2 not configured.
 """
 from __future__ import annotations
 
-import os
 import tempfile
 from pathlib import Path
-from typing import BinaryIO
 
 import boto3
 import structlog

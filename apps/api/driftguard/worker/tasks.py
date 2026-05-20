@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+
 from celery.utils.log import get_task_logger
 
 from driftguard.worker.app import celery_app
@@ -26,7 +27,7 @@ def run_analysis(
     head_sha: str,
 ) -> dict:
     try:
-        from driftguard.analyzer import analyze_pr   # fixed: was driftguard.workers.analyzer
+        from driftguard.analyzer import analyze_pr  # fixed: was driftguard.workers.analyzer
         result = asyncio.run(
             analyze_pr(
                 installation_id=installation_id,
@@ -58,7 +59,7 @@ def run_analysis(
         return result or {}
     except Exception as exc:
         log.exception("run_analysis.failed")
-        raise self.retry(exc=exc)
+        raise self.retry(exc=exc) from exc
 
 
 @celery_app.task(
@@ -75,8 +76,10 @@ def store_embedding(*, analysis_id: str) -> None:
 
 async def _store_embedding_async(analysis_id: str) -> None:
     import uuid
+
     import sqlalchemy
     from sqlalchemy import select
+
     from driftguard.core.db import SessionLocal
     from driftguard.db.models import Analysis, Finding, IncidentEmbedding, PullRequest, Repository
     from driftguard.services.embeddings import embed, intent_text, vec_to_pg
@@ -104,10 +107,10 @@ async def _store_embedding_async(analysis_id: str) -> None:
         if not repo:
             return
 
-        SEV_ORDER = ["low", "medium", "high", "critical"]
+        sev_order = ["low", "medium", "high", "critical"]
         top_sev = max(
-            (f["severity"] for f in findings_dicts if f["severity"] in SEV_ORDER),
-            key=lambda s: SEV_ORDER.index(s),
+            (f["severity"] for f in findings_dicts if f["severity"] in sev_order),
+            key=lambda s: sev_order.index(s),
             default=None,
         )
 
@@ -149,11 +152,10 @@ def send_notification(
 async def _send_notification_async(
     analysis_id: str, repo_full_name: str, pr_number: int
 ) -> None:
+
     from driftguard.core.db import SessionLocal
-    from driftguard.db.models import Analysis, Organization
+    from driftguard.db.models import Analysis, Organization, PullRequest, Repository
     from driftguard.services.email import send_review_complete
-    from sqlalchemy import select
-    from driftguard.db.models import PullRequest, Repository
 
     async with SessionLocal() as session:
         analysis = await session.get(Analysis, analysis_id)

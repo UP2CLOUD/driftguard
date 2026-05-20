@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import structlog
+
 from driftguard.core.config import settings
 
 log = structlog.get_logger(__name__)
@@ -34,5 +35,5 @@ def identify(distinct_id: str, properties: dict) -> None:
         ph = _get_client()
         if ph:
             ph.identify(distinct_id, properties)
-    except Exception:
-        pass
+    except Exception as _exc:  # noqa: BLE001
+        log.debug("analytics.identify.failed", error=str(_exc))

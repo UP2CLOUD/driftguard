@@ -57,6 +57,7 @@ ignore = ["S101", "S104", "B008"]
 "tests/*" = ["S"]
 "driftguard/integrations/*" = ["S603", "S607"]
 "driftguard/core/config.py" = ["S105"]
+"driftguard/services/email.py" = ["E501"]   # HTML strings in f-strings can't wrap
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

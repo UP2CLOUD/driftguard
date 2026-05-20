@@ -6,13 +6,12 @@ Falls back to a simple TF-IDF fingerprint for dev/test.
 from __future__ import annotations
 
 import hashlib
-import json
 import math
 import re
-import structlog
 from typing import TYPE_CHECKING
 
 import httpx
+import structlog
 
 from driftguard.core.config import settings
 
@@ -60,15 +59,15 @@ def _dev_embed(text: str) -> list[float]:
     rng = list(seed) * (EMBED_DIM // len(seed) + 1)
     vec = [(b / 127.5 - 1.0) for b in rng[:EMBED_DIM]]
     # Bias toward token hash positions
-    for i, tok in enumerate(tokens[:20]):
-        idx = int(hashlib.md5(tok.encode()).hexdigest(), 16) % EMBED_DIM
+    for _i, tok in enumerate(tokens[:20]):
+        idx = int(hashlib.md5(tok.encode(), usedforsecurity=False).hexdigest(), 16) % EMBED_DIM
         vec[idx] += 0.1
     norm = math.sqrt(sum(x * x for x in vec)) or 1.0
     return [x / norm for x in vec]
 
 
 def cosine_similarity(a: list[float], b: list[float]) -> float:
-    dot = sum(x * y for x, y in zip(a, b))
+    dot = sum(x * y for x, y in zip(a, b, strict=False))
     return dot  # already normalised
 
 

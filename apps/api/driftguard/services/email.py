@@ -6,6 +6,7 @@ Dev: prints to stdout if RESEND_API_KEY not set.
 from __future__ import annotations
 
 import structlog
+
 from driftguard.core.config import settings
 
 log = structlog.get_logger(__name__)

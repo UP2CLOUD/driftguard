@@ -12,7 +12,7 @@ Usage:
 from __future__ import annotations
 
 import structlog
-from anthropic import AsyncAnthropic, APIStatusError, APITimeoutError
+from anthropic import APIStatusError, APITimeoutError, AsyncAnthropic
 from openai import AsyncOpenAI
 
 from driftguard.core.config import settings
@@ -77,7 +77,9 @@ async def _openai_fallback(*, system: str, user: str, max_tokens: int, tag: str)
     )
     text = response.choices[0].message.content or ""
     log.info("llm.openai.ok", tag=tag, model=settings.openai_model)
-    _track_usage("openai", response.usage.prompt_tokens if response.usage else 0, response.usage.completion_tokens if response.usage else 0)
+    in_tok = response.usage.prompt_tokens if response.usage else 0
+    out_tok = response.usage.completion_tokens if response.usage else 0
+    _track_usage("openai", in_tok, out_tok)
     return text
 
 
@@ -85,5 +87,5 @@ def _track_usage(provider: str, input_tokens: int, output_tokens: int) -> None:
     try:
         from driftguard.services.analytics import track
         track("llm_usage", {"provider": provider, "input_tokens": input_tokens, "output_tokens": output_tokens})
-    except Exception:  # analytics is non-critical
-        pass
+    except Exception as _exc:  # noqa: BLE001 — analytics must never crash callers
+        log.debug("llm.track.failed", error=str(_exc))
