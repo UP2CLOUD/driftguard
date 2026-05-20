@@ -3,6 +3,7 @@
 Transactional emails: PR review complete, policy violations, billing alerts.
 Dev: prints to stdout if RESEND_API_KEY not set.
 """
+
 from __future__ import annotations
 
 import structlog
@@ -14,6 +15,7 @@ log = structlog.get_logger(__name__)
 
 def _client():
     import resend
+
     resend.api_key = settings.resend_api_key
     return resend
 
@@ -38,7 +40,7 @@ async def send_review_complete(
   <table style="width:100%;border-collapse:collapse;">
     <tr>
       <td style="padding:8px;border:1px solid #1a1e25;color:#9aa0a6;">Risk score</td>
-      <td style="padding:8px;border:1px solid #1a1e25;color:{'#ff4757' if risk_score > 70 else '#ffb020' if risk_score > 40 else '#22d38d'};font-weight:700;">{risk_score} / 100 ({risk_label})</td>
+      <td style="padding:8px;border:1px solid #1a1e25;color:{"#ff4757" if risk_score > 70 else "#ffb020" if risk_score > 40 else "#22d38d"};font-weight:700;">{risk_score} / 100 ({risk_label})</td>
     </tr>
     <tr>
       <td style="padding:8px;border:1px solid #1a1e25;color:#9aa0a6;">Findings</td>
@@ -117,13 +119,16 @@ async def _send(*, to: str, subject: str, html: str) -> None:
         return
     try:
         import resend
+
         resend.api_key = settings.resend_api_key
-        resend.Emails.send({
-            "from": settings.resend_from,
-            "to": [to],
-            "subject": subject,
-            "html": html,
-        })
+        resend.Emails.send(
+            {
+                "from": settings.resend_from,
+                "to": [to],
+                "subject": subject,
+                "html": html,
+            }
+        )
         log.info("email.sent", to=to, subject=subject)
     except Exception as exc:
         log.error("email.send.failed", to=to, error=str(exc))

@@ -1,4 +1,5 @@
 """Celery tasks — async wrappers around the analyzer pipeline."""
+
 from __future__ import annotations
 
 import asyncio
@@ -28,6 +29,7 @@ def run_analysis(
 ) -> dict:
     try:
         from driftguard.analyzer import analyze_pr  # fixed: was driftguard.workers.analyzer
+
         result = asyncio.run(
             analyze_pr(
                 installation_id=installation_id,
@@ -51,11 +53,15 @@ def run_analysis(
                 queue="notifications",
             )
         from driftguard.services.analytics import track
-        track("analysis_completed", {
-            "repo": repo_full_name,
-            "pr_number": pr_number,
-            "risk_score": (result or {}).get("risk_score"),
-        })
+
+        track(
+            "analysis_completed",
+            {
+                "repo": repo_full_name,
+                "pr_number": pr_number,
+                "risk_score": (result or {}).get("risk_score"),
+            },
+        )
         return result or {}
     except Exception as exc:
         log.exception("run_analysis.failed")
@@ -90,13 +96,10 @@ async def _store_embedding_async(analysis_id: str) -> None:
             return
 
         findings_rows = (
-            await session.execute(select(Finding).where(Finding.analysis_id == analysis_id))
-        ).scalars().all()
+            (await session.execute(select(Finding).where(Finding.analysis_id == analysis_id))).scalars().all()
+        )
 
-        findings_dicts = [
-            {"severity": f.severity, "resource": f.resource, "message": f.message}
-            for f in findings_rows
-        ]
+        findings_dicts = [{"severity": f.severity, "resource": f.resource, "message": f.message} for f in findings_rows]
         text = intent_text(findings_dicts, analysis.summary_md or "")
         vec = await embed(text)
 
@@ -127,9 +130,7 @@ async def _store_embedding_async(analysis_id: str) -> None:
         session.add(ie)
         await session.flush()
         await session.execute(
-            sqlalchemy.text(
-                "UPDATE incident_embeddings SET embedding_vec = :v WHERE id = :id"
-            ),
+            sqlalchemy.text("UPDATE incident_embeddings SET embedding_vec = :v WHERE id = :id"),
             {"v": vec_to_pg(vec), "id": ie.id},
         )
         await session.commit()
@@ -140,18 +141,14 @@ async def _store_embedding_async(analysis_id: str) -> None:
     queue="notifications",
     max_retries=2,
 )
-def send_notification(
-    *, analysis_id: str, repo_full_name: str, pr_number: int
-) -> None:
+def send_notification(*, analysis_id: str, repo_full_name: str, pr_number: int) -> None:
     try:
         asyncio.run(_send_notification_async(analysis_id, repo_full_name, pr_number))
     except Exception:
         log.warning("send_notification.failed", extra={"analysis_id": analysis_id})
 
 
-async def _send_notification_async(
-    analysis_id: str, repo_full_name: str, pr_number: int
-) -> None:
+async def _send_notification_async(analysis_id: str, repo_full_name: str, pr_number: int) -> None:
 
     from driftguard.core.db import SessionLocal
     from driftguard.db.models import Analysis, Organization, PullRequest, Repository
@@ -175,13 +172,15 @@ async def _send_notification_async(
             return
 
         findings_count = len(
-            (await session.execute(
-                __import__("sqlalchemy").select(
-                    __import__("driftguard.db.models", fromlist=["Finding"]).Finding
-                ).where(
-                    __import__("driftguard.db.models", fromlist=["Finding"]).Finding.analysis_id == analysis_id
+            (
+                await session.execute(
+                    __import__("sqlalchemy")
+                    .select(__import__("driftguard.db.models", fromlist=["Finding"]).Finding)
+                    .where(__import__("driftguard.db.models", fromlist=["Finding"]).Finding.analysis_id == analysis_id)
                 )
-            )).scalars().all()
+            )
+            .scalars()
+            .all()
         )
 
         await send_review_complete(

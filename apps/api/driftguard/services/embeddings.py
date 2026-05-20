@@ -3,6 +3,7 @@
 Uses Anthropic Voyage API for production embeddings.
 Falls back to a simple TF-IDF fingerprint for dev/test.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -80,5 +81,5 @@ def intent_text(findings: list[dict], plan_summary: str) -> str:
     """Build a short intent text from PR findings for embedding."""
     parts = [plan_summary[:400]]
     for f in findings[:5]:
-        parts.append(f"{f.get('severity','')} {f.get('resource','')} {f.get('message','')}")
+        parts.append(f"{f.get('severity', '')} {f.get('resource', '')} {f.get('message', '')}")
     return " ".join(parts)

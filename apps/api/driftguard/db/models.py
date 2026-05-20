@@ -83,6 +83,7 @@ class AuditLog(Base):
 
 class IncidentEmbedding(Base):
     """Semantic memory row — one per analysis, stores intent text + pgvector embedding."""
+
     __tablename__ = "incident_embeddings"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
     org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
@@ -100,6 +101,7 @@ class IncidentEmbedding(Base):
 
 class AsyncJob(Base):
     """Tracks Celery task lifecycle per analysis."""
+
     __tablename__ = "async_jobs"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
     celery_task_id: Mapped[str | None] = mapped_column(String(64), unique=True)

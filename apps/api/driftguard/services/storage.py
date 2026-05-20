@@ -3,6 +3,7 @@
 Plans, tarballs, and evidence packs stored in R2 (no egress fees).
 Falls back to local /tmp in dev if R2 not configured.
 """
+
 from __future__ import annotations
 
 import tempfile
@@ -43,6 +44,7 @@ def _bucket() -> str:
 
 # ── Upload ─────────────────────────────────────────────────────────────────
 
+
 def upload_plan(key: str, data: bytes, content_type: str = "application/octet-stream") -> str:
     """Upload bytes and return the object key."""
     if not settings.s3_endpoint and not settings.s3_bucket:
@@ -79,6 +81,7 @@ def evidence_key(org_id: str, analysis_id: str) -> str:
 
 
 # ── Dev fallback ───────────────────────────────────────────────────────────
+
 
 def _dev_write(key: str, data: bytes) -> str:
     path = Path(tempfile.gettempdir()) / "driftguard_dev" / key

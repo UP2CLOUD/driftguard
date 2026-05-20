@@ -9,6 +9,7 @@ Usage:
         max_tokens=2048,
     )
 """
+
 from __future__ import annotations
 
 import structlog
@@ -86,6 +87,7 @@ async def _openai_fallback(*, system: str, user: str, max_tokens: int, tag: str)
 def _track_usage(provider: str, input_tokens: int, output_tokens: int) -> None:
     try:
         from driftguard.services.analytics import track
+
         track("llm_usage", {"provider": provider, "input_tokens": input_tokens, "output_tokens": output_tokens})
     except Exception as _exc:  # noqa: BLE001 — analytics must never crash callers
         log.debug("llm.track.failed", error=str(_exc))

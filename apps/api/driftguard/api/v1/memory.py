@@ -1,4 +1,5 @@
 """Semantic memory recall endpoint."""
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
@@ -36,6 +37,7 @@ class RecallResponse(BaseModel):
 @router.post("/recall", response_model=RecallResponse)
 async def recall(body: RecallRequest, _: None = Depends(verify_api_key)):
     import time
+
     t0 = time.monotonic()
 
     vec = await embed(body.intent)

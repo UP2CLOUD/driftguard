@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     # ── LLM router ─────────────────────────────────────────────
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-sonnet-4-6"
-    openai_api_key: str = ""                        # fallback
+    openai_api_key: str = ""  # fallback
     openai_model: str = "gpt-4o-mini"
     llm_fallback_enabled: bool = True
 
@@ -25,10 +25,10 @@ class Settings(BaseSettings):
 
     # ── Redis / Upstash (Celery broker + cache) ────────────────
     redis_url: str = "redis://localhost:6379/0"
-    celery_result_backend: str = ""                 # defaults to redis_url
+    celery_result_backend: str = ""  # defaults to redis_url
 
     # ── Object storage (R2 / S3-compat) ───────────────────────
-    s3_endpoint: str = ""                           # e.g. https://<id>.r2.cloudflarestorage.com
+    s3_endpoint: str = ""  # e.g. https://<id>.r2.cloudflarestorage.com
     s3_bucket: str = "driftguard-plans"
     s3_access_key: str = ""
     s3_secret_key: str = ""

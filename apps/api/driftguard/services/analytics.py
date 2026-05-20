@@ -1,4 +1,5 @@
 """PostHog analytics — fire-and-forget, non-blocking."""
+
 from __future__ import annotations
 
 import structlog
@@ -13,6 +14,7 @@ def _get_client():
     global _client
     if _client is None and settings.posthog_api_key:
         import posthog
+
         posthog.api_key = settings.posthog_api_key
         posthog.host = settings.posthog_host
         posthog.disabled = settings.environment == "test"
