@@ -1,79 +1,129 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Careers — DriftGuard" };
+export const metadata: Metadata = {
+  title: "Careers — DriftGuard",
+  description: "Join the team building AI runtime safety for Terraform. Remote-first, EU-based.",
+};
 
 const ROLES = [
   {
-    title: "Staff Backend Engineer",
+    title: "Senior Backend Engineer — Python / FastAPI",
     type: "Full-time",
     location: "Remote (EU)",
-    team: "Platform",
-    desc: "Own the analyzer pipeline — Terraform plan parsing, Checkov integration, semantic embedding, and the PR comment engine. Stack: Python, FastAPI, GCP Cloud Run.",
+    tags: ["Python", "FastAPI", "Celery", "PostgreSQL", "AWS"],
+    desc: "Own the analyzer pipeline — from GitHub webhooks to AI triage to PR comments. You'll work across the Terraform plan parser, Checkov integration, and Claude API orchestration.",
   },
   {
-    title: "Developer Advocate",
+    title: "DevOps / Platform Engineer",
     type: "Full-time",
-    location: "Remote (EU / US-East)",
-    team: "Growth",
-    desc: "Build the community of engineers and platform teams using DriftGuard. Write technical content, speak at KubeCon / HashiConf, and own the docs developer experience.",
+    location: "Remote (EU)",
+    tags: ["GCP", "Terraform", "Kubernetes", "Cloud Run", "Observability"],
+    desc: "Own the infra stack: Cloud Run services, Terraform modules, CI/CD pipelines, and customer-facing IAM integration. Strong IaC background essential.",
   },
+  {
+    title: "Full-Stack Engineer — Next.js",
+    type: "Full-time",
+    location: "Remote (EU)",
+    tags: ["Next.js", "TypeScript", "React", "Tailwind"],
+    desc: "Build the dashboard, findings table, analysis viewer, and onboarding flows. You'll own the full user experience from GitHub App install to first PR review.",
+  },
+  {
+    title: "ML / AI Engineer",
+    type: "Part-time / Contract",
+    location: "Remote",
+    tags: ["LLMs", "RAG", "pgvector", "Prompt Engineering", "Evals"],
+    desc: "Improve the semantic memory system: embedding quality, recall accuracy, eval harness. Work directly with the Claude API and Voyage embeddings.",
+  },
+] as const;
+
+const VALUES = [
+  { v: "Remote-first", desc: "EU timezone preferred. No offices, no commutes." },
+  { v: "High ownership", desc: "Small team. You own your surface end-to-end." },
+  { v: "Ship fast", desc: "We iterate weekly. Strong opinions about scope." },
+  { v: "Open-core", desc: "Core analyzer is open source. You build in public." },
 ];
 
 export default function Careers() {
   return (
     <MarketingPageShell
-      eyebrow="Careers"
-      title="Build the safety layer for AI-generated infrastructure."
-      subtitle="We're a small, early team. Every hire shapes the product and the culture."
+      eyebrow="Company"
+      title="Work on DriftGuard"
+      subtitle="We're building AI runtime safety for infrastructure. Remote-first, small team, high ownership."
       narrow
     >
-      {/* Values */}
-      <section className="mb-12">
-        <div className="dg-label mb-4">How we work</div>
-        <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] sm:grid-cols-3">
-          {[
-            { h: "Remote-first", b: "Async by default. We hire across EU and occasionally US-East timezones. No RTO, ever." },
-            { h: "Small team", b: "Every person has outsized ownership. We ship fast, learn in production, and iterate openly." },
-            { h: "Technical depth", b: "We solve hard problems — embeddings, policy engines, semantic diff at scale. We go deep." },
-          ].map((v) => (
-            <div key={v.h} className="bg-[color:var(--dg-canvas)] p-6">
-              <div className="text-[14px] font-semibold text-[color:var(--dg-fg)] mb-2">{v.h}</div>
-              <div className="text-[12px] leading-relaxed text-[color:var(--dg-fg-muted)]">{v.b}</div>
+      <div className="space-y-14">
+        {/* Values */}
+        <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] grid-cols-2 sm:grid-cols-4">
+          {VALUES.map(({ v, desc }) => (
+            <div key={v} className="bg-[color:var(--dg-canvas)] px-5 py-5">
+              <div className="dg-label mb-2">{v}</div>
+              <p className="text-[12px] text-[color:var(--dg-fg-muted)]">{desc}</p>
             </div>
           ))}
         </div>
-      </section>
 
-      {/* Open roles */}
-      <section className="mb-12">
-        <div className="dg-label mb-4">Open roles</div>
-        <div className="space-y-3">
-          {ROLES.map((r) => (
-            <div key={r.title} className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-5">
-              <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
-                <div>
-                  <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)]">{r.title}</h2>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{r.team}</span>
-                    <span className="text-[color:var(--dg-fg-subtle)]">·</span>
-                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{r.location}</span>
-                    <span className="text-[color:var(--dg-fg-subtle)]">·</span>
-                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{r.type}</span>
+        {/* Open roles */}
+        <section>
+          <div className="dg-label mb-5">Open roles</div>
+          <div className="space-y-4">
+            {ROLES.map((role) => (
+              <div
+                key={role.title}
+                className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden"
+              >
+                <div className="flex items-start justify-between gap-4 flex-wrap px-5 py-4 border-b border-[color:var(--dg-border)]">
+                  <div>
+                    <h2 className="font-sans text-[14px] font-semibold text-[color:var(--dg-fg)]">
+                      {role.title}
+                    </h2>
+                    <div className="flex items-center gap-3 mt-1.5">
+                      <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                        {role.type}
+                      </span>
+                      <span className="opacity-40">·</span>
+                      <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                        {role.location}
+                      </span>
+                    </div>
+                  </div>
+                  <a
+                    href={`mailto:jobs@driftguard.io?subject=${encodeURIComponent(role.title)}`}
+                    className="dg-button dg-button-ghost text-[12px] shrink-0"
+                  >
+                    Apply →
+                  </a>
+                </div>
+                <div className="px-5 py-4">
+                  <p className="text-[12px] text-[color:var(--dg-fg-muted)] mb-3">{role.desc}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {role.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-2 py-0.5 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 </div>
-                <a href={`mailto:careers@driftguard.io?subject=${encodeURIComponent(r.title)}`}
-                  className="dg-button dg-button-primary text-[11px] shrink-0">Apply →</a>
               </div>
-              <p className="text-[12px] leading-relaxed text-[color:var(--dg-fg-muted)]">{r.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
 
-      <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5 flex items-center justify-between gap-4">
-        <p className="text-[13px] text-[color:var(--dg-fg-muted)]">Don&apos;t see a fit? We still want to hear from you.</p>
-        <a href="mailto:careers@driftguard.io" className="dg-button dg-button-ghost text-[12px]">Send a note</a>
+        {/* No match CTA */}
+        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <div className="dg-label mb-1">Don&apos;t see your role?</div>
+            <p className="text-[12px] text-[color:var(--dg-fg-muted)]">
+              We hire on skills, not titles. Send your background and what you want to build.
+            </p>
+          </div>
+          <a href="mailto:jobs@driftguard.io" className="dg-button dg-button-primary text-[12px] shrink-0">
+            Get in touch →
+          </a>
+        </div>
       </div>
     </MarketingPageShell>
   );
