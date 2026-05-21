@@ -6,6 +6,8 @@ export type Org = {
   installation_id: number;
   plan: string;
   has_stripe_customer: boolean;
+  aws_role_arn?: string | null;
+  aws_external_id?: string | null;
 };
 
 export type Repo = {

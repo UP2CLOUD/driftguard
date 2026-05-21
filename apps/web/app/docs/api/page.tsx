@@ -4,16 +4,21 @@ import type { Metadata } from "next";
 export const metadata: Metadata = { title: "API Reference — DriftGuard" };
 
 const ENDPOINTS = [
-  { method: "GET",    path: "/api/v1/health",                    desc: "Health check. Returns 200 + version." },
-  { method: "POST",   path: "/api/v1/webhooks/github",           desc: "GitHub App webhook receiver. HMAC-verified." },
-  { method: "GET",    path: "/api/v1/orgs/{installation_id}",    desc: "Get org by GitHub installation ID." },
-  { method: "GET",    path: "/api/v1/orgs/{org_id}/repos",       desc: "List repos for an org." },
-  { method: "GET",    path: "/api/v1/analyses/{id}",             desc: "Get single analysis with findings." },
-  { method: "GET",    path: "/api/v1/orgs/{org_id}/analyses",    desc: "List analyses for an org (paginated)." },
-  { method: "POST",   path: "/api/v1/memory/recall",             desc: "Semantic recall against the org's memory index." },
-  { method: "GET",    path: "/api/v1/billing/plans",             desc: "List available plans." },
-  { method: "POST",   path: "/api/v1/billing/checkout",          desc: "Create Stripe checkout session." },
-  { method: "POST",   path: "/api/v1/billing/portal",            desc: "Create Stripe customer portal session." },
+  { method: "GET",    path: "/api/v1/health",                      desc: "Liveness probe. Returns status + uptime + version." },
+  { method: "GET",    path: "/api/v1/ready",                       desc: "Readiness probe. Checks DB + Redis. Returns 503 if degraded." },
+  { method: "GET",    path: "/api/v1/metrics",                     desc: "Lightweight metrics: uptime, gc counts, pid." },
+  { method: "POST",   path: "/api/v1/webhooks/github",             desc: "GitHub App webhook receiver. HMAC-SHA256 verified." },
+  { method: "GET",    path: "/api/v1/orgs/by-installation/{id}",   desc: "Get org by GitHub installation ID." },
+  { method: "GET",    path: "/api/v1/orgs/{org_id}/repos",         desc: "List repos for an org." },
+  { method: "GET",    path: "/api/v1/orgs/{org_id}/analyses",      desc: "List analyses for an org. Query: limit (default 20)." },
+  { method: "PATCH",  path: "/api/v1/orgs/{org_id}/aws",           desc: "Save AWS IAM role ARN + state bucket for drift detection." },
+  { method: "GET",    path: "/api/v1/analyses",                    desc: "List analyses. Query: repo_id, limit." },
+  { method: "GET",    path: "/api/v1/analyses/{id}",               desc: "Get single analysis with findings + AI summary." },
+  { method: "POST",   path: "/api/v1/memory/recall",               desc: "Semantic recall: top-k similar past incidents by cosine sim." },
+  { method: "GET",    path: "/api/v1/repos",                       desc: "List all repositories across the installation." },
+  { method: "POST",   path: "/api/v1/billing/checkout",            desc: "Create Stripe checkout session. Returns {url}." },
+  { method: "POST",   path: "/api/v1/billing/portal",              desc: "Create Stripe customer portal session. Returns {url}." },
+  { method: "GET",    path: "/api/v1/aws/verify",                  desc: "Test STS AssumeRole with configured credentials." },
 ];
 
 const METHOD_STYLE: Record<string, string> = {

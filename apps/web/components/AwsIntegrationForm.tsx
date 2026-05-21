@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Org } from "@/lib/api";
 
+
 const IAM_TEMPLATE_URL =
   "https://console.aws.amazon.com/cloudformation/home#/stacks/create/review" +
   "?templateURL=https://driftguard-public.s3.eu-west-1.amazonaws.com/iam-role.json" +
@@ -13,7 +14,7 @@ export function AwsIntegrationForm({
   org,
 }: {
   installationId: string;
-  org: { id: string; aws_role_arn?: string; aws_external_id?: string } | null;
+  org: Org | null;
 }) {
   const externalId = org?.aws_external_id ?? `driftguard-${installationId}`;
   const [roleArn, setRoleArn] = useState(org?.aws_role_arn ?? "");
