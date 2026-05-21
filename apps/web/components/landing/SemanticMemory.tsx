@@ -51,9 +51,9 @@ export function SemanticMemory() {
     <section id="memory" ref={ref} className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-16 sm:py-24">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
-          eyebrow="Semantic memory"
-          title="Every failure becomes context for the next PR."
-          subtitle="DriftGuard converts each blocked deploy, drift event, and compliance violation into a 384-dimensional embedding. Open a similar PR six months later — the original incident shows up in the comment with a similarity score."
+          eyebrow="Operational memory"
+          title="Your agents learn from production. Permanently."
+          subtitle="Every incident — blocked deploy, drift event, policy violation — becomes a 384-d vector. When an AI agent submits a similar pattern weeks later, DriftGuard surfaces the original incident with a similarity score before the merge button is available."
         />
 
         <div className="mt-16 grid gap-8 lg:grid-cols-2 lg:gap-12">

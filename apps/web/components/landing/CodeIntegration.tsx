@@ -27,23 +27,24 @@ cost:
   threshold_monthly_usd: 500
   block_above: 5000`,
 
-  cli: `# install
-brew install driftguard/tap/driftguard
-# or: npm install -g @driftguard/cli
+  cli: `# Add to .github/workflows/terraform.yml
+# DriftGuard posts results as GitHub Check Runs automatically.
+# No workflow changes needed — install the app and it just works.
 
-# scan a PR locally before pushing
-$ driftguard review --pr 142
+# Optional: fail CI explicitly on DriftGuard block
+name: Terraform
+on: [pull_request]
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform init && terraform plan
 
-▸ analyzing 3 changed terraform dirs...
-▸ semantic recall: 2 similar past incidents found
-▸ cost delta: +$245/mo  ▸ drift: 0  ▸ security: 1 high
-
-  HIGH    aws_rds_cluster.prod  ▸ storage_encrypted = false
-  CITED   evt_8x2m (2026-04-22, sim 0.94) — same misconfig
-
-✗ Policy: BLOCK
-  recommend: storage_encrypted = true
-  exit: 1`,
+# DriftGuard reads the plan output via the PR event webhook.
+# The GitHub Check Run blocks merge when risk_score >= 70.
+# Configure thresholds in .github/driftguard.yml per repo.`,
 
   rest: `# Query past incidents semantically
 POST https://api.driftguard.io/v1/memory/recall

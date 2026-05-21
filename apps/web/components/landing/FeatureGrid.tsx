@@ -53,9 +53,9 @@ export function FeatureGrid() {
     <section id="product" className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-16 sm:py-24">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
-          eyebrow="Capabilities"
-          title="A review layer that scales with your team."
-          subtitle="Six capabilities turn every Terraform PR into an audit-ready, AI-augmented review — without slowing down the developers (or the agents)."
+          eyebrow="Full-stack governance"
+          title="Six layers. One review. Zero config overhead."
+          subtitle="Cost intelligence, live drift detection, security scanning, compliance evidence, semantic memory, and AI-native analysis — all triggered by a PR, all without changing your Terraform workflow."
         />
 
         <div className="mt-16 grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] md:grid-cols-2 lg:grid-cols-3">
