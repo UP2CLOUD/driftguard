@@ -3,108 +3,111 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Changelog — DriftGuard" };
 
-const ENTRIES = [
+const RELEASES = [
   {
-    version: "v0.1.4",
-    date: "2026-05-19",
-    tag: "improvement",
-    title: "Semantic memory recall in PR comments",
-    body: "When DriftGuard finds a past incident with similarity ≥ 0.85, it now links directly to the original PR in the GitHub comment. Shows similarity score, blast radius, and date of the prior failure.",
+    version: "v0.1.0-beta",
+    date: "2026-05-21",
+    tag: "Beta",
     items: [
-      "Cited incidents sorted by similarity desc",
-      "Direct GitHub PR deep-link in comment",
-      "Similarity score displayed as badge (0.00–1.00)",
+      { type: "new", text: "GitHub App — PR reviews on every Terraform/OpenTofu push" },
+      { type: "new", text: "Semantic memory — pgvector recall of similar past incidents with cosine similarity" },
+      { type: "new", text: "Infracost integration — monthly cost delta per resource on every PR" },
+      { type: "new", text: "Checkov security scanning — 255 rules mapped to DORA/NIS2/ISO 27001/CIS" },
+      { type: "new", text: "AI review — Claude claude-sonnet-4-6 summarises intent, blast radius, fixes" },
+      { type: "new", text: "GitHub Check Runs — merge blocked when risk score ≥ 70" },
+      { type: "new", text: "AWS STS integration — real state vs plan drift detection via AssumeRole" },
+      { type: "new", text: "Stripe billing — Free / Team / Enterprise plans with usage-based limits" },
+      { type: "new", text: "Dashboard — repo list, analysis history, findings table with expandable fixes" },
+      { type: "new", text: "i18n — 6 locales: English, Português, Español, 中文, हिन्दी, العربية" },
+      { type: "new", text: "Rate limiting — token bucket per IP, readiness probe, metrics endpoint" },
     ],
   },
   {
-    version: "v0.1.3",
-    date: "2026-05-12",
-    tag: "fix",
-    title: "Cost delta format for EUR/GBP/BRL",
-    body: "Currency formatting now respects the workspace locale preference. Previously all deltas were displayed in USD regardless of preference setting.",
+    version: "v0.0.3",
+    date: "2026-04-30",
+    tag: "Alpha",
     items: [
-      "formatCostDeltaCents now locale-aware",
-      "Preference persisted per org, not per session",
+      { type: "new", text: "Multi-framework compliance mapping (DORA, NIS2, ISO 27001, GDPR, CIS)" },
+      { type: "new", text: "Celery + Redis worker queue for async analysis pipeline" },
+      { type: "new", text: "Cloudflare R2 plan artifact storage with AES-256 encryption" },
+      { type: "new", text: "Resend transactional email (welcome, review complete, policy violation)" },
+      { type: "new", text: "PostHog analytics + Sentry error tracking integration" },
+      { type: "fix", text: "LLM fallback router — OpenAI on Claude 529/timeout" },
     ],
   },
   {
-    version: "v0.1.2",
-    date: "2026-05-05",
-    tag: "new",
-    title: "AWS STS integration",
-    body: "Platform teams can now grant DriftGuard read-only access to their AWS account via STS AssumeRole. DriftGuard fetches live state from S3 backends to power drift detection — no credentials stored.",
+    version: "v0.0.2",
+    date: "2026-04-10",
+    tag: "Alpha",
     items: [
-      "Terraform customer-iam module for role provisioning",
-      "External ID condition on AssumeRole",
-      "S3 state backend read for drift diff",
-      "Works with Atlantis and Spacelift self-hosted state",
+      { type: "new", text: "Drift detection engine — compares plan resources to tfstate" },
+      { type: "new", text: "Policy engine — block/warn pattern matching in driftguard.yml" },
+      { type: "new", text: "PR comment formatter with severity heat-map and recall citations" },
+      { type: "fix", text: "Parallel Terraform directory analysis (semaphore 3)" },
+      { type: "fix", text: "GitHub App JWT rotation on expiry" },
     ],
   },
   {
-    version: "v0.1.1",
-    date: "2026-04-28",
-    tag: "improvement",
-    title: "GitHub App install flow",
-    body: "Setup URL now redirects directly to /dashboard/{installationId} after GitHub App installation, removing the intermediate 'Install the GitHub App' screen.",
+    version: "v0.0.1",
+    date: "2026-03-15",
+    tag: "Alpha",
     items: [
-      "api/github/setup route captures installation_id",
-      "Redirect on update enabled for re-installs",
-      "No longer requires OAuth token to list installations",
+      { type: "new", text: "Initial FastAPI backend with GitHub webhook receiver" },
+      { type: "new", text: "Basic Terraform plan parsing and Checkov integration" },
+      { type: "new", text: "Next.js 15 dashboard skeleton with NextAuth v5" },
+      { type: "new", text: "GCP Cloud Run + Terraform bootstrap infra" },
     ],
   },
-  {
-    version: "v0.1.0",
-    date: "2026-04-14",
-    tag: "launch",
-    title: "Initial beta",
-    body: "First beta release. Terraform and OpenTofu PR review via GitHub App. Cost analysis (Infracost), security scanning (Checkov), drift detection, semantic memory, DORA/NIS2/ISO 27001 compliance evidence.",
-    items: [
-      "GitHub App with PR comment",
-      "14 API routes (FastAPI)",
-      "48 unit tests, 10 eval cases",
-      "Multi-tenant with per-org memory isolation",
-    ],
-  },
-];
+] as const;
 
-const TAG_STYLES: Record<string, string> = {
+const TYPE_STYLE = {
   new: "text-allowed border-allowed/30 bg-allowed/10",
-  improvement: "text-[color:var(--dg-electric-bright)] border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/10",
-  fix: "text-warned border-warned/30 bg-warned/10",
-  launch: "text-[#a78bfa] border-[#7c3aed]/30 bg-[#7c3aed]/10",
-};
+  fix: "text-[color:var(--dg-electric-bright)] border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/10",
+  breaking: "text-blocked border-blocked/30 bg-blocked/10",
+} as const;
 
 export default function Changelog() {
   return (
-    <MarketingPageShell
-      eyebrow="Changelog"
-      title="What's new in DriftGuard"
-      subtitle="Release notes for every version. Subscribe to GitHub releases for notifications."
-      narrow
-    >
-      <div className="relative">
-        <div className="absolute left-0 top-0 bottom-0 w-px bg-[color:var(--dg-border)]" />
-        <div className="space-y-12">
-          {ENTRIES.map((e) => (
-            <div key={e.version} className="relative pl-8">
-              <span className="absolute left-[-5px] top-1.5 h-2.5 w-2.5 rounded-full border border-[color:var(--dg-electric)] bg-[color:var(--dg-canvas)]" />
-              <div className="flex flex-wrap items-center gap-3 mb-3">
-                <span className="font-mono text-[13px] font-semibold text-[color:var(--dg-fg)]">{e.version}</span>
-                <span className={`inline-flex items-center rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${TAG_STYLES[e.tag] || ""}`}>{e.tag}</span>
-                <span className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] tabular-nums">{e.date}</span>
+    <MarketingPageShell eyebrow="Product" title="Changelog" subtitle="Every release, annotated." narrow>
+      <div className="space-y-14">
+        {RELEASES.map((r) => (
+          <div key={r.version}>
+            <div className="flex items-center gap-4 mb-5">
+              <div>
+                <div className="flex items-center gap-2.5">
+                  <h2 className="font-sans text-[18px] font-semibold tracking-tight text-[color:var(--dg-fg)]">
+                    {r.version}
+                  </h2>
+                  <span className="rounded border border-[color:var(--dg-border)] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                    {r.tag}
+                  </span>
+                </div>
+                <div className="mt-0.5 font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">{r.date}</div>
               </div>
-              <h2 className="text-[17px] font-semibold tracking-tight text-[color:var(--dg-fg)] mb-2">{e.title}</h2>
-              <p className="text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)] mb-4">{e.body}</p>
-              <ul className="space-y-1.5">
-                {e.items.map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-[12px] text-[color:var(--dg-fg-muted)]">
-                    <span className="mt-1.5 h-1 w-1 rounded-full bg-[color:var(--dg-electric)] shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
             </div>
-          ))}
+            <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
+              {r.items.map((item, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-3 border-b border-[color:var(--dg-border)] last:border-b-0 bg-[color:var(--dg-surface)] px-4 py-3"
+                >
+                  <span className={`mt-0.5 shrink-0 rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${TYPE_STYLE[item.type]}`}>
+                    {item.type}
+                  </span>
+                  <span className="text-[12px] text-[color:var(--dg-fg-muted)]">{item.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-6 text-center">
+          <p className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">
+            Subscribe to release notes →{" "}
+            <a href="mailto:updates@driftguard.io" className="text-[color:var(--dg-electric-bright)] hover:underline">
+              updates@driftguard.io
+            </a>
+          </p>
         </div>
       </div>
     </MarketingPageShell>

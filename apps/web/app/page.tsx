@@ -7,6 +7,7 @@ import { StatusBar } from "@/components/landing/StatusBar";
 import { MarketingNav } from "@/components/landing/MarketingNav";
 import { Hero } from "@/components/landing/Hero";
 import { TrustBar } from "@/components/landing/TrustBar";
+import { DriftPreview } from "@/components/landing/DriftPreview";
 import { FeatureGrid } from "@/components/landing/FeatureGrid";
 import { Architecture } from "@/components/landing/Architecture";
 import { SemanticMemory } from "@/components/landing/SemanticMemory";
@@ -57,6 +58,7 @@ export default async function Page() {
       />
 
       <TrustBar />
+      <DriftPreview />
       <FeatureGrid />
       <Architecture />
       <SemanticMemory />
