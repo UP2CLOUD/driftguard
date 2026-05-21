@@ -150,3 +150,38 @@ async def update_aws_settings(
     await db.commit()
 
     return {"status": "ok", "aws_role_arn": body.aws_role_arn}
+
+
+@router.get("/{org_id}/audit-log")
+async def list_audit_log(
+    org_id: str,
+    limit: int = 50,
+    db: AsyncSession = Depends(get_db),
+) -> list[dict]:
+    """Return the last N audit records for an org. Used for DORA/NIS2 evidence export."""
+    from sqlalchemy import text
+
+    rows = (
+        await db.execute(
+            text("""
+                SELECT id, actor, action, target, payload, created_at
+                FROM audit_log
+                WHERE org_id = :org_id
+                ORDER BY created_at DESC
+                LIMIT :limit
+            """),
+            {"org_id": org_id, "limit": min(limit, 500)},
+        )
+    ).fetchall()
+
+    return [
+        {
+            "id": r.id,
+            "actor": r.actor,
+            "action": r.action,
+            "target": r.target,
+            "payload": r.payload,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+        }
+        for r in rows
+    ]

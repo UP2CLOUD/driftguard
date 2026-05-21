@@ -304,6 +304,29 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         duration_ms=duration_ms,
     )
 
+    # Audit log — DORA/NIS2 evidence
+    try:
+        from driftguard.core.db import SessionLocal
+        from driftguard.services.audit import record as _audit
+
+        async with SessionLocal() as _db:
+            await _audit(
+                _db,
+                org_id=repo_full_name.split("/")[0],
+                action="analysis.completed" if risk_score < 70 else "policy.blocked",
+                actor="driftguard-bot",
+                target=f"{repo_full_name}#PR-{pr_number}",
+                payload={
+                    "analysis_id": analysis_id,
+                    "risk_score": risk_score,
+                    "findings": len(findings),
+                    "head_sha": head_sha,
+                },
+            )
+            await _db.commit()
+    except Exception as _exc:  # noqa: BLE001
+        log.warning("audit_write_failed", error=str(_exc))
+
     # Upload plan tarball to R2 (non-blocking)
     if plan_bytes:
         try:
