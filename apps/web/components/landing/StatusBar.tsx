@@ -25,7 +25,7 @@ export function StatusBar() {
           <span className="hidden md:inline opacity-50">●</span>
           <span className="hidden md:inline">EU‑WEST‑1 / EU‑CENTRAL‑1</span>
           <span className="hidden md:inline opacity-50">●</span>
-          <span className="hidden md:inline">p99 1.2s</span>
+          <span className="hidden md:inline">p99 &lt;2s</span>
         </div>
         <div className="flex items-center gap-4">
           <span className="hidden sm:inline tabular-nums">{now || "————————"}</span>

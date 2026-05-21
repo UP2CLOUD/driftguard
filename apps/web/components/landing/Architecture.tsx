@@ -22,8 +22,8 @@ export function Architecture() {
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
           eyebrow="Architecture"
-          title="One review layer for every Terraform PR."
-          subtitle="DriftGuard installs as a GitHub App. Every PR — written by your engineers or by Cursor / Devin / Claude Code — passes through a semantic memory lookup and a policy gate before merge."
+          title="Infrastructure, not middleware."
+          subtitle="DriftGuard is a GitHub App — no sidecar, no agent, no cloud access beyond read-only STS. The review pipeline runs on our infrastructure. Your Terraform never moves."
         />
 
         <div className="mt-16 grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
