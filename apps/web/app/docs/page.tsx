@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { auth } from "@/auth";
+import { SignInButton } from "@/components/SignInButton";
 import { StatusBar } from "@/components/landing/StatusBar";
 import { MarketingNav } from "@/components/landing/MarketingNav";
 import { Footer } from "@/components/landing/Footer";
@@ -81,7 +82,16 @@ export default async function DocsPage() {
   return (
     <main className="relative min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
       <StatusBar />
-      <MarketingNav isLoggedIn={!!session} />
+      <MarketingNav
+        isLoggedIn={!!session}
+        cta={
+          !session ? (
+            <SignInButton className="dg-button dg-button-primary text-[12px] sm:text-[13px]">
+              Get started
+            </SignInButton>
+          ) : undefined
+        }
+      />
 
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-12 sm:py-16">
         <div className="max-w-3xl">
