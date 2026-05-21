@@ -4,6 +4,9 @@ from pydantic import BaseModel
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from driftguard.api.deps import require_internal_auth
 from driftguard.core.config import settings
 from driftguard.core.db import get_db
 from driftguard.core.logging import log
@@ -44,7 +47,11 @@ async def _bootstrap_installation(db: AsyncSession, installation_id: int) -> Org
 
 
 @router.get("/by-installation/{installation_id}")
-async def get_org_by_installation(installation_id: int, db: AsyncSession = Depends(get_db)) -> dict:
+async def get_org_by_installation(
+    installation_id: int,
+    db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
+) -> dict:
     result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
     org = result.scalar_one_or_none()
 
@@ -64,7 +71,11 @@ async def get_org_by_installation(installation_id: int, db: AsyncSession = Depen
 
 
 @router.get("/{org_id}/repos")
-async def list_org_repos(org_id: str, db: AsyncSession = Depends(get_db)) -> list[dict]:
+async def list_org_repos(
+    org_id: str,
+    db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
+) -> list[dict]:
     result = await db.execute(select(Repository).where(Repository.org_id == org_id).order_by(Repository.full_name))
     return [
         {
@@ -78,7 +89,12 @@ async def list_org_repos(org_id: str, db: AsyncSession = Depends(get_db)) -> lis
 
 
 @router.get("/{org_id}/analyses")
-async def list_org_analyses(org_id: str, limit: int = 20, db: AsyncSession = Depends(get_db)) -> list[dict]:
+async def list_org_analyses(
+    org_id: str,
+    limit: int = 20,
+    db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
+) -> list[dict]:
     stmt = (
         select(Analysis, PullRequest, Repository)
         .join(PullRequest, Analysis.pr_id == PullRequest.id)
@@ -113,6 +129,7 @@ async def update_aws_settings(
     org_id: str,
     body: AwsSettingsUpdate,
     db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
 ) -> dict:
     org = await db.get(Organization, org_id)
     if not org:

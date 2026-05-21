@@ -25,6 +25,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: "Developer Bypass",
           email: "developer@driftguard.dev",
           image: "https://github.com/github.png",
+          accessToken: "mock_github_token",
         };
       },
     }),

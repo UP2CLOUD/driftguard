@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { DashboardNav } from "@/components/DashboardNav";
 import { DashboardFooter } from "@/components/DashboardFooter";
 import { redirect } from "next/navigation";
+import { checkInstallationAccess } from "@/lib/auth-utils";
 
 export default async function DashboardLayout({
   children,
@@ -14,6 +15,9 @@ export default async function DashboardLayout({
   if (!session) redirect("/");
 
   const { installationId } = await params;
+
+  const { authorized } = await checkInstallationAccess(installationId);
+  if (!authorized) redirect("/");
 
   return (
     <div className="min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)] flex flex-col">

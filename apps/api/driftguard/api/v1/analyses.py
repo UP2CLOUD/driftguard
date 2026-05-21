@@ -2,6 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from driftguard.api.deps import require_internal_auth
 from driftguard.core.db import get_db
 from driftguard.db.models import Analysis, Finding, PullRequest, Repository
 
@@ -13,6 +16,7 @@ async def list_analyses(
     repo_id: str | None = None,
     limit: int = 20,
     db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
     stmt = (
         select(Analysis, PullRequest, Repository)
@@ -40,7 +44,11 @@ async def list_analyses(
 
 
 @router.get("/{analysis_id}")
-async def get_analysis(analysis_id: str, db: AsyncSession = Depends(get_db)) -> dict:
+async def get_analysis(
+    analysis_id: str,
+    db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
+) -> dict:
     a = await db.get(Analysis, analysis_id)
     if not a:
         raise HTTPException(404)

@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from stripe import StripeError
 
+from driftguard.api.deps import require_internal_auth
 from driftguard.core.db import get_db
 from driftguard.db.models import Organization
 from driftguard.services.billing import (
@@ -24,7 +25,11 @@ class CheckoutRequest(BaseModel):
 
 
 @router.post("/checkout")
-async def checkout(req: CheckoutRequest, db: AsyncSession = Depends(get_db)) -> dict:
+async def checkout(
+    req: CheckoutRequest,
+    db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
+) -> dict:
     require_stripe_configured()
     org = await db.get(Organization, req.org_id)
     if org is None:
@@ -49,7 +54,11 @@ class PortalRequest(BaseModel):
 
 
 @router.post("/portal")
-async def portal(req: PortalRequest, db: AsyncSession = Depends(get_db)) -> dict:
+async def portal(
+    req: PortalRequest,
+    db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
+) -> dict:
     require_stripe_configured()
     org = await db.get(Organization, req.org_id)
     if org is None:

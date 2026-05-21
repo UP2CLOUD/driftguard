@@ -7,10 +7,13 @@ export const authConfig = {
     signIn: "/",
   },
   callbacks: {
-    async jwt({ token, account, profile }) {
+    async jwt({ token, account, profile, user }) {
       if (account) {
         token.accessToken = account.access_token;
         token.id = profile?.id?.toString() || account.providerAccountId;
+      }
+      if (user && "accessToken" in user) {
+        token.accessToken = user.accessToken;
       }
       return token;
     },
