@@ -2,9 +2,9 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
-import { checkInstallationAccess } from "@/lib/auth-utils";
 import { signOutToHome } from "@/lib/auth-actions";
 import { getGitHubAppInstallUrl } from "@/lib/github-app";
+import { getInstallations } from "@/lib/installations";
 import { DashboardFooter } from "@/components/DashboardFooter";
 import { getUserPreferences } from "@/lib/preferences/server";
 import Link from "next/link";
@@ -17,7 +17,7 @@ export default async function DashboardRoot() {
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
 
-  const { installations } = await checkInstallationAccess("dummy");
+  const installations = await getInstallations(session);
   if (installations.length === 1) redirect(`/dashboard/${installations[0].id}`);
 
   const installUrl = getGitHubAppInstallUrl();

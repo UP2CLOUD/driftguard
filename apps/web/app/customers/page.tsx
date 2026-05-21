@@ -3,119 +3,103 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Customers — DriftGuard",
-  description: "How platform and infrastructure teams use DriftGuard to ship safer Terraform.",
+  description: "Platform engineering teams using DriftGuard to ship safer Terraform.",
 };
 
 const QUOTES = [
   {
-    quote: "Our agents were opening Terraform PRs that would silently delete production RDS clusters. DriftGuard blocks those before merge with a risk score and a PR comment explaining exactly why.",
+    quote: "Before DriftGuard, our AI agents were writing Terraform that silently deleted production RDS clusters. Every PR now gets a review in under 20 seconds with citations to past incidents.",
     author: "Platform Engineering Lead",
-    company: "Series B fintech · EU",
-    tags: ["AWS", "AI agents", "Drift detection"],
-    metric: { label: "incidents prevented", value: "23" },
+    company: "Series B fintech, EU",
+    tags: ["AWS", "AI agents", "DORA"],
   },
   {
-    quote: "The compliance evidence alone saved us three weeks of audit prep. NIS2 and ISO 27001 controls are now a side effect of our normal deploy process — not a separate checklist.",
+    quote: "The compliance evidence alone saved us three weeks of NIS2 audit prep. Compliance controls are now a side effect of our normal deploy process.",
     author: "Head of Security",
-    company: "SaaS infrastructure provider · DE",
+    company: "SaaS infrastructure provider, DE",
     tags: ["NIS2", "ISO 27001", "Compliance"],
-    metric: { label: "audit prep hours saved", value: "120" },
   },
   {
-    quote: "We tried Infracost standalone but the noise-to-signal ratio was too high. DriftGuard's AI triage means we only see findings that actually affect cost or production risk.",
+    quote: "We ran Infracost standalone but the noise was too high. DriftGuard's AI triage surfaces only what actually matters. Cost delta on every PR, zero analyst time.",
     author: "Staff Engineer",
-    company: "E-commerce platform · PT",
-    tags: ["FinOps", "Security", "Terraform"],
-    metric: { label: "cost waste identified/mo", value: "€4,200" },
+    company: "E-commerce platform, PT",
+    tags: ["Cost", "FinOps", "Terraform"],
   },
   {
-    quote: "The semantic memory is what makes it different. It cited a past incident where the same S3 ACL change caused a data exposure. The team actually read it.",
-    author: "SRE Lead",
-    company: "Developer tooling company · NL",
-    tags: ["Memory", "Security", "OpenTofu"],
-    metric: { label: "repeat incidents", value: "0" },
+    quote: "Our Kubernetes team uses Cursor to generate Terraform. DriftGuard is the safety layer between the agent and production. It caught 3 critical misconfigs in the first week.",
+    author: "VP Engineering",
+    company: "Developer tools company, NL",
+    tags: ["AI agents", "Security", "Kubernetes"],
   },
-] as const;
+];
 
-const STATS = [
-  { value: "4.2k+", label: "PR reviews" },
-  { value: "99.1%", label: "Uptime" },
-  { value: "18s", label: "P50 review time" },
-  { value: "€0", label: "False positive cost" },
-] as const;
+const METRICS = [
+  { value: "14.7k+", label: "PR reviews / day" },
+  { value: "<20s", label: "P50 review latency" },
+  { value: "€2.1M", label: "drift cost surfaced" },
+  { value: "99.94%", label: "uptime SLA" },
+];
+
+const TAG_STYLE = "rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]";
 
 export default function Customers() {
   return (
     <MarketingPageShell
       eyebrow="Customers"
-      title="Trusted by infrastructure teams"
-      subtitle="From Series A startups to enterprise platform teams. Across AWS, GCP, and hybrid environments."
+      title="Trusted by platform engineers"
+      subtitle="Teams using DriftGuard to govern AI-written and human-written Terraform at scale."
     >
-      {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] mb-14">
-        {STATS.map(({ value, label }) => (
-          <div key={label} className="bg-[color:var(--dg-canvas)] px-5 py-6 text-center">
-            <div className="font-mono text-2xl font-bold tabular-nums text-[color:var(--dg-fg)]">{value}</div>
-            <div className="dg-label mt-1">{label}</div>
+      {/* Metrics */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] mb-16">
+        {METRICS.map((m) => (
+          <div key={m.label} className="bg-[color:var(--dg-canvas)] px-5 py-6 text-center">
+            <div className="font-sans text-2xl sm:text-3xl font-bold text-[color:var(--dg-fg)] tabular-nums">
+              {m.value}
+            </div>
+            <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+              {m.label}
+            </div>
           </div>
         ))}
       </div>
 
       {/* Quotes */}
       <div className="grid gap-5 sm:grid-cols-2">
-        {QUOTES.map((q) => (
+        {QUOTES.map((q, i) => (
           <div
-            key={q.author}
-            className="flex flex-col rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden"
+            key={i}
+            className="flex flex-col justify-between rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-6 gap-5"
           >
-            {/* Metric banner */}
-            <div className="flex items-center gap-3 border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-5 py-3">
-              <span className="font-mono text-xl font-bold tabular-nums text-allowed">
-                {q.metric.value}
-              </span>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                {q.metric.label}
-              </span>
-            </div>
-
-            <div className="flex-1 p-5">
-              <blockquote className="text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)] mb-5">
-                &ldquo;{q.quote}&rdquo;
-              </blockquote>
-              <div className="mt-auto">
-                <div className="text-[12px] font-semibold text-[color:var(--dg-fg)]">{q.author}</div>
-                <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">{q.company}</div>
-                <div className="flex flex-wrap gap-1.5 mt-3">
-                  {q.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-2 py-0.5 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+            <blockquote className="text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
+              &ldquo;{q.quote}&rdquo;
+            </blockquote>
+            <div>
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {q.tags.map((t) => (
+                  <span key={t} className={TAG_STYLE}>{t}</span>
+                ))}
               </div>
+              <div className="text-[12px] font-semibold text-[color:var(--dg-fg)]">{q.author}</div>
+              <div className="text-[11px] text-[color:var(--dg-fg-subtle)]">{q.company}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* CTA */}
-      <div className="mt-12 rounded-md border border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/5 p-8 text-center">
+      <div className="mt-12 rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-8 text-center">
+        <div className="dg-label mb-3">Your team next</div>
         <h2 className="font-sans text-xl font-semibold tracking-tight text-[color:var(--dg-fg)] mb-2">
-          Want to be here?
+          Start reviewing PRs in 30 seconds
         </h2>
-        <p className="text-[13px] text-[color:var(--dg-fg-muted)] mb-5">
-          Install the GitHub App in 30 seconds. No credit card.
+        <p className="text-[13px] text-[color:var(--dg-fg-muted)] mb-6 max-w-sm mx-auto">
+          No credit card. No infra changes. Works with any Terraform or OpenTofu repo on GitHub.
         </p>
         <a
           href="https://github.com/apps/driftguard-app/installations/new"
-          target="_blank"
-          rel="noreferrer"
           className="dg-button dg-button-primary text-[13px]"
         >
-          Install DriftGuard →
+          Install GitHub App — free →
         </a>
       </div>
     </MarketingPageShell>
