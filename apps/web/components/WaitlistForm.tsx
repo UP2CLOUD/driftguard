@@ -35,14 +35,14 @@ export function WaitlistForm({ theme = "light" }: { theme?: "light" | "dark" }) 
         onChange={(e) => setEmail(e.target.value)}
         className={`flex-1 rounded px-4 py-2.5 text-sm outline-none border transition focus:ring-1 focus:ring-orange-500 focus:border-orange-500 ${
           dark
-            ? "bg-zinc-900 text-zinc-100 border-zinc-800 placeholder:text-zinc-500"
-            : "bg-white text-zinc-900 border-zinc-200 placeholder:text-zinc-400"
+            ? "bg-[color:var(--dg-surface)] text-[color:var(--dg-fg)] border-[color:var(--dg-border)] placeholder:text-[color:var(--dg-fg-subtle)]"
+            : "bg-[color:var(--dg-fg)] text-[color:var(--dg-canvas)] border-[color:var(--dg-border)] placeholder:text-[color:var(--dg-fg-muted)]"
         }`}
       />
       <button
         type="submit"
         disabled={status === "loading"}
-        className="rounded bg-orange-500 px-6 py-2.5 text-sm font-semibold text-zinc-950 transition duration-150 ease-out hover:bg-orange-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 active:scale-[0.98] active:opacity-90 disabled:opacity-60"
+        className="rounded bg-[color:var(--dg-electric-bright)] px-6 py-2.5 text-sm font-semibold text-[color:var(--dg-canvas)] transition duration-150 ease-out hover:bg-[color:var(--dg-electric)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--dg-electric)]/30 active:scale-[0.98] active:opacity-90 disabled:opacity-60"
       >
         {status === "loading" ? t("waitlist.loading") : status === "ok" ? t("waitlist.success") : t("waitlist.join")}
       </button>

@@ -28,22 +28,22 @@ export function UserPreferencesSettings({ initialPreferences }: UserPreferencesS
   const currency = preferences?.currency ?? initialPreferences.currency;
 
   return (
-    <section className="mt-8 border-t border-zinc-800 pt-6">
-      <h2 className="text-lg font-semibold tracking-tight text-zinc-100">
+    <section className="mt-8 border-t border-[color:var(--dg-border)] pt-6">
+      <h2 className="text-lg font-semibold tracking-tight text-[color:var(--dg-fg)]">
         {t("settings.preferencesTitle")}
       </h2>
-      <p className="mt-2 text-sm text-zinc-400">{t("settings.preferencesSubtitle")}</p>
+      <p className="mt-2 text-sm text-[color:var(--dg-fg-muted)]">{t("settings.preferencesSubtitle")}</p>
 
       <div className="mt-6 grid gap-6 sm:grid-cols-2">
         <label className="block">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-[color:var(--dg-fg-muted)]">
             {t("settings.language")}
           </span>
           <select
             value={locale}
             disabled={saving}
             onChange={(e) => void setLocale(e.target.value as Locale)}
-            className="mt-2 w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/30 disabled:opacity-50"
+            className="mt-2 w-full rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] px-3 py-2 text-sm text-[color:var(--dg-fg)] outline-none focus:border-[color:var(--dg-electric)] focus:ring-1 focus:ring-[color:var(--dg-electric)]/20 disabled:opacity-50"
           >
             {locales.map((loc) => (
               <option key={loc} value={loc}>
@@ -51,18 +51,18 @@ export function UserPreferencesSettings({ initialPreferences }: UserPreferencesS
               </option>
             ))}
           </select>
-          <p className="mt-1.5 text-xs text-zinc-500">{t("settings.languageHint")}</p>
+          <p className="mt-1.5 text-xs text-[color:var(--dg-fg-subtle)]">{t("settings.languageHint")}</p>
         </label>
 
         <label className="block">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-[color:var(--dg-fg-muted)]">
             {t("settings.currency")}
           </span>
           <select
             value={currency}
             disabled={saving}
             onChange={(e) => void setCurrency(e.target.value as CurrencyCode)}
-            className="mt-2 w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/30 disabled:opacity-50"
+            className="mt-2 w-full rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] px-3 py-2 text-sm text-[color:var(--dg-fg)] outline-none focus:border-[color:var(--dg-electric)] focus:ring-1 focus:ring-[color:var(--dg-electric)]/20 disabled:opacity-50"
           >
             {currencies.map((code) => (
               <option key={code} value={code}>
@@ -70,12 +70,12 @@ export function UserPreferencesSettings({ initialPreferences }: UserPreferencesS
               </option>
             ))}
           </select>
-          <p className="mt-1.5 text-xs text-zinc-500">{t("settings.currencyHint")}</p>
+          <p className="mt-1.5 text-xs text-[color:var(--dg-fg-subtle)]">{t("settings.currencyHint")}</p>
         </label>
       </div>
 
       {saving && (
-        <p className="mt-3 text-xs text-zinc-500">{t("settings.saving")}</p>
+        <p className="mt-3 text-xs text-[color:var(--dg-fg-subtle)]">{t("settings.saving")}</p>
       )}
       {error && (
         <p className="mt-3 text-xs text-red-400" role="alert">

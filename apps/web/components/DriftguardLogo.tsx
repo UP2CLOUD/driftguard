@@ -33,7 +33,7 @@ export function DriftguardLogo({ href = "/", className = "" }: DriftguardLogoPro
   const inner = (
     <>
       <LogoIcon />
-      <span className="text-base font-bold lowercase tracking-tight text-zinc-100">driftguard</span>
+      <span className="text-base font-bold lowercase tracking-tight text-[color:var(--dg-fg)]">driftguard</span>
     </>
   );
 

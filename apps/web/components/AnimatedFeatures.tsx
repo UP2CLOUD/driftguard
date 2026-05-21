@@ -77,9 +77,9 @@ function FeatureCard({
     <div
       ref={ref}
       style={{ transitionDelay: `${index * 80}ms` }}
-      className={`group relative overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/40 p-6 backdrop-blur-sm
+      className={`group relative overflow-hidden rounded-lg border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)]/40 p-6 backdrop-blur-sm
         transition-all duration-700 ease-out cursor-default
-        hover:border-zinc-700 hover:bg-zinc-900/80 hover:shadow-lg hover:shadow-black/40 hover:-translate-y-0.5
+        hover:border-[color:var(--dg-border-strong)] hover:bg-[color:var(--dg-surface)]/80 hover:shadow-lg hover:shadow-black/40 hover:-translate-y-0.5
         ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
     >
       {/* top gradient bar */}
@@ -90,18 +90,18 @@ function FeatureCard({
         bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
 
       <div className="flex items-start justify-between mb-4">
-        <span className="text-2xl text-zinc-500 group-hover:text-orange-400 transition-colors duration-300 leading-none select-none">
+        <span className="text-2xl text-[color:var(--dg-fg-subtle)] group-hover:text-orange-400 transition-colors duration-300 leading-none select-none">
           {icon}
         </span>
-        <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-600 border border-zinc-800 px-1.5 py-0.5 rounded group-hover:border-zinc-700 group-hover:text-zinc-500 transition-colors duration-300">
+        <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] border border-[color:var(--dg-border)] px-1.5 py-0.5 rounded group-hover:border-[color:var(--dg-border-strong)] group-hover:text-[color:var(--dg-fg-subtle)] transition-colors duration-300">
           {tag}
         </span>
       </div>
 
-      <h3 className="mb-2 text-sm font-bold tracking-tight text-zinc-100 group-hover:text-orange-400 transition-colors duration-300">
+      <h3 className="mb-2 text-sm font-bold tracking-tight text-[color:var(--dg-fg)] group-hover:text-orange-400 transition-colors duration-300">
         {title}
       </h3>
-      <p className="text-xs leading-relaxed text-zinc-500 group-hover:text-zinc-400 transition-colors duration-300">
+      <p className="text-xs leading-relaxed text-[color:var(--dg-fg-subtle)] group-hover:text-[color:var(--dg-fg-muted)] transition-colors duration-300">
         {body}
       </p>
 
