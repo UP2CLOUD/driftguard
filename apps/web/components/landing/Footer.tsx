@@ -4,6 +4,7 @@ import { getUserPreferences } from "@/lib/preferences/server";
 
 export async function Footer() {
   const preferences = await getUserPreferences();
+  const commitSha = (process.env.VERCEL_GIT_COMMIT_SHA ?? "local").slice(0, 7);
   return (
     <footer className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]">
       {/* Top: ASCII signature */}
@@ -71,7 +72,7 @@ export async function Footer() {
             <span className="opacity-50">●</span>
             <span>v0.1.0‑beta</span>
             <span className="opacity-50">●</span>
-            <span>commit 77b7e6a</span>
+            <span>commit {commitSha}</span>
           </div>
         </div>
       </div>
