@@ -62,8 +62,6 @@ async def post_check_run(
 
     With branch protection rules requiring DriftGuard to pass, this gates merging.
     """
-    import httpx
-
     url = f"https://api.github.com/repos/{repo_full_name}/check-runs"
     payload = {
         "name": name,
