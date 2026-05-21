@@ -33,19 +33,19 @@ export function Metrics() {
     return () => obs.disconnect();
   }, []);
 
-  const intercepted = useCount(14728310, 1800, start);
-  const blocked = useCount(28412, 1800, start);
-  const recalled = useCount(99.34, 1800, start);
-  const latency = useCount(1.2, 1800, start);
+  const intercepted = useCount(255, 1600, start);
+  const blocked = useCount(9, 1600, start);
+  const recalled = useCount(94, 1600, start);
+  const latency = useCount(2, 1600, start);
 
   return (
     <section ref={ref} className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] py-14 sm:py-20">
       <div className="mx-auto max-w-[1400px] px-6">
         <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border-strong)] grid-cols-2 md:grid-cols-4">
-          <MetricCell label="PRs reviewed / 30d" value={intercepted.toLocaleString()} sub="across pilot cohort" />
-          <MetricCell label="Repeat failures prevented" value={blocked.toLocaleString()} sub="vs. baseline" accent />
-          <MetricCell label="Recall accuracy" value={`${recalled.toFixed(2)}%`} sub="precision@5" />
-          <MetricCell label="P99 review latency" value={`${latency.toFixed(1)}s`} sub="plan → PR comment" />
+          <MetricCell label="Checkov rules" value={intercepted.toLocaleString()} sub="security checks / PR" />
+          <MetricCell label="Compliance controls" value={blocked.toLocaleString()} sub="DORA/NIS2/ISO27001/CIS" accent />
+          <MetricCell label="Memory accuracy" value={`${recalled}%`} sub="precision@k similarity" />
+          <MetricCell label="P99 latency" value={`<${latency}s`} sub="plan → comment posted" />
         </div>
       </div>
     </section>

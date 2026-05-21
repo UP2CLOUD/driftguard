@@ -20,7 +20,7 @@ export function Hero({ ctaPrimary, ctaSecondary }: { ctaPrimary: React.ReactNode
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--dg-electric-bright)]" />
             </span>
             <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] truncate">
-              v0.1.0-beta live · 14.7k+ Terraform PRs reviewed
+              v0.1.0-beta · Now in early access
             </span>
           </div>
 
@@ -64,7 +64,7 @@ export function Hero({ ctaPrimary, ctaSecondary }: { ctaPrimary: React.ReactNode
 
           {/* Sub-points */}
           <div className="mt-10 grid grid-cols-3 gap-3 sm:gap-6 border-t border-[color:var(--dg-border)] pt-6">
-            <Stat label="P99" value="1.2s" sub="per PR" />
+            <Stat label="P99" value="<2s" sub="review time" />
             <Stat label="Memory" value="384‑d" sub="semantic" />
             <Stat label="Compliance" value="DORA" sub="NIS2 · ISO" />
           </div>
