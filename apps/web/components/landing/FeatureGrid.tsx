@@ -16,7 +16,7 @@ const FEATURES = [
     title: "Live state vs. plan diff",
     body: "Compares the PR's terraform plan against the real cloud state. Catches manual changes, orphan resources, and out-of-band edits before merge.",
     glyph: "△",
-    accent: "#f97316",
+    accent: "var(--dg-orange)",
   },
   {
     tag: "security",
@@ -30,7 +30,7 @@ const FEATURES = [
     title: "Semantic memory of failures",
     body: "Every blocked deploy and compliance violation embedded and indexed. Open a similar PR — the original incident appears in the comment.",
     glyph: "◉",
-    accent: "#a78bfa",
+    accent: "var(--dg-purple)",
   },
   {
     tag: "compliance",
