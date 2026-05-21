@@ -1,102 +1,101 @@
+/**
+ * Installation access checking.
+ *
+ * IMPORTANT: GET /user/installations only works with GitHub App user-to-server
+ * tokens. Our NextAuth flow uses a GitHub OAuth App token — this endpoint
+ * always returns 403. We do NOT call that endpoint.
+ *
+ * Instead: look up installations in our own database via the backend API,
+ * keyed by the GitHub username stored in the session JWT.
+ */
 import { auth } from "@/auth";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const API_SECRET = process.env.SECRET_KEY ?? "dev-only-change-me";
+
+export interface Installation {
+  id: number;
+  account: {
+    login: string;
+    avatar_url?: string;
+  };
+}
 
 export async function checkInstallationAccess(installationId: string): Promise<{
   authorized: boolean;
-  installations: any[];
+  installations: Installation[];
   accessToken?: string;
 }> {
   const session = await auth();
-  if (!session || !session.user?.accessToken) {
+  if (!session?.user?.accessToken) {
     return { authorized: false, installations: [] };
   }
 
   const token = session.user.accessToken;
+  const login = session.user.login ?? "";
 
   // Dev bypass
   if (token === "mock_github_token") {
-    const mockInstallations = [
-      { id: parseInt(installationId) || 999, account: { login: "dev-org" } },
-    ];
-    return { authorized: true, installations: mockInstallations, accessToken: token };
+    return {
+      authorized: true,
+      installations: [{ id: parseInt(installationId) || 999, account: { login: "dev-org" } }],
+      accessToken: token,
+    };
   }
 
+  // 1. Try our backend — returns installations for this GitHub user
   try {
-    // /user/installations requires GitHub App user-to-server token.
-    // GitHub OAuth App tokens use "token" prefix (not "Bearer").
-    // We try this endpoint; if 403, fall back to org-membership check.
-    const res = await fetch("https://api.github.com/user/installations?per_page=100", {
-      headers: {
-        Authorization: `token ${token}`,   // OAuth tokens use "token", not "Bearer"
-        Accept: "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
+    const res = await fetch(`${API_URL}/api/v1/orgs/by-user?login=${encodeURIComponent(login)}`, {
+      headers: { Authorization: `Bearer ${API_SECRET}` },
       next: { revalidate: 60 },
+      signal: AbortSignal.timeout(3000),
     });
 
     if (res.ok) {
-      const data = await res.json();
-      const installations = data.installations ?? [];
+      const data: Installation[] = await res.json();
       const targetId = parseInt(installationId);
-      const isAuthorized = installations.some(
-        (i: any) => i.id === targetId,
-      );
-      return { authorized: isAuthorized, installations, accessToken: token };
+      const authorized = !installationId || installationId === "dummy" ||
+        data.some((i) => i.id === targetId);
+      return { authorized, installations: data, accessToken: token };
     }
-
-    // 403 = token is OAuth App token, not GitHub App token
-    // Fall back: verify user belongs to the org that owns this installation
-    if (res.status === 403 || res.status === 404) {
-      return await _fallbackOrgCheck(token, installationId);
-    }
-
-    console.error("Failed to fetch installations from GitHub", res.status);
-    return { authorized: false, installations: [], accessToken: token };
-  } catch (err) {
-    console.error("checkInstallationAccess error:", err);
-    return { authorized: false, installations: [], accessToken: token };
-  }
-}
-
-/**
- * Fallback when /user/installations returns 403 (OAuth App token).
- * Checks if the user is a member of any org associated with the installation.
- * Since we can't enumerate installations, we grant access if:
- *  (a) the user has any active GitHub session (the installation_id comes from
- *      the GitHub App redirect — GitHub already verified ownership), OR
- *  (b) the user owns a repo in that installation (checked via our DB).
- *
- * For MVP: trust the installation_id from the GitHub redirect URL.
- * GitHub only sends installation_id to the setup URL after the user completes
- * installation — so if the user has it in their session/URL, they installed it.
- */
-async function _fallbackOrgCheck(
-  token: string,
-  installationId: string,
-): Promise<{ authorized: boolean; installations: any[]; accessToken: string }> {
-  // Fetch user identity to confirm token is valid
-  const userRes = await fetch("https://api.github.com/user", {
-    headers: {
-      Authorization: `token ${token}`,
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
-  });
-
-  if (!userRes.ok) {
-    return { authorized: false, installations: [], accessToken: token };
+  } catch {
+    // Backend offline — fall through to GitHub identity check
   }
 
-  const user = await userRes.json();
+  // 2. Backend offline: verify the GitHub token is valid, then trust the
+  //    installation_id (it comes from GitHub's redirect after the user
+  //    completes install — GitHub already verified ownership).
+  try {
+    const userRes = await fetch("https://api.github.com/user", {
+      headers: {
+        Authorization: `token ${token}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    });
 
-  // Token is valid. The installation_id was received from GitHub's redirect
-  // after the user completed the GitHub App install flow — GitHub already
-  // verified ownership. Grant access and return a synthetic installation.
-  const synthetic = [
-    {
-      id: parseInt(installationId),
-      account: { login: user.login, avatar_url: user.avatar_url },
-    },
-  ];
+    if (!userRes.ok) {
+      return { authorized: false, installations: [], accessToken: token };
+    }
 
-  return { authorized: true, installations: synthetic, accessToken: token };
+    const user = await userRes.json();
+    const userLogin = user.login ?? login;
+
+    if (!installationId || installationId === "dummy") {
+      // No specific installation — return empty (dashboard root will show install CTA)
+      return { authorized: false, installations: [], accessToken: token };
+    }
+
+    // Trust the installation_id — GitHub sent it after the user installed the app
+    return {
+      authorized: true,
+      installations: [{
+        id: parseInt(installationId),
+        account: { login: userLogin, avatar_url: user.avatar_url },
+      }],
+      accessToken: token,
+    };
+  } catch {
+    return { authorized: false, installations: [], accessToken: token };
+  }
 }
