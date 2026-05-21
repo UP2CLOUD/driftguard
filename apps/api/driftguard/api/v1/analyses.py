@@ -2,8 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from driftguard.api.deps import require_internal_auth
 from driftguard.core.db import get_db
 from driftguard.db.models import Analysis, Finding, PullRequest, Repository

@@ -4,8 +4,6 @@ from pydantic import BaseModel
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from driftguard.api.deps import require_internal_auth
 from driftguard.core.config import settings
 from driftguard.core.db import get_db
@@ -44,6 +42,40 @@ async def _bootstrap_installation(db: AsyncSession, installation_id: int) -> Org
     except Exception as exc:
         log.warning("bootstrap_error", error=str(exc))
         return None
+
+
+@router.get("/by-user")
+async def get_orgs_by_user(login: str, db: AsyncSession = Depends(get_db)) -> list[dict]:
+    """Return all installations visible to a GitHub user (by their login).
+
+    Used by the dashboard root to list workspaces without calling
+    /user/installations (which 403s for OAuth App tokens).
+    """
+    if not login:
+        return []
+
+    # Find all repos the user has access to via their GitHub login
+    # For MVP: return all enabled orgs (restrict by login when we store it)
+    stmt = (
+        select(Organization)
+        .where(Organization.enabled.is_(True))
+        .order_by(Organization.github_installation_id)
+        .limit(50)
+    )
+    result = await db.execute(stmt)
+    orgs = result.scalars().all()
+
+    return [
+        {
+            "id": org.id,
+            "installation_id": org.github_installation_id,
+            "account": {
+                "login": (org.settings or {}).get("account_login", f"installation-{org.github_installation_id}"),
+                "avatar_url": (org.settings or {}).get("account_avatar_url"),
+            },
+        }
+        for org in orgs
+    ]
 
 
 @router.get("/by-installation/{installation_id}")
