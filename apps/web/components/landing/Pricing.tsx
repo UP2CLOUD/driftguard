@@ -18,7 +18,7 @@ const PLANS = [
     features: ["Unlimited PR analyses", "Cost / drift / security / compliance", "Semantic memory (1y retention)", "OPA policy bundles", "Slack alerts", "Priority email support"],
     highlighted: true,
     cta: "Start free trial →",
-    href: "/?signin=true",
+    href: "/api/auth/signin/github",
   },
   {
     tier: "Enterprise",
