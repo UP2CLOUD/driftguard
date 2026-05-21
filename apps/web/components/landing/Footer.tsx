@@ -71,7 +71,7 @@ export async function Footer() {
             <span className="opacity-50">●</span>
             <span>v0.1.0‑beta</span>
             <span className="opacity-50">●</span>
-            <span>commit a8ebf90</span>
+            <span>commit 77b7e6a</span>
           </div>
         </div>
       </div>

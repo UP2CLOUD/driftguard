@@ -1,71 +1,146 @@
-import { SectionHeader } from "./Architecture";
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { SectionHeader } from "./Architecture";
 
 const PLANS = [
   {
     tier: "OSS",
-    price: "Free",
+    monthlyPrice: null,
+    annualPrice: null,
+    freeLabel: "Free forever",
     desc: "Self-host the analyzer. Community policies.",
-    features: ["Up to 50 PR reviews/mo", "1 repo", "30‑day memory retention", "Community support"],
+    features: [
+      "Up to 50 PR reviews / mo",
+      "1 repo",
+      "30-day memory retention",
+      "Community support",
+    ],
     cta: "Self-host →",
     href: "https://github.com/UP2CLOUD/driftguard",
+    external: true,
   },
   {
     tier: "Team",
-    price: "€29",
-    period: "/repo / month",
+    monthlyPrice: 29,
+    annualPrice: 23,
     desc: "Production PR reviews for human and agent contributors.",
-    features: ["Unlimited PR analyses", "Cost / drift / security / compliance", "Semantic memory (1y retention)", "OPA policy bundles", "Slack alerts", "Priority email support"],
+    features: [
+      "Unlimited PR analyses",
+      "Cost · drift · security · compliance",
+      "Semantic memory — 1 year retention",
+      "OPA policy bundles",
+      "Slack + email alerts",
+      "Priority support",
+    ],
     highlighted: true,
     cta: "Start free trial →",
-    href: "/api/auth/signin/github",
+    href: "https://github.com/apps/driftguard-app/installations/new",
+    external: true,
+    badge: "Most popular",
   },
   {
     tier: "Enterprise",
-    price: "Custom",
+    monthlyPrice: null,
+    annualPrice: null,
+    freeLabel: "Custom",
     desc: "Self-hosted, air-gapped, regulated environments.",
-    features: ["BYO‑cloud / on‑prem", "SSO / SCIM", "Custom policy modules", "Dedicated VPC", "99.95% SLA", "DORA / NIS2 / ISO 27001 evidence pack"],
+    features: [
+      "BYO-cloud / on-prem",
+      "SSO / SCIM provisioning",
+      "Custom policy modules",
+      "Dedicated VPC",
+      "99.95% SLA",
+      "DORA / NIS2 / ISO 27001 evidence",
+    ],
     cta: "Contact sales →",
     href: "mailto:sales@driftguard.io",
+    external: true,
   },
 ];
 
 export function Pricing() {
-  return (
-    <section id="pricing" className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-16 sm:py-24">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
-        <SectionHeader
-          eyebrow="Pricing"
-          title="Per-repo. Annual saves 15%."
-          subtitle="Start free. Pay only for the projects you run in production."
-        />
+  const [annual, setAnnual] = useState(false);
 
-        <div className="mt-16 grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] lg:grid-cols-3">
+  return (
+    <section id="pricing" className="relative py-24 sm:py-32">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
+        <SectionHeader eyebrow="Pricing" title="Simple, per-repo pricing" subtitle="Start free. Add repos as you grow. Cancel anytime." />
+
+        {/* Billing toggle */}
+        <div className="mt-8 mb-12 flex items-center justify-center gap-4">
+          <span className={`font-mono text-[12px] uppercase tracking-widest transition ${!annual ? "text-[color:var(--dg-fg)]" : "text-[color:var(--dg-fg-subtle)]"}`}>
+            Monthly
+          </span>
+          <button
+            onClick={() => setAnnual((a) => !a)}
+            aria-label="Toggle billing period"
+            className={`relative h-6 w-11 rounded-full border transition-colors duration-200 ${
+              annual
+                ? "border-[color:var(--dg-electric)] bg-[color:var(--dg-electric)]/20"
+                : "border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)]"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 h-4.5 w-4.5 rounded-full bg-[color:var(--dg-electric)] transition-transform duration-200 ${
+                annual ? "translate-x-5" : "translate-x-0"
+              }`}
+              style={{ height: "18px", width: "18px" }}
+            />
+          </button>
+          <span className={`font-mono text-[12px] uppercase tracking-widest transition ${annual ? "text-[color:var(--dg-fg)]" : "text-[color:var(--dg-fg-subtle)]"}`}>
+            Annual
+            <span className="ml-2 rounded border border-allowed/40 bg-allowed/10 px-1.5 py-0.5 text-[9px] text-allowed">
+              -20%
+            </span>
+          </span>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
           {PLANS.map((p) => (
             <div
               key={p.tier}
-              className={`relative bg-[color:var(--dg-canvas)] p-6 sm:p-7 ${
-                p.highlighted ? "lg:z-10 lg:shadow-[0_0_0_1px_var(--dg-electric)] bg-[color:var(--dg-surface)]" : ""
+              className={`relative flex flex-col rounded-md border p-6 transition-all ${
+                p.highlighted
+                  ? "border-[color:var(--dg-electric)]/40 bg-[color:var(--dg-electric)]/5 shadow-[0_0_40px_-10px_rgba(63,140,255,0.15)]"
+                  : "border-[color:var(--dg-border)] bg-[color:var(--dg-surface)]"
               }`}
             >
-              {p.highlighted && (
-                <div className="absolute -top-3 left-7 inline-flex items-center gap-1.5 rounded-full border border-[color:var(--dg-electric)] bg-[color:var(--dg-canvas)] px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
-                  <span className="h-1 w-1 rounded-full bg-[color:var(--dg-electric)]" />
-                  Most popular
+              {p.badge && (
+                <div className="absolute -top-px left-1/2 -translate-x-1/2">
+                  <span className="inline-flex items-center rounded-b border border-t-0 border-[color:var(--dg-electric)]/40 bg-[color:var(--dg-electric)]/10 px-3 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
+                    {p.badge}
+                  </span>
                 </div>
               )}
 
-              <div className="dg-label">{p.tier}</div>
-              <div className="mt-4 flex items-baseline gap-1.5">
-                <span className="font-sans text-4xl font-semibold tracking-tight text-[color:var(--dg-fg)]">{p.price}</span>
-                {p.period && <span className="text-[12px] text-[color:var(--dg-fg-subtle)] font-mono">{p.period}</span>}
-              </div>
-              <p className="mt-3 text-[13px] text-[color:var(--dg-fg-muted)]">{p.desc}</p>
+              <div className="dg-label mb-2">{p.tier}</div>
 
-              <ul className="mt-6 space-y-2.5 text-[13px]">
+              {/* Price */}
+              <div className="mb-1 flex items-end gap-1.5">
+                {p.monthlyPrice !== null ? (
+                  <>
+                    <span className="font-sans text-3xl font-bold tabular-nums text-[color:var(--dg-fg)]">
+                      €{annual ? p.annualPrice : p.monthlyPrice}
+                    </span>
+                    <span className="mb-1 font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">
+                      / repo / mo{annual ? " (billed annually)" : ""}
+                    </span>
+                  </>
+                ) : (
+                  <span className="font-sans text-3xl font-bold text-[color:var(--dg-fg)]">
+                    {p.freeLabel}
+                  </span>
+                )}
+              </div>
+
+              <p className="mb-5 text-[12px] text-[color:var(--dg-fg-muted)]">{p.desc}</p>
+
+              <ul className="mb-6 flex-1 space-y-2.5">
                 {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-[color:var(--dg-fg-muted)]">
-                    <span className="mt-1 h-1 w-1 rounded-full bg-[color:var(--dg-electric)] shrink-0" />
+                  <li key={f} className="flex items-start gap-2 text-[12px] text-[color:var(--dg-fg-muted)]">
+                    <span className="mt-0.5 shrink-0 text-allowed">✓</span>
                     {f}
                   </li>
                 ))}
@@ -73,17 +148,22 @@ export function Pricing() {
 
               <Link
                 href={p.href}
-                className={`mt-8 inline-flex w-full items-center justify-center gap-1 rounded-md px-3.5 py-2.5 font-mono text-[12px] uppercase tracking-widest transition
-                  ${p.highlighted
-                    ? "bg-[color:var(--dg-electric)] text-white hover:bg-[color:var(--dg-electric-bright)] shadow-[0_0_20px_-4px_var(--dg-electric)]"
-                    : "border border-[color:var(--dg-border-strong)] text-[color:var(--dg-fg)] hover:border-[color:var(--dg-border-bright)] hover:bg-[color:var(--dg-surface)]"
-                  }`}
+                target={p.external ? "_blank" : undefined}
+                rel={p.external ? "noreferrer" : undefined}
+                className={`dg-button w-full justify-center text-[12px] ${
+                  p.highlighted ? "dg-button-primary" : "dg-button-ghost"
+                }`}
               >
                 {p.cta}
               </Link>
             </div>
           ))}
         </div>
+
+        {/* Bottom note */}
+        <p className="mt-8 text-center font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">
+          All plans include SOC 2 Type II (Q4 2026) · GDPR-native · EU data residency
+        </p>
       </div>
     </section>
   );
