@@ -10,16 +10,17 @@ export const authConfig = {
     async jwt({ token, account, profile, user }) {
       if (account) {
         token.accessToken = account.access_token;
-        token.id = profile?.id?.toString() || account.providerAccountId;
+        token.id = (profile?.id as string | number | undefined)?.toString() ?? account.providerAccountId;
       }
       if (user && "accessToken" in user) {
-        token.accessToken = user.accessToken;
+        token.accessToken = user.accessToken as string | undefined;
       }
       return token;
     },
     async session({ session, token }) {
       session.user.id = token.id as string;
       session.user.accessToken = token.accessToken as string;
+      session.user.login = (token.login as string) ?? "";
       return session;
     },
     authorized({ auth, request: { nextUrl } }) {

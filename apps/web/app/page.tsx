@@ -7,6 +7,7 @@ import { StatusBar } from "@/components/landing/StatusBar";
 import { MarketingNav } from "@/components/landing/MarketingNav";
 import { Hero } from "@/components/landing/Hero";
 import { TrustBar } from "@/components/landing/TrustBar";
+import { DashboardPreview } from "@/components/landing/DashboardPreview";
 import { DriftPreview } from "@/components/landing/DriftPreview";
 import { FeatureGrid } from "@/components/landing/FeatureGrid";
 import { Architecture } from "@/components/landing/Architecture";
