@@ -1,4 +1,5 @@
 """Tests for health, readiness and metrics endpoints."""
+
 from fastapi.testclient import TestClient
 
 from driftguard.main import app
