@@ -1,101 +1,64 @@
 "use client";
 
-import { DriftguardLogo } from "@/components/DriftguardLogo";
-import { useT } from "@/components/I18nProvider";
 import Link from "next/link";
-import type { ReactNode } from "react";
 
-type NotFoundPageProps = {
-  hasSession: boolean;
-};
-
-export function NotFoundPage({ hasSession }: NotFoundPageProps) {
-  const t = useT();
-
+export function NotFoundPage({ hasSession }: { hasSession: boolean }) {
   return (
-    <main className="relative flex min-h-screen flex-col bg-canvas text-fg">
-      <div className="pointer-events-none absolute inset-0 opacity-[0.35]" aria-hidden>
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `
-              linear-gradient(color-mix(in srgb, var(--dg-border) 40%, transparent) 1px, transparent 1px),
-              linear-gradient(90deg, color-mix(in srgb, var(--dg-border) 40%, transparent) 1px, transparent 1px)
-            `,
-            backgroundSize: "48px 48px",
-          }}
-        />
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
-      </div>
+    <main className="min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)] flex flex-col dg-grid dg-vignette">
+      <div className="dg-grain absolute inset-0 pointer-events-none" />
 
-      <header className="relative z-10 border-b border-border bg-canvas/95 backdrop-blur-md">
-        <Animate animation="fade-in" className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <DriftguardLogo href="/" />
-          <Link
-            href="/"
-            className="font-mono text-2xs uppercase tracking-wider text-fg-muted transition-colors hover:text-accent"
-          >
-            {t("notFound.backHome")}
+      {/* Minimal nav */}
+      <nav className="relative z-10 border-b border-[color:var(--dg-border)] px-6 py-4 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2.5">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="text-[color:var(--dg-electric)]">
+            <path d="M2 3 L10 7 L18 3 L18 13 L10 17 L2 13 Z" stroke="currentColor" strokeWidth="1.4" />
+            <path d="M10 7 L10 17" stroke="currentColor" strokeWidth="1.4" opacity="0.4" />
+          </svg>
+          <span className="font-sans text-[15px] font-semibold tracking-tight">driftguard</span>
+        </Link>
+        {hasSession && (
+          <Link href="/dashboard" className="dg-button dg-button-ghost text-[12px]">
+            Dashboard →
           </Link>
-        </Animate>
-      </header>
+        )}
+      </nav>
 
-      <div className="relative z-10 flex flex-1 items-center justify-center px-4 py-16">
-        <Animate animation="fade-up" delay="80ms" className="w-full max-w-lg">
-          <article className="dg-panel overflow-hidden p-8 md:p-10">
-            <div className="mb-6 flex items-center gap-2 font-mono text-2xs uppercase tracking-wider text-fg-subtle">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-signal-drift" aria-hidden />
-              <span>{t("notFound.statusLabel")}</span>
-              <span className="text-signal-drift">{t("notFound.statusValue")}</span>
-            </div>
+      {/* Content */}
+      <div className="relative flex-1 flex flex-col items-center justify-center text-center px-6 py-20">
+        <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric)] mb-4">
+          404
+        </div>
+        <h1 className="font-sans text-3xl sm:text-4xl font-semibold tracking-tight text-[color:var(--dg-fg)] mb-4">
+          Page not found
+        </h1>
+        <p className="text-[14px] text-[color:var(--dg-fg-muted)] max-w-sm mb-8">
+          This page doesn&apos;t exist or has been moved. Check the URL or head back to safety.
+        </p>
+        <div className="flex flex-wrap gap-3 justify-center">
+          <Link href="/" className="dg-button dg-button-primary text-[13px]">
+            Go home
+          </Link>
+          <Link href="/docs" className="dg-button dg-button-ghost text-[13px]">
+            Documentation
+          </Link>
+          {hasSession && (
+            <Link href="/dashboard" className="dg-button dg-button-ghost text-[13px]">
+              Dashboard
+            </Link>
+          )}
+        </div>
 
-            <h1 className="tracking-tight text-fg">
-              <span className="block font-mono text-6xl font-bold tabular-nums text-accent md:text-7xl">
-                {t("notFound.code")}
-              </span>
-              <span className="mt-2 block text-xl font-semibold md:text-2xl">{t("notFound.title")}</span>
-            </h1>
-
-            <p className="mt-3 text-sm leading-relaxed text-fg-muted">{t("notFound.description")}</p>
-
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link
-                href="/"
-                className="inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-semibold text-canvas transition duration-150 ease-out hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
-              >
-                {t("notFound.backHome")}
-              </Link>
-              {hasSession ? (
-                <Link
-                  href="/dashboard"
-                  className="inline-flex items-center justify-center rounded-md border border-border bg-surface px-4 py-2 text-sm font-semibold text-fg-muted transition duration-150 ease-out hover:border-border-strong hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
-                >
-                  {t("notFound.goDashboard")}
-                </Link>
-              ) : null}
-            </div>
-          </article>
-        </Animate>
+        {/* Terminal decoration */}
+        <div className="mt-16 rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-4 font-mono text-[12px] text-left max-w-xs w-full">
+          <div className="text-[color:var(--dg-fg-subtle)] mb-2">$ driftguard recall --intent missing-page</div>
+          <div className="text-[color:var(--dg-fg-muted)]">
+            <span className="text-blocked">✗</span> No incidents found for this path.
+          </div>
+          <div className="text-[color:var(--dg-fg-subtle)] mt-1">
+            similarity: 0.00 · confidence: low
+          </div>
+        </div>
       </div>
     </main>
-  );
-}
-
-function Animate({
-  children,
-  className = "",
-  animation,
-  delay = "0ms",
-}: {
-  children: ReactNode;
-  className?: string;
-  animation: "fade-in" | "fade-up";
-  delay?: string;
-}) {
-  const animClass = animation === "fade-in" ? "animate-fade-in" : "animate-fade-up";
-  return (
-    <div className={`${animClass} opacity-0 ${className}`} style={{ animationDelay: delay }}>
-      {children}
-    </div>
   );
 }

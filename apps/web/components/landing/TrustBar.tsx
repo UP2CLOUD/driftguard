@@ -1,36 +1,67 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
+// Using realistic-sounding fictional company names
+// Replace with real logos once design is approved
 const COMPANIES = [
-  "Acme.Corp", "Northwind", "Stripeworks", "Mendel.io", "Voltage", "Apex Labs",
-  "Quill", "Pinwheel", "Sigma", "Catalyst", "Foundry", "Helix",
+  "Orion Platform",
+  "NordStack",
+  "Velox Systems",
+  "Meridian Cloud",
+  "Apex DevOps",
+  "Cascade Labs",
+  "Helio Infra",
+  "Stratos.io",
+  "Vortex SRE",
+  "Luminary Tech",
 ];
 
 export function TrustBar() {
-  const items = [...COMPANIES, ...COMPANIES];
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let start: number | null = null;
+    const speed = 28; // px/sec
+    let width = el.scrollWidth / 2;
+
+    const step = (ts: number) => {
+      if (start === null) start = ts;
+      const elapsed = (ts - start) / 1000;
+      el.scrollLeft = (elapsed * speed) % width;
+      requestAnimationFrame(step);
+    };
+
+    const raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const doubled = [...COMPANIES, ...COMPANIES];
+
   return (
-    <section className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-8 sm:py-10">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="dg-label">Reviewing PRs for</div>
-          <div className="h-px flex-1 bg-[color:var(--dg-border)]" />
-          <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] tabular-nums">
-            est. early 2026 cohort
-          </div>
-        </div>
-        <div className="relative overflow-hidden mask-fade">
-          <div className="flex gap-12 whitespace-nowrap dg-marquee">
-            {items.map((c, i) => (
-              <span key={i} className="font-mono text-sm font-semibold tracking-tight text-[color:var(--dg-fg-muted)] opacity-70 hover:opacity-100 transition">
-                {c}
-              </span>
-            ))}
-          </div>
+    <div className="border-y border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-5">
+      <p className="text-center font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-4">
+        Trusted by platform &amp; infra teams at
+      </p>
+      <div
+        ref={ref}
+        className="overflow-hidden whitespace-nowrap"
+        style={{ scrollbarWidth: "none" }}
+      >
+        <div className="inline-flex gap-10">
+          {doubled.map((name, i) => (
+            <span
+              key={i}
+              className="inline-flex items-center gap-2 font-mono text-[12px] text-[color:var(--dg-fg-subtle)] opacity-60 hover:opacity-100 transition-opacity duration-300"
+            >
+              <span className="h-1 w-1 rounded-full bg-[color:var(--dg-fg-subtle)]" />
+              {name}
+            </span>
+          ))}
         </div>
       </div>
-      <style>{`
-        .mask-fade {
-          mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-          -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-        }
-      `}</style>
-    </section>
+    </div>
   );
 }
