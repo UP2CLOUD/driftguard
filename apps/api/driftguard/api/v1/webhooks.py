@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from driftguard.core.config import settings
 from driftguard.core.db import get_db
 from driftguard.core.logging import log
+from driftguard.core.ratelimit import WebhookRateLimit
 from driftguard.services.onboarding import (
     remove_installation,
     remove_repositories,
@@ -29,7 +30,7 @@ def _verify_signature(payload: bytes, signature: str | None) -> bool:
     return hmac.compare_digest(expected, signature)
 
 
-@router.post("/github")
+@router.post("/github", dependencies=[WebhookRateLimit])
 async def github_webhook(
     request: Request,
     background: BackgroundTasks,
