@@ -1,5 +1,6 @@
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -97,3 +98,36 @@ async def list_org_analyses(org_id: str, limit: int = 20, db: AsyncSession = Dep
         }
         for a, p, r in result.all()
     ]
+
+
+class AwsSettingsUpdate(BaseModel):
+    aws_role_arn: str | None = None
+    state_bucket: str | None = None
+    state_key: str = "terraform.tfstate"
+
+
+@router.patch("/{org_id}/aws")
+async def update_aws_settings(
+    org_id: str,
+    body: AwsSettingsUpdate,
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    org = await db.get(Organization, org_id)
+    if not org:
+        raise HTTPException(404, "org not found")
+
+    # Validate role ARN format
+    if body.aws_role_arn and not body.aws_role_arn.startswith("arn:aws:iam::"):
+        raise HTTPException(422, "invalid role ARN format")
+
+    settings_patch = dict(org.settings or {})
+    if body.aws_role_arn is not None:
+        settings_patch["aws_role_arn"] = body.aws_role_arn
+    if body.state_bucket is not None:
+        settings_patch["state_bucket"] = body.state_bucket
+    settings_patch["state_key"] = body.state_key
+
+    org.settings = settings_patch
+    await db.commit()
+
+    return {"status": "ok", "aws_role_arn": body.aws_role_arn}
