@@ -41,7 +41,7 @@ const KIND_GLYPH: Record<EventLine["kind"], string> = {
 
 export function LiveTerminal() {
   const [feed, setFeed] = useState<EventLine[]>([SCRIPT[0]]);
-  const [counters, setCounters] = useState({ intercepted: 14728, blocked: 412, recalled: 8341 });
+  const [counters, setCounters] = useState({ intercepted: 0, blocked: 0, recalled: 0 });
   const idxRef = useRef(1);
   const scrollRef = useRef<HTMLDivElement>(null);
 
