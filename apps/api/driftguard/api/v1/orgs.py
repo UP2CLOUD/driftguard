@@ -58,6 +58,8 @@ async def get_org_by_installation(installation_id: int, db: AsyncSession = Depen
         "installation_id": org.github_installation_id,
         "plan": org.plan,
         "has_stripe_customer": org.stripe_customer_id is not None,
+        "aws_role_arn": (org.settings or {}).get("aws_role_arn"),
+        "aws_external_id": f"driftguard-{org.github_installation_id}",
     }
 
 

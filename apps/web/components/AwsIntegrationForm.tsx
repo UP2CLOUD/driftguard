@@ -4,10 +4,8 @@ import { useState } from "react";
 import type { Org } from "@/lib/api";
 
 
-const IAM_TEMPLATE_URL =
-  "https://console.aws.amazon.com/cloudformation/home#/stacks/create/review" +
-  "?templateURL=https://driftguard-public.s3.eu-west-1.amazonaws.com/iam-role.json" +
-  "&stackName=DriftGuardReadOnly";
+const IAM_TERRAFORM_URL =
+  "https://github.com/UP2CLOUD/driftguard/tree/main/infra/terraform/modules/customer-iam";
 
 export function AwsIntegrationForm({
   installationId,
@@ -61,9 +59,12 @@ export function AwsIntegrationForm({
           <div>
             <div className="dg-label mb-1">Step 1 — Create IAM role</div>
             <p className="text-[12px] text-[color:var(--dg-fg-muted)] max-w-sm">
-              One-click CloudFormation stack. Creates a read-only role with your
-              external ID as condition.
+              Deploy the read-only Terraform module in your AWS account.
+              Creates a role with external ID condition — no wildcard access.
             </p>
+            <pre className="mt-3 rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[10px] text-[color:var(--dg-fg)]">
+              {`module "driftguard" {\n  source = "github.com/UP2CLOUD/driftguard//infra/terraform/modules/customer-iam"\n  driftguard_aws_account_id = "<your-aws-account-id>"\n  state_bucket = "my-tfstate-bucket" # optional\n}`}
+            </pre>
             <div className="mt-3 flex items-center gap-2">
               <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">External ID:</span>
               <code className="font-mono text-[11px] text-[color:var(--dg-electric-bright)] select-all">
@@ -72,12 +73,12 @@ export function AwsIntegrationForm({
             </div>
           </div>
           <a
-            href={IAM_TEMPLATE_URL}
+            href={IAM_TERRAFORM_URL}
             target="_blank"
             rel="noreferrer"
             className="dg-button dg-button-ghost text-[12px] shrink-0"
           >
-            Open CloudFormation →
+            View module →
           </a>
         </div>
       </div>
