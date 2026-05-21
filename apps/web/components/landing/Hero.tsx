@@ -13,11 +13,14 @@ export function Hero({ ctaPrimary, ctaSecondary }: { ctaPrimary: React.ReactNode
       <div className="relative mx-auto grid max-w-[1400px] gap-10 px-4 sm:px-6 py-14 sm:py-20 lg:grid-cols-[1fr_1.15fr] lg:gap-16 lg:py-28">
         {/* Left: copy */}
         <div className="relative flex flex-col justify-center min-w-0">
-          {/* Tag */}
-          <div className="mb-6 inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)]/60 px-3 py-1 backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-allowed dg-pulse text-allowed shrink-0" />
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-muted)] truncate">
-              Now reviewing 14.7k+ Terraform PRs / day
+          {/* Animated badge — from Gemini template */}
+          <div className="mb-6 inline-flex w-fit max-w-full items-center gap-2.5 rounded-full border border-[color:var(--dg-electric)]/20 bg-[color:var(--dg-electric)]/10 px-3.5 py-1.5 backdrop-blur">
+            <span className="relative flex h-2 w-2 shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--dg-electric)] opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--dg-electric-bright)]" />
+            </span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] truncate">
+              v0.1.0-beta live · 14.7k+ Terraform PRs reviewed
             </span>
           </div>
 
@@ -39,8 +42,19 @@ export function Hero({ ctaPrimary, ctaSecondary }: { ctaPrimary: React.ReactNode
             so your agents stop making the same mistake twice.
           </p>
 
+          {/* Terminal snippet — from Gemini template */}
+          <div className="mt-7 flex items-center gap-2 rounded-lg border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] px-4 py-2.5 w-fit max-w-full">
+            <code className="font-mono text-[12px] text-[color:var(--dg-fg-muted)] truncate">
+              <span className="text-[color:var(--dg-electric-bright)]"># .github/driftguard.yml</span>
+              <span className="mx-3 opacity-30">|</span>
+              <span className="text-allowed">policy:</span>
+              <span className="ml-1.5 text-[color:var(--dg-fg-subtle)]">block:</span>
+              <span className="ml-1.5 text-[color:var(--dg-fg-muted)]">aws_rds.*.delete</span>
+            </code>
+          </div>
+
           {/* CTAs */}
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-5 flex flex-wrap items-center gap-3">
             {ctaPrimary}
             {ctaSecondary}
             <Link href="#architecture" className="font-mono text-[12px] uppercase tracking-wider text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">

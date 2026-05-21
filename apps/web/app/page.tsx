@@ -16,6 +16,7 @@ import { Metrics } from "@/components/landing/Metrics";
 import { CodeIntegration } from "@/components/landing/CodeIntegration";
 import { Pricing } from "@/components/landing/Pricing";
 import { Footer } from "@/components/landing/Footer";
+import { CtaSection } from "@/components/landing/CtaSection";
 
 export default async function Page() {
   const session = await auth();
@@ -107,6 +108,11 @@ export default async function Page() {
         </div>
       </section>
 
+      <CtaSection cta={
+        <SignInButton className="dg-button dg-button-primary text-[14px] px-6 py-3">
+          Install GitHub App — free
+        </SignInButton>
+      } />
       <Footer />
     </main>
   );
