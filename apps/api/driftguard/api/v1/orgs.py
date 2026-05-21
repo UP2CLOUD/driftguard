@@ -54,8 +54,8 @@ async def get_orgs_by_user(login: str, db: AsyncSession = Depends(get_db)) -> li
     if not login:
         return []
 
-    # Find all repos the user has access to via their GitHub login
-    # For MVP: return all enabled orgs (restrict by login when we store it)
+    # Query orgs where account_login matches the GitHub user
+    # account_login is stored in org.settings when the app is installed
     stmt = (
         select(Organization)
         .where(Organization.enabled.is_(True))
@@ -63,7 +63,16 @@ async def get_orgs_by_user(login: str, db: AsyncSession = Depends(get_db)) -> li
         .limit(50)
     )
     result = await db.execute(stmt)
-    orgs = result.scalars().all()
+    all_orgs = result.scalars().all()
+
+    # Filter by account_login stored in settings
+    # Falls back to returning all orgs when login not yet stored (legacy installs)
+    matching = [
+        o
+        for o in all_orgs
+        if not (o.settings or {}).get("account_login")  # legacy: no login stored
+        or (o.settings or {}).get("account_login", "").lower() == login.lower()
+    ]
 
     return [
         {
@@ -74,7 +83,7 @@ async def get_orgs_by_user(login: str, db: AsyncSession = Depends(get_db)) -> li
                 "avatar_url": (org.settings or {}).get("account_avatar_url"),
             },
         }
-        for org in orgs
+        for org in matching
     ]
 
 

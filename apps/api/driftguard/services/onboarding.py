@@ -5,7 +5,13 @@ from driftguard.core.logging import log
 from driftguard.db.models import Organization, Repository
 
 
-async def upsert_installation(db: AsyncSession, *, installation_id: int, repositories: list[dict]) -> Organization:
+async def upsert_installation(
+    db: AsyncSession,
+    *,
+    installation_id: int,
+    repositories: list[dict],
+    account: dict | None = None,
+) -> Organization:
     """Idempotent. Called on `installation.created` and `installation_repositories` events."""
     result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
     org = result.scalar_one_or_none()
@@ -16,6 +22,17 @@ async def upsert_installation(db: AsyncSession, *, installation_id: int, reposit
         db.add(org)
         await db.flush()
         log.info("org_created", installation_id=installation_id, org_id=org.id)
+
+    # Store GitHub account metadata so GET /orgs/by-user?login= can filter correctly
+    if account:
+        current_settings = dict(org.settings or {})
+        if account.get("login"):
+            current_settings["account_login"] = account["login"]
+        if account.get("avatar_url"):
+            current_settings["account_avatar_url"] = account["avatar_url"]
+        if account.get("type"):
+            current_settings["account_type"] = account["type"]  # User or Organization
+        org.settings = current_settings
 
     existing = await db.execute(select(Repository).where(Repository.org_id == org.id))
     existing_by_gh_id = {r.github_repo_id: r for r in existing.scalars()}

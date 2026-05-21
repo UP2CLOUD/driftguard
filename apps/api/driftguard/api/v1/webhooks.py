@@ -53,8 +53,9 @@ async def github_webhook(
     if x_github_event == "installation":
         installation_id = payload["installation"]["id"]
         repos = payload.get("repositories", [])
+        account = payload.get("installation", {}).get("account")
         if action in {"created", "new_permissions_accepted", "unsuspend"}:
-            await upsert_installation(db, installation_id=installation_id, repositories=repos)
+            await upsert_installation(db, installation_id=installation_id, repositories=repos, account=account)
         elif action in {"deleted", "suspend"}:
             await remove_installation(db, installation_id=installation_id)
         return {"received": True}
