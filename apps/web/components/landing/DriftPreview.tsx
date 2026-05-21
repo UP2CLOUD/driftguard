@@ -79,9 +79,9 @@ export function DriftPreview() {
     <section className="py-20 sm:py-28 border-t border-[color:var(--dg-border)]">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
-          eyebrow="Live demo"
-          title="What DriftGuard sees on every PR"
-          subtitle="Real output from an AI-generated Terraform PR. Cost delta, security findings, drift, and compliance — before merge."
+          eyebrow="PR review"
+          title="Every AI agent output, reviewed before merge."
+          subtitle="Four analysis engines run in parallel — cost delta (Infracost), security (Checkov), live drift (STS), and compliance mapping. Results appear in the PR within 2 seconds."
         />
 
         <div className="mt-10">

@@ -5,16 +5,16 @@ import { useEffect, useRef } from "react";
 // Using realistic-sounding fictional company names
 // Replace with real logos once design is approved
 const COMPANIES = [
-  "Orion Platform",
-  "NordStack",
-  "Velox Systems",
-  "Meridian Cloud",
-  "Apex DevOps",
-  "Cascade Labs",
-  "Helio Infra",
-  "Stratos.io",
-  "Vortex SRE",
-  "Luminary Tech",
+  "Platform engineers",
+  "DevOps teams",
+  "Infrastructure leads",
+  "SRE teams",
+  "AI agent operators",
+  "Cloud architects",
+  "Compliance engineers",
+  "FinOps analysts",
+  "Security engineers",
+  "Staff engineers",
 ];
 
 export function TrustBar() {
