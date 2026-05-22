@@ -30,10 +30,10 @@ export async function Footer() {
           </div>
 
           <FootCol title="Product" links={[
-            { l: "Architecture", h: "#architecture" },
-            { l: "Memory", h: "#memory" },
-            { l: "Integrate", h: "#integrate" },
-            { l: "Pricing", h: "#pricing" },
+            { l: "Architecture", h: "/#architecture" },
+            { l: "Memory", h: "/#memory" },
+            { l: "Integrate", h: "/#integrate" },
+            { l: "Pricing", h: "/#pricing" },
             { l: "Changelog", h: "/changelog" },
           ]} />
           <FootCol title="Developers" links={[

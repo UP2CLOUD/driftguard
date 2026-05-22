@@ -19,6 +19,7 @@ import { CodeIntegration } from "@/components/landing/CodeIntegration";
 import { Pricing } from "@/components/landing/Pricing";
 import { CtaSection } from "@/components/landing/CtaSection";
 import { Footer } from "@/components/landing/Footer";
+import { HashScroll } from "@/components/HashScroll";
 
 export default async function Page() {
   const session = await auth();
@@ -38,6 +39,7 @@ export default async function Page() {
 
   return (
     <>
+      <HashScroll />
       <StatusBar />
       <MarketingNav isLoggedIn={isLoggedIn} cta={!isLoggedIn ? cta : undefined} />
 

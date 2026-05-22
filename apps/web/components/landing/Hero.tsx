@@ -74,7 +74,7 @@ export function Hero({
             {ctaPrimary}
             {ctaSecondary}
             <Link
-              href="#architecture"
+              href="/#architecture"
               className="font-mono text-[11px] uppercase tracking-wider text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
             >
               ▸ how it works
