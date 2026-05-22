@@ -111,3 +111,56 @@ class AsyncJob(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     error: Mapped[str | None] = mapped_column(Text)
+
+
+# ── Generic runtime monitoring (Phase 2 domain) ──────────────────────────────
+
+
+class RuntimeEvent(Base):
+    """Any event emitted by an agent or integration (GitHub PR, Terraform plan, etc.)."""
+
+    __tablename__ = "runtime_events"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    org_id: Mapped[str] = mapped_column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
+    repo_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("repositories.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    analysis_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("analyses.id", ondelete="SET NULL"), nullable=True
+    )
+    event_type: Mapped[str] = mapped_column(
+        String(64), index=True
+    )  # pr_opened, drift_detected, policy_blocked, cost_alert …
+    severity: Mapped[str] = mapped_column(String(16), default="info")  # info | warn | high | critical
+    source: Mapped[str] = mapped_column(String(64), default="driftguard")  # github | agent | manual | scheduler
+    message: Mapped[str] = mapped_column(Text, default="")
+    metadata_: Mapped[dict | None] = mapped_column("metadata", JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, index=True)
+
+
+class DriftIncident(Base):
+    """Detected operational drift or repeated failure pattern."""
+
+    __tablename__ = "drift_incidents"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    org_id: Mapped[str] = mapped_column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
+    repo_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("repositories.id", ondelete="SET NULL"), nullable=True
+    )
+    title: Mapped[str] = mapped_column(String(255), default="")
+    description: Mapped[str] = mapped_column(Text, default="")
+    severity: Mapped[str] = mapped_column(String(16), default="medium")  # low | medium | high | critical
+    status: Mapped[str] = mapped_column(String(32), default="open")  # open | investigating | resolved | suppressed
+    root_cause: Mapped[str | None] = mapped_column(Text, nullable=True)
+    suggested_fix: Mapped[str | None] = mapped_column(Text, nullable=True)
+    recurrence_count: Mapped[int] = mapped_column(Integer, default=1)
+    fingerprint: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)  # for dedup
+    first_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    last_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, index=True)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow
+    )

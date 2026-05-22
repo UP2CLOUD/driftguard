@@ -21,6 +21,22 @@ export default async function RepoList({
   let orgPlan = "free";
   let apiAvailable = false;
 
+  // Fetch real dashboard overview (replaces individual org/repo/analyses fetches)
+  let overview: Record<string, any> | null = null;
+  try {
+    const ovRes = await fetch(
+      `${apiUrl}/api/v1/dashboard/overview?installation_id=${installationId}`,
+      { headers: { Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}` },
+        next: { revalidate: 20 }, signal: AbortSignal.timeout(3000) }
+    );
+    if (ovRes.ok) { overview = await ovRes.json(); apiAvailable = true; }
+  } catch { /* backend offline */ }
+
+  if (overview) {
+    orgPlan = overview.plan ?? "free";
+    lastAnalyses = overview.recent_analyses ?? [];
+  }
+
   try {
     const orgRes = await fetch(
       `${apiUrl}/api/v1/orgs/by-installation/${installationId}`,
