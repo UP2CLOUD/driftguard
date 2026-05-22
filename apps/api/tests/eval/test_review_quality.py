@@ -23,8 +23,12 @@ from driftguard.ai.reviewer import review
 
 CASES_DIR = Path(__file__).parent / "cases"
 RUN_EVAL = os.getenv("DRIFTGUARD_RUN_EVAL") == "1"
+HAS_API_KEY = bool(os.getenv("ANTHROPIC_API_KEY", "").strip())
 
-pytestmark = pytest.mark.skipif(not RUN_EVAL, reason="eval suite disabled; set DRIFTGUARD_RUN_EVAL=1")
+pytestmark = pytest.mark.skipif(
+    not RUN_EVAL or not HAS_API_KEY,
+    reason="eval suite disabled — set DRIFTGUARD_RUN_EVAL=1 and ANTHROPIC_API_KEY",
+)
 
 
 def _load_cases() -> list[dict]:

@@ -21,7 +21,19 @@ jobs:
         working-directory: apps/api
         run: uv sync --all-extras
 
+      - name: Check API key is configured
+        id: key_check
+        run: |
+          if [ -z "${{ secrets.ANTHROPIC_API_KEY }}" ]; then
+            echo "has_key=false" >> $GITHUB_OUTPUT
+            echo "⚠ ANTHROPIC_API_KEY secret not set — skipping evals (no cost, no failure)"
+          else
+            echo "has_key=true" >> $GITHUB_OUTPUT
+            echo "✓ ANTHROPIC_API_KEY present — running evals"
+          fi
+
       - name: Run eval suite (costs $)
+        if: steps.key_check.outputs.has_key == 'true'
         working-directory: apps/api
         env:
           DRIFTGUARD_RUN_EVAL: "1"
@@ -30,4 +42,9 @@ jobs:
 
       - name: Report results
         if: always()
-        run: echo "Eval suite completed. Check logs for regressions."
+        run: |
+          if [ "${{ steps.key_check.outputs.has_key }}" == "false" ]; then
+            echo "ℹ Eval suite skipped — add ANTHROPIC_API_KEY to repository secrets to enable"
+          else
+            echo "✓ Eval suite completed — check logs for any quality regressions"
+          fi
