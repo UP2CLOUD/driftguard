@@ -1,5 +1,9 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 
 export const metadata: Metadata = {
   title: "Customers — DriftGuard",
@@ -42,12 +46,17 @@ const METRICS = [
 
 const TAG_STYLE = "rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]";
 
-export default function Customers() {
+export default async function Customers() {
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+
   return (
     <MarketingPageShell
-      eyebrow="Customers"
-      title="Trusted by platform engineers"
-      subtitle="Teams using DriftGuard to govern AI-written and human-written Terraform at scale."
+      eyebrow={t("customers.eyebrow")}
+      title={t("customers.title")}
+      subtitle={t("customers.subtitle")}
     >
       {/* Metrics */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] mb-16">

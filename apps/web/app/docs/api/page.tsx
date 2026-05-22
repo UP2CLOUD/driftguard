@@ -1,5 +1,9 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 
 export const metadata: Metadata = { title: "API Reference — DriftGuard" };
 
@@ -28,12 +32,15 @@ const METHOD_STYLE: Record<string, string> = {
   PATCH:  "text-warned border-warned/30 bg-warned/10",
 };
 
-export default function ApiReference() {
+export default async function ApiReference() {
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+
   return (
     <MarketingPageShell
-      eyebrow="Developers"
-      title="API Reference"
-      subtitle="REST API for DriftGuard. All endpoints require a Bearer token passed in the Authorization header."
+      eyebrow={t("docs.api.eyebrow")} title={t("docs.api.title")} subtitle={t("docs.api.subtitle")}
     >
       {/* Auth */}
       <section className="mb-12">

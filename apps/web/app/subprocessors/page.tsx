@@ -1,5 +1,9 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 
 export const metadata: Metadata = { title: "Subprocessors — DriftGuard" };
 
@@ -12,12 +16,15 @@ const SUBPROCESSORS = [
   { name: "Sentry", purpose: "Error monitoring and performance tracing (backend only, no PR content)", country: "USA", entity: "Functional Software, Inc." },
 ];
 
-export default function Subprocessors() {
+export default async function Subprocessors() {
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+
   return (
     <MarketingPageShell
-      eyebrow="Legal"
-      title="Subprocessors"
-      subtitle="Last updated 19 May 2026. We notify customers at least 30 days before adding or replacing a subprocessor."
+      eyebrow={t("subprocessors.eyebrow")} title={t("subprocessors.title")} subtitle={t("subprocessors.subtitle")}
     >
       <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden mb-10">
         <div className="grid grid-cols-[1fr_2fr_1fr] border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">

@@ -164,5 +164,170 @@
     "blocked": "محظور",
     "approved": "معتمد",
     "warned": "محذّر"
+  },
+  "docs": {
+    "eyebrow": "التوثيق",
+    "title": "توثيق DriftGuard",
+    "subtitle": "كل ما تحتاجه لدمج DriftGuard وتكوينه وتشغيله.",
+    "getStarted": "ابدأ",
+    "coreConc": "المفاهيم الأساسية",
+    "integrations": "التكاملات",
+    "compliance": "الامتثال",
+    "legal": "القانونية",
+    "install": {
+      "label": "التثبيت",
+      "eyebrow": "الوثائق · البدء",
+      "title": "التثبيت في 30 ثانية",
+      "subtitle": "ثلاث خطوات. بدون SDK، بدون إعادة كتابة، بدون تغييرات في البنية التحتية."
+    },
+    "firstReview": {
+      "label": "أول مراجعة PR",
+      "eyebrow": "الوثائق · البدء",
+      "title": "أول مراجعة PR",
+      "subtitle": "ما يحلله DriftGuard في كل PR من Terraform وكيفية قراءة النتائج."
+    },
+    "api": {
+      "label": "مرجع API",
+      "eyebrow": "المطورون",
+      "title": "مرجع API",
+      "subtitle": "REST API — جميع النقاط النهائية والمصادقة والأمثلة."
+    },
+    "memory": {
+      "label": "الذاكرة الدلالية",
+      "eyebrow": "الوثائق · المفاهيم",
+      "title": "الذاكرة الدلالية",
+      "subtitle": "كيف يتذكر DriftGuard الأعطال ويستردها عند مراجعة PR."
+    },
+    "cost": {
+      "label": "تحليل التكلفة",
+      "eyebrow": "الوثائق · المفاهيم",
+      "title": "تحليل التكلفة",
+      "subtitle": "دلتا التكلفة الشهرية في كل PR من Terraform قبل الدمج."
+    },
+    "drift": {
+      "label": "كشف الانجراف",
+      "eyebrow": "الوثائق · المفاهيم",
+      "title": "كشف الانجراف",
+      "subtitle": "حالة السحابة الفعلية مقابل ما تتوقعه خطة Terraform."
+    },
+    "policies": {
+      "label": "محرك السياسات",
+      "eyebrow": "الوثائق · المفاهيم",
+      "title": "محرك السياسات",
+      "subtitle": "أعلن ما يُسمح لوكلائك ومهندسيك بتغييره."
+    },
+    "webhooks": {
+      "label": "Webhooks الصادرة",
+      "eyebrow": "الوثائق · التكاملات",
+      "title": "Webhooks الصادرة",
+      "subtitle": "استقبل أحداث DriftGuard في Slack أو Teams أو نقطتك النهائية."
+    }
+  },
+  "status": {
+    "eyebrow": "حالة النظام",
+    "titleOk": "جميع الأنظمة تعمل",
+    "titleDegraded": "انقطاع الخدمة",
+    "operational": "يعمل",
+    "degraded": "متدهور",
+    "outage": "عطل كبير",
+    "lastChecked": "آخر فحص:",
+    "components": "المكونات",
+    "metrics": "المقاييس",
+    "uptime": "99.9% وقت تشغيل",
+    "p99": "P99 <2s",
+    "memory": "فهرس الذاكرة",
+    "pipeline": "خط أنابيب المراجعة",
+    "dashboard": "لوحة التحكم",
+    "webhooks": "GitHub Webhooks",
+    "checkov": "Checkov + فرز AI",
+    "infracost": "تكامل Infracost",
+    "costAnalysis": "تحليل التكلفة"
+  },
+  "security": {
+    "eyebrow": "الثقة والأمان",
+    "title": "الأمان في DriftGuard",
+    "subtitle": "نراجع بنية الفرق الأخرى. هذا يتطلب منا الحفاظ على معايير أمان عالية.",
+    "dataModel": "نموذج البيانات",
+    "encryption": "التشفير",
+    "auth": "المصادقة",
+    "auditLog": "سجل التدقيق",
+    "pentest": "اختبار الاختراق",
+    "depScan": "فحص التبعيات",
+    "dataResid": "إقامة البيانات",
+    "awsCreds": "بيانات AWS",
+    "sdlc": "التطوير الآمن"
+  },
+  "compliance": {
+    "eyebrow": "الامتثال التنظيمي",
+    "title": "الامتثال",
+    "subtitle": "كيف يتوافق DriftGuard مع DORA وNIS2 وISO 27001 ومعايير CIS.",
+    "framework": "الإطار",
+    "article": "المادة / التحكم",
+    "coverage": "تغطية DriftGuard",
+    "status": "الحالة",
+    "partial": "جزئي",
+    "full": "كامل",
+    "planned": "مخطط"
+  },
+  "customers": {
+    "eyebrow": "العملاء",
+    "title": "موثوق به من قبل مهندسي المنصات",
+    "subtitle": "الفرق التي تستخدم DriftGuard لإدارة Terraform.",
+    "yourTeam": "فريقك التالي",
+    "ctaTitle": "ابدأ مراجعة PRs في 30 ثانية",
+    "ctaBody": "بدون بطاقة ائتمان. بدون تغييرات في البنية التحتية.",
+    "ctaButton": "تثبيت GitHub App — مجاناً ←",
+    "reviews7d": "مراجعة PR / يوم",
+    "p50": "زمن استجابة P50",
+    "driftCost": "تكلفة الانجراف المكتشفة",
+    "uptime": "SLA وقت التشغيل"
+  },
+  "careers": {
+    "eyebrow": "وظائف",
+    "title": "انضم إلى الفريق",
+    "subtitle": "بناء أمان وقت التشغيل للذكاء الاصطناعي لـ Terraform. عن بُعد، قاعدة EU.",
+    "openRoles": "الوظائف المتاحة",
+    "fullTime": "دوام كامل",
+    "remote": "عن بُعد · EU",
+    "apply": "تقدم ←",
+    "noRoles": "لا توجد وظائف متاحة حالياً.",
+    "noRolesBody": "نوظف حسب الحاجة. تابعنا على LinkedIn.",
+    "whyUs": "لماذا DriftGuard",
+    "highOwn": "مسؤولية عالية",
+    "openSource": "نواة مفتوحة المصدر",
+    "euOnly": "المنطقة الزمنية EU مفضلة"
+  },
+  "changelog": {
+    "eyebrow": "سجل الإصدارات",
+    "title": "سجل التغييرات",
+    "subtitle": "جميع التغييرات على منصة DriftGuard، الأحدث أولاً.",
+    "new": "جديد",
+    "fix": "إصلاح",
+    "breaking": "تغيير جذري",
+    "improved": "محسّن",
+    "note": "تُحفظ الإدخالات التقنية باللغة الإنجليزية كسجل رسمي."
+  },
+  "pricing": {
+    "eyebrow": "الأسعار",
+    "perRepo": "لكل مستودع. التوفير 15% سنوياً."
+  },
+  "legal": {
+    "languageNote": "يُقدَّم هذا المستند باللغة الإنجليزية لدقته القانونية. الترجمات لأغراض إعلامية فقط.",
+    "effectiveDate": "تاريخ السريان:",
+    "lastUpdated": "آخر تحديث:"
+  },
+  "subprocessors": {
+    "eyebrow": "قانوني",
+    "title": "المعالجون الفرعيون",
+    "subtitle": "خدمات الطرف الثالث التي تعالج البيانات الشخصية نيابةً عن DriftGuard.",
+    "name": "المعالج الفرعي",
+    "purpose": "الغرض",
+    "location": "موقع البيانات",
+    "updated": "آخر تحديث:"
+  },
+  "dpa": {
+    "eyebrow": "قانوني",
+    "title": "اتفاقية معالجة البيانات",
+    "subtitle": "بين DriftGuard (المعالج) والعميل (المتحكم). متوافق مع GDPR المادة 28."
   }
 }

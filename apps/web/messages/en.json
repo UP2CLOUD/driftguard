@@ -164,5 +164,170 @@
     "blocked": "blocked",
     "approved": "approved",
     "warned": "warned"
+  },
+  "docs": {
+    "eyebrow": "Documentation",
+    "title": "DriftGuard docs",
+    "subtitle": "Everything you need to integrate, configure, and operate DriftGuard.",
+    "getStarted": "Get started",
+    "coreConc": "Core concepts",
+    "integrations": "Integrations",
+    "compliance": "Compliance",
+    "legal": "Legal",
+    "install": {
+      "label": "Install",
+      "eyebrow": "Docs · Get started",
+      "title": "Install in 30 seconds",
+      "subtitle": "Three steps. No SDK, no rewrites, no infra changes."
+    },
+    "firstReview": {
+      "label": "Your first PR review",
+      "eyebrow": "Docs · Get started",
+      "title": "Your first PR review",
+      "subtitle": "What DriftGuard analyses on every Terraform PR and how to read the results."
+    },
+    "api": {
+      "label": "API reference",
+      "eyebrow": "Developers",
+      "title": "API Reference",
+      "subtitle": "REST API — all endpoints, authentication, and examples."
+    },
+    "memory": {
+      "label": "Semantic memory",
+      "eyebrow": "Docs · Core concepts",
+      "title": "Semantic memory",
+      "subtitle": "How DriftGuard remembers failures and recalls them at PR review time."
+    },
+    "cost": {
+      "label": "Cost analysis",
+      "eyebrow": "Docs · Core concepts",
+      "title": "Cost analysis",
+      "subtitle": "Monthly cost delta on every Terraform PR — before it merges."
+    },
+    "drift": {
+      "label": "Drift detection",
+      "eyebrow": "Docs · Core concepts",
+      "title": "Drift detection",
+      "subtitle": "Real cloud state vs. what your Terraform plan expects."
+    },
+    "policies": {
+      "label": "Policy engine",
+      "eyebrow": "Docs · Core concepts",
+      "title": "Policy engine",
+      "subtitle": "Declare what your agents and engineers are allowed to change."
+    },
+    "webhooks": {
+      "label": "Outbound webhooks",
+      "eyebrow": "Docs · Integrations",
+      "title": "Outbound webhooks",
+      "subtitle": "Receive DriftGuard events in Slack, Teams, or your own endpoint."
+    }
+  },
+  "status": {
+    "eyebrow": "System status",
+    "titleOk": "All systems operational",
+    "titleDegraded": "Service disruption",
+    "operational": "Operational",
+    "degraded": "Degraded",
+    "outage": "Major outage",
+    "lastChecked": "Last checked:",
+    "components": "Components",
+    "metrics": "Metrics",
+    "uptime": "99.9% uptime",
+    "p99": "P99 <2s",
+    "memory": "Memory index",
+    "pipeline": "Core review pipeline",
+    "dashboard": "Dashboard",
+    "webhooks": "GitHub Webhooks",
+    "checkov": "Checkov + AI triage",
+    "infracost": "Infracost integration",
+    "costAnalysis": "Cost analysis"
+  },
+  "security": {
+    "eyebrow": "Trust & security",
+    "title": "Security at DriftGuard",
+    "subtitle": "We review other teams' infrastructure. Holding that trust requires us to maintain a high security bar ourselves.",
+    "dataModel": "Data model",
+    "encryption": "Encryption",
+    "auth": "Authentication",
+    "auditLog": "Audit log",
+    "pentest": "Penetration testing",
+    "depScan": "Dependency scanning",
+    "dataResid": "Data residency",
+    "awsCreds": "AWS credentials",
+    "sdlc": "Secure development"
+  },
+  "compliance": {
+    "eyebrow": "Regulatory compliance",
+    "title": "Compliance",
+    "subtitle": "How DriftGuard maps to DORA, NIS2, ISO 27001, and CIS Benchmarks.",
+    "framework": "Framework",
+    "article": "Article / Control",
+    "coverage": "DriftGuard coverage",
+    "status": "Status",
+    "partial": "Partial",
+    "full": "Full",
+    "planned": "Planned"
+  },
+  "customers": {
+    "eyebrow": "Customers",
+    "title": "Trusted by platform engineers",
+    "subtitle": "Teams using DriftGuard to govern AI-written and human-written Terraform at scale.",
+    "yourTeam": "Your team next",
+    "ctaTitle": "Start reviewing PRs in 30 seconds",
+    "ctaBody": "No credit card. No infra changes. Works with any Terraform or OpenTofu repo on GitHub.",
+    "ctaButton": "Install GitHub App — free →",
+    "reviews7d": "PR reviews / day",
+    "p50": "P50 review latency",
+    "driftCost": "drift cost surfaced",
+    "uptime": "uptime SLA"
+  },
+  "careers": {
+    "eyebrow": "Careers",
+    "title": "Join the team",
+    "subtitle": "Building AI runtime safety for Terraform. Remote-first, EU-based.",
+    "openRoles": "Open roles",
+    "fullTime": "Full-time",
+    "remote": "Remote · EU",
+    "apply": "Apply →",
+    "noRoles": "No open roles right now.",
+    "noRolesBody": "We hire when the product demands it. Follow us on LinkedIn for updates.",
+    "whyUs": "Why DriftGuard",
+    "highOwn": "High ownership",
+    "openSource": "Open source core",
+    "euOnly": "EU timezone preferred"
+  },
+  "changelog": {
+    "eyebrow": "Release history",
+    "title": "Changelog",
+    "subtitle": "All changes to the DriftGuard platform, newest first.",
+    "new": "New",
+    "fix": "Fix",
+    "breaking": "Breaking",
+    "improved": "Improved",
+    "note": "Technical entries kept in English as canonical release record."
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "perRepo": "Per-repo. Annual saves 15%."
+  },
+  "legal": {
+    "languageNote": "This document is provided in English for legal accuracy. Translations are for informational purposes only.",
+    "effectiveDate": "Effective date:",
+    "lastUpdated": "Last updated:"
+  },
+  "subprocessors": {
+    "eyebrow": "Legal",
+    "title": "Subprocessors",
+    "subtitle": "Third-party services that process personal data on behalf of DriftGuard.",
+    "name": "Subprocessor",
+    "purpose": "Purpose",
+    "location": "Data location",
+    "updated": "Last updated:"
+  },
+  "dpa": {
+    "eyebrow": "Legal",
+    "title": "Data Processing Agreement",
+    "subtitle": "Between DriftGuard (Processor) and Customer (Controller). Compliant with GDPR Art. 28."
   }
 }

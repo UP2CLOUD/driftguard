@@ -1,5 +1,9 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 
 export const metadata: Metadata = { title: "Status — DriftGuard" };
 
@@ -33,14 +37,18 @@ const DOT_COLOR: Record<SystemStatus, string> = {
   outage:      "bg-blocked",
 };
 
-export default function StatusPage() {
+export default async function StatusPage() {
   const allOperational = SYSTEMS.every((s) => s.status === "operational");
   const now = new Date().toUTCString();
 
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
   return (
     <MarketingPageShell
-      eyebrow="Status"
-      title={allOperational ? "All systems operational" : "Service disruption"}
+      eyebrow={t("status.eyebrow")}
+      title={allOperational ? t("status.titleOk") : t("status.titleDegraded")}
       subtitle={`Last checked: ${now}`}
       narrow
     >

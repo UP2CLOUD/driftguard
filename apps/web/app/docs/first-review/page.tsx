@@ -1,12 +1,19 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 export const metadata = { title: "Your first PR review — DriftGuard Docs" };
 
-export default function FirstReview() {
+export default async function FirstReview() {
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+
   return (
     <MarketingPageShell
-      eyebrow="Docs · Get started"
-      title="Your first PR review"
-      subtitle="What DriftGuard posts on a Terraform PR — and how to read it."
+      eyebrow={t("docs.firstReview.eyebrow")} title={t("docs.firstReview.title")} subtitle={t("docs.firstReview.subtitle")}
       narrow
     >
       <div className="space-y-10 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">

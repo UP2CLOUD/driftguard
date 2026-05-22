@@ -1,4 +1,8 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 export const metadata = { title: "Webhooks — DriftGuard Docs" };
 
 const EVENTS = [
@@ -44,12 +48,15 @@ const EVENTS = [
   },
 ];
 
-export default function Webhooks() {
+export default async function Webhooks() {
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+
   return (
     <MarketingPageShell
-      eyebrow="Docs · Integrations"
-      title="Outbound webhooks"
-      subtitle="Send DriftGuard events to your own systems — Slack, PagerDuty, SIEM, or any HTTP endpoint."
+      eyebrow={t("docs.webhooks.eyebrow")} title={t("docs.webhooks.title")} subtitle={t("docs.webhooks.subtitle")}
       narrow
     >
       <div className="space-y-10">
@@ -64,6 +71,10 @@ export default function Webhooks() {
           </p>
           <pre className="overflow-x-auto rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-4 font-mono text-[12px] text-[color:var(--dg-fg)]">{`# Verify signature (Python)
 import hashlib, hmac
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 
 def verify(payload: bytes, sig: str, secret: str) -> bool:
     expected = "sha256=" + hmac.new(

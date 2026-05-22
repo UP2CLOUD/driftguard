@@ -164,5 +164,170 @@
     "blocked": "अवरुद्ध",
     "approved": "अनुमोदित",
     "warned": "चेतावनी दी"
+  },
+  "docs": {
+    "eyebrow": "दस्तावेज़",
+    "title": "DriftGuard दस्तावेज़",
+    "subtitle": "DriftGuard को एकीकृत, कॉन्फ़िगर और संचालित करने के लिए सभी आवश्यक जानकारी।",
+    "getStarted": "शुरू करें",
+    "coreConc": "मुख्य अवधारणाएं",
+    "integrations": "एकीकरण",
+    "compliance": "अनुपालन",
+    "legal": "कानूनी",
+    "install": {
+      "label": "इंस्टॉलेशन",
+      "eyebrow": "डॉक्स · शुरू करें",
+      "title": "30 सेकंड में इंस्टॉल करें",
+      "subtitle": "तीन चरण। कोई SDK, कोई रीराइट, कोई इन्फ्रा बदलाव नहीं।"
+    },
+    "firstReview": {
+      "label": "आपकी पहली समीक्षा",
+      "eyebrow": "डॉक्स · शुरू करें",
+      "title": "आपकी पहली PR समीक्षा",
+      "subtitle": "DriftGuard प्रत्येक Terraform PR पर क्या विश्लेषण करता है।"
+    },
+    "api": {
+      "label": "API संदर्भ",
+      "eyebrow": "डेवलपर्स",
+      "title": "API संदर्भ",
+      "subtitle": "REST API — सभी endpoints, प्रमाणीकरण और उदाहरण।"
+    },
+    "memory": {
+      "label": "सिमेंटिक मेमोरी",
+      "eyebrow": "डॉक्स · अवधारणाएं",
+      "title": "सिमेंटिक मेमोरी",
+      "subtitle": "DriftGuard विफलताओं को कैसे याद रखता है।"
+    },
+    "cost": {
+      "label": "लागत विश्लेषण",
+      "eyebrow": "डॉक्स · अवधारणाएं",
+      "title": "लागत विश्लेषण",
+      "subtitle": "प्रत्येक Terraform PR पर मासिक लागत डेल्टा।"
+    },
+    "drift": {
+      "label": "ड्रिफ्ट डिटेक्शन",
+      "eyebrow": "डॉक्स · अवधारणाएं",
+      "title": "ड्रिफ्ट डिटेक्शन",
+      "subtitle": "वास्तविक क्लाउड स्थिति बनाम Terraform योजना।"
+    },
+    "policies": {
+      "label": "पॉलिसी इंजन",
+      "eyebrow": "डॉक्स · अवधारणाएं",
+      "title": "पॉलिसी इंजन",
+      "subtitle": "अपने एजेंटों को क्या बदलने की अनुमति है यह घोषित करें।"
+    },
+    "webhooks": {
+      "label": "आउटबाउंड Webhooks",
+      "eyebrow": "डॉक्स · एकीकरण",
+      "title": "आउटबाउंड Webhooks",
+      "subtitle": "Slack, Teams या अपने endpoint में DriftGuard इवेंट प्राप्त करें।"
+    }
+  },
+  "status": {
+    "eyebrow": "सिस्टम स्थिति",
+    "titleOk": "सभी सिस्टम चालू",
+    "titleDegraded": "सेवा बाधा",
+    "operational": "चालू",
+    "degraded": "डेग्रेडेड",
+    "outage": "बड़ी आउटेज",
+    "lastChecked": "अंतिम जांच:",
+    "components": "घटक",
+    "metrics": "मेट्रिक्स",
+    "uptime": "99.9% अपटाइम",
+    "p99": "P99 <2s",
+    "memory": "मेमोरी इंडेक्स",
+    "pipeline": "समीक्षा पाइपलाइन",
+    "dashboard": "डैशबोर्ड",
+    "webhooks": "GitHub Webhooks",
+    "checkov": "Checkov + AI ट्राइज",
+    "infracost": "Infracost एकीकरण",
+    "costAnalysis": "लागत विश्लेषण"
+  },
+  "security": {
+    "eyebrow": "विश्वास और सुरक्षा",
+    "title": "DriftGuard में सुरक्षा",
+    "subtitle": "हम अन्य टीमों की इन्फ्रा की समीक्षा करते हैं, इसलिए हमें उच्च सुरक्षा मानक बनाए रखने होते हैं।",
+    "dataModel": "डेटा मॉडल",
+    "encryption": "एन्क्रिप्शन",
+    "auth": "प्रमाणीकरण",
+    "auditLog": "ऑडिट लॉग",
+    "pentest": "पेनेट्रेशन टेस्टिंग",
+    "depScan": "डिपेंडेंसी स्कैन",
+    "dataResid": "डेटा रेजिडेंसी",
+    "awsCreds": "AWS क्रेडेंशियल",
+    "sdlc": "सुरक्षित विकास"
+  },
+  "compliance": {
+    "eyebrow": "नियामक अनुपालन",
+    "title": "अनुपालन",
+    "subtitle": "DriftGuard DORA, NIS2, ISO 27001 और CIS बेंचमार्क से कैसे मैप होता है।",
+    "framework": "फ्रेमवर्क",
+    "article": "अनुच्छेद / नियंत्रण",
+    "coverage": "DriftGuard कवरेज",
+    "status": "स्थिति",
+    "partial": "आंशिक",
+    "full": "पूर्ण",
+    "planned": "नियोजित"
+  },
+  "customers": {
+    "eyebrow": "ग्राहक",
+    "title": "प्लेटफॉर्म इंजीनियरों का भरोसा",
+    "subtitle": "DriftGuard का उपयोग करने वाली टीमें।",
+    "yourTeam": "आपकी टीम अगली",
+    "ctaTitle": "30 सेकंड में PR समीक्षा शुरू करें",
+    "ctaBody": "कोई क्रेडिट कार्ड नहीं। कोई इन्फ्रा बदलाव नहीं।",
+    "ctaButton": "GitHub App इंस्टॉल करें — मुफ़्त →",
+    "reviews7d": "PR समीक्षा / दिन",
+    "p50": "P50 लेटेंसी",
+    "driftCost": "ड्रिफ्ट लागत",
+    "uptime": "अपटाइम SLA"
+  },
+  "careers": {
+    "eyebrow": "करियर",
+    "title": "टीम में शामिल हों",
+    "subtitle": "Terraform के लिए AI रनटाइम सुरक्षा बना रहे हैं। Remote-first, EU आधारित।",
+    "openRoles": "खुले पद",
+    "fullTime": "पूर्णकालिक",
+    "remote": "रिमोट · EU",
+    "apply": "आवेदन करें →",
+    "noRoles": "अभी कोई खुला पद नहीं।",
+    "whyUs": "DriftGuard क्यों",
+    "highOwn": "उच्च जिम्मेदारी",
+    "openSource": "ओपन सोर्स कोर",
+    "euOnly": "EU टाइमज़ोन पसंदीदा",
+    "noRolesBody": "हम जरूरत के अनुसार भर्ती करते हैं। LinkedIn पर फॉलो करें।"
+  },
+  "changelog": {
+    "eyebrow": "रिलीज़ इतिहास",
+    "title": "Changelog",
+    "subtitle": "DriftGuard प्लेटफॉर्म में सभी बदलाव, नवीनतम पहले।",
+    "new": "नया",
+    "fix": "सुधार",
+    "breaking": "Breaking",
+    "improved": "बेहतर",
+    "note": "तकनीकी प्रविष्टियां अंग्रेजी में रखी गई हैं।"
+  },
+  "pricing": {
+    "eyebrow": "मूल्य निर्धारण",
+    "perRepo": "प्रति repo। वार्षिक पर 15% बचत।"
+  },
+  "legal": {
+    "languageNote": "यह दस्तावेज़ कानूनी सटीकता के लिए अंग्रेजी में प्रदान किया गया है। अनुवाद केवल सूचनात्मक हैं।",
+    "effectiveDate": "प्रभावी तिथि:",
+    "lastUpdated": "अंतिम अपडेट:"
+  },
+  "subprocessors": {
+    "eyebrow": "कानूनी",
+    "title": "उप-प्रोसेसर",
+    "subtitle": "DriftGuard की ओर से व्यक्तिगत डेटा प्रोसेस करने वाली तृतीय-पक्ष सेवाएं।",
+    "name": "उप-प्रोसेसर",
+    "purpose": "उद्देश्य",
+    "location": "डेटा स्थान",
+    "updated": "अंतिम अपडेट:"
+  },
+  "dpa": {
+    "eyebrow": "कानूनी",
+    "title": "डेटा प्रोसेसिंग अनुबंध",
+    "subtitle": "DriftGuard (प्रोसेसर) और ग्राहक (नियंत्रक) के बीच। GDPR अनुच्छेद 28 के अनुपालन में।"
   }
 }

@@ -1,5 +1,9 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 
 export const metadata: Metadata = { title: "Compliance — DriftGuard" };
 
@@ -52,12 +56,15 @@ const STATUS_LABEL: Record<string, string> = {
   "in-progress": "In progress",
 };
 
-export default function Compliance() {
+export default async function Compliance() {
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+
   return (
     <MarketingPageShell
-      eyebrow="Compliance"
-      title="Compliance as a side effect."
-      subtitle="DriftGuard doesn't add a compliance workflow. It produces audit evidence as a natural output of every PR review."
+      eyebrow={t("compliance.eyebrow")} title={t("compliance.title")} subtitle={t("compliance.subtitle")}
     >
       <div className="space-y-4 mb-16">
         {FRAMEWORKS.map((f) => (

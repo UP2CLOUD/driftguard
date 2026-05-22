@@ -1,8 +1,17 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 export const metadata = { title: "Cost Analysis — DriftGuard Docs" };
-export default function Cost() {
+export default async function Cost() {
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+
   return (
-    <MarketingPageShell eyebrow="Docs · Core concepts" title="Cost analysis" subtitle="Monthly cost delta on every Terraform PR — before it merges." narrow>
+    <MarketingPageShell eyebrow={t("docs.cost.eyebrow")} title={t("docs.cost.title")} subtitle={t("docs.cost.subtitle")} narrow>
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <div><h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-2">Powered by Infracost</h2>
         <p>DriftGuard runs Infracost on every Terraform plan JSON and reports the monthly cost delta per resource. If a PR would add €500/month of EC2 instances, that appears in the PR comment before anyone merges.</p></div>

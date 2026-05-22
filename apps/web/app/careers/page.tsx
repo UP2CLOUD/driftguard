@@ -1,5 +1,9 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 
 export const metadata: Metadata = {
   title: "Careers — DriftGuard",
@@ -44,12 +48,15 @@ const VALUES = [
   { v: "Open-core", desc: "Core analyzer is open source. You build in public." },
 ];
 
-export default function Careers() {
+export default async function Careers() {
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+
   return (
     <MarketingPageShell
-      eyebrow="Company"
-      title="Work on DriftGuard"
-      subtitle="We're building AI runtime safety for infrastructure. Remote-first, small team, high ownership."
+      eyebrow={t("careers.eyebrow")} title={t("careers.title")} subtitle={t("careers.subtitle")}
       narrow
     >
       <div className="space-y-14">

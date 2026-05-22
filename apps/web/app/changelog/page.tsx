@@ -1,5 +1,9 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 
 export const metadata: Metadata = { title: "Changelog — DriftGuard" };
 
@@ -66,9 +70,14 @@ const TYPE_STYLE = {
   breaking: "text-blocked border-blocked/30 bg-blocked/10",
 } as const;
 
-export default function Changelog() {
+export default async function Changelog() {
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+
   return (
-    <MarketingPageShell eyebrow="Product" title="Changelog" subtitle="Every release, annotated." narrow>
+    <MarketingPageShell eyebrow={t("changelog.eyebrow")} title={t("changelog.title")} subtitle={t("changelog.subtitle")} narrow>
       <div className="space-y-14">
         {RELEASES.map((r) => (
           <div key={r.version}>

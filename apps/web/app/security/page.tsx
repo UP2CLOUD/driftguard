@@ -1,5 +1,9 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 
 export const metadata: Metadata = { title: "Security — DriftGuard" };
 
@@ -18,12 +22,15 @@ const CONTROLS = [
   { label: "SOC 2 Type II", value: "In progress — target Q4 2026" },
 ];
 
-export default function Security() {
+export default async function Security() {
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+
   return (
     <MarketingPageShell
-      eyebrow="Security"
-      title="Security at DriftGuard"
-      subtitle="We review other teams' infrastructure. Holding that trust requires us to maintain a high security bar ourselves."
+      eyebrow={t("security.eyebrow")} title={t("security.title")} subtitle={t("security.subtitle")}
       narrow
     >
       <section className="mb-12">

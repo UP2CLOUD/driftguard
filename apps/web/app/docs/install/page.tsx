@@ -1,4 +1,8 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 export const metadata = { title: "Install — DriftGuard Docs" };
 
 const STEPS = [
@@ -18,9 +22,14 @@ EOF`, desc: "Commit this file to any branch. DriftGuard reads it on every PR." }
   { n: "03", title: "Open a Terraform PR", code: "git checkout -b test/driftguard-review\n# edit any .tf file\ngit push && open a PR", desc: "DriftGuard will comment within ~30s. Check the Actions tab if it doesn\'t appear." },
 ];
 
-export default function Install() {
+export default async function Install() {
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+
   return (
-    <MarketingPageShell eyebrow="Docs · Get started" title="Install in 30 seconds" subtitle="Three steps. No SDK, no rewrites, no infra changes." narrow>
+    <MarketingPageShell eyebrow={t("docs.install.eyebrow")} title={t("docs.install.title")} subtitle={t("docs.install.subtitle")} narrow>
       <div className="space-y-10">
         {STEPS.map((s) => (
           <div key={s.n} className="relative pl-8 border-l border-[color:var(--dg-border)]">

@@ -1,5 +1,9 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 
 export const metadata: Metadata = { title: "Data Processing Agreement — DriftGuard" };
 
@@ -46,12 +50,15 @@ const SECTIONS = [
   },
 ];
 
-export default function DPA() {
+export default async function DPA() {
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+
   return (
     <MarketingPageShell
-      eyebrow="Legal"
-      title="Data Processing Agreement"
-      subtitle="Last updated 19 May 2026. This DPA is incorporated by reference into the DriftGuard Terms of Service."
+      eyebrow={t("dpa.eyebrow")} title={t("dpa.title")} subtitle={t("dpa.subtitle")}
       narrow
     >
       <div className="space-y-8">

@@ -1,8 +1,17 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
+
 export const metadata = { title: "Semantic Memory — DriftGuard Docs" };
-export default function Memory() {
+export default async function Memory() {
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+
   return (
-    <MarketingPageShell eyebrow="Docs · Core concepts" title="Semantic memory" subtitle="How DriftGuard remembers failures and recalls them at PR review time." narrow>
+    <MarketingPageShell eyebrow={t("docs.memory.eyebrow")} title={t("docs.memory.title")} subtitle={t("docs.memory.subtitle")} narrow>
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <Section title="What gets stored">
           Every finding from every PR analysis is converted into a 384-dimensional embedding using the Voyage-3-lite model. The embedding captures: the resource type, the change intent, the blast radius, and the severity. It is stored in a pgvector index alongside the original finding text, the repository, the PR number, and the outcome (blocked / allowed).
