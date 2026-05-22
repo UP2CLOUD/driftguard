@@ -60,6 +60,31 @@
     "saving": "保存中…",
     "billingTitle": "订阅与账单",
     "billingCurrent": "当前方案：",
-    "activePlan": "当前方案"
+    "activePlan": "当前方案",
+    "orgTitle": "组织",
+    "apiUnavailable": "API 不可用 — 请在 Vercel 环境变量中配置 NEXT_PUBLIC_API_URL。"
+  },
+  "installApp": {
+    "title": "安装 GitHub 应用",
+    "body": "要开始审查 Terraform PR，请在您的组织或仓库中安装 DriftGuard GitHub 应用。",
+    "cta": "安装 GitHub 应用 →",
+    "hint": "只需 30 秒，无需信用卡。",
+    "selectOrg": "选择组织",
+    "setup": "需要配置"
+  },
+  "repos": {
+    "title": "代码仓库",
+    "addRepo": "+ 添加仓库",
+    "statsRepos": "仓库",
+    "statsAnalyses": "7天分析",
+    "statsAvgRisk": "平均风险",
+    "statsPlan": "计划",
+    "noReposTitle": "暂无仓库",
+    "noReposBody": "打开一个 Terraform 或 OpenTofu PR 以触发首次分析。DriftGuard 将评论成本变化、安全发现和合规证据。",
+    "addRepository": "添加仓库 →",
+    "readDocs": "阅读文档",
+    "recentAnalyses": "最近分析",
+    "statusActive": "活跃",
+    "statusOff": "停用"
   }
 }

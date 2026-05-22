@@ -60,6 +60,31 @@
     "saving": "Guardando…",
     "billingTitle": "Suscripción y facturación",
     "billingCurrent": "Plan actual:",
-    "activePlan": "Plan activo"
+    "activePlan": "Plan activo",
+    "orgTitle": "Organización",
+    "apiUnavailable": "API no disponible — configura NEXT_PUBLIC_API_URL en las variables de entorno de Vercel."
+  },
+  "installApp": {
+    "title": "Instalar la GitHub App",
+    "body": "Para empezar a revisar PRs de Terraform, instala la GitHub App de DriftGuard en tu organización o repositorio.",
+    "cta": "Instalar GitHub App →",
+    "hint": "Tarda 30 segundos. Sin tarjeta de crédito.",
+    "selectOrg": "Seleccionar organización",
+    "setup": "Configuración requerida"
+  },
+  "repos": {
+    "title": "Repositorios",
+    "addRepo": "+ Agregar repo",
+    "statsRepos": "Repos",
+    "statsAnalyses": "Análisis 7d",
+    "statsAvgRisk": "Riesgo promedio",
+    "statsPlan": "Plan",
+    "noReposTitle": "Sin repositorios aún",
+    "noReposBody": "Abre un PR de Terraform u OpenTofu para activar tu primer análisis. DriftGuard comentará con delta de costo, hallazgos de seguridad y evidencia de cumplimiento.",
+    "addRepository": "Agregar repositorio →",
+    "readDocs": "Leer la documentación",
+    "recentAnalyses": "Análisis recientes",
+    "statusActive": "activo",
+    "statusOff": "inactivo"
   }
 }

@@ -60,6 +60,31 @@
     "saving": "جارٍ الحفظ…",
     "billingTitle": "الاشتراك والفوترة",
     "billingCurrent": "الخطة الحالية:",
-    "activePlan": "الخطة النشطة"
+    "activePlan": "الخطة النشطة",
+    "orgTitle": "المؤسسة",
+    "apiUnavailable": "واجهة API غير متاحة — قم بتكوين NEXT_PUBLIC_API_URL في متغيرات Vercel."
+  },
+  "installApp": {
+    "title": "تثبيت تطبيق GitHub",
+    "body": "لبدء مراجعة طلبات Terraform، قم بتثبيت تطبيق DriftGuard على GitHub في مؤسستك أو مستودعك.",
+    "cta": "تثبيت تطبيق GitHub ←",
+    "hint": "يستغرق 30 ثانية. لا حاجة لبطاقة ائتمان.",
+    "selectOrg": "اختر المؤسسة",
+    "setup": "الإعداد مطلوب"
+  },
+  "repos": {
+    "title": "المستودعات",
+    "addRepo": "+ إضافة مستودع",
+    "statsRepos": "مستودعات",
+    "statsAnalyses": "تحليلات 7أيام",
+    "statsAvgRisk": "متوسط المخاطر",
+    "statsPlan": "الخطة",
+    "noReposTitle": "لا توجد مستودعات بعد",
+    "noReposBody": "افتح طلب Terraform أو OpenTofu لتفعيل أول تحليل. سيعلق DriftGuard بفارق التكلفة ونتائج الأمان وأدلة الامتثال.",
+    "addRepository": "إضافة مستودع ←",
+    "readDocs": "اقرأ التوثيق",
+    "recentAnalyses": "التحليلات الأخيرة",
+    "statusActive": "نشط",
+    "statusOff": "معطل"
   }
 }

@@ -60,6 +60,31 @@
     "saving": "सहेजा जा रहा है…",
     "billingTitle": "सदस्यता और बिलिंग",
     "billingCurrent": "वर्तमान योजना:",
-    "activePlan": "सक्रिय योजना"
+    "activePlan": "सक्रिय योजना",
+    "orgTitle": "संस्था",
+    "apiUnavailable": "API अनुपलब्ध — Vercel पर्यावरण चर में NEXT_PUBLIC_API_URL कॉन्फ़िगर करें।"
+  },
+  "installApp": {
+    "title": "GitHub App इंस्टॉल करें",
+    "body": "Terraform PRs की समीक्षा शुरू करने के लिए, अपनी संस्था या रिपॉज़िटरी पर DriftGuard GitHub App इंस्टॉल करें।",
+    "cta": "GitHub App इंस्टॉल करें →",
+    "hint": "30 सेकंड लगते हैं। कोई क्रेडिट कार्ड आवश्यक नहीं।",
+    "selectOrg": "संस्था चुनें",
+    "setup": "सेटअप आवश्यक"
+  },
+  "repos": {
+    "title": "रिपॉज़िटरी",
+    "addRepo": "+ रेपो जोड़ें",
+    "statsRepos": "रेपो",
+    "statsAnalyses": "7d विश्लेषण",
+    "statsAvgRisk": "औसत जोखिम",
+    "statsPlan": "योजना",
+    "noReposTitle": "अभी तक कोई रिपॉज़िटरी नहीं",
+    "noReposBody": "अपना पहला विश्लेषण ट्रिगर करने के लिए Terraform या OpenTofu PR खोलें। DriftGuard लागत अंतर, सुरक्षा निष्कर्ष और अनुपालन प्रमाण के साथ टिप्पणी करेगा।",
+    "addRepository": "रिपॉज़िटरी जोड़ें →",
+    "readDocs": "दस्तावेज़ पढ़ें",
+    "recentAnalyses": "हाल के विश्लेषण",
+    "statusActive": "सक्रिय",
+    "statusOff": "बंद"
   }
 }
