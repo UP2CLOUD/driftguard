@@ -75,6 +75,40 @@ def _recommended_action(severity: str, incident_created: bool, recurrence: int) 
     return "monitor"
 
 
+async def _evaluate_policies(db: AsyncSession, org_id: str, event_type: str, severity: str, message: str) -> None:
+    """Check event against enabled policy rules; increment match_count on hits."""
+
+    from driftguard.db.models import PolicyRule
+
+    rules = (
+        (
+            await db.execute(
+                select(PolicyRule).where(
+                    PolicyRule.org_id == org_id,
+                    PolicyRule.enabled.is_(True),
+                )
+            )
+        )
+        .scalars()
+        .all()
+    )
+
+    for rule in rules:
+        cond = rule.conditions or {}
+        # Match on event_type
+        if "event_type" in cond and cond["event_type"] != event_type:
+            continue
+        # Match on severity
+        if "severity" in cond and cond["severity"] != severity:
+            continue
+        # Match on message substring
+        if "message_contains" in cond:
+            if cond["message_contains"].lower() not in message.lower():
+                continue
+        # Rule matched
+        rule.match_count = (rule.match_count or 0) + 1
+
+
 @router.post("/event", response_model=IngestEventResponse)
 async def ingest_event(
     body: IngestEventRequest,
@@ -166,6 +200,9 @@ async def ingest_event(
             await db.flush()
             incident_id = incident.id
             incident_created = True
+
+    # 5. Evaluate active policy rules
+    await _evaluate_policies(db, org.id, body.event_type, body.severity, body.message)
 
     await db.commit()
 

@@ -54,7 +54,12 @@ class Settings(BaseSettings):
 
     # ── App ────────────────────────────────────────────────────
     public_base_url: str = "http://localhost:3000"
-    cors_origins: list[str] = ["http://localhost:3000", "http://localhost:3002"]
+    cors_origins: list[str] = [
+        "http://localhost:3000",
+        "http://localhost:3002",
+        "https://driftguard-blue.vercel.app",
+        "https://driftguard.io",
+    ]
 
     @property
     def celery_broker_url(self) -> str:

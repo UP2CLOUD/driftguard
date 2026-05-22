@@ -11,6 +11,7 @@ from driftguard.api.v1 import (
     ingest,
     memory,
     orgs,
+    policies,
     repos,
     stripe_webhooks,
     webhooks,
@@ -31,3 +32,4 @@ router.include_router(dashboard.router)
 router.include_router(ingest.router)
 router.include_router(incidents.router)
 router.include_router(events.router)
+router.include_router(policies.router)

@@ -165,3 +165,26 @@ class DriftIncident(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow
     )
+
+
+class PolicyRule(Base):
+    """Runtime guardrail — blocks or warns on matching drift events."""
+
+    __tablename__ = "policy_rules"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    org_id: Mapped[str] = mapped_column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
+    name: Mapped[str] = mapped_column(String(255), default="")
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    rule_type: Mapped[str] = mapped_column(String(64), default="block")  # block | warn | alert
+    severity: Mapped[str] = mapped_column(String(16), default="high")
+    enabled: Mapped[bool] = mapped_column(default=True)
+    conditions: Mapped[dict | None] = mapped_column(
+        JSON, nullable=True
+    )  # {event_type, message_contains, resource_pattern}
+    actions: Mapped[dict | None] = mapped_column(JSON, nullable=True)  # {notify_email, create_incident, block_merge}
+    match_count: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow
+    )

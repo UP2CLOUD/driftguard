@@ -1,285 +1,306 @@
 import Link from "next/link";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { fetchInstallationRepos } from "@/lib/github-installation";
 
-export default async function RepoList({
+const API   = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const TOKEN = () => `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}`;
+const HDRS  = () => ({ Authorization: TOKEN() });
+
+async function apiFetch(path: string, revalidate = 20) {
+  try {
+    const res = await fetch(`${API()}${path}`, {
+      headers: HDRS(),
+      next: { revalidate },
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
+export default async function DashboardPage({
   params,
 }: {
   params: Promise<{ installationId: string }>;
 }) {
+  const session = await auth();
+  if (!session) redirect("/");
+
   const { installationId } = await params;
   const preferences = await getUserPreferences();
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
 
-  // Try backend API first, fall back to GitHub API directly
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-  let repos: any[] = [];
-  let lastAnalyses: any[] = [];
-  let orgPlan = "free";
-  let apiAvailable = false;
+  // Parallel fetch: overview + incidents + events
+  const [overview, incidents, events] = await Promise.all([
+    apiFetch(`/api/v1/dashboard/overview?installation_id=${installationId}`),
+    apiFetch(`/api/v1/incidents?installation_id=${installationId}&limit=5`),
+    apiFetch(`/api/v1/events?installation_id=${installationId}&limit=8`),
+  ]);
 
-  // Fetch real dashboard overview (replaces individual org/repo/analyses fetches)
-  let overview: Record<string, any> | null = null;
-  try {
-    const ovRes = await fetch(
-      `${apiUrl}/api/v1/dashboard/overview?installation_id=${installationId}`,
-      { headers: { Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}` },
-        next: { revalidate: 20 }, signal: AbortSignal.timeout(3000) }
-    );
-    if (ovRes.ok) { overview = await ovRes.json(); apiAvailable = true; }
-  } catch { /* backend offline */ }
+  const apiAvailable = !!overview;
+  const orgPlan      = overview?.plan ?? "free";
+  const repos        = overview?.repos ?? 0;
+  const analyses7d   = overview?.analyses_7d ?? 0;
+  const avgRisk      = overview?.avg_risk_7d ?? null;
+  const openInc      = overview?.open_incidents ?? 0;
+  const criticalInc  = overview?.critical_incidents ?? 0;
+  const memoryCount  = overview?.memory_entries ?? 0;
+  const recentAnalyses = overview?.recent_analyses ?? [];
 
-  if (overview) {
-    orgPlan = overview.plan ?? "free";
-    lastAnalyses = overview.recent_analyses ?? [];
-  }
-
-  try {
-    const orgRes = await fetch(
-      `${apiUrl}/api/v1/orgs/by-installation/${installationId}`,
-      {
-        headers: { Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}` },
-        next: { revalidate: 30 },
-        signal: AbortSignal.timeout(3000),
-      }
-    );
-    if (orgRes.ok) {
-      apiAvailable = true;
-      const org = await orgRes.json();
-      orgPlan = org.plan;
-      const [reposRes, analysesRes] = await Promise.all([
-        fetch(`${apiUrl}/api/v1/orgs/${org.id}/repos`, {
-          headers: { Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}` },
-          next: { revalidate: 30 },
-        }),
-        fetch(`${apiUrl}/api/v1/orgs/${org.id}/analyses?limit=5`, {
-          headers: { Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}` },
-          next: { revalidate: 30 },
-        }),
-      ]);
-      if (reposRes.ok) repos = await reposRes.json();
-      if (analysesRes.ok) lastAnalyses = await analysesRes.json();
-    }
-  } catch {
-    // API not reachable — fall back to GitHub
-  }
-
-  // Fallback: fetch repos directly from GitHub API
+  // GitHub fallback for repos list when API offline
+  let ghRepos: any[] = [];
   if (!apiAvailable) {
-    const ghRepos = await fetchInstallationRepos(installationId);
-    repos = ghRepos.map((r) => ({
-      id: String(r.id),
+    const raw = await fetchInstallationRepos(installationId);
+    ghRepos = raw.map((r) => ({
       full_name: r.full_name,
-      default_branch: r.default_branch,
-      enabled: true,
       html_url: r.html_url,
+      default_branch: r.default_branch,
     }));
   }
 
+  const SEV_COLOR: Record<string, string> = {
+    critical: "text-blocked",
+    high: "text-[color:var(--dg-severity-high)]",
+    medium: "text-warned",
+    low: "text-[color:var(--dg-fg-muted)]",
+  };
+
+  const STATUS_DOT: Record<string, string> = {
+    open: "bg-blocked",
+    investigating: "bg-warned",
+    resolved: "bg-allowed",
+    suppressed: "bg-[color:var(--dg-fg-subtle)]",
+  };
+
   return (
-    <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 sm:py-10">
-      {/* Header */}
-      <div className="flex items-end justify-between gap-4 mb-6 sm:mb-8">
-        <div>
-          <div className="dg-label">Workspace ▸ {installationId}</div>
-          <h1 className="mt-2 font-sans text-2xl sm:text-3xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
-            {t("repos.title")}
-          </h1>
-        </div>
-        <a
-          href="https://github.com/apps/driftguard-app/installations/new"
-          className="dg-button dg-button-ghost text-[12px]"
-        >
-          {t("repos.addRepo")}
-        </a>
-      </div>
-
-      {/* API unavailable banner */}
-      {!apiAvailable && repos.length > 0 && (
-        <div className="mb-6 flex items-center gap-3 rounded-md border border-warned/30 bg-warned/5 px-4 py-3">
-          <span className="h-1.5 w-1.5 rounded-full bg-warned shrink-0" />
-          <p className="font-mono text-[11px] text-warned">
-            Backend API offline — showing repos from GitHub directly. Analysis history unavailable.
-          </p>
-        </div>
-      )}
-
-      {/* Stats strip */}
-      <div className="mb-8 grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] grid-cols-2 sm:grid-cols-4">
-        <StatCell label="Repos" value={repos.length} />
-        <StatCell label="Analyses" value={lastAnalyses.length} />
-        <StatCell
-          label="Avg risk"
-          value={
-            lastAnalyses.length
-              ? Math.round(
-                  lastAnalyses.reduce((s: number, a: any) => s + (a.risk_score || 0), 0) /
-                    lastAnalyses.length
-                )
-              : "—"
-          }
-        />
-        <StatCell label="Plan" value={orgPlan} accent={orgPlan !== "free"} />
-      </div>
-
-      {/* Repo list */}
-      {repos.length === 0 ? (
-        <EmptyState t={t} />
-      ) : (
-        <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
-          <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 grid grid-cols-[1fr_auto_auto] gap-4 text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] font-mono">
-            <span>Repository</span>
-            <span className="hidden sm:inline">Branch</span>
-            <span>Status</span>
-          </div>
-          {repos.map((repo: any) => {
-            const href = apiAvailable
-              ? `/dashboard/${installationId}/repos/${repo.id}`
-              : (repo.html_url ?? `https://github.com/${repo.full_name}`);
-            return (
-              <Link
-                key={repo.id}
-                href={href}
-                target={apiAvailable ? undefined : "_blank"}
-                rel={apiAvailable ? undefined : "noreferrer"}
-                className="grid grid-cols-[1fr_auto_auto] gap-4 items-center px-4 py-3.5 border-b border-[color:var(--dg-border)] last:border-b-0 bg-[color:var(--dg-surface)] hover:bg-[color:var(--dg-surface-raised)] transition group"
-              >
-                <div className="min-w-0">
-                  <div className="font-mono text-[13px] font-semibold text-[color:var(--dg-fg)] group-hover:text-[color:var(--dg-electric-bright)] transition truncate">
-                    {repo.full_name}
-                  </div>
-                </div>
-                <span className="hidden sm:inline font-mono text-[12px] text-[color:var(--dg-fg-muted)]">
-                  {repo.default_branch}
-                </span>
-                <span
-                  className={`inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider ${
-                    repo.enabled
-                      ? "text-allowed"
-                      : "text-[color:var(--dg-fg-subtle)]"
-                  }`}
-                >
-                  <span
-                    className={`h-1.5 w-1.5 rounded-full ${
-                      repo.enabled ? "bg-allowed dg-pulse" : "bg-[color:var(--dg-fg-subtle)]"
-                    }`}
-                  />
-                  {repo.enabled ? "active" : "off"}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Recent analyses (only when API available) */}
-      {apiAvailable && lastAnalyses.length > 0 && (
-        <section className="mt-12">
-          <div className="dg-label mb-3">{t("repos.recentAnalyses")}</div>
-          <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
-            {lastAnalyses.map((a: any) => (
-              <Link
-                key={a.id}
-                href={`/dashboard/${installationId}/analyses/${a.id}`}
-                className="flex items-center justify-between px-4 py-3 border-b border-[color:var(--dg-border)] last:border-b-0 bg-[color:var(--dg-surface)] hover:bg-[color:var(--dg-surface-raised)] transition group"
-              >
-                <div className="flex items-center gap-4 min-w-0">
-                  <span
-                    className={`h-2 w-2 rounded-full shrink-0 ${
-                      (a.risk_score ?? 0) > 70
-                        ? "bg-blocked"
-                        : (a.risk_score ?? 0) > 40
-                          ? "bg-warned"
-                          : "bg-allowed"
-                    }`}
-                  />
-                  <span className="font-mono text-[12px] text-[color:var(--dg-fg)] truncate">
-                    {a.repo_full_name ?? a.repo ?? "—"}
-                  </span>
-                  <span className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] hidden sm:inline">
-                    PR #{a.pr_number}
-                  </span>
-                </div>
-                <div className="flex items-center gap-4 shrink-0">
-                  <span className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] tabular-nums">
-                    risk {a.risk_score ?? 0}
-                  </span>
-                  <span className="text-[color:var(--dg-fg-subtle)] group-hover:text-[color:var(--dg-electric-bright)] transition">
-                    →
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
-  );
-}
-
-function StatCell({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: any;
-  accent?: boolean;
-}) {
-  return (
-    <div className="bg-[color:var(--dg-canvas)] px-4 py-4 sm:py-5">
-      <div className="dg-label">{label}</div>
-      <div
-        className={`mt-2 font-mono text-2xl font-semibold tabular-nums ${
-          accent
-            ? "text-[color:var(--dg-electric-bright)]"
-            : "text-[color:var(--dg-fg)]"
-        }`}
-      >
-        {value}
-      </div>
-    </div>
-  );
-}
-
-function EmptyState({ t }: { t: (k: string) => string }) {
-  return (
-    <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-8 sm:p-12 text-center">
-      <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-canvas)] mb-5">
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 22 22"
-          fill="none"
-          className="text-[color:var(--dg-electric)]"
-        >
-          <path
-            d="M2 3 L11 7 L20 3 L20 14 L11 19 L2 14 Z"
-            stroke="currentColor"
-            strokeWidth="1.4"
-          />
-        </svg>
-      </div>
-      <h2 className="font-sans text-lg font-semibold tracking-tight text-[color:var(--dg-fg)]">
-        {t("repos.noReposTitle")}
-      </h2>
-      <p className="mt-2 max-w-md mx-auto text-[13px] text-[color:var(--dg-fg-muted)]">
-        {t("repos.noReposBody")}
-      </p>
-      <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-        <a
-          href="https://github.com/apps/driftguard-app/installations/new"
-          className="dg-button dg-button-primary text-[12px]"
-        >
-          {t("repos.addRepository")}
-        </a>
-        <Link href="/docs" className="dg-button dg-button-ghost text-[12px]">
-          {t("repos.readDocs")}
+    <main className="min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
+      {/* Nav */}
+      <nav className="sticky top-0 z-40 border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]/90 backdrop-blur-md px-4 sm:px-6 py-3 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="text-[color:var(--dg-electric)]">
+            <path d="M2 3 L10 7 L18 3 L18 13 L10 17 L2 13 Z" stroke="currentColor" strokeWidth="1.4" />
+          </svg>
+          <span className="font-sans text-[14px] font-semibold tracking-tight">driftguard</span>
         </Link>
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hidden sm:inline">
+            {orgPlan} plan
+          </span>
+          {!apiAvailable && (
+            <span className="font-mono text-[10px] text-warned bg-warned/10 border border-warned/20 rounded px-2 py-1">
+              API offline — limited data
+            </span>
+          )}
+        </div>
+      </nav>
+
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-8">
+
+        {/* Stats strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)]">
+          {[
+            { label: t("repos.statsRepos") ?? "Repos", value: repos, color: "" },
+            { label: t("repos.statsAnalyses") ?? "Analyses 7d", value: analyses7d, color: "" },
+            { label: "Avg risk", value: avgRisk != null ? `${avgRisk}` : "—", color: "" },
+            { label: "Open incidents", value: openInc, color: openInc > 0 ? "text-blocked" : "" },
+            { label: "Critical", value: criticalInc, color: criticalInc > 0 ? "text-blocked" : "" },
+            { label: "Memory", value: memoryCount, color: "" },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
+              <div className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">{label}</div>
+              <div className={`font-mono text-xl font-bold tabular-nums ${color || "text-[color:var(--dg-fg)]"}`}>{value}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+          {/* Left: Analyses + Incidents */}
+          <div className="space-y-6">
+
+            {/* Recent analyses */}
+            <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
+              <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
+                <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                  {t("repos.recentAnalyses") ?? "Recent analyses"}
+                </span>
+                <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{analyses7d} / 7d</span>
+              </div>
+              {recentAnalyses.length === 0 && !apiAvailable ? (
+                <div className="px-4 py-8 text-center">
+                  <p className="text-[13px] text-[color:var(--dg-fg-muted)] mb-4">
+                    {t("repos.noReposBody") ?? "Open a Terraform PR to trigger your first analysis."}
+                  </p>
+                  <a
+                    href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-app"}/installations/new`}
+                    className="dg-button dg-button-ghost text-[11px]"
+                  >
+                    {t("repos.addRepository") ?? "Add repository →"}
+                  </a>
+                </div>
+              ) : recentAnalyses.length === 0 ? (
+                <div className="px-4 py-6 text-center text-[13px] text-[color:var(--dg-fg-muted)]">
+                  No analyses yet — open a Terraform PR to start.
+                </div>
+              ) : (
+                <div className="divide-y divide-[color:var(--dg-border)]">
+                  {recentAnalyses.map((a: any) => (
+                    <Link
+                      key={a.id}
+                      href={`/dashboard/${installationId}/analyses/${a.id}`}
+                      className="flex items-center justify-between px-4 py-3 hover:bg-[color:var(--dg-surface-raised)] transition group"
+                    >
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <code className="font-mono text-[11px] text-[color:var(--dg-fg)] truncate">
+                            {a.repo_full_name}#{a.pr_number}
+                          </code>
+                          <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)] hidden sm:inline">
+                            {a.head_sha?.slice(0, 7)}
+                          </span>
+                        </div>
+                        <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+                          {a.created_at ? new Date(a.created_at).toLocaleString() : ""}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className={`font-mono text-[13px] font-bold tabular-nums ${
+                          (a.risk_score ?? 0) >= 70 ? "text-blocked" :
+                          (a.risk_score ?? 0) >= 40 ? "text-warned" : "text-allowed"
+                        }`}>
+                          {a.risk_score ?? "—"}
+                        </span>
+                        <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] opacity-0 group-hover:opacity-100 transition">→</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Incidents */}
+            {incidents && incidents.length > 0 && (
+              <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
+                <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                    Drift incidents
+                  </span>
+                  <span className="font-mono text-[10px] rounded border border-blocked/30 bg-blocked/10 text-blocked px-1.5 py-0.5">
+                    {openInc} open
+                  </span>
+                </div>
+                <div className="divide-y divide-[color:var(--dg-border)]">
+                  {incidents.map((inc: any) => (
+                    <div key={inc.id} className="flex items-start gap-3 px-4 py-3 hover:bg-[color:var(--dg-surface-raised)] transition">
+                      <div className="mt-1.5 shrink-0">
+                        <span className={`inline-block h-2 w-2 rounded-full ${STATUS_DOT[inc.status] ?? "bg-[color:var(--dg-fg-subtle)]"}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                          <span className={`font-mono text-[10px] uppercase tracking-widest ${SEV_COLOR[inc.severity] ?? ""}`}>
+                            {inc.severity}
+                          </span>
+                          <span className="text-[12px] font-medium text-[color:var(--dg-fg)] truncate">{inc.title}</span>
+                        </div>
+                        <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] flex items-center gap-3">
+                          <span>{inc.status}</span>
+                          {inc.recurrence_count > 1 && (
+                            <span className="text-warned">↺ {inc.recurrence_count}×</span>
+                          )}
+                          {inc.last_seen_at && (
+                            <span>{new Date(inc.last_seen_at).toLocaleString()}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* GitHub repos fallback */}
+            {!apiAvailable && ghRepos.length > 0 && (
+              <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
+                <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                    Repositories (GitHub)
+                  </span>
+                </div>
+                <div className="divide-y divide-[color:var(--dg-border)]">
+                  {ghRepos.map((r: any) => (
+                    <a
+                      key={r.full_name}
+                      href={r.html_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center justify-between px-4 py-3 hover:bg-[color:var(--dg-surface-raised)] transition"
+                    >
+                      <code className="font-mono text-[11px] text-[color:var(--dg-fg)]">{r.full_name}</code>
+                      <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{r.default_branch}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right: event feed */}
+          <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden h-fit">
+            <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                Event feed
+              </span>
+              {apiAvailable && (
+                <span className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-allowed animate-pulse" />
+                  <span className="font-mono text-[10px] text-allowed">live</span>
+                </span>
+              )}
+            </div>
+            {events && events.length > 0 ? (
+              <div className="divide-y divide-[color:var(--dg-border)]">
+                {events.map((e: any) => {
+                  const sev = e.severity ?? "info";
+                  const dotCls =
+                    sev === "critical" ? "bg-blocked shadow-[0_0_4px_rgba(255,71,87,0.5)]" :
+                    sev === "high"     ? "bg-[color:var(--dg-severity-high)]" :
+                    sev === "warn"     ? "bg-warned" : "bg-[color:var(--dg-electric)]";
+                  const txtCls =
+                    sev === "critical" ? "text-blocked" :
+                    sev === "high"     ? "text-[color:var(--dg-severity-high)]" :
+                    sev === "warn"     ? "text-warned" : "text-[color:var(--dg-fg-muted)]";
+                  return (
+                    <div key={e.id} className="px-4 py-3">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${dotCls}`} />
+                        <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] truncate">
+                          {e.event_type} · {e.source}
+                        </span>
+                      </div>
+                      <p className={`text-[11px] truncate ${txtCls}`}>{e.message}</p>
+                      {e.created_at && (
+                        <p className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)] mt-0.5">
+                          {new Date(e.created_at).toLocaleTimeString()}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="px-4 py-8 text-center text-[12px] text-[color:var(--dg-fg-muted)]">
+                No events yet — events appear here as DriftGuard reviews PRs.
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }
