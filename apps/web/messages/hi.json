@@ -86,5 +86,11 @@
     "recentAnalyses": "हाल के विश्लेषण",
     "statusActive": "सक्रिय",
     "statusOff": "बंद"
+  },
+  "landing": {
+    "ctaTitle": "अपने क्लाउड पर नियंत्रण वापस पाएं।",
+    "ctaSubtitle": "30 सेकंड में इंस्टॉल करें। कोई क्रेडिट कार्ड आवश्यक नहीं। GitHub, AWS, OpenTofu और किसी भी Terraform-संगत टूलचेन के साथ काम करता है।",
+    "ctaButton": "GitHub App इंस्टॉल करें — मुफ़्त",
+    "ctaReadDocs": "दस्तावेज़ पढ़ें →"
   }
 }

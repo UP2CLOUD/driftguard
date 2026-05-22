@@ -1,4 +1,7 @@
 import { auth } from "@/auth";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
 import Link from "next/link";
 import { SignInButton } from "@/components/SignInButton";
 import { StatusBar } from "@/components/landing/StatusBar";
@@ -19,6 +22,9 @@ import { Footer } from "@/components/landing/Footer";
 export default async function Page() {
   const session = await auth();
   const isLoggedIn = !!session;
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
 
   const cta = (
     <SignInButton className="dg-button dg-button-primary text-[12px] sm:text-[13px]">
@@ -79,11 +85,16 @@ export default async function Page() {
       <Pricing />
 
       {/* 11. CTA */}
-      <CtaSection cta={
-        <SignInButton className="dg-button dg-button-primary text-[14px] px-6 py-3">
-          Install GitHub App — free
-        </SignInButton>
-      } />
+      <CtaSection
+        title={t("landing.ctaTitle") || undefined}
+        subtitle={t("landing.ctaSubtitle") || undefined}
+        readDocsLabel={t("landing.ctaReadDocs") || undefined}
+        cta={
+          <SignInButton className="dg-button dg-button-primary text-[14px] px-6 py-3">
+            {t("landing.ctaButton") ?? "Install GitHub App — free"}
+          </SignInButton>
+        }
+      />
 
       <Footer />
     </>

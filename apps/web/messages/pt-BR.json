@@ -86,5 +86,11 @@
     "hint": "Leva 30 segundos. Sem cartão de crédito.",
     "selectOrg": "Selecionar Organização",
     "setup": "Configuração necessária"
+  },
+  "landing": {
+    "ctaTitle": "Recupere o controlo da sua cloud.",
+    "ctaSubtitle": "Instale em 30 segundos. Sem cartão de crédito. Funciona com GitHub, AWS, OpenTofu e qualquer toolchain compatível com Terraform.",
+    "ctaButton": "Instalar GitHub App — grátis",
+    "ctaReadDocs": "Ler a documentação →"
   }
 }

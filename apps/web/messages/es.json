@@ -86,5 +86,11 @@
     "recentAnalyses": "Análisis recientes",
     "statusActive": "activo",
     "statusOff": "inactivo"
+  },
+  "landing": {
+    "ctaTitle": "Recupera el control de tu cloud.",
+    "ctaSubtitle": "Instala en 30 segundos. Sin tarjeta de crédito. Funciona con GitHub, AWS, OpenTofu y cualquier toolchain compatible con Terraform.",
+    "ctaButton": "Instalar GitHub App — gratis",
+    "ctaReadDocs": "Leer la documentación →"
   }
 }

@@ -86,5 +86,11 @@
     "recentAnalyses": "最近分析",
     "statusActive": "活跃",
     "statusOff": "停用"
+  },
+  "landing": {
+    "ctaTitle": "重新掌控您的云基础设施。",
+    "ctaSubtitle": "30秒内完成安装。无需信用卡。支持GitHub、AWS、OpenTofu及任何Terraform兼容工具链。",
+    "ctaButton": "安装 GitHub App — 免费",
+    "ctaReadDocs": "阅读文档 →"
   }
 }

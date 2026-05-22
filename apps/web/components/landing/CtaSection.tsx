@@ -1,6 +1,16 @@
 import Link from "next/link";
 
-export function CtaSection({ cta }: { cta: React.ReactNode }) {
+export function CtaSection({
+  cta,
+  title,
+  subtitle,
+  readDocsLabel,
+}: {
+  cta: React.ReactNode;
+  title?: string;
+  subtitle?: string;
+  readDocsLabel?: string;
+}) {
   return (
     <section className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-20 sm:py-28 overflow-hidden">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
@@ -10,11 +20,10 @@ export function CtaSection({ cta }: { cta: React.ReactNode }) {
         <div className="relative text-center">
           <div className="dg-label mb-4">Ready to ship safer</div>
           <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[color:var(--dg-fg)] mb-6">
-            Regain control of your cloud.
+            {title ?? "Regain control of your cloud."}
           </h2>
           <p className="text-[14px] sm:text-[15px] text-[color:var(--dg-fg-muted)] max-w-xl mx-auto mb-10">
-            Install in 30 seconds. No credit card required.
-            Works with GitHub, AWS, OpenTofu, and any Terraform-compatible toolchain.
+            {subtitle ?? "Install in 30 seconds. No credit card required. Works with GitHub, AWS, OpenTofu, and any Terraform-compatible toolchain."}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
@@ -23,7 +32,7 @@ export function CtaSection({ cta }: { cta: React.ReactNode }) {
               href="/docs/install"
               className="dg-button dg-button-ghost text-[13px]"
             >
-              Read the docs →
+              {readDocsLabel ?? "Read the docs →"}
             </Link>
           </div>
 

@@ -55,7 +55,13 @@ export function useUserPreferences(initial?: UserPreferences) {
         }
         const data = (await res.json()) as UserPreferences;
         setPreferences(data);
-        router.refresh();
+        // Full reload ensures server re-renders with new cookie AND
+        // clears message module cache for correct locale translation
+        if (typeof window !== "undefined") {
+          window.location.reload();
+        } else {
+          router.refresh();
+        }
       } catch (e) {
         setError((e as Error).message);
         throw e;

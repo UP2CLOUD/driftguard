@@ -86,5 +86,11 @@
     "recentAnalyses": "التحليلات الأخيرة",
     "statusActive": "نشط",
     "statusOff": "معطل"
+  },
+  "landing": {
+    "ctaTitle": "استعد السيطرة على بنيتك السحابية.",
+    "ctaSubtitle": "التثبيت في 30 ثانية. لا بطاقة ائتمان. يعمل مع GitHub وAWS وOpenTofu وأي toolchain متوافق مع Terraform.",
+    "ctaButton": "تثبيت GitHub App — مجاناً",
+    "ctaReadDocs": "اقرأ التوثيق ←"
   }
 }
