@@ -21,6 +21,7 @@ import { CtaSection } from "@/components/landing/CtaSection";
 import { Footer } from "@/components/landing/Footer";
 import { HashScroll } from "@/components/HashScroll";
 import { JsonLd } from "@/components/JsonLd";
+import { MotionSection } from "@/components/MotionSection";
 import { jsonLdSoftware, jsonLdOrg } from "@/lib/seo";
 
 export default async function Page() {
@@ -67,28 +68,28 @@ export default async function Page() {
       />
 
       {/* 2. Social proof */}
-      <TrustBar />
+      <MotionSection><TrustBar /></MotionSection>
 
       {/* 3. The aha moment — interactive PR review table */}
-      <DriftPreview />
+      <MotionSection delay={60}><DriftPreview /></MotionSection>
 
       {/* 4. How it prevents incidents — live event feed */}
-      <IncidentTimeline installationId={installationId} />
+      <MotionSection delay={80}><IncidentTimeline installationId={installationId} /></MotionSection>
 
       {/* 5. How the system works architecturally */}
-      <Architecture />
+      <MotionSection delay={60}><Architecture /></MotionSection>
 
       {/* 6. The differentiator — semantic memory */}
-      <SemanticMemory />
+      <MotionSection delay={60}><SemanticMemory /></MotionSection>
 
       {/* 7. Feature breakdown */}
       <FeatureGrid />
 
       {/* 8. Scale signals */}
-      <Metrics installationId={installationId} />
+      <MotionSection delay={80}><Metrics installationId={installationId} /></MotionSection>
 
       {/* 9. Integration — how easy it is */}
-      <CodeIntegration />
+      <MotionSection delay={60}><CodeIntegration /></MotionSection>
 
       {/* 10. Pricing */}
       <Pricing />

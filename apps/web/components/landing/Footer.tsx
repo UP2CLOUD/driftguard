@@ -22,7 +22,10 @@ export async function Footer() {
               AI runtime safety + semantic memory. Built for autonomous infrastructure agents.
             </p>
             <div className="mt-6 flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-allowed dg-pulse" />
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-allowed opacity-50 dg-pulse" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-allowed" />
+              </span>
               <span className="font-mono text-[10px] text-allowed">ALL SYSTEMS OPERATIONAL</span>
             </div>
           </div>

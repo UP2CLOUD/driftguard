@@ -111,7 +111,7 @@ export function SemanticMemory() {
                     <div className="h-1 flex-1 rounded-full bg-[color:var(--dg-border)] overflow-hidden">
                       <div
                         className="h-full rounded-full bg-[color:var(--dg-electric)]"
-                        style={{ width: visible ? `${n.sim * 100}%` : "0%", transition: `width ${600 + i * 100}ms ease-out` }}
+                        style={{ width: visible ? `${n.sim * 100}%` : "0%", transition: `width ${500 + i * 80}ms cubic-bezier(0.16,1,0.3,1) ${i * 50}ms`, boxShadow: visible && n.sim > 0.8 ? "0 0 6px var(--dg-electric)" : "none" }}
                       />
                     </div>
                     <span className="font-mono text-[10px] tabular-nums text-[color:var(--dg-electric-bright)] w-9 text-right">

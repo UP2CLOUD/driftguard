@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { SectionHeader } from "./Architecture";
 
 const SAMPLES = {
@@ -81,9 +81,12 @@ export function CodeIntegration() {
   const [copied, setCopied] = useState(false);
 
   const copy = () => {
-    navigator.clipboard.writeText(SAMPLES[lang]);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(SAMPLES[lang]).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }).catch(() => {});
+    }
   };
 
   return (
@@ -126,7 +129,7 @@ export function CodeIntegration() {
 
           {/* Code body */}
           <div className="relative">
-            <pre className="overflow-x-auto p-4 sm:p-6 font-mono text-[11px] sm:text-[13px] leading-relaxed text-[color:var(--dg-fg)]">
+            <pre key={lang} className="dg-tab-panel overflow-x-auto p-4 sm:p-6 font-mono text-[11px] sm:text-[13px] leading-relaxed text-[color:var(--dg-fg)]">
               <code>{SAMPLES[lang]}</code>
             </pre>
             {/* Line numbers gutter */}

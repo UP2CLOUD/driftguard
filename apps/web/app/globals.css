@@ -170,6 +170,160 @@ body {
   );
 }
 
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MOTION SYSTEM — timing, easing, keyframes
+   Inspired by Linear / Vercel / Stripe
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+:root {
+  /* Timing */
+  --t-fast:    120ms;
+  --t-base:    180ms;
+  --t-medium:  260ms;
+  --t-slow:    400ms;
+  --t-reveal:  600ms;
+  /* Easing */
+  --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in-out:  cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-linear:  linear;
+}
+
+/* ── Slide-up reveal ────────────────────────────────── */
+@keyframes dg-slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.dg-slide-up {
+  animation: dg-slide-up var(--t-reveal) var(--ease-out) backwards;
+}
+.dg-stagger-1 { animation-delay: 60ms; }
+.dg-stagger-2 { animation-delay: 120ms; }
+.dg-stagger-3 { animation-delay: 180ms; }
+.dg-stagger-4 { animation-delay: 240ms; }
+.dg-stagger-5 { animation-delay: 300ms; }
+.dg-stagger-6 { animation-delay: 360ms; }
+
+/* ── Float (subtle hover lift) ──────────────────────── */
+@keyframes dg-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-3px); }
+}
+
+/* ── Card hover glow ─────────────────────────────────── */
+.dg-card-hover {
+  transition: transform var(--t-base) var(--ease-out),
+              box-shadow var(--t-base) var(--ease-out),
+              border-color var(--t-base) var(--ease-out);
+  will-change: transform, box-shadow;
+}
+.dg-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px -8px rgba(63, 140, 255, 0.12);
+  border-color: rgba(63, 140, 255, 0.25) !important;
+}
+
+/* ── Button micro-interaction ────────────────────────── */
+.dg-button-primary:active,
+.dg-button-ghost:active {
+  transform: scale(0.97);
+  transition-duration: 80ms;
+}
+.dg-button-primary:hover {
+  box-shadow: 0 0 20px rgba(63, 140, 255, 0.3),
+              inset 0 1px 0 rgba(255,255,255,0.12);
+}
+
+/* ── Shine sweep ─────────────────────────────────────── */
+@keyframes dg-shine {
+  from { transform: translateX(-100%) skewX(-15deg); }
+  to   { transform: translateX(250%)  skewX(-15deg); }
+}
+.dg-shine-hover {
+  position: relative;
+  overflow: hidden;
+}
+.dg-shine-hover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+  transform: translateX(-100%) skewX(-15deg);
+  pointer-events: none;
+}
+.dg-shine-hover:hover::after {
+  animation: dg-shine 500ms var(--ease-out) forwards;
+}
+
+/* ── Flow path animation (Architecture) ─────────────── */
+@keyframes dg-flow-dot {
+  0%   { offset-distance: 0%;   opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+.dg-flow-dot {
+  animation: dg-flow-dot 2.5s var(--ease-in-out) infinite;
+  offset-rotate: 0deg;
+}
+
+/* ── Similarity bar fill ─────────────────────────────── */
+@keyframes dg-bar-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.dg-bar-fill {
+  transform-origin: left;
+  animation: dg-bar-fill var(--t-slow) var(--ease-out) backwards;
+}
+
+/* ── Glow pulse (active state indicators) ────────────── */
+@keyframes dg-glow-pulse {
+  0%, 100% { box-shadow: 0 0 4px 0 currentColor; }
+  50%       { box-shadow: 0 0 12px 2px currentColor; opacity: 0.8; }
+}
+.dg-glow-pulse {
+  animation: dg-glow-pulse 2s ease-in-out infinite;
+}
+
+/* ── Number roll (counter) ───────────────────────────── */
+@keyframes dg-count-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Tab transition ──────────────────────────────────── */
+.dg-tab-panel {
+  animation: dg-slide-up var(--t-medium) var(--ease-out) backwards;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   REDUCED MOTION — kill all non-essential animations
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration:   0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration:  0.01ms !important;
+    scroll-behavior:      auto !important;
+  }
+  .dg-pulse,
+  .dg-scan,
+  .dg-marquee,
+  .dg-flow-dot,
+  .dg-glow-pulse,
+  .dg-shine-hover::after {
+    animation: none !important;
+  }
+  .dg-card-hover:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
 #features, #architecture, #memory, #integrate, #pricing, #waitlist {
   scroll-margin-top: 4.5rem;
 }
@@ -189,6 +343,8 @@ body {
   }
   .dg-button {
     @apply inline-flex items-center gap-1.5 rounded-md px-3.5 py-2 text-[13px] font-medium transition-all duration-150;
+  overflow: hidden;
+  position: relative;
   }
   .dg-button-primary {
     @apply bg-[color:var(--dg-electric)] text-white hover:bg-[color:var(--dg-electric-bright)] active:scale-[0.98]

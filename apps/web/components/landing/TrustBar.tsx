@@ -1,67 +1,53 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-// Using realistic-sounding fictional company names
-// Replace with real logos once design is approved
-const COMPANIES = [
-  "Platform engineers",
-  "DevOps teams",
-  "Infrastructure leads",
-  "SRE teams",
-  "AI agent operators",
-  "Cloud architects",
-  "Compliance engineers",
-  "FinOps analysts",
-  "Security engineers",
-  "Staff engineers",
+const ROLES = [
+  "Platform engineers",  "DevOps teams",         "Infrastructure leads",
+  "SRE teams",           "AI agent operators",   "Cloud architects",
+  "Compliance engineers","FinOps analysts",       "Security engineers",
+  "Staff engineers",     "Platform engineers",   "DevOps teams",
+  "Infrastructure leads","SRE teams",             "AI agent operators",
+  "Cloud architects",    "Compliance engineers",  "FinOps analysts",
+  "Security engineers",  "Staff engineers",
 ];
 
 export function TrustBar() {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    let start: number | null = null;
-    const speed = 28; // px/sec
-    let width = el.scrollWidth / 2;
-
-    const step = (ts: number) => {
-      if (start === null) start = ts;
-      const elapsed = (ts - start) / 1000;
-      el.scrollLeft = (elapsed * speed) % width;
-      requestAnimationFrame(step);
-    };
-
-    const raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  const doubled = [...COMPANIES, ...COMPANIES];
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [paused, setPaused] = useState(false);
 
   return (
-    <div className="border-y border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-5">
-      <p className="text-center font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-4">
-        Trusted by platform &amp; infra teams at
-      </p>
+    <section
+      className="border-t border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)]/60 py-4 overflow-hidden"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {/* Edge fades */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 z-10
+        bg-gradient-to-r from-[color:var(--dg-surface)] to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 z-10
+        bg-gradient-to-l from-[color:var(--dg-surface)] to-transparent" />
+
+      {/* Scrolling track */}
       <div
-        ref={ref}
-        className="overflow-hidden whitespace-nowrap"
-        style={{ scrollbarWidth: "none" }}
+        ref={trackRef}
+        className="flex whitespace-nowrap"
+        style={{
+          animation: `dg-marquee 40s linear infinite`,
+          animationPlayState: paused ? "paused" : "running",
+        }}
       >
-        <div className="inline-flex gap-10">
-          {doubled.map((name, i) => (
-            <span
-              key={i}
-              className="inline-flex items-center gap-2 font-mono text-[12px] text-[color:var(--dg-fg-subtle)] opacity-60 hover:opacity-100 transition-opacity duration-300"
-            >
-              <span className="h-1 w-1 rounded-full bg-[color:var(--dg-fg-subtle)]" />
-              {name}
-            </span>
-          ))}
-        </div>
+        {/* Double the list for seamless loop */}
+        {[...ROLES, ...ROLES].map((role, i) => (
+          <span
+            key={i}
+            className="inline-flex items-center gap-2.5 px-5 font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--dg-fg-subtle)] select-none"
+          >
+            <span className="h-1 w-1 rounded-full bg-[color:var(--dg-fg-subtle)]/40 shrink-0" />
+            {role}
+          </span>
+        ))}
       </div>
-    </div>
+    </section>
   );
 }

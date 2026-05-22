@@ -1,147 +1,149 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
-type EventLine = {
-  ts: string;
-  kind: "INTERCEPT" | "RECALL" | "BLOCK" | "ALLOW" | "DRIFT";
-  actor: string;
-  msg: string;
-  resource?: string;
-};
+type Kind = "INTERCEPT" | "RECALL" | "BLOCK" | "ALLOW" | "DRIFT";
+type Line = { ts: string; kind: Kind; actor: string; msg: string; id: number };
 
-const SCRIPT: EventLine[] = [
-  { ts: "+0.001s", kind: "INTERCEPT", actor: "agent.terraform-writer", msg: "intent: terraform apply", resource: "prod/networking.tf" },
-  { ts: "+0.004s", kind: "RECALL", actor: "memory.semantic", msg: "found 2 similar past failures (cos 0.91, 0.87)" },
-  { ts: "+0.011s", kind: "BLOCK", actor: "guardrail.policy", msg: "would delete aws_rds_cluster.prod (drift from approved plan)", resource: "aws_rds_cluster.prod" },
-  { ts: "+0.012s", kind: "INTERCEPT", actor: "agent.code-fixer", msg: "intent: write k8s manifest", resource: "infra/staging/ingress.yaml" },
-  { ts: "+0.018s", kind: "RECALL", actor: "memory.semantic", msg: "context: previous TLS misconfig 2026-04-22" },
-  { ts: "+0.024s", kind: "ALLOW", actor: "guardrail.policy", msg: "passes policy check, audit logged", resource: "ingress-staging" },
-  { ts: "+0.031s", kind: "DRIFT", actor: "monitor.runtime", msg: "live state diverged from declared (3 resources)", resource: "aws_s3_bucket.uploads" },
-  { ts: "+0.037s", kind: "INTERCEPT", actor: "agent.sre-bot", msg: "intent: scale eks node group", resource: "prod-eks-1" },
-  { ts: "+0.044s", kind: "RECALL", actor: "memory.semantic", msg: "similar incident: 2026-03-14 OOM during scale-up" },
-  { ts: "+0.051s", kind: "ALLOW", actor: "guardrail.policy", msg: "warn: pre-scale memory check recommended", resource: "prod-eks-1" },
+const SCRIPT: Omit<Line, "id">[] = [
+  { ts: "+0.001s", kind: "INTERCEPT", actor: "agent.cursor",      msg: "PR #847: terraform apply — 23 resources" },
+  { ts: "+0.004s", kind: "RECALL",    actor: "memory.semantic",   msg: "found 3 similar past failures (cos 0.94, 0.87, 0.81)" },
+  { ts: "+0.011s", kind: "BLOCK",     actor: "guardrail.policy",  msg: "CRITICAL: aws_s3_bucket.tf-state public access removed" },
+  { ts: "+0.018s", kind: "BLOCK",     actor: "guardrail.cost",    msg: "cost delta +€480/mo — threshold exceeded" },
+  { ts: "+0.025s", kind: "INTERCEPT", actor: "agent.devin",       msg: "PR #843: k8s ingress update — 5 resources" },
+  { ts: "+0.031s", kind: "RECALL",    actor: "memory.semantic",   msg: "context: TLS misconfig 2026-04-22 (cos 0.89)" },
+  { ts: "+0.038s", kind: "ALLOW",     actor: "guardrail.policy",  msg: "passes all checks — audit logged" },
+  { ts: "+0.044s", kind: "DRIFT",     actor: "monitor.runtime",   msg: "live state diverged: aws_ec2.bastion not in state" },
 ];
 
-const KIND_STYLES: Record<EventLine["kind"], string> = {
-  INTERCEPT: "text-[color:var(--dg-electric-bright)] border-l-[color:var(--dg-electric)]",
-  RECALL: "text-[#a78bfa] border-l-[#7c3aed]",
-  BLOCK: "text-blocked border-l-blocked",
-  ALLOW: "text-allowed border-l-allowed",
-  DRIFT: "text-warned border-l-warned",
+const STYLES: Record<Kind, { badge: string; line: string; dot: string }> = {
+  INTERCEPT: { badge: "text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-electric)]/10",    line: "border-l-[color:var(--dg-electric)]/40",    dot: "bg-[color:var(--dg-electric)]" },
+  RECALL:    { badge: "text-[color:var(--dg-purple)] bg-[color:var(--dg-purple)]/10",               line: "border-l-[color:var(--dg-purple)]/40",       dot: "bg-[color:var(--dg-purple)]" },
+  BLOCK:     { badge: "text-blocked bg-blocked/10",                                                  line: "border-l-blocked/40 bg-blocked/[0.02]",      dot: "bg-blocked" },
+  ALLOW:     { badge: "text-allowed bg-allowed/10",                                                  line: "border-l-allowed/40",                        dot: "bg-allowed" },
+  DRIFT:     { badge: "text-warned bg-warned/10",                                                    line: "border-l-warned/40",                         dot: "bg-warned" },
 };
 
-const KIND_GLYPH: Record<EventLine["kind"], string> = {
-  INTERCEPT: "↯",
-  RECALL: "◉",
-  BLOCK: "■",
-  ALLOW: "✓",
-  DRIFT: "△",
+const GLYPHS: Record<Kind, string> = {
+  INTERCEPT: "↯", RECALL: "◉", BLOCK: "■", ALLOW: "✓", DRIFT: "△",
 };
+
+let UID = 0;
 
 export function LiveTerminal() {
-  const [feed, setFeed] = useState<EventLine[]>([SCRIPT[0]]);
-  const [counters, setCounters] = useState({ intercepted: 0, blocked: 0, recalled: 0 });
+  const [lines, setLines] = useState<Line[]>([{ ...SCRIPT[0], id: ++UID }]);
+  const [newLineId, setNewLineId] = useState<number | null>(null);
+  const [counters, setCounters] = useState({ events: 0, blocked: 0, recalled: 0 });
   const idxRef = useRef(1);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const i = setInterval(() => {
-      const next = SCRIPT[idxRef.current % SCRIPT.length];
-      idxRef.current += 1;
-      setFeed((f) => {
-        const updated = [...f, next];
-        return updated.length > 12 ? updated.slice(-12) : updated;
-      });
-      setCounters((c) => ({
-        intercepted: c.intercepted + 1,
-        blocked: c.blocked + (next.kind === "BLOCK" ? 1 : 0),
-        recalled: c.recalled + (next.kind === "RECALL" ? 1 : 0),
-      }));
-    }, 1400);
-    return () => clearInterval(i);
+  const addLine = useCallback(() => {
+    const raw = SCRIPT[idxRef.current % SCRIPT.length];
+    idxRef.current += 1;
+    const line = { ...raw, id: ++UID };
+    setLines(prev => {
+      const next = [...prev, line];
+      return next.length > 10 ? next.slice(-10) : next;
+    });
+    setNewLineId(line.id);
+    setCounters(c => ({
+      events:   c.events + 1,
+      blocked:  c.blocked  + (raw.kind === "BLOCK" ? 1 : 0),
+      recalled: c.recalled + (raw.kind === "RECALL" ? 1 : 0),
+    }));
+    setTimeout(() => setNewLineId(null), 300);
   }, []);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [feed]);
+    const interval = setInterval(addLine, 1400);
+    return () => clearInterval(interval);
+  }, [addLine]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [lines]);
 
   return (
-    <div className="relative">
-      {/* Outer frame with corner marks */}
-      <div className="absolute -top-2 -left-2 h-3 w-3 border-l border-t border-[color:var(--dg-border-bright)]" />
-      <div className="absolute -top-2 -right-2 h-3 w-3 border-r border-t border-[color:var(--dg-border-bright)]" />
-      <div className="absolute -bottom-2 -left-2 h-3 w-3 border-l border-b border-[color:var(--dg-border-bright)]" />
-      <div className="absolute -bottom-2 -right-2 h-3 w-3 border-r border-b border-[color:var(--dg-border-bright)]" />
-
-      <div className="relative overflow-hidden rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)]/95 dg-scanline">
-        {/* Window chrome */}
-        <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-3 py-2">
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-blocked/70" />
-            <span className="h-2 w-2 rounded-full bg-warned/70" />
-            <span className="h-2 w-2 rounded-full bg-allowed/70" />
-            <span className="ml-3 font-mono text-[10px] uppercase tracking-wider text-[color:var(--dg-fg-subtle)]">
-              driftguard ▸ runtime-supervisor ▸ live
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 font-mono text-[10px] text-allowed">
-            <span className="h-1.5 w-1.5 rounded-full bg-allowed dg-pulse" />
-            <span>LIVE</span>
-          </div>
+    <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-canvas)] overflow-hidden font-mono text-[11px]">
+      {/* Chrome */}
+      <div className="flex items-center gap-2 border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-2">
+        <div className="flex gap-1.5">
+          <div className="h-2.5 w-2.5 rounded-full bg-blocked/50" />
+          <div className="h-2.5 w-2.5 rounded-full bg-warned/50" />
+          <div className="h-2.5 w-2.5 rounded-full bg-allowed/50" />
         </div>
+        <span className="flex-1 text-center text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+          driftguard · runtime supervisor
+        </span>
+        <span className="flex items-center gap-1.5 text-[9px] text-allowed">
+          <span className="h-1.5 w-1.5 rounded-full bg-allowed dg-pulse" />
+          LIVE · DEMO
+        </span>
+      </div>
 
-        {/* Counter strip */}
-        <div className="grid grid-cols-3 border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]/40">
-          <Counter label="intercepted" value={counters.intercepted} />
-          <Counter label="recalled" value={counters.recalled} bordered />
-          <Counter label="blocked" value={counters.blocked} accent="blocked" />
-        </div>
+      {/* Log feed */}
+      <div
+        ref={scrollRef}
+        className="h-[220px] overflow-hidden relative"
+      >
+        {/* Scanline */}
+        <div className="pointer-events-none absolute inset-0 dg-scan opacity-[0.03] z-10" />
 
-        {/* Feed */}
-        <div ref={scrollRef} className="h-[300px] sm:h-[340px] overflow-hidden p-2.5 sm:p-3 font-mono text-[10px] sm:text-[11.5px] leading-relaxed">
-          {feed.map((e, i) => (
-            <div
-              key={`${e.ts}-${i}`}
-              className={`mb-1.5 flex items-start gap-1.5 sm:gap-2 border-l-2 pl-1.5 sm:pl-2 dg-reveal ${KIND_STYLES[e.kind]}`}
-              style={{ animationDelay: `${i * 30}ms` }}
-            >
-              <span className="text-[color:var(--dg-fg-subtle)] tabular-nums shrink-0 hidden sm:inline">{e.ts}</span>
-              <span className="shrink-0 w-3 text-center">{KIND_GLYPH[e.kind]}</span>
-              <span className="shrink-0 font-bold tracking-wide text-[9px] sm:text-[11px]">{e.kind}</span>
-              <span className="text-[color:var(--dg-fg-muted)] shrink-0 hidden md:inline">{e.actor}</span>
-              <span className="text-[color:var(--dg-fg)] flex-1 truncate">{e.msg}</span>
-              {e.resource && (
-                <span className="text-[color:var(--dg-fg-subtle)] truncate max-w-[80px] sm:max-w-[140px] hidden sm:inline">{e.resource}</span>
-              )}
-            </div>
-          ))}
-          <div className="flex items-center gap-2 text-[color:var(--dg-fg-subtle)]">
-            <span>{">"}</span>
-            <span className="dg-cursor inline-block h-3 w-1.5 bg-[color:var(--dg-fg-muted)]" />
-          </div>
-        </div>
-
-        {/* Status bar */}
-        <div className="flex items-center justify-between border-t border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-3 py-1.5 font-mono text-[9px] sm:text-[10px] tracking-wider text-[color:var(--dg-fg-subtle)] gap-2">
-          <span className="truncate">policy.engine: opa ▪ memory: 384‑d ▪ <span className="hidden sm:inline">p99 1.2s</span></span>
-          <span className="text-allowed shrink-0">● healthy</span>
+        <div className="px-0 py-1">
+          {lines.map((line, i) => {
+            const s = STYLES[line.kind];
+            const isNew = line.id === newLineId;
+            return (
+              <div
+                key={line.id}
+                className={`flex items-start gap-2 px-3 py-1 border-l-2 ${s.line}
+                  ${i === lines.length - 1 ? "opacity-100" : "opacity-60"}
+                  ${isNew ? "dg-slide-up" : ""}`}
+                style={{
+                  transition: isNew ? undefined : "opacity 400ms ease",
+                }}
+              >
+                {/* Timestamp */}
+                <span className="text-[color:var(--dg-fg-subtle)] tabular-nums shrink-0 pt-px">
+                  {line.ts}
+                </span>
+                {/* Badge */}
+                <span className={`rounded px-1 py-px text-[9px] uppercase tracking-widest shrink-0 ${s.badge}`}>
+                  {GLYPHS[line.kind]} {line.kind}
+                </span>
+                {/* Message */}
+                <span className="text-[color:var(--dg-fg-muted)] min-w-0 leading-relaxed">
+                  <span className="text-[color:var(--dg-fg-subtle)]">{line.actor}</span>
+                  {" "}{line.msg}
+                  {i === lines.length - 1 && (
+                    <span className="ml-0.5 inline-block h-[10px] w-[5px] bg-[color:var(--dg-fg-muted)] align-middle dg-cursor" />
+                  )}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
-    </div>
-  );
-}
 
-function Counter({
-  label, value, bordered, accent,
-}: { label: string; value: number; bordered?: boolean; accent?: "blocked" | "allowed" }) {
-  return (
-    <div className={`px-4 py-3 ${bordered ? "border-x border-[color:var(--dg-border)]" : ""}`}>
-      <div className="dg-label">{label}</div>
-      <div className={`mt-0.5 font-mono text-lg font-semibold tabular-nums ${
-        accent === "blocked" ? "text-blocked" : "text-[color:var(--dg-fg)]"
-      }`}>
-        {value.toLocaleString()}
+      {/* Counters */}
+      <div className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] grid grid-cols-3 divide-x divide-[color:var(--dg-border)]">
+        {[
+          { label: "events",   val: counters.events,   color: "text-[color:var(--dg-electric-bright)]" },
+          { label: "blocked",  val: counters.blocked,  color: "text-blocked" },
+          { label: "recalled", val: counters.recalled, color: "text-[color:var(--dg-purple)]" },
+        ].map(({ label, val, color }) => (
+          <div key={label} className="px-3 py-2 text-center">
+            <div className={`font-mono text-base font-bold tabular-nums ${color}`}
+              suppressHydrationWarning>
+              {val}
+            </div>
+            <div className="text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mt-0.5">
+              {label}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
