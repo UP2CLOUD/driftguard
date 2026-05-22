@@ -28,7 +28,7 @@ def run_analysis(
     head_sha: str,
 ) -> dict:
     try:
-        from driftguard.analyzer import analyze_pr  # fixed: was driftguard.workers.analyzer
+        from driftguard.workers.analyzer import analyze_pr
 
         result = asyncio.run(
             analyze_pr(
@@ -189,5 +189,5 @@ async def _send_notification_async(analysis_id: str, repo_full_name: str, pr_num
             pr_number=pr_number,
             risk_score=analysis.risk_score,
             findings_count=findings_count,
-            analysis_url=f"https://driftguard.io/dashboard/{org.installation_id}/analyses/{analysis_id}",
+            analysis_url=f"https://driftguard.io/dashboard/{org.github_installation_id}/analyses/{analysis_id}",
         )
