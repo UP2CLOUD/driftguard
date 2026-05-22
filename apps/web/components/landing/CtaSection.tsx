@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function CtaSection({ cta }: { cta: React.ReactNode }) {
   return (
-    <section className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-20 sm:py-28">
+    <section className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-20 sm:py-28 overflow-hidden">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         {/* Glow */}
         <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 h-64 w-[600px] bg-[radial-gradient(closest-side,rgba(63,140,255,0.12),transparent_80%)]" />

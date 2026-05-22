@@ -32,8 +32,8 @@ export function Architecture() {
             <div className="relative rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-4 sm:p-6 md:p-8 overflow-hidden">
               <div className="dg-label mb-6">fig 02 ▸ data flow</div>
 
-              <div className="overflow-x-auto -mx-2 px-2">
-                <svg viewBox="0 0 600 380" className="w-full h-auto min-w-[500px]">
+              <div className="overflow-x-auto">
+                <svg viewBox="0 0 600 380" className="h-auto min-w-[480px] max-w-full">
                 {/* Grid bg */}
                 <defs>
                   <pattern id="arch-grid" width="20" height="20" patternUnits="userSpaceOnUse">

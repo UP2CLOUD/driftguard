@@ -29,10 +29,10 @@ export function MarketingNav({
 
   return (
     <nav
-      className={`sticky top-0 z-50 transition-all duration-200 ${
+      className={`sticky top-0 z-50 border-b transition-colors duration-200 ${
         scrolled
-          ? "border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]/90 backdrop-blur-md"
-          : "border-b border-transparent"
+          ? "border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]/90 backdrop-blur-md"
+          : "border-transparent bg-transparent"
       }`}
     >
       <div className="mx-auto flex max-w-[1400px] items-center justify-between px-4 sm:px-6 py-3.5">

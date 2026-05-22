@@ -20,7 +20,7 @@ const QUERIES = [
 
 export function SemanticMemory() {
   const [queryIdx, setQueryIdx] = useState(0);
-  const [typed, setTyped] = useState("");
+  const [typed, setTyped] = useState(QUERIES[0][0] ?? "");
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 

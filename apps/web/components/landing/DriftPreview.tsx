@@ -155,7 +155,7 @@ export function DriftPreview() {
                               row.severity === "high" ? "bg-[color:var(--dg-severity-high)]" :
                               "bg-[color:var(--dg-fg-subtle)]"
                             }`} />
-                            <code className="font-mono text-[11px] text-[color:var(--dg-fg)] truncate max-w-[180px]">
+                            <code className="font-mono text-[11px] text-[color:var(--dg-fg)] truncate max-w-[120px] sm:max-w-[200px]">
                               {row.resource}
                             </code>
                           </div>

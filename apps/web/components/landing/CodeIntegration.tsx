@@ -126,7 +126,7 @@ export function CodeIntegration() {
 
           {/* Code body */}
           <div className="relative">
-            <pre className="overflow-x-auto p-6 font-mono text-[13px] leading-relaxed text-[color:var(--dg-fg)]">
+            <pre className="overflow-x-auto p-4 sm:p-6 font-mono text-[11px] sm:text-[13px] leading-relaxed text-[color:var(--dg-fg)]">
               <code>{SAMPLES[lang]}</code>
             </pre>
             {/* Line numbers gutter */}

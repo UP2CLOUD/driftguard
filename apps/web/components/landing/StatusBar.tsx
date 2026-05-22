@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 export function StatusBar() {
   const [now, setNow] = useState<string>("");
+
   useEffect(() => {
     const update = () => {
       const d = new Date();
@@ -19,7 +20,7 @@ export function StatusBar() {
       <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-1.5 font-mono text-[10px] tracking-wider text-[color:var(--dg-fg-subtle)]">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1.5">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-allowed dg-pulse text-allowed" />
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-allowed dg-pulse" />
             <span className="uppercase">SYSTEM OPERATIONAL</span>
           </span>
           <span className="hidden md:inline opacity-50">●</span>
@@ -28,7 +29,13 @@ export function StatusBar() {
           <span className="hidden md:inline">p99 &lt;2s</span>
         </div>
         <div className="flex items-center gap-4">
-          <span className="hidden sm:inline tabular-nums">{now || "————————"}</span>
+          {/* suppressHydrationWarning prevents SSR→client clock mismatch flash */}
+          <span
+            className="hidden sm:inline tabular-nums w-[152px] text-right"
+            suppressHydrationWarning
+          >
+            {now || "\u00a0"}
+          </span>
           <span className="opacity-50">●</span>
           <span>v0.1.0-beta</span>
         </div>

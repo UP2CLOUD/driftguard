@@ -43,8 +43,8 @@ export function Hero({ ctaPrimary, ctaSecondary }: { ctaPrimary: React.ReactNode
           </p>
 
           {/* Terminal snippet — from Gemini template */}
-          <div className="mt-7 flex items-center gap-2 rounded-lg border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] px-4 py-2.5 w-fit max-w-full">
-            <code className="font-mono text-[12px] text-[color:var(--dg-fg-muted)] truncate">
+          <div className="mt-7 flex items-center gap-2 rounded-lg border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] px-4 py-2.5 w-fit max-w-full overflow-hidden">
+            <code className="font-mono text-[11px] sm:text-[12px] text-[color:var(--dg-fg-muted)] truncate min-w-0">
               <span className="text-[color:var(--dg-electric-bright)]"># .github/driftguard.yml</span>
               <span className="mx-3 opacity-30">|</span>
               <span className="text-allowed">policy:</span>

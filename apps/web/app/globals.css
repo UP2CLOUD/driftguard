@@ -57,6 +57,7 @@
 
 html,
 body {
+  overflow-x: hidden; /* prevent horizontal scroll on mobile */
   background: var(--dg-canvas);
   color: var(--dg-fg);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
