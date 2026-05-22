@@ -5,7 +5,9 @@ from driftguard.api.v1 import (
     aws,
     billing,
     dashboard,
+    events,
     health,
+    incidents,
     ingest,
     memory,
     orgs,
@@ -27,3 +29,5 @@ router.include_router(aws.router, dependencies=[Depends(verify_api_key)])
 router.include_router(memory.router, dependencies=[Depends(verify_api_key)])
 router.include_router(dashboard.router)
 router.include_router(ingest.router)
+router.include_router(incidents.router)
+router.include_router(events.router)

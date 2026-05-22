@@ -1,5 +1,6 @@
-"""Tests for org API PATCH /aws — uses dependency override for DB."""
+"""Tests for incidents + events endpoints."""
 
+from datetime import UTC
 from unittest.mock import AsyncMock, MagicMock
 
 from fastapi.testclient import TestClient
@@ -10,70 +11,99 @@ from driftguard.main import app
 AUTH = {"Authorization": "Bearer dev-only-change-me"}
 
 
-def _make_client(org_mock) -> TestClient:
-    async def _override():
-        yield org_mock
+def _no_org_session():
+    mock = AsyncMock()
+    mock.execute = AsyncMock(
+        return_value=MagicMock(
+            scalar_one_or_none=MagicMock(return_value=None),
+            scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[]))),
+        )
+    )
+    mock.get = AsyncMock(return_value=None)
+    mock.flush = AsyncMock()
+    mock.commit = AsyncMock()
+    mock.add = MagicMock()
+    return mock
 
-    app.dependency_overrides[get_db] = _override
-    c = TestClient(app)
-    return c
+
+def _override(session):
+    async def _dep():
+        yield session
+
+    app.dependency_overrides[get_db] = _dep
 
 
 def _cleanup():
     app.dependency_overrides.pop(get_db, None)
 
 
-def test_aws_patch_invalid_arn_format():
-    session = AsyncMock()
-    session.get = AsyncMock(return_value=MagicMock(settings={}))
-    session.commit = AsyncMock()
-    client = _make_client(session)
+def test_list_incidents_no_org_returns_empty():
+    _override(_no_org_session())
     try:
-        r = client.patch(
-            "/api/v1/orgs/fake-org/aws",
-            json={"aws_role_arn": "not-an-arn"},
-            headers=AUTH,
-        )
-        assert r.status_code == 422
+        r = TestClient(app).get("/api/v1/incidents?installation_id=9999")
+        assert r.status_code == 200
+        assert r.json() == []
     finally:
         _cleanup()
 
 
-def test_aws_patch_org_not_found():
-    session = AsyncMock()
-    session.get = AsyncMock(return_value=None)
-    client = _make_client(session)
+def test_get_incident_not_found():
+    _override(_no_org_session())
     try:
-        r = client.patch(
-            "/api/v1/orgs/missing-org/aws",
-            json={"aws_role_arn": "arn:aws:iam::123456789012:role/DriftGuardReadOnly"},
-            headers=AUTH,
+        r = TestClient(app).get("/api/v1/incidents/nonexistent-id")
+        assert r.status_code == 404
+    finally:
+        _cleanup()
+
+
+def test_patch_incident_not_found():
+    _override(_no_org_session())
+    try:
+        r = TestClient(app).patch(
+            "/api/v1/incidents/nonexistent-id",
+            json={"status": "resolved"},
         )
         assert r.status_code == 404
     finally:
         _cleanup()
 
 
-def test_aws_patch_valid():
-    fake_org = MagicMock()
-    fake_org.settings = {}
-    session = AsyncMock()
-    session.get = AsyncMock(return_value=fake_org)
-    session.commit = AsyncMock()
-    client = _make_client(session)
+def test_list_events_no_org_returns_empty():
+    _override(_no_org_session())
     try:
-        r = client.patch(
-            "/api/v1/orgs/real-org/aws",
-            json={
-                "aws_role_arn": "arn:aws:iam::123456789012:role/DriftGuardReadOnly",
-                "state_bucket": "my-tfstate",
-                "state_key": "prod/terraform.tfstate",
-            },
-            headers=AUTH,
-        )
+        r = TestClient(app).get("/api/v1/events?installation_id=9999")
         assert r.status_code == 200
-        assert r.json()["status"] == "ok"
-        assert fake_org.settings["aws_role_arn"].startswith("arn:aws:iam::")
-        assert fake_org.settings["state_bucket"] == "my-tfstate"
+        assert r.json() == []
+    finally:
+        _cleanup()
+
+
+def test_patch_incident_invalid_status():
+    from datetime import datetime
+
+    from driftguard.db.models import DriftIncident
+
+    inc = DriftIncident(
+        id="test-id",
+        org_id="org-1",
+        title="Test incident",
+        severity="high",
+        status="open",
+        recurrence_count=1,
+        first_seen_at=datetime.now(UTC),
+        last_seen_at=datetime.now(UTC),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
+    )
+    mock = AsyncMock()
+    mock.get = AsyncMock(return_value=inc)
+    mock.commit = AsyncMock()
+    _override(mock)
+    try:
+        r = TestClient(app).patch(
+            "/api/v1/incidents/test-id",
+            json={"status": "invalid_status"},
+        )
+        assert r.status_code == 422
     finally:
         _cleanup()

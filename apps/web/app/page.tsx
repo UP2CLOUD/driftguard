@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { getInstallations } from "@/lib/installations";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
@@ -22,6 +23,9 @@ import { Footer } from "@/components/landing/Footer";
 export default async function Page() {
   const session = await auth();
   const isLoggedIn = !!session;
+  // Resolve first installation for live data in Metrics + IncidentTimeline
+  const installations = isLoggedIn ? await getInstallations(session) : [];
+  const installationId = installations[0]?.id ?? undefined;
   const preferences = await getUserPreferences();
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
@@ -64,7 +68,7 @@ export default async function Page() {
       <DriftPreview />
 
       {/* 4. How it prevents incidents — live event feed */}
-      <IncidentTimeline />
+      <IncidentTimeline installationId={installationId} />
 
       {/* 5. How the system works architecturally */}
       <Architecture />
@@ -76,7 +80,7 @@ export default async function Page() {
       <FeatureGrid />
 
       {/* 8. Scale signals */}
-      <Metrics />
+      <Metrics installationId={installationId} />
 
       {/* 9. Integration — how easy it is */}
       <CodeIntegration />

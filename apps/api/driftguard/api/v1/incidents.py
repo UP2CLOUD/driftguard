@@ -1,0 +1,106 @@
+"""Incidents API — DriftIncident CRUD."""
+
+from __future__ import annotations
+
+from datetime import datetime
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
+from sqlalchemy import desc, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from driftguard.core.db import get_db
+from driftguard.db.models import DriftIncident, Organization
+
+router = APIRouter(prefix="/incidents", tags=["incidents"])
+
+VALID_STATUSES = {"open", "investigating", "resolved", "suppressed"}
+
+
+class IncidentPatch(BaseModel):
+    status: str | None = None
+    root_cause: str | None = None
+    suggested_fix: str | None = None
+
+
+@router.get("")
+async def list_incidents(
+    installation_id: int = Query(...),
+    status: str | None = Query(None),
+    severity: str | None = Query(None),
+    limit: int = Query(20, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+) -> list[dict]:
+    org = (
+        await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
+    ).scalar_one_or_none()
+    if not org:
+        return []
+
+    stmt = (
+        select(DriftIncident)
+        .where(DriftIncident.org_id == org.id)
+        .order_by(desc(DriftIncident.last_seen_at))
+        .limit(limit)
+    )
+    if status:
+        stmt = stmt.where(DriftIncident.status == status)
+    if severity:
+        stmt = stmt.where(DriftIncident.severity == severity)
+
+    rows = (await db.execute(stmt)).scalars().all()
+    return [_serialize(r) for r in rows]
+
+
+@router.get("/{incident_id}")
+async def get_incident(incident_id: str, db: AsyncSession = Depends(get_db)) -> dict:
+    inc = await db.get(DriftIncident, incident_id)
+    if not inc:
+        raise HTTPException(404, "incident not found")
+    return _serialize(inc)
+
+
+@router.patch("/{incident_id}")
+async def patch_incident(
+    incident_id: str,
+    body: IncidentPatch,
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    inc = await db.get(DriftIncident, incident_id)
+    if not inc:
+        raise HTTPException(404, "incident not found")
+
+    if body.status is not None:
+        if body.status not in VALID_STATUSES:
+            raise HTTPException(422, f"status must be one of: {VALID_STATUSES}")
+        inc.status = body.status
+        if body.status == "resolved" and not inc.resolved_at:
+            inc.resolved_at = datetime.utcnow()
+    if body.root_cause is not None:
+        inc.root_cause = body.root_cause
+    if body.suggested_fix is not None:
+        inc.suggested_fix = body.suggested_fix
+
+    inc.updated_at = datetime.utcnow()
+    await db.commit()
+    return _serialize(inc)
+
+
+def _serialize(inc: DriftIncident) -> dict:
+    return {
+        "id": inc.id,
+        "org_id": inc.org_id,
+        "repo_id": inc.repo_id,
+        "title": inc.title,
+        "description": inc.description,
+        "severity": inc.severity,
+        "status": inc.status,
+        "root_cause": inc.root_cause,
+        "suggested_fix": inc.suggested_fix,
+        "recurrence_count": inc.recurrence_count,
+        "fingerprint": inc.fingerprint,
+        "first_seen_at": inc.first_seen_at.isoformat() if inc.first_seen_at else None,
+        "last_seen_at": inc.last_seen_at.isoformat() if inc.last_seen_at else None,
+        "resolved_at": inc.resolved_at.isoformat() if inc.resolved_at else None,
+        "created_at": inc.created_at.isoformat() if inc.created_at else None,
+    }
