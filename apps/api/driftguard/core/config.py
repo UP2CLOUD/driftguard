@@ -54,6 +54,8 @@ class Settings(BaseSettings):
 
     # ── App ────────────────────────────────────────────────────
     public_base_url: str = "http://localhost:3000"
+    slack_webhook_url: str = ""
+
     cors_origins: list[str] = [
         "http://localhost:3000",
         "http://localhost:3002",

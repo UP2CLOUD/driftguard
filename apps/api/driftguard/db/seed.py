@@ -256,6 +256,60 @@ async def seed() -> None:
                 )
             )
 
+        # ── Default policy templates ──────────────────────────────────────────
+        from sqlalchemy import select as _select
+
+        from driftguard.db.models import PolicyRule
+
+        existing_policies = (await db.execute(_select(PolicyRule).where(PolicyRule.org_id == org.id))).scalars().all()
+
+        if not existing_policies:
+            policy_templates = [
+                PolicyRule(
+                    org_id=org.id,
+                    name="Block public S3 buckets",
+                    description="Block any change that removes S3 public access protection.",
+                    rule_type="block",
+                    severity="critical",
+                    enabled=True,
+                    conditions={"event_type": "security_finding", "message_contains": "public"},
+                    actions={"block_merge": True, "create_incident": True},
+                ),
+                PolicyRule(
+                    org_id=org.id,
+                    name="Warn on RDS resize",
+                    description="Warn when a production RDS instance class is changed.",
+                    rule_type="warn",
+                    severity="high",
+                    enabled=True,
+                    conditions={"event_type": "drift_detected", "message_contains": "rds"},
+                    actions={"create_incident": True},
+                ),
+                PolicyRule(
+                    org_id=org.id,
+                    name="Block IAM wildcard resources",
+                    description="Block IAM policies that grant wildcard resource access.",
+                    rule_type="block",
+                    severity="critical",
+                    enabled=True,
+                    conditions={"event_type": "security_finding", "message_contains": "wildcard"},
+                    actions={"block_merge": True, "create_incident": True},
+                ),
+                PolicyRule(
+                    org_id=org.id,
+                    name="Alert on cost spike > €200/mo",
+                    description="Alert when a PR introduces more than €200/mo in new spend.",
+                    rule_type="alert",
+                    severity="high",
+                    enabled=True,
+                    conditions={"event_type": "cost_alert"},
+                    actions={"notify_email": True},
+                ),
+            ]
+            for p in policy_templates:
+                db.add(p)
+            print(f"✓ seeded {len(policy_templates)} policy templates")
+
         await db.commit()
         print("✓ seed complete")
 

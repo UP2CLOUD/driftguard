@@ -12,6 +12,7 @@ from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.core.db import get_db
+from driftguard.core.rate_limit import rate_limit
 from driftguard.db.models import (
     DriftIncident,
     Organization,
@@ -113,6 +114,7 @@ async def _evaluate_policies(db: AsyncSession, org_id: str, event_type: str, sev
 async def ingest_event(
     body: IngestEventRequest,
     db: AsyncSession = Depends(get_db),
+    _rl: None = Depends(rate_limit(per_minute=30, per_hour=500)),
 ) -> IngestEventResponse:
     # 1. Resolve org
     org_result = await db.execute(
@@ -201,7 +203,25 @@ async def ingest_event(
             incident_id = incident.id
             incident_created = True
 
-    # 5. Evaluate active policy rules
+    # 5. Fire Slack notification for new critical/high incidents
+    if incident_created and body.severity in {"critical", "high"}:
+        try:
+            import asyncio
+
+            from driftguard.services.slack import notify_incident
+
+            asyncio.create_task(
+                notify_incident(
+                    title=_title_from(body.event_type, body.message),
+                    severity=body.severity,
+                    repo=body.repo_full_name or "unknown",
+                    risk_score=int(_risk_score(body.severity, recurrence) * 100),
+                )
+            )
+        except Exception:  # noqa: S110
+            pass  # Slack is non-blocking — never fail the ingest
+
+    # 6. Evaluate active policy rules
     await _evaluate_policies(db, org.id, body.event_type, body.severity, body.message)
 
     await db.commit()
