@@ -7,7 +7,12 @@
     "signInGithub": "تسجيل الدخول عبر GitHub",
     "devBypass": "تجاوز المطور",
     "repos": "المستودعات",
-    "settings": "الإعدادات"
+    "settings": "الإعدادات",
+    "incidents": "الحوادث",
+    "policies": "السياسات",
+    "memory": "الذاكرة",
+    "overview": "نظرة عامة",
+    "signOutShort": "تسجيل الخروج"
   },
   "auth": {
     "goToDashboard": "الانتقال إلى لوحة التحكم →",
@@ -28,7 +33,22 @@
   },
   "dashboard": {
     "selectOrg": "اختر المؤسسة",
-    "connectGithub": "الاتصال بـ GitHub"
+    "connectGithub": "الاتصال بـ GitHub",
+    "title": "لوحة التحكم",
+    "avgRisk": "متوسط المخاطر",
+    "openIncidents": "الحوادث المفتوحة",
+    "critical": "حرج",
+    "memoryEntries": "الذاكرة",
+    "driftIncidents": "حوادث الانجراف",
+    "eventFeed": "تغذية الأحداث",
+    "noEvents": "لا توجد أحداث بعد — تظهر الأحداث هنا عندما يراجع DriftGuard طلبات السحب.",
+    "noAnalyses": "لا توجد تحليلات بعد — افتح طلب سحب Terraform للبدء.",
+    "apiOffline": "واجهة API غير متصلة — بيانات محدودة",
+    "recurrence": "تكرار",
+    "open": "مفتوح",
+    "investigating": "قيد التحقيق",
+    "resolved": "محلول",
+    "suppressed": "مكتوم"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -62,7 +82,21 @@
     "billingCurrent": "الخطة الحالية:",
     "activePlan": "الخطة النشطة",
     "orgTitle": "المؤسسة",
-    "apiUnavailable": "واجهة API غير متاحة — قم بتكوين NEXT_PUBLIC_API_URL في متغيرات Vercel."
+    "apiUnavailable": "واجهة API غير متاحة — قم بتكوين NEXT_PUBLIC_API_URL في متغيرات Vercel.",
+    "preferences": "التفضيلات",
+    "preferencesDesc": "تفضيلات اللغة والعرض والإشعارات.",
+    "awsTitle": "تكامل AWS",
+    "awsDesc": "امنح DriftGuard وصولاً للقراءة فقط لمقارنة الحالة الحية مع خطط Terraform. لا تُخزّن بيانات الاعتماد — STS AssumeRole مع معرّف خارجي.",
+    "billingDesc": "أدر اشتراكك وطريقة الدفع.",
+    "workspaceTitle": "مساحة العمل",
+    "workspaceDesc": "بيانات وصفية للقراءة فقط حول هذا التثبيت.",
+    "installationId": "معرّف تثبيت GitHub",
+    "organisationId": "معرّف المنظمة",
+    "plan": "الخطة",
+    "stripeCustomer": "عميل Stripe",
+    "stripeActive": "نشط",
+    "dangerZone": "منطقة الخطر",
+    "dangerZoneDesc": "إجراءات لا رجعة فيها. تابع بحذر."
   },
   "installApp": {
     "title": "تثبيت تطبيق GitHub",
@@ -92,5 +126,43 @@
     "ctaSubtitle": "التثبيت في 30 ثانية. لا بطاقة ائتمان. يعمل مع GitHub وAWS وOpenTofu وأي toolchain متوافق مع Terraform.",
     "ctaButton": "تثبيت GitHub App — مجاناً",
     "ctaReadDocs": "اقرأ التوثيق ←"
+  },
+  "incidents": {
+    "title": "الحوادث",
+    "eyebrow": "حوادث الانجراف",
+    "subtitle": "{open} مفتوحة · {investigating} قيد التحقيق · {resolved} محلولة",
+    "noTitle": "لا توجد حوادث بعد.",
+    "noBody": "تُنشأ الحوادث تلقائياً عندما يكتشف DriftGuard أحداثاً عالية الخطورة.",
+    "status": "الحالة",
+    "recurrenceLabel": "{n}× تكرار",
+    "suggestedFix": "الإصلاح:",
+    "open": "مفتوح",
+    "investigating": "قيد التحقيق",
+    "resolved": "محلول",
+    "suppressed": "مكتوم"
+  },
+  "policies": {
+    "title": "قواعد السياسة",
+    "eyebrow": "ضوابط وقت التشغيل",
+    "subtitle": "{active} نشطة · {total} إجمالي",
+    "apiHint": "استخدم POST /api/v1/policies لإضافة قواعد",
+    "noTitle": "لا توجد سياسات بعد.",
+    "noBody": "شغّل سكريبت seed لإنشاء قوالب السياسة الافتراضية.",
+    "disabled": "معطّل",
+    "block": "حظر",
+    "warn": "تحذير",
+    "alert": "تنبيه",
+    "matches": "{n} تطابقات"
+  },
+  "memory": {
+    "title": "الذاكرة التشغيلية",
+    "eyebrow": "الذاكرة الدلالية",
+    "subtitle": "{total} حادثة مفهرسة · تُستخدم لاسترجاع التشابه في كل PR",
+    "total": "الإجمالي",
+    "noTitle": "لا توجد إدخالات ذاكرة بعد.",
+    "noBody": "تتراكم الذاكرة مع مراجعة DriftGuard لطلبات السحب وتسجيل التضمينات.",
+    "blocked": "محظور",
+    "approved": "معتمد",
+    "warned": "محذّر"
   }
 }

@@ -7,7 +7,12 @@
     "signInGithub": "Entrar com GitHub",
     "devBypass": "Bypass de dev",
     "repos": "Repositórios",
-    "settings": "Configurações"
+    "settings": "Configurações",
+    "incidents": "Incidentes",
+    "policies": "Políticas",
+    "memory": "Memória",
+    "overview": "Visão geral",
+    "signOutShort": "Sair"
   },
   "auth": {
     "goToDashboard": "Ir para o painel →",
@@ -28,7 +33,22 @@
   },
   "dashboard": {
     "selectOrg": "Selecionar organização",
-    "connectGithub": "Conectar ao GitHub"
+    "connectGithub": "Conectar ao GitHub",
+    "title": "Dashboard",
+    "avgRisk": "Risco médio",
+    "openIncidents": "Incidentes abertos",
+    "critical": "Crítico",
+    "memoryEntries": "Memória",
+    "driftIncidents": "Incidentes de drift",
+    "eventFeed": "Feed de eventos",
+    "noEvents": "Sem eventos — os eventos aparecem aqui quando o DriftGuard revê PRs.",
+    "noAnalyses": "Sem análises — abre um PR Terraform para começar.",
+    "apiOffline": "API offline — dados limitados",
+    "recurrence": "recorrência",
+    "open": "aberto",
+    "investigating": "investigando",
+    "resolved": "resolvido",
+    "suppressed": "suprimido"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -77,7 +97,21 @@
     "billingCurrent": "Plano atual:",
     "activePlan": "Plano ativo",
     "orgTitle": "Organização",
-    "apiUnavailable": "API indisponível — configure NEXT_PUBLIC_API_URL nas variáveis de ambiente do Vercel."
+    "apiUnavailable": "API indisponível — configure NEXT_PUBLIC_API_URL nas variáveis de ambiente do Vercel.",
+    "preferences": "Preferências",
+    "preferencesDesc": "Idioma, apresentação e preferências de notificação.",
+    "awsTitle": "Integração AWS",
+    "awsDesc": "Concede acesso só de leitura ao DriftGuard para comparar o estado live com os planos Terraform. Sem credenciais armazenadas — STS AssumeRole com ID externo.",
+    "billingDesc": "Gere a tua subscrição e método de pagamento.",
+    "workspaceTitle": "Workspace",
+    "workspaceDesc": "Metadados só de leitura sobre esta instalação.",
+    "installationId": "ID de instalação GitHub",
+    "organisationId": "ID da organização",
+    "plan": "Plano",
+    "stripeCustomer": "Cliente Stripe",
+    "stripeActive": "activo",
+    "dangerZone": "Zona de perigo",
+    "dangerZoneDesc": "Acções irreversíveis. Procede com cuidado."
   },
   "installApp": {
     "title": "Instalar o GitHub App",
@@ -92,5 +126,43 @@
     "ctaSubtitle": "Instale em 30 segundos. Sem cartão de crédito. Funciona com GitHub, AWS, OpenTofu e qualquer toolchain compatível com Terraform.",
     "ctaButton": "Instalar GitHub App — grátis",
     "ctaReadDocs": "Ler a documentação →"
+  },
+  "incidents": {
+    "title": "Incidentes",
+    "eyebrow": "Incidentes de drift",
+    "subtitle": "{open} abertos · {investigating} investigando · {resolved} resolvidos",
+    "noTitle": "Sem incidentes ainda.",
+    "noBody": "Os incidentes são criados automaticamente quando o DriftGuard detecta eventos críticos.",
+    "status": "Estado",
+    "recurrenceLabel": "{n}× recorrência",
+    "suggestedFix": "Correcção:",
+    "open": "aberto",
+    "investigating": "investigando",
+    "resolved": "resolvido",
+    "suppressed": "suprimido"
+  },
+  "policies": {
+    "title": "Regras de política",
+    "eyebrow": "Controlos de runtime",
+    "subtitle": "{active} activas · {total} total",
+    "apiHint": "Use POST /api/v1/policies para adicionar regras",
+    "noTitle": "Sem políticas ainda.",
+    "noBody": "Corre o script seed para criar os templates de política predefinidos.",
+    "disabled": "desactivada",
+    "block": "bloquear",
+    "warn": "avisar",
+    "alert": "alertar",
+    "matches": "{n} correspondências"
+  },
+  "memory": {
+    "title": "Memória operacional",
+    "eyebrow": "Memória semântica",
+    "subtitle": "{total} incidentes indexados · usados para recall em cada PR",
+    "total": "Total",
+    "noTitle": "Sem entradas de memória.",
+    "noBody": "A memória é construída à medida que o DriftGuard revê PRs e regista embeddings.",
+    "blocked": "bloqueado",
+    "approved": "aprovado",
+    "warned": "avisado"
   }
 }

@@ -95,7 +95,7 @@ export default async function DashboardPage({
           </span>
           {!apiAvailable && (
             <span className="font-mono text-[10px] text-warned bg-warned/10 border border-warned/20 rounded px-2 py-1">
-              API offline — limited data
+{t("dashboard.apiOffline") ?? "API offline"}
             </span>
           )}
         </div>
@@ -108,10 +108,10 @@ export default async function DashboardPage({
           {[
             { label: t("repos.statsRepos") ?? "Repos", value: repos, color: "" },
             { label: t("repos.statsAnalyses") ?? "Analyses 7d", value: analyses7d, color: "" },
-            { label: "Avg risk", value: avgRisk != null ? `${avgRisk}` : "—", color: "" },
-            { label: "Open incidents", value: openInc, color: openInc > 0 ? "text-blocked" : "" },
-            { label: "Critical", value: criticalInc, color: criticalInc > 0 ? "text-blocked" : "" },
-            { label: "Memory", value: memoryCount, color: "" },
+            { label: t("dashboard.avgRisk") ?? "Avg risk", value: avgRisk != null ? `${avgRisk}` : "—", color: "" },
+            { label: t("dashboard.openIncidents") ?? "Open incidents", value: openInc, color: openInc > 0 ? "text-blocked" : "" },
+            { label: t("dashboard.critical") ?? "Critical", value: criticalInc, color: criticalInc > 0 ? "text-blocked" : "" },
+            { label: t("dashboard.memoryEntries") ?? "Memory", value: memoryCount, color: "" },
           ].map(({ label, value, color }) => (
             <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
               <div className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">{label}</div>
@@ -146,7 +146,7 @@ export default async function DashboardPage({
                 </div>
               ) : recentAnalyses.length === 0 ? (
                 <div className="px-4 py-6 text-center text-[13px] text-[color:var(--dg-fg-muted)]">
-                  No analyses yet — open a Terraform PR to start.
+    {t("dashboard.noAnalyses") ?? "No analyses yet."}
                 </div>
               ) : (
                 <div className="divide-y divide-[color:var(--dg-border)]">
@@ -189,7 +189,7 @@ export default async function DashboardPage({
               <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
                 <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
                   <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                    Drift incidents
+                    {t("dashboard.driftIncidents") ?? "Drift incidents"}
                   </span>
                   <span className="font-mono text-[10px] rounded border border-blocked/30 bg-blocked/10 text-blocked px-1.5 py-0.5">
                     {openInc} open
@@ -254,7 +254,7 @@ export default async function DashboardPage({
           <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden h-fit">
             <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
               <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                Event feed
+                {t("dashboard.eventFeed") ?? "Event feed"}
               </span>
               {apiAvailable && (
                 <span className="flex items-center gap-1.5">
@@ -295,7 +295,7 @@ export default async function DashboardPage({
               </div>
             ) : (
               <div className="px-4 py-8 text-center text-[12px] text-[color:var(--dg-fg-muted)]">
-                No events yet — events appear here as DriftGuard reviews PRs.
+{t("dashboard.noEvents") ?? "No events yet."}
               </div>
             )}
           </div>

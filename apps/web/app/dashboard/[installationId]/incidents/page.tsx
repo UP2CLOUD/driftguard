@@ -1,9 +1,11 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
 
-const API   = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const HDRS  = () => ({ Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}` });
+const API  = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const HDRS = () => ({ Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}` });
 
 async function fetchIncidents(id: string, status?: string) {
   try {
@@ -31,31 +33,33 @@ export default async function IncidentsPage({ params }: { params: Promise<{ inst
   if (!session) redirect("/");
   const { installationId } = await params;
 
-  const [open, resolved] = await Promise.all([
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+  const [open, resolved, investigating] = await Promise.all([
     fetchIncidents(installationId, "open"),
     fetchIncidents(installationId, "resolved"),
+    fetchIncidents(installationId, "investigating"),
   ]);
-  const investigating = await fetchIncidents(installationId, "investigating");
   const all = [...open, ...investigating, ...resolved];
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8">
       <div className="mb-8">
-        <div className="dg-label mb-2">Drift incidents</div>
+        <div className="dg-label mb-2">{t("incidents.eyebrow")}</div>
         <h1 className="font-sans text-2xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
-          Incidents
+          {t("incidents.title")}
         </h1>
         <p className="mt-1 text-[13px] text-[color:var(--dg-fg-muted)]">
-          {open.length} open · {investigating.length} investigating · {resolved.length} resolved
+          {open.length} {t("incidents.open")} · {investigating.length} {t("incidents.investigating")} · {resolved.length} {t("incidents.resolved")}
         </p>
       </div>
 
       {all.length === 0 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-12 text-center">
-          <div className="text-[13px] text-[color:var(--dg-fg-muted)]">No incidents yet.</div>
-          <p className="mt-2 text-[11px] text-[color:var(--dg-fg-subtle)]">
-            Incidents are created automatically when DriftGuard detects high or critical events.
-          </p>
+          <div className="text-[13px] text-[color:var(--dg-fg-muted)]">{t("incidents.noTitle")}</div>
+          <p className="mt-2 text-[11px] text-[color:var(--dg-fg-subtle)]">{t("incidents.noBody")}</p>
         </div>
       ) : (
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
@@ -75,15 +79,15 @@ export default async function IncidentsPage({ params }: { params: Promise<{ inst
                   <p className="text-[12px] text-[color:var(--dg-fg-muted)] truncate">{inc.description}</p>
                 )}
                 <div className="mt-1.5 flex items-center gap-4 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-                  <span className="capitalize">{inc.status}</span>
+                  <span>{t(`incidents.${inc.status}` as any) ?? inc.status}</span>
                   {inc.recurrence_count > 1 && (
-                    <span className="text-warned">↺ {inc.recurrence_count}× recurrence</span>
+                    <span className="text-warned">↺ {inc.recurrence_count}× {t("incidents.recurrenceLabel").replace("{n}", "")}</span>
                   )}
                   {inc.last_seen_at && <span>{new Date(inc.last_seen_at).toLocaleString()}</span>}
                 </div>
                 {inc.suggested_fix && (
                   <div className="mt-2 rounded border border-allowed/20 bg-allowed/5 px-3 py-1.5 font-mono text-[10px] text-allowed">
-                    Fix: {inc.suggested_fix}
+                    {t("incidents.suggestedFix")} {inc.suggested_fix}
                   </div>
                 )}
               </div>

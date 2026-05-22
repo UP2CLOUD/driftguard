@@ -8,20 +8,23 @@ export function DashboardNav({
   installationId,
   planLabel,
   openIncidents = 0,
+  labels = {},
 }: {
   installationId: string;
   planLabel?: string;
   openIncidents?: number;
+  labels?: Record<string, string>;
 }) {
+  const l = (key: string, fallback: string) => labels[key] ?? fallback;
   const pathname = usePathname();
   const base = `/dashboard/${installationId}`;
 
   const navItems = [
-    { label: "Overview",  href: base },
-    { label: "Incidents", href: `${base}/incidents`, badge: openIncidents > 0 ? openIncidents : 0 },
-    { label: "Policies",  href: `${base}/policies` },
-    { label: "Memory",    href: `${base}/memory` },
-    { label: "Settings",  href: `${base}/settings` },
+    { label: l("overview", "Overview"),  href: base },
+    { label: l("incidents", "Incidents"), href: `${base}/incidents`, badge: openIncidents > 0 ? openIncidents : 0 },
+    { label: l("policies", "Policies"),  href: `${base}/policies` },
+    { label: l("memory", "Memory"),      href: `${base}/memory` },
+    { label: l("settings", "Settings"),  href: `${base}/settings` },
   ];
 
   return (

@@ -49,7 +49,7 @@ export default async function Settings({
       )}
 
       {/* ── Preferences ─────────────────────────────────────────── */}
-      <Section title="Preferences" description="Language, display, and notification preferences.">
+      <Section title={t("settings.preferences")} description={t("settings.preferencesDesc")}>
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
           <UserPreferencesSettings initialPreferences={preferences} />
         </div>
@@ -58,14 +58,14 @@ export default async function Settings({
       {/* ── AWS Integration ─────────────────────────────────────── */}
       <Section
         title="AWS integration"
-        description="Grant DriftGuard read-only access to compare live state against Terraform plans. No credentials stored — STS AssumeRole with external ID."
+        description={t("settings.awsDesc")}
       >
         <AwsIntegrationForm installationId={installationId} org={org} />
       </Section>
 
       {/* ── Billing ─────────────────────────────────────────────── */}
       {org && (
-        <Section title="Plan &amp; billing" description="Manage your subscription and payment method.">
+        <Section title={t("settings.billingTitle")} description={t("settings.billingDesc")}>
           <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] sm:grid-cols-3 mb-4">
             <PlanCard name="Free"       price="€0"  detail="50 PR analyses/mo · 1 repo"              current={org.plan === "free"} />
             <PlanCard name="Team"       price="€29" detail="Unlimited PRs · memory · compliance"     current={org.plan === "team"} period="/repo/mo" highlighted />
@@ -81,21 +81,21 @@ export default async function Settings({
       )}
 
       {/* ── Workspace info ───────────────────────────────────────── */}
-      <Section title="Workspace" description="Read-only metadata about this installation.">
+      <Section title={t("settings.workspaceTitle")} description={t("settings.workspaceDesc")}>
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
-          <Row label="GitHub installation ID" value={installationId} mono />
+          <Row label={t("settings.installationId")} value={installationId} mono />
           {org && (
             <>
-              <Row label="Organisation ID" value={org.id} mono />
-              <Row label="Plan" value={org.plan} />
-              <Row label="Stripe customer" value={org.has_stripe_customer ? "active" : "—"} />
+              <Row label={t("settings.organisationId")} value={org.id} mono />
+              <Row label={t("settings.plan")} value={org.plan} />
+              <Row label={t("settings.stripeCustomer")} value={org.has_stripe_customer ? t("settings.stripeActive") : "—"} />
             </>
           )}
         </div>
       </Section>
 
       {/* ── Danger zone ─────────────────────────────────────────── */}
-      <Section title="Danger zone" description="Irreversible actions. Proceed with care." danger>
+      <Section title={t("settings.dangerZone")} description={t("settings.dangerZoneDesc")} danger>
         <div className="rounded-md border border-blocked/30 bg-blocked/5 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <div className="text-[13px] font-semibold text-[color:var(--dg-fg)]">Remove DriftGuard</div>

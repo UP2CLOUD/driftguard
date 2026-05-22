@@ -7,7 +7,12 @@
     "signInGithub": "Sign in with GitHub",
     "devBypass": "Dev Bypass",
     "repos": "Repos",
-    "settings": "Settings"
+    "settings": "Settings",
+    "incidents": "Incidents",
+    "policies": "Policies",
+    "memory": "Memory",
+    "overview": "Overview",
+    "signOutShort": "Sign out"
   },
   "auth": {
     "goToDashboard": "Go to Dashboard →",
@@ -28,7 +33,22 @@
   },
   "dashboard": {
     "selectOrg": "Select Organization",
-    "connectGithub": "Connect to GitHub"
+    "connectGithub": "Connect to GitHub",
+    "title": "Dashboard",
+    "avgRisk": "Avg risk",
+    "openIncidents": "Open incidents",
+    "critical": "Critical",
+    "memoryEntries": "Memory",
+    "driftIncidents": "Drift incidents",
+    "eventFeed": "Event feed",
+    "noEvents": "No events yet — events appear here as DriftGuard reviews PRs.",
+    "noAnalyses": "No analyses yet — open a Terraform PR to start.",
+    "apiOffline": "API offline — limited data",
+    "recurrence": "recurrence",
+    "open": "open",
+    "investigating": "investigating",
+    "resolved": "resolved",
+    "suppressed": "suppressed"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -77,7 +97,21 @@
     "billingCurrent": "Current plan:",
     "activePlan": "Active Plan",
     "orgTitle": "Organization",
-    "apiUnavailable": "API unavailable — configure NEXT_PUBLIC_API_URL in your Vercel environment variables."
+    "apiUnavailable": "API unavailable — configure NEXT_PUBLIC_API_URL in your Vercel environment variables.",
+    "preferences": "Preferences",
+    "preferencesDesc": "Language, display, and notification preferences.",
+    "awsTitle": "AWS integration",
+    "awsDesc": "Grant DriftGuard read-only access to compare live state against Terraform plans. No credentials stored — STS AssumeRole with external ID.",
+    "billingDesc": "Manage your subscription and payment method.",
+    "workspaceTitle": "Workspace",
+    "workspaceDesc": "Read-only metadata about this installation.",
+    "installationId": "GitHub installation ID",
+    "organisationId": "Organisation ID",
+    "plan": "Plan",
+    "stripeCustomer": "Stripe customer",
+    "stripeActive": "active",
+    "dangerZone": "Danger zone",
+    "dangerZoneDesc": "Irreversible actions. Proceed with care."
   },
   "installApp": {
     "title": "Install the GitHub App",
@@ -92,5 +126,43 @@
     "ctaSubtitle": "Install in 30 seconds. No credit card required. Works with GitHub, AWS, OpenTofu, and any Terraform-compatible toolchain.",
     "ctaButton": "Install GitHub App — free",
     "ctaReadDocs": "Read the docs →"
+  },
+  "incidents": {
+    "title": "Incidents",
+    "eyebrow": "Drift incidents",
+    "subtitle": "{open} open · {investigating} investigating · {resolved} resolved",
+    "noTitle": "No incidents yet.",
+    "noBody": "Incidents are created automatically when DriftGuard detects high or critical events.",
+    "status": "Status",
+    "recurrenceLabel": "{n}× recurrence",
+    "suggestedFix": "Fix:",
+    "open": "open",
+    "investigating": "investigating",
+    "resolved": "resolved",
+    "suppressed": "suppressed"
+  },
+  "policies": {
+    "title": "Policy rules",
+    "eyebrow": "Runtime guardrails",
+    "subtitle": "{active} active · {total} total",
+    "apiHint": "Use POST /api/v1/policies to add rules",
+    "noTitle": "No policies yet.",
+    "noBody": "Run the seed script to create default policy templates.",
+    "disabled": "disabled",
+    "block": "block",
+    "warn": "warn",
+    "alert": "alert",
+    "matches": "{n} matches"
+  },
+  "memory": {
+    "title": "Operational memory",
+    "eyebrow": "Semantic memory",
+    "subtitle": "{total} indexed incidents · used for similarity recall on every PR",
+    "total": "Total",
+    "noTitle": "No memory entries yet.",
+    "noBody": "Memory is built as DriftGuard reviews PRs and records incident embeddings.",
+    "blocked": "blocked",
+    "approved": "approved",
+    "warned": "warned"
   }
 }

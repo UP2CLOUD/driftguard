@@ -7,7 +7,12 @@
     "signInGithub": "Iniciar sesión con GitHub",
     "devBypass": "Bypass de desarrollo",
     "repos": "Repos",
-    "settings": "Ajustes"
+    "settings": "Ajustes",
+    "incidents": "Incidentes",
+    "policies": "Políticas",
+    "memory": "Memoria",
+    "overview": "Resumen",
+    "signOutShort": "Cerrar sesión"
   },
   "auth": {
     "goToDashboard": "Ir al panel →",
@@ -28,7 +33,22 @@
   },
   "dashboard": {
     "selectOrg": "Seleccionar organización",
-    "connectGithub": "Conectar con GitHub"
+    "connectGithub": "Conectar con GitHub",
+    "title": "Panel",
+    "avgRisk": "Riesgo promedio",
+    "openIncidents": "Incidentes abiertos",
+    "critical": "Crítico",
+    "memoryEntries": "Memoria",
+    "driftIncidents": "Incidentes de drift",
+    "eventFeed": "Feed de eventos",
+    "noEvents": "Sin eventos — aparecen aquí cuando DriftGuard revisa PRs.",
+    "noAnalyses": "Sin análisis — abre un PR de Terraform para empezar.",
+    "apiOffline": "API sin conexión — datos limitados",
+    "recurrence": "recurrencia",
+    "open": "abierto",
+    "investigating": "investigando",
+    "resolved": "resuelto",
+    "suppressed": "suprimido"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -62,7 +82,21 @@
     "billingCurrent": "Plan actual:",
     "activePlan": "Plan activo",
     "orgTitle": "Organización",
-    "apiUnavailable": "API no disponible — configura NEXT_PUBLIC_API_URL en las variables de entorno de Vercel."
+    "apiUnavailable": "API no disponible — configura NEXT_PUBLIC_API_URL en las variables de entorno de Vercel.",
+    "preferences": "Preferencias",
+    "preferencesDesc": "Idioma, visualización y preferencias de notificación.",
+    "awsTitle": "Integración AWS",
+    "awsDesc": "Concede acceso de solo lectura a DriftGuard para comparar el estado en vivo con los planes de Terraform. Sin credenciales almacenadas — STS AssumeRole con ID externo.",
+    "billingDesc": "Administra tu suscripción y método de pago.",
+    "workspaceTitle": "Workspace",
+    "workspaceDesc": "Metadatos de solo lectura sobre esta instalación.",
+    "installationId": "ID de instalación de GitHub",
+    "organisationId": "ID de organización",
+    "plan": "Plan",
+    "stripeCustomer": "Cliente Stripe",
+    "stripeActive": "activo",
+    "dangerZone": "Zona de peligro",
+    "dangerZoneDesc": "Acciones irreversibles. Proceder con cuidado."
   },
   "installApp": {
     "title": "Instalar la GitHub App",
@@ -92,5 +126,43 @@
     "ctaSubtitle": "Instala en 30 segundos. Sin tarjeta de crédito. Funciona con GitHub, AWS, OpenTofu y cualquier toolchain compatible con Terraform.",
     "ctaButton": "Instalar GitHub App — gratis",
     "ctaReadDocs": "Leer la documentación →"
+  },
+  "incidents": {
+    "title": "Incidentes",
+    "eyebrow": "Incidentes de drift",
+    "subtitle": "{open} abiertos · {investigating} investigando · {resolved} resueltos",
+    "noTitle": "Sin incidentes todavía.",
+    "noBody": "Los incidentes se crean automáticamente cuando DriftGuard detecta eventos críticos.",
+    "status": "Estado",
+    "recurrenceLabel": "{n}× recurrencia",
+    "suggestedFix": "Corrección:",
+    "open": "abierto",
+    "investigating": "investigando",
+    "resolved": "resuelto",
+    "suppressed": "suprimido"
+  },
+  "policies": {
+    "title": "Reglas de política",
+    "eyebrow": "Controles de runtime",
+    "subtitle": "{active} activas · {total} total",
+    "apiHint": "Usa POST /api/v1/policies para agregar reglas",
+    "noTitle": "Sin políticas todavía.",
+    "noBody": "Ejecuta el script seed para crear las plantillas de política predeterminadas.",
+    "disabled": "desactivada",
+    "block": "bloquear",
+    "warn": "advertir",
+    "alert": "alertar",
+    "matches": "{n} coincidencias"
+  },
+  "memory": {
+    "title": "Memoria operacional",
+    "eyebrow": "Memoria semántica",
+    "subtitle": "{total} incidentes indexados · usados para recall en cada PR",
+    "total": "Total",
+    "noTitle": "Sin entradas de memoria.",
+    "noBody": "La memoria se construye mientras DriftGuard revisa PRs y registra embeddings.",
+    "blocked": "bloqueado",
+    "approved": "aprobado",
+    "warned": "advertido"
   }
 }

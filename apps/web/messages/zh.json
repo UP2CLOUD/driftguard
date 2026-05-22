@@ -7,7 +7,12 @@
     "signInGithub": "使用 GitHub 登录",
     "devBypass": "开发者绕过",
     "repos": "仓库",
-    "settings": "设置"
+    "settings": "设置",
+    "incidents": "事件",
+    "policies": "策略",
+    "memory": "记忆",
+    "overview": "概览",
+    "signOutShort": "退出"
   },
   "auth": {
     "goToDashboard": "前往控制台 →",
@@ -28,7 +33,22 @@
   },
   "dashboard": {
     "selectOrg": "选择组织",
-    "connectGithub": "连接 GitHub"
+    "connectGithub": "连接 GitHub",
+    "title": "仪表板",
+    "avgRisk": "平均风险",
+    "openIncidents": "未解决事件",
+    "critical": "严重",
+    "memoryEntries": "记忆",
+    "driftIncidents": "漂移事件",
+    "eventFeed": "事件流",
+    "noEvents": "暂无事件 — 当 DriftGuard 审查 PR 时，事件将显示在此处。",
+    "noAnalyses": "暂无分析 — 打开 Terraform PR 开始分析。",
+    "apiOffline": "API 离线 — 数据受限",
+    "recurrence": "重复",
+    "open": "开放",
+    "investigating": "调查中",
+    "resolved": "已解决",
+    "suppressed": "已抑制"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -62,7 +82,21 @@
     "billingCurrent": "当前方案：",
     "activePlan": "当前方案",
     "orgTitle": "组织",
-    "apiUnavailable": "API 不可用 — 请在 Vercel 环境变量中配置 NEXT_PUBLIC_API_URL。"
+    "apiUnavailable": "API 不可用 — 请在 Vercel 环境变量中配置 NEXT_PUBLIC_API_URL。",
+    "preferences": "偏好设置",
+    "preferencesDesc": "语言、显示和通知偏好。",
+    "awsTitle": "AWS 集成",
+    "awsDesc": "授予 DriftGuard 只读权限，以比较实时状态与 Terraform 计划。不存储凭证 — STS AssumeRole 使用外部 ID。",
+    "billingDesc": "管理您的订阅和付款方式。",
+    "workspaceTitle": "工作区",
+    "workspaceDesc": "此安装的只读元数据。",
+    "installationId": "GitHub 安装 ID",
+    "organisationId": "组织 ID",
+    "plan": "计划",
+    "stripeCustomer": "Stripe 客户",
+    "stripeActive": "活跃",
+    "dangerZone": "危险区域",
+    "dangerZoneDesc": "不可逆操作，请谨慎操作。"
   },
   "installApp": {
     "title": "安装 GitHub 应用",
@@ -92,5 +126,43 @@
     "ctaSubtitle": "30秒内完成安装。无需信用卡。支持GitHub、AWS、OpenTofu及任何Terraform兼容工具链。",
     "ctaButton": "安装 GitHub App — 免费",
     "ctaReadDocs": "阅读文档 →"
+  },
+  "incidents": {
+    "title": "事件",
+    "eyebrow": "漂移事件",
+    "subtitle": "{open} 未解决 · {investigating} 调查中 · {resolved} 已解决",
+    "noTitle": "暂无事件。",
+    "noBody": "当 DriftGuard 检测到高危或严重事件时，将自动创建事件。",
+    "status": "状态",
+    "recurrenceLabel": "{n}× 重复",
+    "suggestedFix": "修复建议：",
+    "open": "开放",
+    "investigating": "调查中",
+    "resolved": "已解决",
+    "suppressed": "已抑制"
+  },
+  "policies": {
+    "title": "策略规则",
+    "eyebrow": "运行时防护",
+    "subtitle": "{active} 活跃 · {total} 总计",
+    "apiHint": "使用 POST /api/v1/policies 添加规则",
+    "noTitle": "暂无策略。",
+    "noBody": "运行 seed 脚本创建默认策略模板。",
+    "disabled": "已禁用",
+    "block": "阻断",
+    "warn": "警告",
+    "alert": "告警",
+    "matches": "{n} 匹配"
+  },
+  "memory": {
+    "title": "运行记忆",
+    "eyebrow": "语义记忆",
+    "subtitle": "{total} 已索引事件 · 用于每次 PR 的相似性召回",
+    "total": "总计",
+    "noTitle": "暂无记忆条目。",
+    "noBody": "随着 DriftGuard 审查 PR 并记录事件嵌入，记忆将逐步构建。",
+    "blocked": "已阻断",
+    "approved": "已批准",
+    "warned": "已警告"
   }
 }

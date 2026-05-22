@@ -1,4 +1,7 @@
 import { auth } from "@/auth";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
 import { DashboardNav } from "@/components/DashboardNav";
 import { DashboardFooter } from "@/components/DashboardFooter";
 import { redirect } from "next/navigation";
@@ -37,6 +40,10 @@ export default async function DashboardLayout({
 
   const { installationId } = await params;
 
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
   const { authorized, installations } = await checkInstallationAccess(installationId);
   if (!authorized) redirect("/");
 
@@ -51,6 +58,13 @@ export default async function DashboardLayout({
         installationId={installationId}
         planLabel={planLabel}
         openIncidents={openIncidents}
+        labels={{
+          overview:  t("nav.overview")  ?? "Overview",
+          incidents: t("nav.incidents") ?? "Incidents",
+          policies:  t("nav.policies")  ?? "Policies",
+          memory:    t("nav.memory")    ?? "Memory",
+          settings:  t("nav.settings")  ?? "Settings",
+        }}
       />
       <main className="flex-1">{children}</main>
       <DashboardFooter />

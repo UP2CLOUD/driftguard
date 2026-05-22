@@ -7,7 +7,12 @@
     "signInGithub": "GitHub से साइन इन करें",
     "devBypass": "डेव बायपास",
     "repos": "रिपॉज़िटरी",
-    "settings": "सेटिंग्स"
+    "settings": "सेटिंग्स",
+    "incidents": "घटनाएं",
+    "policies": "नीतियां",
+    "memory": "स्मृति",
+    "overview": "अवलोकन",
+    "signOutShort": "साइन आउट"
   },
   "auth": {
     "goToDashboard": "डैशबोर्ड पर जाएँ →",
@@ -28,7 +33,22 @@
   },
   "dashboard": {
     "selectOrg": "संगठन चुनें",
-    "connectGithub": "GitHub से कनेक्ट करें"
+    "connectGithub": "GitHub से कनेक्ट करें",
+    "title": "डैशबोर्ड",
+    "avgRisk": "औसत जोखिम",
+    "openIncidents": "खुली घटनाएं",
+    "critical": "गंभीर",
+    "memoryEntries": "स्मृति",
+    "driftIncidents": "ड्रिफ्ट घटनाएं",
+    "eventFeed": "इवेंट फ़ीड",
+    "noEvents": "अभी कोई इवेंट नहीं — DriftGuard के PR समीक्षा करने पर यहाँ दिखेंगे।",
+    "noAnalyses": "अभी कोई विश्लेषण नहीं — शुरू करने के लिए Terraform PR खोलें।",
+    "apiOffline": "API ऑफ़लाइन — सीमित डेटा",
+    "recurrence": "पुनरावृत्ति",
+    "open": "खुला",
+    "investigating": "जांच में",
+    "resolved": "हल किया गया",
+    "suppressed": "दबाया गया"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -62,7 +82,21 @@
     "billingCurrent": "वर्तमान योजना:",
     "activePlan": "सक्रिय योजना",
     "orgTitle": "संस्था",
-    "apiUnavailable": "API अनुपलब्ध — Vercel पर्यावरण चर में NEXT_PUBLIC_API_URL कॉन्फ़िगर करें।"
+    "apiUnavailable": "API अनुपलब्ध — Vercel पर्यावरण चर में NEXT_PUBLIC_API_URL कॉन्फ़िगर करें।",
+    "preferences": "प्राथमिकताएं",
+    "preferencesDesc": "भाषा, प्रदर्शन और अधिसूचना प्राथमिकताएं।",
+    "awsTitle": "AWS एकीकरण",
+    "awsDesc": "DriftGuard को Terraform योजनाओं के साथ लाइव स्थिति की तुलना करने के लिए केवल-पढ़ने की पहुंच दें। कोई क्रेडेंशियल संग्रहीत नहीं — बाहरी ID के साथ STS AssumeRole।",
+    "billingDesc": "अपनी सदस्यता और भुगतान विधि प्रबंधित करें।",
+    "workspaceTitle": "वर्कस्पेस",
+    "workspaceDesc": "इस इंस्टॉलेशन के बारे में केवल-पढ़ने योग्य मेटाडेटा।",
+    "installationId": "GitHub इंस्टॉलेशन ID",
+    "organisationId": "संगठन ID",
+    "plan": "योजना",
+    "stripeCustomer": "Stripe ग्राहक",
+    "stripeActive": "सक्रिय",
+    "dangerZone": "खतरनाक क्षेत्र",
+    "dangerZoneDesc": "अपरिवर्तनीय क्रियाएं। सावधानी से आगे बढ़ें।"
   },
   "installApp": {
     "title": "GitHub App इंस्टॉल करें",
@@ -92,5 +126,43 @@
     "ctaSubtitle": "30 सेकंड में इंस्टॉल करें। कोई क्रेडिट कार्ड आवश्यक नहीं। GitHub, AWS, OpenTofu और किसी भी Terraform-संगत टूलचेन के साथ काम करता है।",
     "ctaButton": "GitHub App इंस्टॉल करें — मुफ़्त",
     "ctaReadDocs": "दस्तावेज़ पढ़ें →"
+  },
+  "incidents": {
+    "title": "घटनाएं",
+    "eyebrow": "ड्रिफ्ट घटनाएं",
+    "subtitle": "{open} खुली · {investigating} जांच में · {resolved} हल",
+    "noTitle": "अभी कोई घटना नहीं।",
+    "noBody": "जब DriftGuard उच्च या गंभीर इवेंट का पता लगाता है तो घटनाएं स्वचालित रूप से बनती हैं।",
+    "status": "स्थिति",
+    "recurrenceLabel": "{n}× पुनरावृत्ति",
+    "suggestedFix": "सुधार:",
+    "open": "खुला",
+    "investigating": "जांच में",
+    "resolved": "हल किया गया",
+    "suppressed": "दबाया गया"
+  },
+  "policies": {
+    "title": "नीति नियम",
+    "eyebrow": "रनटाइम गार्डरेल",
+    "subtitle": "{active} सक्रिय · {total} कुल",
+    "apiHint": "नियम जोड़ने के लिए POST /api/v1/policies का उपयोग करें",
+    "noTitle": "अभी कोई नीति नहीं।",
+    "noBody": "डिफ़ॉल्ट पॉलिसी टेम्पलेट बनाने के लिए seed स्क्रिप्ट चलाएं।",
+    "disabled": "अक्षम",
+    "block": "ब्लॉक",
+    "warn": "चेतावनी",
+    "alert": "अलर्ट",
+    "matches": "{n} मिलान"
+  },
+  "memory": {
+    "title": "परिचालन स्मृति",
+    "eyebrow": "सिमेंटिक स्मृति",
+    "subtitle": "{total} अनुक्रमित घटनाएं · प्रत्येक PR पर समानता रिकॉल के लिए",
+    "total": "कुल",
+    "noTitle": "अभी कोई स्मृति प्रविष्टि नहीं।",
+    "noBody": "DriftGuard के PR समीक्षा करने और घटना एम्बेडिंग रिकॉर्ड करने पर स्मृति बनती है।",
+    "blocked": "अवरुद्ध",
+    "approved": "अनुमोदित",
+    "warned": "चेतावनी दी"
   }
 }
