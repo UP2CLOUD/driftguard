@@ -59,7 +59,7 @@ export default async function Image() {
 
         {/* Bottom: stats strip */}
         <div style={{ display: "flex", marginTop: 56, gap: 48, fontSize: 14 }}>
-          <Stat label="P99 review" value="1.2s" />
+          <Stat label="P99 review" value="<2s" />
           <Stat label="Memory" value="384-d" />
           <Stat label="Compliance" value="DORA · NIS2 · ISO 27001" />
         </div>

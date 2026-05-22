@@ -1,11 +1,19 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 
-export const metadata: Metadata = { title: "Security — DriftGuard" };
+export const metadata: Metadata = {
+  ...pageMeta({
+    title: "Security — DriftGuard",
+    description: "DriftGuard security architecture: AES-256 encryption, GitHub OAuth, append-only audit log, EU data residency, annual pentest.",
+    path: "/security",
+    keywords: ["Terraform security", "infrastructure security", "GDPR", "EU data residency"],
+  }),
+};
 
 const CONTROLS = [
   { label: "Encryption at rest", value: "AES-256 (GCP Cloud Storage + Cloud SQL)" },

@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { pageMeta, jsonLdBreadcrumb, jsonLdArticle } from "@/lib/seo";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
@@ -56,7 +58,8 @@ export default async function Webhooks() {
 
   return (
     <MarketingPageShell
-      eyebrow={t("docs.webhooks.eyebrow")} title={t("docs.webhooks.title")} subtitle={t("docs.webhooks.subtitle")}
+      jsonLd={jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Docs", path: "/docs" }, { name: "Webhooks", path: "/docs/webhooks" }])}
+            eyebrow={t("docs.webhooks.eyebrow")} title={t("docs.webhooks.title")} subtitle={t("docs.webhooks.subtitle")}
       narrow
     >
       <div className="space-y-10">

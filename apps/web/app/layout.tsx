@@ -63,6 +63,17 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
   },
+  alternates: {
+    canonical: "/",
+    languages: {
+      "en-US": "/",
+      "pt-BR": "/",
+      "es-ES": "/",
+      "zh-CN": "/",
+      "hi-IN": "/",
+      "ar-SA": "/",
+    },
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

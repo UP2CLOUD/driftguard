@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { pageMeta, jsonLdBreadcrumb, jsonLdArticle } from "@/lib/seo";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
@@ -13,7 +15,8 @@ export default async function FirstReview() {
 
   return (
     <MarketingPageShell
-      eyebrow={t("docs.firstReview.eyebrow")} title={t("docs.firstReview.title")} subtitle={t("docs.firstReview.subtitle")}
+      jsonLd={jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Docs", path: "/docs" }, { name: "First review", path: "/docs/first-review" }])}
+            eyebrow={t("docs.firstReview.eyebrow")} title={t("docs.firstReview.title")} subtitle={t("docs.firstReview.subtitle")}
       narrow
     >
       <div className="space-y-10 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">

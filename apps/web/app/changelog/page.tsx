@@ -1,11 +1,19 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 
-export const metadata: Metadata = { title: "Changelog — DriftGuard" };
+export const metadata: Metadata = {
+  ...pageMeta({
+    title: "Changelog — DriftGuard",
+    description: "DriftGuard platform release history. All features, fixes, and breaking changes — newest first.",
+    path: "/changelog",
+    keywords: ["DriftGuard updates", "Terraform review changelog", "release notes"],
+  }),
+};
 
 const RELEASES = [
   {

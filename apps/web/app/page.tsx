@@ -20,6 +20,8 @@ import { Pricing } from "@/components/landing/Pricing";
 import { CtaSection } from "@/components/landing/CtaSection";
 import { Footer } from "@/components/landing/Footer";
 import { HashScroll } from "@/components/HashScroll";
+import { JsonLd } from "@/components/JsonLd";
+import { jsonLdSoftware, jsonLdOrg } from "@/lib/seo";
 
 export default async function Page() {
   const session = await auth();
@@ -40,6 +42,7 @@ export default async function Page() {
   return (
     <>
       <HashScroll />
+      <JsonLd data={[jsonLdSoftware(), jsonLdOrg()]} />
       <StatusBar />
       <MarketingNav isLoggedIn={isLoggedIn} cta={!isLoggedIn ? cta : undefined} />
 

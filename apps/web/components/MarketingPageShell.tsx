@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { JsonLd } from "@/components/JsonLd";
 import { StatusBar } from "@/components/landing/StatusBar";
 import { MarketingNav } from "@/components/landing/MarketingNav";
 import { Footer } from "@/components/landing/Footer";
@@ -9,16 +10,19 @@ export async function MarketingPageShell({
   title,
   subtitle,
   narrow = false,
+  jsonLd,
 }: {
   children: React.ReactNode;
   eyebrow?: string;
   title?: string;
   subtitle?: string;
   narrow?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }) {
   const session = await auth();
   return (
     <main className="min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
+      {jsonLd && <JsonLd data={jsonLd} />}
       <StatusBar />
       <MarketingNav isLoggedIn={!!session} />
       <div className={`mx-auto ${narrow ? "max-w-3xl" : "max-w-[1400px]"} px-4 sm:px-6 py-12 sm:py-16`}>

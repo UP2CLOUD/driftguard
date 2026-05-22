@@ -1,11 +1,19 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 
-export const metadata: Metadata = { title: "Compliance — DriftGuard" };
+export const metadata: Metadata = {
+  ...pageMeta({
+    title: "Compliance — DriftGuard",
+    description: "How DriftGuard maps to DORA, NIS2 Article 21, ISO 27001:2022, and CIS Benchmarks. Compliance evidence as a side effect of PR review.",
+    path: "/compliance",
+    keywords: ["DORA compliance", "NIS2 compliance", "ISO 27001 Terraform", "CIS benchmarks IaC"],
+  }),
+};
 
 const FRAMEWORKS = [
   {

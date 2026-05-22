@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { pageMeta, jsonLdBreadcrumb, jsonLdArticle } from "@/lib/seo";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
@@ -11,7 +13,9 @@ export default async function Memory() {
 
 
   return (
-    <MarketingPageShell eyebrow={t("docs.memory.eyebrow")} title={t("docs.memory.title")} subtitle={t("docs.memory.subtitle")} narrow>
+    <MarketingPageShell
+      jsonLd={jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Docs", path: "/docs" }, { name: "Memory", path: "/docs/memory" }])}
+      eyebrow={t("docs.memory.eyebrow")} title={t("docs.memory.title")} subtitle={t("docs.memory.subtitle")} narrow>
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <Section title="What gets stored">
           Every finding from every PR analysis is converted into a 384-dimensional embedding using the Voyage-3-lite model. The embedding captures: the resource type, the change intent, the blast radius, and the severity. It is stored in a pgvector index alongside the original finding text, the repository, the PR number, and the outcome (blocked / allowed).

@@ -5,10 +5,15 @@ import { StatusBar } from "@/components/landing/StatusBar";
 import { MarketingNav } from "@/components/landing/MarketingNav";
 import { Footer } from "@/components/landing/Footer";
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Docs — DriftGuard",
-  description: "DriftGuard documentation: install, configure, integrate, deploy.",
+  ...pageMeta({
+    title: "Documentation — DriftGuard",
+    description: "DriftGuard documentation: install guide, API reference, core concepts, integrations, and compliance controls.",
+    path: "/docs",
+    keywords: ["DriftGuard docs", "Terraform PR review docs", "infrastructure as code review"],
+  }),
 };
 
 const SECTIONS = [

@@ -1,13 +1,18 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 
 export const metadata: Metadata = {
-  title: "Customers — DriftGuard",
-  description: "Platform engineering teams using DriftGuard to ship safer Terraform.",
+  ...pageMeta({
+    title: "Customers — DriftGuard",
+    description: "Platform and DevOps teams using DriftGuard to govern AI-written Terraform at scale. Real results from engineering teams.",
+    path: "/customers",
+    keywords: ["Terraform governance", "AI agent safety", "platform engineering"],
+  }),
 };
 
 const QUOTES = [

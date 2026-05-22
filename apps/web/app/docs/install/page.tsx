@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { pageMeta, jsonLdBreadcrumb, jsonLdArticle } from "@/lib/seo";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
@@ -29,7 +31,9 @@ export default async function Install() {
 
 
   return (
-    <MarketingPageShell eyebrow={t("docs.install.eyebrow")} title={t("docs.install.title")} subtitle={t("docs.install.subtitle")} narrow>
+    <MarketingPageShell
+      jsonLd={jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Docs", path: "/docs" }, { name: "Install", path: "/docs/install" }])}
+      eyebrow={t("docs.install.eyebrow")} title={t("docs.install.title")} subtitle={t("docs.install.subtitle")} narrow>
       <div className="space-y-10">
         {STEPS.map((s) => (
           <div key={s.n} className="relative pl-8 border-l border-[color:var(--dg-border)]">

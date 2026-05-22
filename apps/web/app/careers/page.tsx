@@ -1,13 +1,18 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 
 export const metadata: Metadata = {
-  title: "Careers — DriftGuard",
-  description: "Join the team building AI runtime safety for Terraform. Remote-first, EU-based.",
+  ...pageMeta({
+    title: "Careers — DriftGuard",
+    description: "Join the team building AI runtime safety for Terraform infrastructure. Remote-first, EU-based. Senior engineers wanted.",
+    path: "/careers",
+    keywords: ["DriftGuard jobs", "infrastructure engineering jobs", "EU remote engineering"],
+  }),
 };
 
 const ROLES = [

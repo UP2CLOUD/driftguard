@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { pageMeta, jsonLdBreadcrumb, jsonLdArticle } from "@/lib/seo";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
@@ -11,7 +13,9 @@ export default async function Cost() {
 
 
   return (
-    <MarketingPageShell eyebrow={t("docs.cost.eyebrow")} title={t("docs.cost.title")} subtitle={t("docs.cost.subtitle")} narrow>
+    <MarketingPageShell
+      jsonLd={jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Docs", path: "/docs" }, { name: "Cost analysis", path: "/docs/cost" }])}
+      eyebrow={t("docs.cost.eyebrow")} title={t("docs.cost.title")} subtitle={t("docs.cost.subtitle")} narrow>
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <div><h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-2">Powered by Infracost</h2>
         <p>DriftGuard runs Infracost on every Terraform plan JSON and reports the monthly cost delta per resource. If a PR would add €500/month of EC2 instances, that appears in the PR comment before anyone merges.</p></div>

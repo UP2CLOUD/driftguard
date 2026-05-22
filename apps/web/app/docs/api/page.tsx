@@ -3,9 +3,17 @@ import type { Metadata } from "next";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
+import { pageMeta, jsonLdBreadcrumb, jsonLdArticle } from "@/lib/seo";
 
 
-export const metadata: Metadata = { title: "API Reference — DriftGuard" };
+export const metadata: Metadata = {
+  ...pageMeta({
+    title: "API Reference — DriftGuard",
+    description: "DriftGuard REST API reference. All endpoints, authentication, request/response examples for organisations, analyses, billing, and webhooks.",
+    path: "/docs/api",
+    keywords: ["DriftGuard API", "Terraform review API", "infrastructure review REST API"],
+  }),
+};
 
 const ENDPOINTS = [
   { method: "GET",    path: "/api/v1/health",                      desc: "Liveness probe. Returns status + uptime + version." },
@@ -40,7 +48,8 @@ export default async function ApiReference() {
 
   return (
     <MarketingPageShell
-      eyebrow={t("docs.api.eyebrow")} title={t("docs.api.title")} subtitle={t("docs.api.subtitle")}
+      jsonLd={jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Docs", path: "/docs" }, { name: "API reference", path: "/docs/api" }])}
+            eyebrow={t("docs.api.eyebrow")} title={t("docs.api.title")} subtitle={t("docs.api.subtitle")}
     >
       {/* Auth */}
       <section className="mb-12">

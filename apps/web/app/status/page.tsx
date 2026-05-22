@@ -1,11 +1,19 @@
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 
-export const metadata: Metadata = { title: "Status — DriftGuard" };
+export const metadata: Metadata = {
+  ...pageMeta({
+    title: "Status — DriftGuard",
+    description: "Real-time DriftGuard system status. Check uptime for the review pipeline, dashboard, GitHub webhooks, and Infracost integration.",
+    path: "/status",
+    keywords: ["DriftGuard status", "system status", "uptime"],
+  }),
+};
 
 const SYSTEMS = [
   { name: "API",                 description: "Core review pipeline",          status: "operational" },

@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { pageMeta, jsonLdBreadcrumb, jsonLdArticle } from "@/lib/seo";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
@@ -11,7 +13,9 @@ export default async function Drift() {
 
 
   return (
-    <MarketingPageShell eyebrow={t("docs.drift.eyebrow")} title={t("docs.drift.title")} subtitle={t("docs.drift.subtitle")} narrow>
+    <MarketingPageShell
+      jsonLd={jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Docs", path: "/docs" }, { name: "Drift detection", path: "/docs/drift" }])}
+      eyebrow={t("docs.drift.eyebrow")} title={t("docs.drift.title")} subtitle={t("docs.drift.subtitle")} narrow>
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <div><h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-2">How it works</h2>
         <p>DriftGuard compares the resources in your <code className="font-mono text-[color:var(--dg-electric-bright)]">terraform plan</code> output against the real state in your cloud account. Any resource that exists in the plan but not in live state (or vice-versa) is flagged as drift.</p></div>

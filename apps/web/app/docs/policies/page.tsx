@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { pageMeta, jsonLdBreadcrumb, jsonLdArticle } from "@/lib/seo";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
@@ -11,7 +13,9 @@ export default async function Policies() {
 
 
   return (
-    <MarketingPageShell eyebrow={t("docs.policies.eyebrow")} title={t("docs.policies.title")} subtitle={t("docs.policies.subtitle")} narrow>
+    <MarketingPageShell
+      jsonLd={jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Docs", path: "/docs" }, { name: "Policy engine", path: "/docs/policies" }])}
+      eyebrow={t("docs.policies.eyebrow")} title={t("docs.policies.title")} subtitle={t("docs.policies.subtitle")} narrow>
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <div><h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-2">driftguard.yml config</h2>
         <pre className="overflow-x-auto rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-4 font-mono text-[12px] text-[color:var(--dg-fg)]">{`policy:
