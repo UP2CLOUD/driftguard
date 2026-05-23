@@ -23,9 +23,14 @@ from driftguard.ai.reviewer import review as ai_review
 from driftguard.core.db import SessionLocal
 from driftguard.core.logging import log
 from driftguard.core.workspace import workspace
+from driftguard.events.publisher import publish as publish_event  # noqa: F401
+from driftguard.events.schemas import Severity  # noqa: F401
 from driftguard.integrations import checkov, infracost, terraform
 from driftguard.integrations.git import download_tarball, find_terraform_dirs
 from driftguard.integrations.github import installation_token, post_check_run, post_pr_comment
+from driftguard.services.terraform.plan_parser import TerraformPlan, parse_plan
+from driftguard.services.terraform.risk_scorer import RiskResult
+from driftguard.services.terraform.risk_scorer import score as score_plan
 
 
 async def enqueue_pr_analysis(payload: dict) -> None:
@@ -207,12 +212,20 @@ async def _persist_analysis(
         return str(uuid.uuid4())
 
 
-def _compute_risk(findings: list[Finding]) -> int:
+def _compute_risk(findings: list[Finding], plan: "TerraformPlan | None" = None) -> int:
+    """
+    Compute risk score.
+    When a parsed TerraformPlan is available, uses the deterministic plan-level scorer.
+    Falls back to finding-severity weighted sum for backward compatibility.
+    """
+    if plan is not None and plan.changes:
+        result: RiskResult = score_plan(plan.changes, block_threshold=70)
+        return result.score
+    # Fallback: finding-severity sum (no plan available)
     if not findings:
         return 0
     weights = {"critical": 40, "high": 20, "medium": 8, "low": 2}
-    score = sum(weights.get(f.severity, 0) for f in findings)
-    return min(100, score)
+    return min(100, sum(weights.get(f.severity, 0) for f in findings))
 
 
 async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: int, head_sha: str) -> dict:
@@ -251,6 +264,8 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         )
 
     risk_score = _compute_risk(findings)
+    # Store resource snapshots in DB for drift baseline
+    # (fire-and-forget — non-blocking)
     review_md = await ai_review(findings, pr_ctx)
     duration_ms = int((time.monotonic() - started) * 1000)
 
@@ -420,6 +435,13 @@ async def _analyze_dir(
     plan_json_path = tf_dir / "plan.json"
     plan_json_path.write_text(json.dumps(plan_json))
     plan_bytes = plan_json_path.read_bytes()
+
+    # Parse plan with typed parser — structured ResourceChange objects
+    _parsed_plan: TerraformPlan | None = None
+    try:
+        _parsed_plan = parse_plan(plan_json)
+    except Exception as _parse_err:
+        log.warning("plan.parse.failed", extra={"error": str(_parse_err)})
 
     findings: list[Finding] = []
     findings.extend(from_plan_changes(plan_json))

@@ -188,3 +188,76 @@ class PolicyRule(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow
     )
+
+
+# ── API Tokens ─────────────────────────────────────────────────────────────────
+
+
+class APIToken(Base):
+    """
+    Hashed API tokens for programmatic access.
+    Plaintext is only shown once at creation — never stored.
+    """
+
+    __tablename__ = "api_tokens"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
+    name: Mapped[str] = mapped_column(String(128))  # human label
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True)  # SHA-256 hex
+    role: Mapped[str] = mapped_column(String(32), default="org:member")
+    scopes: Mapped[str | None] = mapped_column(String(512))  # csv: "analyses:read,policies:write"
+    revoked: Mapped[bool] = mapped_column(default=False)
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_by: Mapped[str | None] = mapped_column(String(64))  # actor who created this
+
+
+# ── Org membership ─────────────────────────────────────────────────────────────
+
+
+class OrgMember(Base):
+    """
+    Maps users (GitHub logins) to organisations with a role.
+    Created automatically on first login if the user is the installer.
+    """
+
+    __tablename__ = "org_members"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
+    github_login: Mapped[str] = mapped_column(String(64), index=True)
+    role: Mapped[str] = mapped_column(String(32), default="org:member")  # org:owner|admin|member|viewer
+    invited_by: Mapped[str | None] = mapped_column(String(64))
+    joined_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+# ── Terraform resource snapshot ────────────────────────────────────────────────
+
+
+class TerraformResource(Base):
+    """
+    Snapshot of a Terraform resource from the last successful plan/state.
+    Used for drift baseline comparison and graph analysis.
+    """
+
+    __tablename__ = "terraform_resources"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
+    repo_id: Mapped[str] = mapped_column(ForeignKey("repositories.id", ondelete="CASCADE"), index=True)
+    analysis_id: Mapped[str | None] = mapped_column(ForeignKey("analyses.id", ondelete="SET NULL"), nullable=True)
+
+    address: Mapped[str] = mapped_column(String(512), index=True)  # e.g. "module.vpc.aws_subnet.private[0]"
+    type: Mapped[str] = mapped_column(String(128), index=True)  # e.g. "aws_subnet"
+    name: Mapped[str] = mapped_column(String(255))
+    provider: Mapped[str] = mapped_column(String(255))
+    module: Mapped[str | None] = mapped_column(String(512))
+    action: Mapped[str] = mapped_column(String(32))  # ChangeAction
+    attributes: Mapped[dict] = mapped_column(JSON, default=dict)  # redacted attribute snapshot
+    is_destructive: Mapped[bool] = mapped_column(default=False)
+    touches_sensitive: Mapped[bool] = mapped_column(default=False)
+    risk_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
+    snapshotted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
