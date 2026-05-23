@@ -252,7 +252,7 @@ class TestRiskScorer:
         assert _make(["delete", "create"]) > _make(["update"])
 
     def test_severity_levels_ordered(self):
-        _ORDER = [Severity.INFO, Severity.LOW, Severity.MEDIUM, Severity.HIGH, Severity.CRITICAL]
-        assert _ORDER == sorted(_ORDER, key=lambda s: [Severity.INFO, Severity.LOW, Severity.MEDIUM, Severity.HIGH, Severity.CRITICAL].index(s))
+        severity_order = [Severity.INFO, Severity.LOW, Severity.MEDIUM, Severity.HIGH, Severity.CRITICAL]
+        assert severity_order == sorted(severity_order, key=severity_order.index)
         assert Severity.CRITICAL == "critical"
         assert Severity.HIGH == "high"
