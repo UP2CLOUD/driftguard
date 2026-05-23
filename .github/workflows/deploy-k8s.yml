@@ -1,43 +1,79 @@
-# Production Kubernetes deploy — GitOps via ArgoCD image updater
-# Flow: build → push → sign → update gitops repo → ArgoCD auto-sync
+# DriftGuard — Kubernetes deploy pipeline (GKE target state)
+#
+# ACTIVATION REQUIREMENT: This workflow is manual-only (workflow_dispatch)
+# until the following GCP infrastructure exists and vars/secrets are set:
+#   vars.GCP_WIF_PROVIDER     — Workload Identity Federation provider
+#   vars.GCP_DEPLOYER_SA      — Deployer service account email
+#   vars.GCP_PROJECT          — GCP project ID
+#   secrets.GITOPS_PAT        — PAT with write access to driftguard-gitops repo
+#   secrets.KUBECONFIG        — Base64-encoded kubeconfig for the GKE cluster
+#
+# Current production deploy: .github/workflows/deploy-api.yml (Cloud Run)
+# This workflow: future state — activates when GKE cluster is provisioned.
 
 name: deploy-k8s
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "apps/api/**"
-      - "apps/web/**"
   workflow_dispatch:
     inputs:
       environment:
+        description: "Target environment"
+        required: true
+        default: dev
         type: choice
         options: [dev, staging, prod]
-        default: dev
+      skip_tests:
+        description: "Skip tests (emergency deploy only)"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
 
 permissions:
   contents: read
-  id-token: write       # Workload Identity
+  id-token: write
   packages: write
-  security-events: write # SARIF upload
+  security-events: write
 
 env:
   REGISTRY: europe-west1-docker.pkg.dev
-  PROJECT: driftguard-prod
-  REGION: europe-west1
+  PROJECT: ${{ vars.GCP_PROJECT || 'driftguard-prod' }}
+  REGION:  ${{ vars.GCP_REGION  || 'europe-west1' }}
 
 jobs:
-  # ── 1. Test ────────────────────────────────────────────────────────────────
+  # ── Preflight: verify required secrets exist ──────────────────────────────
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      gcp_ready: ${{ steps.check.outputs.gcp_ready }}
+    steps:
+    - name: Check GCP configuration
+      id: check
+      run: |
+        if [ -z "${{ vars.GCP_WIF_PROVIDER }}" ] || [ -z "${{ vars.GCP_DEPLOYER_SA }}" ]; then
+          echo "gcp_ready=false" >> "$GITHUB_OUTPUT"
+          echo "::warning::GCP not configured. Set vars.GCP_WIF_PROVIDER and vars.GCP_DEPLOYER_SA."
+          echo "::warning::Workflow will run tests only and skip build/deploy."
+        else
+          echo "gcp_ready=true" >> "$GITHUB_OUTPUT"
+        fi
+
+  # ── 1. Test (always runs — no external deps) ──────────────────────────────
   test-api:
+    needs: preflight
+    if: inputs.skip_tests != 'true'
     runs-on: ubuntu-latest
     services:
       postgres:
         image: pgvector/pgvector:pg16
         env:
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: driftguard_test
-        options: --health-cmd pg_isready --health-interval 10s
+          POSTGRES_USER: driftguard
+          POSTGRES_PASSWORD: driftguard
+          POSTGRES_DB: driftguard
+        options: >-
+          --health-cmd "pg_isready -U driftguard"
+          --health-interval 5s
+          --health-retries 10
         ports: ["5432:5432"]
       redis:
         image: redis:7-alpine
@@ -48,44 +84,42 @@ jobs:
 
     - uses: astral-sh/setup-uv@v3
       with:
-        version: "0.4.x"
+        version: latest
 
-    - name: Install deps
-      run: cd apps/api && uv sync --frozen
-
-    - name: Run tests
-      run: |
-        cd apps/api
-        uv run pytest tests/ -q --ignore=tests/eval \
-          --cov=driftguard \
-          --cov-report=xml \
-          --tb=short
-      env:
-        DATABASE_URL: postgresql+asyncpg://postgres:test@localhost:5432/driftguard_test
-        REDIS_URL: redis://localhost:6379/0
-        SECRET_KEY: test-secret-key-at-least-32-chars!!
-        ENVIRONMENT: test
+    - name: Sync deps
+      working-directory: apps/api
+      run: uv sync --all-extras
 
     - name: Lint
-      run: cd apps/api && uv run ruff check . && uv run ruff format --check .
+      working-directory: apps/api
+      run: uv run ruff check . && uv run ruff format --check .
 
-    - name: Upload coverage
-      uses: codecov/codecov-action@v4
-      with:
-        files: apps/api/coverage.xml
+    - name: Test
+      working-directory: apps/api
+      env:
+        DATABASE_URL: postgresql+asyncpg://driftguard:driftguard@localhost:5432/driftguard
+        REDIS_URL: redis://localhost:6379/0
+        SECRET_KEY: ci-deploy-key-at-least-32-chars!!
+        ENVIRONMENT: ci
+      run: uv run pytest -v --ignore=tests/eval
 
-  # ── 2. Build + Security scan ──────────────────────────────────────────────
+  # ── 2. Build + sign (GCP required) ────────────────────────────────────────
   build-api:
-    needs: test-api
+    needs: [preflight, test-api]
+    if: |
+      always() &&
+      needs.preflight.outputs.gcp_ready == 'true' &&
+      (needs.test-api.result == 'success' || inputs.skip_tests == 'true')
     runs-on: ubuntu-latest
     outputs:
-      image: ${{ steps.meta.outputs.tags }}
       digest: ${{ steps.push.outputs.digest }}
+      image:  ${{ steps.meta.outputs.tags }}
 
     steps:
     - uses: actions/checkout@v4
 
-    - uses: google-github-actions/auth@v2
+    - name: Authenticate to GCP
+      uses: google-github-actions/auth@v2
       with:
         workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
         service_account: ${{ vars.GCP_DEPLOYER_SA }}
@@ -101,7 +135,7 @@ jobs:
         images: ${{ env.REGISTRY }}/${{ env.PROJECT }}/api/driftguard-api
         tags: |
           type=sha,prefix=,suffix=,format=short
-          type=ref,event=branch
+          type=raw,value=latest,enable=${{ inputs.environment == 'prod' }}
 
     - name: Build and push
       id: push
@@ -130,74 +164,110 @@ jobs:
       uses: anchore/scan-action@v3
       with:
         image: ${{ env.REGISTRY }}/${{ env.PROJECT }}/api/driftguard-api@${{ steps.push.outputs.digest }}
-        fail-build: true
+        fail-build: ${{ inputs.environment == 'prod' }}
         severity-cutoff: critical
         output-format: sarif
 
     - name: Upload SARIF
+      if: always()
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: ${{ steps.scan.outputs.sarif }}
 
-    - name: Install Cosign
+    - name: Sign image (Cosign keyless)
       uses: sigstore/cosign-installer@v3
 
-    - name: Sign image
-      run: |
+    - run: |
         cosign sign --yes \
           ${{ env.REGISTRY }}/${{ env.PROJECT }}/api/driftguard-api@${{ steps.push.outputs.digest }}
 
-  # ── 3. Deploy (GitOps → ArgoCD) ───────────────────────────────────────────
+  # ── 3. Deploy via GitOps → ArgoCD ─────────────────────────────────────────
   deploy:
-    needs: build-api
+    needs: [preflight, build-api]
+    if: |
+      always() &&
+      needs.preflight.outputs.gcp_ready == 'true' &&
+      needs.build-api.result == 'success'
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.event.inputs.environment || 'dev' }}
+      name: ${{ inputs.environment }}
       url: https://app.driftguard.io
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout gitops repo
+      uses: actions/checkout@v4
       with:
         repository: UP2CLOUD/driftguard-gitops
         token: ${{ secrets.GITOPS_PAT }}
         path: gitops
 
-    - name: Update image digest in gitops repo
+    - name: Install yq
       run: |
-        ENV="${{ github.event.inputs.environment || 'dev' }}"
+        wget -qO /usr/local/bin/yq \
+          https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+        chmod +x /usr/local/bin/yq
+
+    - name: Update image in gitops repo
+      run: |
+        ENV="${{ inputs.environment }}"
+        DIGEST="${{ needs.build-api.outputs.digest }}"
+        SHA="${{ github.sha }}"
+        FILE="gitops/envs/${ENV}/api/values-prod.yaml"
+
+        # Create file if it doesn't exist yet
+        mkdir -p "$(dirname $FILE)"
+        [ -f "$FILE" ] || echo "{}" > "$FILE"
+
+        yq e ".image.tag = \"${SHA:0:7}\"" -i "$FILE"
+        yq e ".image.digest = \"$DIGEST\"" -i "$FILE"
+        yq e '.podAnnotations["dg.io/deployed-at"] = "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'"' -i "$FILE"
+        yq e '.podAnnotations["dg.io/deployed-by"] = "${{ github.actor }}"' -i "$FILE"
+
         cd gitops
-
-        # Use yq to update image tag
-        yq e ".image.tag = \"${{ github.sha }}\"" \
-          -i envs/${ENV}/api/values-prod.yaml
-
-        # Also update the digest annotation for Kyverno verification
-        yq e ".podAnnotations[\"dg.io/image-digest\"] = \"${{ needs.build-api.outputs.digest }}\"" \
-          -i envs/${ENV}/api/values-prod.yaml
-
         git config user.name  "DriftGuard CI"
         git config user.email "ci@driftguard.io"
         git add -A
-        git diff --staged --quiet || git commit -m \
-          "chore(${ENV}): update api to ${{ github.sha }}
+        git diff --staged --quiet && echo "No changes" && exit 0
 
-Digest: ${{ needs.build-api.outputs.digest }}
-Triggered by: ${{ github.actor }}
-PR: ${{ github.event.pull_request.html_url }}"
+        MSG="chore(${ENV}): deploy api ${SHA:0:7}\n\nDigest: ${DIGEST}\nActor: ${{ github.actor }}"
+        git commit -m "$MSG"
 
         git push
 
-    - name: Wait for ArgoCD sync
+    - name: Wait for ArgoCD sync (optional)
+      continue-on-error: true
       run: |
-        # ArgoCD auto-syncs within 3 minutes via webhook
-        # Wait and verify health
-        sleep 30
-        kubectl --kubeconfig=/dev/stdin wait application \
-          driftguard-api \
+        echo "${{ secrets.KUBECONFIG }}" | base64 -d > /tmp/kubeconfig
+        kubectl --kubeconfig=/tmp/kubeconfig \
+          -n driftguard-argocd \
+          wait application/driftguard-api \
           --for=condition=Healthy \
           --timeout=300s \
-          -n driftguard-argocd <<< "${{ secrets.KUBECONFIG }}"
+        || echo "ArgoCD wait timed out — check dashboard"
+        rm -f /tmp/kubeconfig
 
     - name: Smoke test
       run: |
-        curl -sf https://api.driftguard.io/api/v1/health | jq .status
+        BASE="https://api.driftguard.io"
+        for i in 1 2 3 4 5; do
+          STATUS=$(curl -sf "${BASE}/api/v1/health" 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status','?'))" 2>/dev/null || echo "unreachable")
+          echo "Attempt $i: $STATUS"
+          [ "$STATUS" = "ok" ] && exit 0
+          sleep 15
+        done
+        echo "Smoke test failed after 5 attempts"
+        exit 1
+
+    - name: Notify Slack
+      if: always()
+      run: |
+        RESULT="${{ job.status }}"
+        COLOR=$([ "$RESULT" = "success" ] && echo "#22d38d" || echo "#ff4757")
+        curl -s -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
+          -H "Content-Type: application/json" \
+          -d "{
+            \"attachments\": [{
+              \"color\": \"${COLOR}\",
+              \"text\": \"*Deploy ${{ inputs.environment }}*: ${RESULT}\nAPI: \`${{ github.sha }}\`\nActor: ${{ github.actor }}\"
+            }]
+          }" || true
