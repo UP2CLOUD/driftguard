@@ -1,3 +1,7 @@
+"use client";
+
+import { useT } from "@/components/TranslationProvider";
+
 import Link from "next/link";
 
 export function CtaSection({
@@ -11,6 +15,7 @@ export function CtaSection({
   subtitle?: string;
   readDocsLabel?: string;
 }) {
+  const t = useT();
   return (
     <section className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-20 sm:py-28 overflow-hidden">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
@@ -18,7 +23,7 @@ export function CtaSection({
         <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 h-64 w-[600px] bg-[radial-gradient(closest-side,rgba(63,140,255,0.12),transparent_80%)]" />
 
         <div className="relative text-center">
-          <div className="dg-label mb-4">Ready to ship safer</div>
+          <div className="dg-label mb-4">{t("landing.cta.headline")}</div>
           <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[color:var(--dg-fg)] mb-6">
             {title ?? "Regain control of your cloud."}
           </h2>

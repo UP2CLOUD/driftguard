@@ -1,8 +1,11 @@
 "use client";
 
+import { useT } from "@/components/TranslationProvider";
+
 import { useEffect, useRef, useState } from "react";
 
 export function Architecture() {
+  const t = useT();
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -22,8 +25,8 @@ export function Architecture() {
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
           eyebrow="Architecture"
-          title="Infrastructure, not middleware."
-          subtitle="DriftGuard is a GitHub App — no sidecar, no agent, no cloud access beyond read-only STS. The review pipeline runs on our infrastructure. Your Terraform never moves."
+          title={t("landing.architecture.tooltipGateway")}
+          subtitle={t("landing.architecture.tooltipApp")} data-orig="DriftGuard is a GitHub App — no sidecar, no agent, no cloud access beyond read-only STS. The review pipeline runs on our infrastructure. Your Terraform never moves."
         />
 
         <div className="mt-16 grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
@@ -60,7 +63,7 @@ export function Architecture() {
                     stroke="var(--dg-electric)"
                     strokeWidth="1.5" />
                   <text x="330" y="98" fontFamily="monospace" fontSize="9" fill="var(--dg-electric-bright)"
-                    textAnchor="middle" letterSpacing="2">DRIFTGUARD CORE</text>
+                    textAnchor="middle" letterSpacing="2">{t("landing.architecture.coreLabel")}</text>
 
                   {/* Inner blocks */}
                   <rect x="246" y="112" width="168" height="50" rx="3"
@@ -71,7 +74,7 @@ export function Architecture() {
                   <rect x="246" y="170" width="168" height="50" rx="3"
                     fill="var(--dg-canvas)" stroke="var(--dg-border-strong)" />
                   <text x="330" y="193" fontFamily="monospace" fontSize="11" fill="var(--dg-fg)" textAnchor="middle">policy.engine</text>
-                  <text x="330" y="206" fontFamily="monospace" fontSize="9" fill="var(--dg-fg-subtle)" textAnchor="middle">OPA / Rego</text>
+                  <text x="330" y="206" fontFamily="monospace" fontSize="9" fill="var(--dg-fg-subtle)" textAnchor="middle">{t("landing.architecture.opaLabel")}</text>
 
                   <rect x="246" y="228" width="168" height="50" rx="3"
                     fill="var(--dg-canvas)" stroke="var(--dg-border-strong)" />

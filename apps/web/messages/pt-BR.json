@@ -125,7 +125,133 @@
     "ctaTitle": "Recupere o controlo da sua cloud.",
     "ctaSubtitle": "Instale em 30 segundos. Sem cartão de crédito. Funciona com GitHub, AWS, OpenTofu e qualquer toolchain compatível com Terraform.",
     "ctaButton": "Instalar GitHub App — grátis",
-    "ctaReadDocs": "Ler a documentação →"
+    "ctaReadDocs": "Ler a documentação →",
+    "hero": {
+      "line1": "Os teus agentes de IA escrevem Terraform.",
+      "line2": "Nós garantimos que fazem deploy com segurança.",
+      "cta_start": "Começar",
+      "cta_install": "Instalar GitHub App — grátis",
+      "cta_dashboard": "Dashboard →",
+      "cta_docs": "Ler a documentação"
+    },
+    "statusBar": {
+      "operational": "SISTEMA OPERACIONAL",
+      "regions": "EU‑WEST‑1 / EU‑CENTRAL‑1"
+    },
+    "nav": {
+      "dashboard": "Dashboard →",
+      "signOut": "Sair"
+    },
+    "architecture": {
+      "coreLabel": "DRIFTGUARD CORE",
+      "opaLabel": "OPA / Rego",
+      "tooltipGateway": "Infraestrutura, não middleware.",
+      "tooltipApp": "DriftGuard é uma GitHub App — sem sidecar, sem agente, sem acesso além de leitura.",
+      "nodePrOpen": "PR abre",
+      "nodePolicyGate": "Portal de políticas",
+      "nodeComment": "Comentário no PR",
+      "nodeOutcome": "Resultado propagado"
+    },
+    "codeIntegration": {
+      "title": "Instalar em 30 segundos.",
+      "subtitle": "GitHub App + configuração de repo. Sem SDK, sem reescritas, sem alterações de infra.",
+      "worksWith": "Funciona com"
+    },
+    "cta": {
+      "headline": "Prontos para fazer deploy com segurança"
+    },
+    "dashboardPreview": {
+      "liveEnv": "Ambiente live",
+      "realtimeState": "Estado cloud em tempo real",
+      "realtimeSync": "Sincronização em tempo real com conta AWS (Produção)",
+      "finopsImpact": "Impacto FinOps",
+      "critical": "Crítico",
+      "colResource": "Recurso",
+      "colDrift": "Desvio de estado",
+      "colDetected": "Detectado por",
+      "colAction": "Acção",
+      "colCategory": "Categoria",
+      "colResources": "Recursos"
+    },
+    "driftPreview": {
+      "sectionTitle": "Cada output de agente IA, revisto antes do merge.",
+      "sectionSubtitle": "Quatro motores em paralelo — delta de custo (Infracost), segurança (Checkov), drift em tempo real (STS) e recall de memória semântica (pgvector). Tudo em menos de 2s.",
+      "colResource": "Recurso",
+      "colChange": "Alteração",
+      "colFinding": "Descoberta",
+      "colPlan": "Plano Terraform",
+      "colLiveState": "Estado live",
+      "colPlanned": "Planeado",
+      "colActual": "Real"
+    },
+    "featureGrid": {
+      "sectionTitle": "Seis camadas. Uma revisão. Zero overhead de configuração.",
+      "sectionSubtitle": "Custo, drift, segurança, conformidade, memória semântica e análise AI-native — tudo num único PR, sem alterar o workflow Terraform.",
+      "hoverHint": "Passa o cursor em cada card para ver um exemplo real",
+      "features": {
+        "cost": {
+          "title": "Delta de custo em cada PR",
+          "body": "Diff de custo mensal por recurso via Infracost. Bloqueios por threshold. Sem surpresas na fatura AWS.",
+          "example": "aws_rds_cluster.prod\ndb.r5.large → db.r5.4xlarge\n+€480/mês · threshold excedido → BLOQUEADO"
+        },
+        "drift": {
+          "title": "Estado real vs. plano",
+          "body": "Compara o plano Terraform com o estado real da cloud. Detecta alterações manuais e recursos órfãos.",
+          "example": "aws_security_group.web-sg\nIngress 0.0.0.0/0 adicionado via Console\n→ DRIFT DETECTADO · há 3h"
+        },
+        "security": {
+          "title": "Descobertas de segurança",
+          "body": "Checkov + triagem AI. 255 regras mapeadas a controlos de conformidade.",
+          "example": "aws_s3_bucket.tf-state\nAcesso público removido\nCKV_AWS_19 · NIS2 Art.21 → BLOQUEADO"
+        },
+        "memory": {
+          "title": "Memória semântica de falhas",
+          "body": "Cada deploy bloqueado indexado como embedding. PR semelhante → incidente original aparece.",
+          "example": "rds.delete.prod recordado\ncos 0.94 · 2026-04-22\n→ Mesma misconfig bloqueada duas vezes"
+        },
+        "compliance": {
+          "title": "DORA / NIS2 / ISO 27001",
+          "body": "Cada descoberta mapeada a controlos de conformidade. Evidência de auditoria em cada PR.",
+          "example": "DORA Art.11 · NIS2 Art.21\nISO 27001 A.8.8 · CIS v8\n→ Evidência exportada automaticamente"
+        },
+        "aiNative": {
+          "title": "Construído para agentes contribuidores",
+          "body": "Agentes IA escrevem metade da tua IaC. DriftGuard trata-os como engenheiros juniores.",
+          "example": "agent.cursor abriu PR #847\n23 recursos · risco 84/100\n→ 2 descobertas críticas · BLOQUEADO"
+        }
+      }
+    },
+    "footer": {
+      "status": "TODOS OS SISTEMAS OPERACIONAIS",
+      "location": "Lisboa / EU",
+      "gdpr": "RGPD‑nativo",
+      "colProduct": "Produto",
+      "colCompany": "Empresa",
+      "colLegal": "Legal"
+    },
+    "incidents": {
+      "sectionTitle": "Cada PR de agente. Cada milissegundo.",
+      "sectionSubtitle": "DriftGuard intercepta, analisa e decide em menos de 2 segundos. Antes do botão de merge estar disponível."
+    },
+    "liveTerminal": {
+      "liveDemo": "AO VIVO · DEMO"
+    },
+    "metrics": {
+      "connectPrompt": "Liga a tua instalação GitHub para ver métricas live do workspace."
+    },
+    "pricing": {
+      "sectionTitle": "Preços simples, por repo",
+      "sectionSubtitle": "Começa grátis. Adiciona repos à medida que cresces. Cancela quando quiseres.",
+      "toggleAria": "Alternar período de facturação",
+      "billingMonthly": "Mensal",
+      "billingAnnual": "Anual",
+      "footer": "Todos os planos incluem SOC 2 Tipo II (Q4 2026) · RGPD‑nativo · Dados na EU"
+    },
+    "semanticMemory": {
+      "sectionTitle": "Os teus agentes aprendem de produção. Permanentemente.",
+      "sectionSubtitle": "Cada incidente — deploy bloqueado, evento de drift, violação de política — torna-se um embedding 384-d. O próximo PR semelhante recupera o incidente original automaticamente.",
+      "recalledLabel": "Incidentes recuperados"
+    }
   },
   "incidents": {
     "title": "Incidentes",

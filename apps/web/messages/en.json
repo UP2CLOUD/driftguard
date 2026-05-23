@@ -125,7 +125,133 @@
     "ctaTitle": "Regain control of your cloud.",
     "ctaSubtitle": "Install in 30 seconds. No credit card required. Works with GitHub, AWS, OpenTofu, and any Terraform-compatible toolchain.",
     "ctaButton": "Install GitHub App — free",
-    "ctaReadDocs": "Read the docs →"
+    "ctaReadDocs": "Read the docs →",
+    "hero": {
+      "line1": "Your AI agents write Terraform.",
+      "line2": "We make sure they ship safer.",
+      "cta_start": "Get started",
+      "cta_install": "Install GitHub App — free",
+      "cta_dashboard": "Dashboard →",
+      "cta_docs": "Read the docs"
+    },
+    "statusBar": {
+      "operational": "SYSTEM OPERATIONAL",
+      "regions": "EU‑WEST‑1 / EU‑CENTRAL‑1"
+    },
+    "nav": {
+      "dashboard": "Dashboard →",
+      "signOut": "Sign out"
+    },
+    "architecture": {
+      "coreLabel": "DRIFTGUARD CORE",
+      "opaLabel": "OPA / Rego",
+      "tooltipGateway": "Infrastructure, not middleware.",
+      "tooltipApp": "DriftGuard is a GitHub App — no sidecar, no agent, no cloud access beyond read-only.",
+      "nodePrOpen": "PR opens",
+      "nodePolicyGate": "Policy gate",
+      "nodeComment": "Comment on PR",
+      "nodeOutcome": "Outcome flows back"
+    },
+    "codeIntegration": {
+      "title": "Install in 30 seconds.",
+      "subtitle": "GitHub App + repo config. No SDK, no rewrites, no infrastructure changes. Optional: add driftguard.yml for custom policies.",
+      "worksWith": "Works with"
+    },
+    "cta": {
+      "headline": "Ready to ship safer"
+    },
+    "dashboardPreview": {
+      "liveEnv": "Live environment",
+      "realtimeState": "Real-time cloud state",
+      "realtimeSync": "Real-time sync with AWS Account (Production)",
+      "finopsImpact": "FinOps Impact",
+      "critical": "Critical",
+      "colResource": "Resource",
+      "colDrift": "State drift",
+      "colDetected": "Detected by",
+      "colAction": "Action",
+      "colCategory": "Category",
+      "colResources": "Resources"
+    },
+    "driftPreview": {
+      "sectionTitle": "Every AI agent output, reviewed before merge.",
+      "sectionSubtitle": "Four analysis engines run in parallel — cost delta (Infracost), security (Checkov), live drift detection (STS), and semantic memory recall (pgvector). All in under 2s.",
+      "colResource": "Resource",
+      "colChange": "Change",
+      "colFinding": "Finding",
+      "colPlan": "Terraform plan",
+      "colLiveState": "Live state",
+      "colPlanned": "Planned",
+      "colActual": "Actual"
+    },
+    "featureGrid": {
+      "sectionTitle": "Six layers. One review. Zero config overhead.",
+      "sectionSubtitle": "Cost intelligence, live drift detection, security scanning, compliance evidence, semantic memory, and AI-native analysis — all triggered by a PR, all without changing your Terraform workflow.",
+      "hoverHint": "Hover each card to see a real example",
+      "features": {
+        "cost": {
+          "title": "Cost delta on every PR",
+          "body": "Infracost-powered monthly cost diff per resource. Threshold-based blocks. No surprises in the AWS bill at the end of the month.",
+          "example": "aws_rds_cluster.prod\ndb.r5.large → db.r5.4xlarge\n+€480/mo · threshold exceeded → BLOCKED"
+        },
+        "drift": {
+          "title": "Live state vs. plan diff",
+          "body": "Compares the PR's terraform plan against the real cloud state. Catches manual changes, orphan resources, and out-of-band edits before merge.",
+          "example": "aws_security_group.web-sg\nIngress 0.0.0.0/0 added via Console\n→ DRIFT DETECTED · 3h ago"
+        },
+        "security": {
+          "title": "Curated security findings",
+          "body": "Checkov + AI triage. 255 rules mapped to compliance controls. Public S3 buckets, wildcard IAM, missing encryption — flagged with fix suggestions.",
+          "example": "aws_s3_bucket.tf-state\nPublic access block removed\nCKV_AWS_19 · NIS2 Art.21 → BLOCKED"
+        },
+        "memory": {
+          "title": "Semantic memory of failures",
+          "body": "Every blocked deploy and compliance violation embedded and indexed. Open a similar PR — the original incident appears in the comment.",
+          "example": "rds.delete.prod recalled\ncos 0.94 · 2026-04-22\n→ Same misconfig blocked twice"
+        },
+        "compliance": {
+          "title": "DORA / NIS2 / ISO 27001",
+          "body": "Each finding mapped to compliance controls. Audit evidence collected on every PR — no extra workflow, no questionnaires.",
+          "example": "DORA Art.11 · NIS2 Art.21\nISO 27001 A.8.8 · CIS v8\n→ Evidence exported automatically"
+        },
+        "aiNative": {
+          "title": "Built for agent contributors",
+          "body": "AI agents (Cursor, Devin, Claude Code) write half your IaC. DriftGuard treats them like junior engineers: reviewed, mentored, fast-tracked when safe.",
+          "example": "agent.cursor opened PR #847\n23 resources · risk 84/100\n→ 2 critical findings · BLOCKED"
+        }
+      }
+    },
+    "footer": {
+      "status": "ALL SYSTEMS OPERATIONAL",
+      "location": "Lisboa / EU",
+      "gdpr": "GDPR‑native",
+      "colProduct": "Product",
+      "colCompany": "Company",
+      "colLegal": "Legal"
+    },
+    "incidents": {
+      "sectionTitle": "Every agent PR. Every millisecond.",
+      "sectionSubtitle": "DriftGuard intercepts, analyses, and gates in under 2 seconds. Before the merge button is available."
+    },
+    "liveTerminal": {
+      "liveDemo": "LIVE · DEMO"
+    },
+    "metrics": {
+      "connectPrompt": "Connect your GitHub installation to see live workspace metrics."
+    },
+    "pricing": {
+      "sectionTitle": "Simple, per-repo pricing",
+      "sectionSubtitle": "Start free. Add repos as you grow. Cancel anytime.",
+      "toggleAria": "Toggle billing period",
+      "billingMonthly": "Monthly",
+      "billingAnnual": "Annual",
+      "footer": "All plans include SOC 2 Type II (Q4 2026) · GDPR-native · EU data residency"
+    },
+    "semanticMemory": {
+      "sectionTitle": "Your agents learn from production. Permanently.",
+      "sectionSubtitle": "Every incident — blocked deploy, drift event, policy violation — becomes a 384-d embedding. The next similar PR surfaces the original incident automatically.",
+      "recalledLabel": "Recalled incidents"
+    }
   },
   "incidents": {
     "title": "Incidents",

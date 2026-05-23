@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/components/TranslationProvider";
+
 import { useEffect, useRef, useState, useCallback } from "react";
 import { SectionHeader } from "./Architecture";
 
@@ -62,6 +64,7 @@ function toDisplayEvent(e: LiveEvent) {
 }
 
 export function IncidentTimeline({ installationId }: { installationId?: number }) {
+  const t = useT();
   const [visible, setVisible] = useState(false);
   const [revealCount, setRevealCount] = useState(0);
   const [liveEvents, setLiveEvents] = useState<ReturnType<typeof toDisplayEvent>[]>([]);
@@ -137,7 +140,7 @@ export function IncidentTimeline({ installationId }: { installationId?: number }
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
           eyebrow="Runtime governance"
-          title="Every agent PR. Every millisecond."
+          title={t("landing.incidents.sectionTitle")}
           subtitle="DriftGuard intercepts, analyses, and gates in under 2 seconds. Before the merge button is even available."
         />
 

@@ -125,7 +125,133 @@
     "ctaTitle": "अपने क्लाउड पर नियंत्रण वापस पाएं।",
     "ctaSubtitle": "30 सेकंड में इंस्टॉल करें। कोई क्रेडिट कार्ड आवश्यक नहीं। GitHub, AWS, OpenTofu और किसी भी Terraform-संगत टूलचेन के साथ काम करता है।",
     "ctaButton": "GitHub App इंस्टॉल करें — मुफ़्त",
-    "ctaReadDocs": "दस्तावेज़ पढ़ें →"
+    "ctaReadDocs": "दस्तावेज़ पढ़ें →",
+    "hero": {
+      "line1": "आपके AI एजेंट Terraform लिखते हैं।",
+      "line2": "हम सुनिश्चित करते हैं कि वे सुरक्षित रूप से deploy करें।",
+      "cta_start": "शुरू करें",
+      "cta_install": "GitHub App इंस्टॉल करें — मुफ़्त",
+      "cta_dashboard": "डैशबोर्ड →",
+      "cta_docs": "दस्तावेज़ पढ़ें"
+    },
+    "statusBar": {
+      "operational": "सिस्टम सक्रिय",
+      "regions": "EU‑WEST‑1 / EU‑CENTRAL‑1"
+    },
+    "nav": {
+      "dashboard": "डैशबोर्ड →",
+      "signOut": "साइन आउट"
+    },
+    "architecture": {
+      "coreLabel": "DRIFTGUARD CORE",
+      "opaLabel": "OPA / Rego",
+      "tooltipGateway": "इन्फ्रास्ट्रक्चर, मिडलवेयर नहीं।",
+      "tooltipApp": "DriftGuard एक GitHub App है — कोई sidecar, कोई एजेंट नहीं।",
+      "nodePrOpen": "PR खुलता है",
+      "nodePolicyGate": "पॉलिसी गेट",
+      "nodeComment": "PR पर टिप्पणी",
+      "nodeOutcome": "परिणाम वापस"
+    },
+    "codeIntegration": {
+      "title": "30 सेकंड में इंस्टॉल करें।",
+      "subtitle": "GitHub App + repo कॉन्फ़िग। कोई SDK नहीं, कोई पुनर्लेखन नहीं।",
+      "worksWith": "के साथ काम करता है"
+    },
+    "cta": {
+      "headline": "सुरक्षित deploy के लिए तैयार"
+    },
+    "dashboardPreview": {
+      "liveEnv": "लाइव वातावरण",
+      "realtimeState": "रीयल-टाइम क्लाउड स्थिति",
+      "realtimeSync": "AWS अकाउंट (प्रोडक्शन) से रीयल-टाइम सिंक",
+      "finopsImpact": "FinOps प्रभाव",
+      "critical": "गंभीर",
+      "colResource": "संसाधन",
+      "colDrift": "स्थिति विचलन",
+      "colDetected": "द्वारा पता लगाया",
+      "colAction": "क्रिया",
+      "colCategory": "श्रेणी",
+      "colResources": "संसाधन"
+    },
+    "driftPreview": {
+      "sectionTitle": "प्रत्येक AI एजेंट आउटपुट, merge से पहले समीक्षित।",
+      "sectionSubtitle": "चार विश्लेषण इंजन समानांतर में — लागत डेल्टा, सुरक्षा, लाइव drift, और सिमेंटिक मेमोरी recall। सब 2s में।",
+      "colResource": "संसाधन",
+      "colChange": "परिवर्तन",
+      "colFinding": "खोज",
+      "colPlan": "Terraform प्लान",
+      "colLiveState": "लाइव स्थिति",
+      "colPlanned": "योजनाबद्ध",
+      "colActual": "वास्तविक"
+    },
+    "featureGrid": {
+      "sectionTitle": "छह परतें। एक समीक्षा। शून्य कॉन्फ़िग ओवरहेड।",
+      "sectionSubtitle": "लागत, drift, सुरक्षा, अनुपालन, सिमेंटिक मेमोरी — एक PR में सब।",
+      "hoverHint": "वास्तविक उदाहरण देखने के लिए प्रत्येक कार्ड पर होवर करें",
+      "features": {
+        "cost": {
+          "title": "प्रत्येक PR पर लागत डेल्टा",
+          "body": "Infracost-संचालित मासिक लागत अंतर। थ्रेशोल्ड-आधारित ब्लॉक।",
+          "example": "aws_rds_cluster.prod\n+€480/माह · थ्रेशोल्ड पार → अवरुद्ध"
+        },
+        "drift": {
+          "title": "लाइव स्थिति बनाम प्लान",
+          "body": "PR के Terraform प्लान को वास्तविक क्लाउड स्थिति से तुलना करता है।",
+          "example": "aws_security_group.web-sg\n→ DRIFT DETECTED"
+        },
+        "security": {
+          "title": "सुरक्षा खोजें",
+          "body": "Checkov + AI ट्राइज। 255 नियम।",
+          "example": "aws_s3_bucket.tf-state → अवरुद्ध"
+        },
+        "memory": {
+          "title": "विफलताओं की सिमेंटिक मेमोरी",
+          "body": "प्रत्येक अवरुद्ध deploy को embedding के रूप में इंडेक्स किया जाता है।",
+          "example": "cos 0.94 · → दोबारा अवरुद्ध"
+        },
+        "compliance": {
+          "title": "DORA / NIS2 / ISO 27001",
+          "body": "प्रत्येक खोज अनुपालन नियंत्रणों से मैप।",
+          "example": "DORA Art.11 → स्वचालित साक्ष्य"
+        },
+        "aiNative": {
+          "title": "एजेंट योगदानकर्ताओं के लिए निर्मित",
+          "body": "AI एजेंट आधी IaC लिखते हैं। DriftGuard उन्हें जूनियर इंजीनियरों की तरह समीक्षित करता है।",
+          "example": "agent.cursor PR #847 → अवरुद्ध"
+        }
+      }
+    },
+    "footer": {
+      "status": "सभी सिस्टम सक्रिय",
+      "location": "लिस्बन / EU",
+      "gdpr": "GDPR‑अनुपालित",
+      "colProduct": "उत्पाद",
+      "colCompany": "कंपनी",
+      "colLegal": "कानूनी"
+    },
+    "incidents": {
+      "sectionTitle": "प्रत्येक एजेंट PR। प्रत्येक मिलीसेकंड।",
+      "sectionSubtitle": "DriftGuard 2 सेकंड से कम में इंटरसेप्ट, विश्लेषण और निर्णय करता है।"
+    },
+    "liveTerminal": {
+      "liveDemo": "लाइव · डेमो"
+    },
+    "metrics": {
+      "connectPrompt": "लाइव वर्कस्पेस मेट्रिक्स देखने के लिए अपनी GitHub इंस्टॉलेशन कनेक्ट करें।"
+    },
+    "pricing": {
+      "sectionTitle": "सरल, प्रति-repo मूल्य निर्धारण",
+      "sectionSubtitle": "मुफ़्त शुरू करें। जैसे-जैसे बढ़ें repos जोड़ें। कभी भी रद्द करें।",
+      "toggleAria": "बिलिंग अवधि बदलें",
+      "billingMonthly": "मासिक",
+      "billingAnnual": "वार्षिक",
+      "footer": "सभी प्लान में SOC 2 Type II · GDPR-अनुपालित · EU डेटा"
+    },
+    "semanticMemory": {
+      "sectionTitle": "आपके एजेंट प्रोडक्शन से सीखते हैं। स्थायी रूप से।",
+      "sectionSubtitle": "प्रत्येक घटना 384-d embedding बन जाती है। अगला समान PR मूल घटना को स्वचालित रूप से दिखाता है।",
+      "recalledLabel": "याद किए गए incidents"
+    }
   },
   "incidents": {
     "title": "घटनाएं",

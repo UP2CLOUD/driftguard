@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/components/TranslationProvider";
+
 import Link from "next/link";
 import { useState } from "react";
 import { SectionHeader } from "./Architecture";
@@ -61,6 +63,7 @@ const PLANS = [
 ];
 
 export function Pricing() {
+  const t = useT();
   const [annual, setAnnual] = useState(false);
 
   return (
@@ -75,7 +78,7 @@ export function Pricing() {
           </span>
           <button
             onClick={() => setAnnual((a) => !a)}
-            aria-label="Toggle billing period"
+            aria-label={t("landing.pricing.toggleAria")}
             className={`relative h-6 w-11 rounded-full border transition-colors duration-200 ${
               annual
                 ? "border-[color:var(--dg-electric)] bg-[color:var(--dg-electric)]/20"

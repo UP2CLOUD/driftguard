@@ -22,6 +22,7 @@ import { Footer } from "@/components/landing/Footer";
 import { HashScroll } from "@/components/HashScroll";
 import { JsonLd } from "@/components/JsonLd";
 import { MotionSection } from "@/components/MotionSection";
+import { TranslationProvider } from "@/components/TranslationProvider";
 import { jsonLdSoftware, jsonLdOrg } from "@/lib/seo";
 
 export default async function Page() {
@@ -41,6 +42,7 @@ export default async function Page() {
   );
 
   return (
+    <TranslationProvider messages={messages as Record<string, unknown>}>
     <>
       <HashScroll />
       <JsonLd data={[jsonLdSoftware(), jsonLdOrg()]} />
@@ -108,5 +110,6 @@ export default async function Page() {
 
       <Footer />
     </>
+    </TranslationProvider>
   );
 }

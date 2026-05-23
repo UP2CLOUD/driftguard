@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/components/TranslationProvider";
+
 import { useEffect, useRef, useState, useCallback } from "react";
 
 type Kind = "INTERCEPT" | "RECALL" | "BLOCK" | "ALLOW" | "DRIFT";
@@ -31,6 +33,7 @@ const GLYPHS: Record<Kind, string> = {
 let UID = 0;
 
 export function LiveTerminal() {
+  const t = useT();
   const [lines, setLines] = useState<Line[]>([{ ...SCRIPT[0], id: ++UID }]);
   const [newLineId, setNewLineId] = useState<number | null>(null);
   const [counters, setCounters] = useState({ events: 0, blocked: 0, recalled: 0 });

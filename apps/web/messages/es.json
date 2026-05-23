@@ -125,7 +125,133 @@
     "ctaTitle": "Recupera el control de tu cloud.",
     "ctaSubtitle": "Instala en 30 segundos. Sin tarjeta de crédito. Funciona con GitHub, AWS, OpenTofu y cualquier toolchain compatible con Terraform.",
     "ctaButton": "Instalar GitHub App — gratis",
-    "ctaReadDocs": "Leer la documentación →"
+    "ctaReadDocs": "Leer la documentación →",
+    "hero": {
+      "line1": "Tus agentes de IA escriben Terraform.",
+      "line2": "Nosotros nos aseguramos de que lo hagan con seguridad.",
+      "cta_start": "Empezar",
+      "cta_install": "Instalar GitHub App — gratis",
+      "cta_dashboard": "Dashboard →",
+      "cta_docs": "Leer la documentación"
+    },
+    "statusBar": {
+      "operational": "SISTEMA OPERATIVO",
+      "regions": "EU‑WEST‑1 / EU‑CENTRAL‑1"
+    },
+    "nav": {
+      "dashboard": "Dashboard →",
+      "signOut": "Cerrar sesión"
+    },
+    "architecture": {
+      "coreLabel": "DRIFTGUARD CORE",
+      "opaLabel": "OPA / Rego",
+      "tooltipGateway": "Infraestructura, no middleware.",
+      "tooltipApp": "DriftGuard es una GitHub App — sin sidecar, sin agente.",
+      "nodePrOpen": "PR abre",
+      "nodePolicyGate": "Portal de políticas",
+      "nodeComment": "Comentario en PR",
+      "nodeOutcome": "Resultado propagado"
+    },
+    "codeIntegration": {
+      "title": "Instalar en 30 segundos.",
+      "subtitle": "GitHub App + configuración de repo. Sin SDK, sin reescrituras, sin cambios de infra.",
+      "worksWith": "Funciona con"
+    },
+    "cta": {
+      "headline": "Listos para hacer deploy con seguridad"
+    },
+    "dashboardPreview": {
+      "liveEnv": "Entorno live",
+      "realtimeState": "Estado cloud en tiempo real",
+      "realtimeSync": "Sincronización en tiempo real con cuenta AWS (Producción)",
+      "finopsImpact": "Impacto FinOps",
+      "critical": "Crítico",
+      "colResource": "Recurso",
+      "colDrift": "Desviación de estado",
+      "colDetected": "Detectado por",
+      "colAction": "Acción",
+      "colCategory": "Categoría",
+      "colResources": "Recursos"
+    },
+    "driftPreview": {
+      "sectionTitle": "Cada output de agente IA, revisado antes del merge.",
+      "sectionSubtitle": "Cuatro motores en paralelo — delta de coste (Infracost), seguridad (Checkov), drift en vivo (STS) y recall de memoria semántica (pgvector). Todo en menos de 2s.",
+      "colResource": "Recurso",
+      "colChange": "Cambio",
+      "colFinding": "Hallazgo",
+      "colPlan": "Plan Terraform",
+      "colLiveState": "Estado live",
+      "colPlanned": "Planificado",
+      "colActual": "Real"
+    },
+    "featureGrid": {
+      "sectionTitle": "Seis capas. Una revisión. Cero overhead de configuración.",
+      "sectionSubtitle": "Coste, drift, seguridad, cumplimiento, memoria semántica y análisis AI-native — todo en un PR.",
+      "hoverHint": "Pasa el cursor sobre cada tarjeta para ver un ejemplo real",
+      "features": {
+        "cost": {
+          "title": "Delta de coste en cada PR",
+          "body": "Diff de coste mensual por recurso con Infracost. Bloqueos por umbral.",
+          "example": "aws_rds_cluster.prod\ndb.r5.large → db.r5.4xlarge\n+€480/mes · umbral superado → BLOQUEADO"
+        },
+        "drift": {
+          "title": "Estado real vs. plan",
+          "body": "Compara el plan Terraform con el estado real de la cloud. Detecta cambios manuales.",
+          "example": "aws_security_group.web-sg\nIngress 0.0.0.0/0 añadido via Consola\n→ DRIFT DETECTADO · hace 3h"
+        },
+        "security": {
+          "title": "Hallazgos de seguridad",
+          "body": "Checkov + triaje IA. 255 reglas mapeadas a controles de cumplimiento.",
+          "example": "aws_s3_bucket.tf-state\nAcceso público eliminado\nCKV_AWS_19 · NIS2 Art.21 → BLOQUEADO"
+        },
+        "memory": {
+          "title": "Memoria semántica de fallos",
+          "body": "Cada deploy bloqueado indexado como embedding. PR similar → incidente original aparece.",
+          "example": "rds.delete.prod recordado\ncos 0.94 · 2026-04-22\n→ Misma misconfig bloqueada dos veces"
+        },
+        "compliance": {
+          "title": "DORA / NIS2 / ISO 27001",
+          "body": "Cada hallazgo mapeado a controles de cumplimiento. Evidencia de auditoría en cada PR.",
+          "example": "DORA Art.11 · NIS2 Art.21\nISO 27001 A.8.8 · CIS v8\n→ Evidencia exportada automáticamente"
+        },
+        "aiNative": {
+          "title": "Construido para agentes contribuidores",
+          "body": "Los agentes IA escriben la mitad de tu IaC. DriftGuard los trata como ingenieros junior.",
+          "example": "agent.cursor abrió PR #847\n23 recursos · riesgo 84/100\n→ 2 hallazgos críticos · BLOQUEADO"
+        }
+      }
+    },
+    "footer": {
+      "status": "TODOS LOS SISTEMAS OPERATIVOS",
+      "location": "Lisboa / EU",
+      "gdpr": "RGPD‑nativo",
+      "colProduct": "Producto",
+      "colCompany": "Empresa",
+      "colLegal": "Legal"
+    },
+    "incidents": {
+      "sectionTitle": "Cada PR de agente. Cada milisegundo.",
+      "sectionSubtitle": "DriftGuard intercepta, analiza y decide en menos de 2 segundos. Antes de que el botón de merge esté disponible."
+    },
+    "liveTerminal": {
+      "liveDemo": "EN VIVO · DEMO"
+    },
+    "metrics": {
+      "connectPrompt": "Conecta tu instalación GitHub para ver métricas live del workspace."
+    },
+    "pricing": {
+      "sectionTitle": "Precios simples, por repo",
+      "sectionSubtitle": "Empieza gratis. Añade repos según creces. Cancela cuando quieras.",
+      "toggleAria": "Alternar período de facturación",
+      "billingMonthly": "Mensual",
+      "billingAnnual": "Anual",
+      "footer": "Todos los planes incluyen SOC 2 Tipo II (Q4 2026) · RGPD‑nativo · Datos en la EU"
+    },
+    "semanticMemory": {
+      "sectionTitle": "Tus agentes aprenden de producción. Permanentemente.",
+      "sectionSubtitle": "Cada incidente — deploy bloqueado, evento de drift, violación de política — se convierte en un embedding 384-d.",
+      "recalledLabel": "Incidentes recuperados"
+    }
   },
   "incidents": {
     "title": "Incidentes",

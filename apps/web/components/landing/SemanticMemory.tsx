@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/components/TranslationProvider";
+
 import { useEffect, useRef, useState } from "react";
 import { SectionHeader } from "./Architecture";
 
@@ -19,6 +21,7 @@ const QUERIES = [
 ];
 
 export function SemanticMemory() {
+  const t = useT();
   const [queryIdx, setQueryIdx] = useState(0);
   const [typed, setTyped] = useState(QUERIES[0][0] ?? "");
   const ref = useRef<HTMLDivElement>(null);
@@ -80,7 +83,7 @@ export function SemanticMemory() {
           {/* Memory results */}
           <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)]">
             <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] px-4 py-2.5">
-              <div className="dg-label">Recalled incidents</div>
+              <div className="dg-label">{t("landing.semanticMemory.recalledLabel")}</div>
               <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] tabular-nums">
                 top‑k = 6
               </div>

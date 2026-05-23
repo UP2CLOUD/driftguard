@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/components/TranslationProvider";
+
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
@@ -18,6 +20,7 @@ export function MarketingNav({
   isLoggedIn?: boolean;
   cta?: React.ReactNode;
 }) {
+  const t = useT();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 

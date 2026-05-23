@@ -1,8 +1,14 @@
 import Link from "next/link";
 import { LocaleSwitcher } from "../LocaleSwitcher";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 export async function Footer() {
+  const prefs = await getUserPreferences();
+  const msgs = await getMessages(prefs.locale);
+  const t = createTranslator(msgs);
+
   const preferences = await getUserPreferences();
   const commitSha = (process.env.VERCEL_GIT_COMMIT_SHA ?? "local").slice(0, 7);
   return (
@@ -26,7 +32,7 @@ export async function Footer() {
                 <span className="absolute inline-flex h-full w-full rounded-full bg-allowed opacity-50 dg-pulse" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-allowed" />
               </span>
-              <span className="font-mono text-[10px] text-allowed">ALL SYSTEMS OPERATIONAL</span>
+              <span className="font-mono text-[10px] text-allowed">{t("landing.footer.status")}</span>
             </div>
           </div>
 
@@ -74,9 +80,9 @@ export async function Footer() {
           <div className="flex flex-wrap items-center gap-3">
             <span>© 2026 UP2CLOUD</span>
             <span className="opacity-50">●</span>
-            <span>Lisboa / EU</span>
+            <span>{t("landing.footer.location")}</span>
             <span className="opacity-50">●</span>
-            <span>GDPR‑native</span>
+            <span>{t("landing.footer.gdpr")}</span>
           </div>
           <div className="flex items-center gap-4">
             <LocaleSwitcher initialPreferences={preferences} compact />

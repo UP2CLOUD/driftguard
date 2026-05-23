@@ -1,3 +1,7 @@
+"use client";
+
+import { useT } from "@/components/TranslationProvider";
+
 import { LiveTerminal } from "./LiveTerminal";
 import Link from "next/link";
 
@@ -8,6 +12,7 @@ export function Hero({
   ctaPrimary: React.ReactNode;
   ctaSecondary?: React.ReactNode;
 }) {
+  const t = useT();
   return (
     <section className="relative overflow-hidden border-b border-[color:var(--dg-border)] dg-grid dg-vignette">
       <div className="dg-grain absolute inset-0 pointer-events-none" />
@@ -40,7 +45,7 @@ export function Hero({
           {/* Headline — each line explicit to prevent inline gradient overflow */}
           <h1 className="font-sans font-semibold leading-[1.1] tracking-[-0.02em] text-[color:var(--dg-fg)]
             text-[28px] sm:text-[38px] md:text-[46px] lg:text-[54px]">
-            <span className="block">Your AI agents write Terraform.</span>
+            <span className="block">{t("landing.hero.line1")}</span>
             <span className="block bg-gradient-to-r from-[color:var(--dg-electric)] via-[color:var(--dg-electric-bright)] to-[color:var(--dg-cyan)] bg-clip-text text-transparent">
               We make sure they ship safer.
             </span>

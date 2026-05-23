@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/components/TranslationProvider";
+
 import { useState, useCallback } from "react";
 import { SectionHeader } from "./Architecture";
 
@@ -77,6 +79,7 @@ HTTP/1.1 200 OK
 type Lang = keyof typeof SAMPLES;
 
 export function CodeIntegration() {
+  const t = useT();
   const [lang, setLang] = useState<Lang>("github");
   const [copied, setCopied] = useState(false);
 
@@ -94,7 +97,7 @@ export function CodeIntegration() {
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
           eyebrow="Integrate"
-          title="Install in 30 seconds."
+          title={t("landing.codeIntegration.title")}
           subtitle="GitHub App + repo config. No SDK, no rewrites, no infrastructure changes. Optional CLI for local pre-flight."
         />
 
@@ -145,7 +148,7 @@ export function CodeIntegration() {
 
         {/* Sub-CTA: framework chips */}
         <div className="mt-6 flex flex-wrap items-center gap-2 text-[11px]">
-          <span className="dg-label">Works with</span>
+          <span className="dg-label">{t("landing.codeIntegration.worksWith")}</span>
           {["Terraform", "OpenTofu", "Terragrunt", "Atlantis", "Spacelift", "Cursor", "Devin", "Claude Code"].map((f) => (
             <span
               key={f}

@@ -1,8 +1,11 @@
 "use client";
 
+import { useT } from "@/components/TranslationProvider";
+
 import { useEffect, useState } from "react";
 
 export function StatusBar() {
+  const t = useT();
   const [now, setNow] = useState<string>("");
 
   useEffect(() => {
@@ -21,10 +24,10 @@ export function StatusBar() {
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1.5">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-allowed dg-pulse" />
-            <span className="uppercase">SYSTEM OPERATIONAL</span>
+            <span className="uppercase">{t("landing.statusBar.operational")}</span>
           </span>
           <span className="hidden md:inline opacity-50">●</span>
-          <span className="hidden md:inline">EU‑WEST‑1 / EU‑CENTRAL‑1</span>
+          <span className="hidden md:inline">{t("landing.statusBar.regions")}</span>
           <span className="hidden md:inline opacity-50">●</span>
           <span className="hidden md:inline">p99 &lt;2s</span>
         </div>

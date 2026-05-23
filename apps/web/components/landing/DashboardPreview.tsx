@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/components/TranslationProvider";
+
 import { useState } from "react";
 
 const DRIFTS = [
@@ -49,6 +51,7 @@ const FINOPS = [
 ];
 
 export function DashboardPreview() {
+  const t = useT();
   const [tab, setTab] = useState<"drifts" | "finops">("drifts");
 
   return (
@@ -58,7 +61,7 @@ export function DashboardPreview() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
           <div>
-            <div className="dg-label mb-2">Live environment</div>
+            <div className="dg-label mb-2">{t("landing.dashboardPreview.liveEnv")}</div>
             <h2 className="font-sans text-2xl sm:text-3xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
               Real-time cloud state
             </h2>
@@ -92,7 +95,7 @@ export function DashboardPreview() {
             <StatCell
               icon={<ShieldIcon />}
               label="Security Risks Detected"
-              value={<><span className="text-blocked">2</span><span className="ml-2 text-sm font-normal text-blocked/60">Critical</span></>}
+              value={<><span className="text-blocked">2</span><span className="ml-2 text-sm font-normal text-blocked/60">{t("landing.dashboardPreview.critical")}</span></>}
               tint="bg-blocked/5"
             />
             <StatCell
@@ -109,10 +112,10 @@ export function DashboardPreview() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)]/30 text-[10px] text-[color:var(--dg-fg-subtle)] uppercase tracking-widest font-mono">
-                    <th className="px-5 py-3 font-medium">Resource</th>
-                    <th className="px-4 py-3 font-medium">State drift</th>
-                    <th className="px-4 py-3 font-medium hidden md:table-cell">Detected by</th>
-                    <th className="px-4 py-3 font-medium text-right pr-6">Action</th>
+                    <th className="px-5 py-3 font-medium">{t("landing.dashboardPreview.colResource")}</th>
+                    <th className="px-4 py-3 font-medium">{t("landing.dashboardPreview.colDrift")}</th>
+                    <th className="px-4 py-3 font-medium hidden md:table-cell">{t("landing.dashboardPreview.colDetected")}</th>
+                    <th className="px-4 py-3 font-medium text-right pr-6">{t("landing.dashboardPreview.colAction")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -177,8 +180,8 @@ export function DashboardPreview() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)]/30 text-[10px] text-[color:var(--dg-fg-subtle)] uppercase tracking-widest font-mono">
-                    <th className="px-5 py-3 font-medium">Category</th>
-                    <th className="px-4 py-3 font-medium text-right">Resources</th>
+                    <th className="px-5 py-3 font-medium">{t("landing.dashboardPreview.colCategory")}</th>
+                    <th className="px-4 py-3 font-medium text-right">{t("landing.dashboardPreview.colResources")}</th>
                     <th className="px-4 py-3 font-medium text-right pr-6">Cost impact</th>
                   </tr>
                 </thead>

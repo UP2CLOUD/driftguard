@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/components/TranslationProvider";
+
 import { useEffect, useRef, useState } from "react";
 import { SectionHeader } from "./Architecture";
 
@@ -36,6 +38,7 @@ const STATIC_FALLBACK = {
 };
 
 export function Metrics({ installationId }: { installationId?: number }) {
+  const t = useT();
   const ref = useRef<HTMLDivElement>(null);
   const [start, setStart] = useState(false);
   const [live, setLive] = useState<LiveMetrics | null>(null);

@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/components/TranslationProvider";
+
 import { useState } from "react";
 import { SectionHeader } from "./Architecture";
 
@@ -73,6 +75,7 @@ const ACTION_ICON = {
 } as const;
 
 export function DriftPreview() {
+  const t = useT();
   const [tab, setTab] = useState<Tab>("PR Analysis");
 
   return (
@@ -138,9 +141,9 @@ export function DriftPreview() {
                 <table className="w-full text-left">
                   <thead>
                     <tr className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)]">
-                      <Th>Resource</Th>
-                      <Th>Change</Th>
-                      <Th>Finding</Th>
+                      <Th>{t("landing.driftPreview.colResource")}</Th>
+                      <Th>{t("landing.driftPreview.colChange")}</Th>
+                      <Th>{t("landing.driftPreview.colFinding")}</Th>
                       <Th>Cost</Th>
                       <Th align="right">Gate</Th>
                     </tr>
@@ -194,9 +197,9 @@ export function DriftPreview() {
                 <table className="w-full text-left">
                   <thead>
                     <tr className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)]">
-                      <Th>Resource</Th>
-                      <Th>Terraform plan</Th>
-                      <Th>Live state</Th>
+                      <Th>{t("landing.driftPreview.colResource")}</Th>
+                      <Th>{t("landing.driftPreview.colPlan")}</Th>
+                      <Th>{t("landing.driftPreview.colLiveState")}</Th>
                       <Th>Delta</Th>
                     </tr>
                   </thead>
@@ -219,9 +222,9 @@ export function DriftPreview() {
                 <table className="w-full text-left">
                   <thead>
                     <tr className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)]">
-                      <Th>Resource</Th>
-                      <Th>Planned</Th>
-                      <Th>Actual</Th>
+                      <Th>{t("landing.driftPreview.colResource")}</Th>
+                      <Th>{t("landing.driftPreview.colPlanned")}</Th>
+                      <Th>{t("landing.driftPreview.colActual")}</Th>
                       <Th>Waste</Th>
                     </tr>
                   </thead>

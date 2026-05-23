@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/components/TranslationProvider";
+
 import { useEffect, useRef, useState } from "react";
 import { SectionHeader } from "./Architecture";
 
@@ -140,12 +142,13 @@ function FeatureCell({
 }
 
 export function FeatureGrid() {
+  const t = useT();
   return (
     <section id="product" className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-16 sm:py-24">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
           eyebrow="Full-stack governance"
-          title="Six layers. One review. Zero config overhead."
+          title={t("landing.featureGrid.sectionTitle")}
           subtitle="Cost intelligence, live drift detection, security scanning, compliance evidence, semantic memory, and AI-native analysis — all triggered by a PR, all without changing your Terraform workflow."
         />
         <div className="mt-16 grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] md:grid-cols-2 lg:grid-cols-3">

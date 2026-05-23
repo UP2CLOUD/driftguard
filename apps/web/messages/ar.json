@@ -125,7 +125,133 @@
     "ctaTitle": "استعد السيطرة على بنيتك السحابية.",
     "ctaSubtitle": "التثبيت في 30 ثانية. لا بطاقة ائتمان. يعمل مع GitHub وAWS وOpenTofu وأي toolchain متوافق مع Terraform.",
     "ctaButton": "تثبيت GitHub App — مجاناً",
-    "ctaReadDocs": "اقرأ التوثيق ←"
+    "ctaReadDocs": "اقرأ التوثيق ←",
+    "hero": {
+      "line1": "وكلاء الذكاء الاصطناعي يكتبون Terraform.",
+      "line2": "نحن نضمن أنهم ينشرون بأمان.",
+      "cta_start": "ابدأ",
+      "cta_install": "تثبيت تطبيق GitHub — مجاناً",
+      "cta_dashboard": "لوحة التحكم ←",
+      "cta_docs": "اقرأ التوثيق"
+    },
+    "statusBar": {
+      "operational": "النظام يعمل",
+      "regions": "EU‑WEST‑1 / EU‑CENTRAL‑1"
+    },
+    "nav": {
+      "dashboard": "لوحة التحكم ←",
+      "signOut": "تسجيل الخروج"
+    },
+    "architecture": {
+      "coreLabel": "نواة DRIFTGUARD",
+      "opaLabel": "OPA / Rego",
+      "tooltipGateway": "بنية تحتية، ليست وسيطاً.",
+      "tooltipApp": "DriftGuard تطبيق GitHub — بدون sidecar أو وكيل.",
+      "nodePrOpen": "PR يفتح",
+      "nodePolicyGate": "بوابة السياسة",
+      "nodeComment": "تعليق على PR",
+      "nodeOutcome": "النتيجة تعود"
+    },
+    "codeIntegration": {
+      "title": "التثبيت في 30 ثانية.",
+      "subtitle": "تطبيق GitHub + إعداد المستودع. بدون SDK أو إعادة كتابة.",
+      "worksWith": "يعمل مع"
+    },
+    "cta": {
+      "headline": "مستعد للنشر الآمن"
+    },
+    "dashboardPreview": {
+      "liveEnv": "البيئة المباشرة",
+      "realtimeState": "حالة السحابة في الوقت الفعلي",
+      "realtimeSync": "مزامنة فورية مع حساب AWS (الإنتاج)",
+      "finopsImpact": "تأثير FinOps",
+      "critical": "حرج",
+      "colResource": "المورد",
+      "colDrift": "انجراف الحالة",
+      "colDetected": "اكتشف بواسطة",
+      "colAction": "الإجراء",
+      "colCategory": "الفئة",
+      "colResources": "الموارد"
+    },
+    "driftPreview": {
+      "sectionTitle": "كل مخرجات وكيل الذكاء الاصطناعي، مراجعة قبل الدمج.",
+      "sectionSubtitle": "أربعة محركات تحليل متوازية في أقل من ثانيتين.",
+      "colResource": "المورد",
+      "colChange": "التغيير",
+      "colFinding": "الاكتشاف",
+      "colPlan": "خطة Terraform",
+      "colLiveState": "الحالة المباشرة",
+      "colPlanned": "مخطط",
+      "colActual": "فعلي"
+    },
+    "featureGrid": {
+      "sectionTitle": "ست طبقات. مراجعة واحدة. صفر تكوين.",
+      "sectionSubtitle": "تكلفة، انجراف، أمان، امتثال، ذاكرة دلالية — كل ذلك في PR واحد.",
+      "hoverHint": "مرّر فوق كل بطاقة لرؤية مثال حقيقي",
+      "features": {
+        "cost": {
+          "title": "دلتا التكلفة في كل PR",
+          "body": "فرق التكلفة الشهرية عبر Infracost.",
+          "example": "aws_rds_cluster.prod\n+€480/شهر → محظور"
+        },
+        "drift": {
+          "title": "الحالة الفعلية مقابل الخطة",
+          "body": "مقارنة خطة Terraform بحالة السحابة الفعلية.",
+          "example": "aws_security_group.web-sg\n→ انجراف مكتشف"
+        },
+        "security": {
+          "title": "اكتشافات الأمان",
+          "body": "Checkov + فرز بالذكاء الاصطناعي.",
+          "example": "aws_s3_bucket.tf-state → محظور"
+        },
+        "memory": {
+          "title": "ذاكرة دلالية للأعطال",
+          "body": "كل نشر محظور مُفهرس كـ embedding.",
+          "example": "cos 0.94 → محظور مرتين"
+        },
+        "compliance": {
+          "title": "DORA / NIS2 / ISO 27001",
+          "body": "كل اكتشاف مرتبط بضوابط الامتثال.",
+          "example": "DORA Art.11 → أدلة تلقائية"
+        },
+        "aiNative": {
+          "title": "مبني للوكلاء المساهمين",
+          "body": "وكلاء الذكاء الاصطناعي يكتبون نصف IaC.",
+          "example": "agent.cursor PR #847 → محظور"
+        }
+      }
+    },
+    "footer": {
+      "status": "جميع الأنظمة تعمل",
+      "location": "لشبونة / EU",
+      "gdpr": "متوافق مع GDPR",
+      "colProduct": "المنتج",
+      "colCompany": "الشركة",
+      "colLegal": "قانوني"
+    },
+    "incidents": {
+      "sectionTitle": "كل PR للوكيل. كل ملّي ثانية.",
+      "sectionSubtitle": "DriftGuard يعترض ويحلل ويقرر في أقل من ثانيتين."
+    },
+    "liveTerminal": {
+      "liveDemo": "مباشر · تجريبي"
+    },
+    "metrics": {
+      "connectPrompt": "قم بتوصيل تثبيت GitHub الخاص بك لعرض مقاييس مساحة العمل المباشرة."
+    },
+    "pricing": {
+      "sectionTitle": "تسعير بسيط لكل مستودع",
+      "sectionSubtitle": "ابدأ مجاناً. أضف مستودعات مع النمو. ألغِ في أي وقت.",
+      "toggleAria": "تبديل فترة الفوترة",
+      "billingMonthly": "شهري",
+      "billingAnnual": "سنوي",
+      "footer": "جميع الخطط تشمل SOC 2 Type II · متوافق مع GDPR · بيانات EU"
+    },
+    "semanticMemory": {
+      "sectionTitle": "وكلاؤك يتعلمون من الإنتاج. بشكل دائم.",
+      "sectionSubtitle": "كل حادثة تصبح embedding بـ 384 بُعداً.",
+      "recalledLabel": "الحوادث المستردة"
+    }
   },
   "incidents": {
     "title": "الحوادث",
