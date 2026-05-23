@@ -1,0 +1,84 @@
+# Disaster Recovery — Velero for cluster state + Barman for Postgres
+
+---
+# Velero backup schedule — full cluster state to GCS
+# Includes: deployments, services, configmaps, secrets (encrypted), PVs
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: driftguard-daily-backup
+  namespace: velero
+spec:
+  schedule: "0 1 * * *"   # 1 AM UTC daily
+  useOwnerReferencesInBackup: false
+  template:
+    ttl: 720h   # 30 days
+    includedNamespaces:
+    - driftguard-system
+    - driftguard-data
+    - driftguard-ai
+    - driftguard-gateway
+    excludedResources:
+    - events
+    - events.events.k8s.io
+    storageLocation: driftguard-gcs
+    volumeSnapshotLocations:
+    - gcp-default
+    hooks:
+      resources:
+      # Quiesce Postgres before snapshot
+      - name: postgres-checkpoint
+        includedNamespaces: [driftguard-data]
+        labelSelector:
+          matchLabels:
+            app: postgres
+        pre:
+        - exec:
+            container: postgres
+            command:
+            - /bin/bash
+            - -c
+            - psql -U postgres -c "CHECKPOINT;"
+            onError: Continue
+            timeout: 30s
+---
+# BackupStorageLocation: GCS
+apiVersion: velero.io/v1
+kind: BackupStorageLocation
+metadata:
+  name: driftguard-gcs
+  namespace: velero
+spec:
+  provider: velero.io/gcp
+  objectStorage:
+    bucket: driftguard-velero-backups
+    prefix: cluster-state
+  config:
+    serviceAccount: velero@driftguard-prod.iam.gserviceaccount.com
+---
+# Hourly Postgres-only backup (via CloudNativePG + Barman)
+# This is declared in the CloudNativePG cluster spec (see postgres-ha module)
+# Additional: cross-region replica for DR
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: driftguard-postgres-dr
+  namespace: driftguard-data
+spec:
+  instances: 2
+  # Restore from primary region's backup
+  bootstrap:
+    recovery:
+      source: driftguard-postgres
+      recoveryTarget:
+        targetTime: "2099-01-01T00:00:00Z"   # Latest
+  externalClusters:
+  - name: driftguard-postgres
+    barmanObjectStore:
+      destinationPath: "gs://driftguard-pg-backup/postgres"
+      googleCredentials:
+        applicationCredentials:
+          secret: { name: postgres-gcs-credentials }
+  storage:
+    size: 500Gi
+    storageClass: premium-rwo

@@ -1,0 +1,162 @@
+# GPU inference worker — NVIDIA T4 for text embeddings (all-mpnet-base-v2)
+# Scales from 0 (KEDA scale-to-zero on queue depth)
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: driftguard-embedding-worker
+  namespace: driftguard-ai
+  labels:
+    app: embedding-worker
+    app.kubernetes.io/part-of: driftguard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: embedding-worker
+  template:
+    metadata:
+      labels:
+        app: embedding-worker
+      annotations:
+        # Auto-instrument with OTel
+        instrumentation.opentelemetry.io/inject-python: "true"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    spec:
+      serviceAccountName: embedding-worker
+      priorityClassName: driftguard-ai
+
+      # Only schedule on GPU nodes
+      nodeSelector:
+        cloud.google.com/gke-accelerator: nvidia-tesla-t4
+
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile: { type: RuntimeDefault }
+
+      initContainers:
+      # Download model weights to shared volume (cache-aside pattern)
+      - name: model-loader
+        image: europe-west1-docker.pkg.dev/driftguard-prod/ai/model-loader@sha256:DIGEST
+        resources:
+          requests: { cpu: 200m, memory: 512Mi }
+          limits: { cpu: 1, memory: 2Gi }
+        volumeMounts:
+        - name: model-cache
+          mountPath: /models
+        env:
+        - name: MODEL_NAME
+          value: sentence-transformers/all-mpnet-base-v2
+        - name: HF_HOME
+          value: /models
+
+      containers:
+      - name: embedding-server
+        image: europe-west1-docker.pkg.dev/driftguard-prod/ai/embedding-server@sha256:DIGEST
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+
+        resources:
+          requests:
+            cpu: "1"
+            memory: 4Gi
+            nvidia.com/gpu: "1"
+          limits:
+            cpu: "4"
+            memory: 8Gi
+            nvidia.com/gpu: "1"
+
+        env:
+        - name: MODEL_PATH
+          value: /models
+        - name: BATCH_SIZE
+          value: "32"
+        - name: MAX_QUEUE_WAIT_MS
+          value: "100"
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: driftguard-api-secrets
+              key: REDIS_URL
+
+        volumeMounts:
+        - name: model-cache
+          mountPath: /models
+          readOnly: true
+
+        livenessProbe:
+          httpGet: { path: /health, port: 8080 }
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+
+        readinessProbe:
+          httpGet: { path: /ready, port: 8080 }
+          initialDelaySeconds: 30
+          periodSeconds: 10
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: { drop: [ALL] }
+          readOnlyRootFilesystem: false  # Model files need writable /tmp
+
+      volumes:
+      - name: model-cache
+        emptyDir:
+          medium: Memory
+          sizeLimit: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: driftguard-embedding
+  namespace: driftguard-ai
+spec:
+  selector:
+    app: embedding-worker
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+---
+# KEDA ScaledObject — scale based on Redis queue depth
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: embedding-worker-scaler
+  namespace: driftguard-ai
+spec:
+  scaleTargetRef:
+    name: driftguard-embedding-worker
+  minReplicaCount: 0  # Scale to zero overnight
+  maxReplicaCount: 4
+  cooldownPeriod: 300
+  pollingInterval: 15
+  triggers:
+  - type: redis
+    metadata:
+      address: redis-sentinel.driftguard-data:26379
+      passwordFromEnv: REDIS_PASSWORD
+      listName: driftguard:embedding:queue
+      listLength: "10"      # 1 replica per 10 queued embeddings
+      activationListLength: "1"
+---
+# PriorityClass for AI workloads
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: driftguard-ai
+value: 900
+globalDefault: false
+description: "AI/inference workloads — higher priority than app tier"

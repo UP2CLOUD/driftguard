@@ -1,0 +1,122 @@
+# Cilium NetworkPolicy — deny-all default, explicit allow
+# L7 (HTTP-aware) policies enabled via CiliumNetworkPolicy
+
+---
+# Default deny-all ingress+egress for driftguard-system
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: driftguard-system
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+# API pod: allow ingress from gateway, egress to data ns
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: api-policy
+  namespace: driftguard-system
+spec:
+  endpointSelector:
+    matchLabels:
+      app: driftguard-api
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: driftguard-gateway
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: driftguard-observability
+        app: otel-collector
+    toPorts:
+    - ports: [{ port: "8000", protocol: TCP }]
+      rules:
+        http:
+        - method: GET
+          path: /api/v1/metrics
+  egress:
+  # Postgres
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: driftguard-data
+        app: postgres
+    toPorts: [{ ports: [{ port: "5432" }] }]
+  # Redis
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: driftguard-data
+        app: redis
+    toPorts: [{ ports: [{ port: "6379" }] }]
+  # AI inference
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: driftguard-ai
+    toPorts: [{ ports: [{ port: "8080" }] }]
+  # External: Anthropic API, GitHub API
+  - toFQDNs:
+    - matchPattern: "*.anthropic.com"
+    - matchPattern: "api.github.com"
+    - matchPattern: "*.stripe.com"
+    toPorts: [{ ports: [{ port: "443" }] }]
+  # DNS
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: kube-system
+        k8s:k8s-app: kube-dns
+    toPorts: [{ ports: [{ port: "53", protocol: UDP }] }]
+---
+# Worker pod policy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: worker-policy
+  namespace: driftguard-system
+spec:
+  endpointSelector:
+    matchLabels:
+      app: driftguard-worker
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: driftguard-data
+    toPorts: [{ ports: [{ port: "5432" }, { port: "6379" }] }]
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: driftguard-ai
+    toPorts: [{ ports: [{ port: "8080" }] }]
+  - toFQDNs:
+    - matchPattern: "*.anthropic.com"
+    - matchPattern: "api.github.com"
+    - matchPattern: "*.amazonaws.com"
+    - matchPattern: "*.googleapis.com"
+    toPorts: [{ ports: [{ port: "443" }] }]
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: kube-system
+        k8s:k8s-app: kube-dns
+    toPorts: [{ ports: [{ port: "53", protocol: UDP }] }]
+---
+# Data namespace: postgres only accessible from system ns
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: data-ingress-policy
+  namespace: driftguard-data
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres
+  policyTypes: [Ingress]
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          app.kubernetes.io/part-of: driftguard
+      podSelector:
+        matchLabels:
+          dg.io/db-access: "true"
+    ports:
+    - protocol: TCP
+      port: 5432

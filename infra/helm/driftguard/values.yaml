@@ -1,0 +1,249 @@
+# DriftGuard Helm chart — self-hosted enterprise values
+# Install:
+#   helm repo add driftguard https://charts.driftguard.io
+#   helm install driftguard driftguard/driftguard \
+#     -f values.yaml \
+#     --namespace driftguard --create-namespace
+
+global:
+  # Deployment mode: saas | enterprise
+  mode: enterprise
+  image:
+    registry: europe-west1-docker.pkg.dev
+    repository: driftguard-prod/api/driftguard-api
+    tag: ""          # Set by CI: sha256 digest
+    pullPolicy: IfNotPresent
+    pullSecrets: []  # Set to imagePullSecrets for private registry
+  env: production
+
+# ── API ───────────────────────────────────────────────────────────────────────
+api:
+  enabled: true
+  replicaCount: 3
+
+  image:
+    tag: ""   # Inherits global.image.tag
+
+  resources:
+    requests: { cpu: 200m, memory: 512Mi }
+    limits:   { cpu: "2",  memory: 2Gi }
+
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 50
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+  podDisruptionBudget:
+    minAvailable: 2
+
+  podAnnotations:
+    instrumentation.opentelemetry.io/inject-python: "true"
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
+
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop: [ALL]
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+    - host: api.your-domain.com
+      paths:
+      - path: /api
+        pathType: Prefix
+    tls:
+    - secretName: driftguard-api-tls
+      hosts:
+      - api.your-domain.com
+
+  env:
+    ENVIRONMENT: production
+    LOG_LEVEL: INFO
+    WORKERS: "4"
+    OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4318"
+
+  # Secrets: reference existing K8s secret or let ESO create it
+  existingSecret: driftguard-api-secrets
+  secretKeys:
+    database_url: DATABASE_URL
+    redis_url: REDIS_URL
+    anthropic_key: ANTHROPIC_API_KEY
+    github_app_pk: GITHUB_APP_PRIVATE_KEY
+    github_webhook_secret: GITHUB_WEBHOOK_SECRET
+    secret_key: SECRET_KEY
+
+# ── Worker (Celery) ───────────────────────────────────────────────────────────
+worker:
+  enabled: true
+  replicaCount: 2
+
+  resources:
+    requests: { cpu: 500m, memory: 1Gi }
+    limits:   { cpu: "4",  memory: 8Gi }
+
+  queues: "analysis,notifications,embeddings"
+  concurrency: 4
+
+  keda:
+    enabled: true
+    minReplicaCount: 1
+    maxReplicaCount: 20
+    triggers:
+    - type: redis
+      metadata:
+        listName: celery
+        listLength: "5"
+
+# ── Embedding worker (GPU) ────────────────────────────────────────────────────
+embeddingWorker:
+  enabled: true
+  replicaCount: 0   # KEDA manages this
+
+  gpu:
+    enabled: true
+    type: nvidia-tesla-t4
+    count: 1
+
+  resources:
+    requests:
+      cpu: "1"
+      memory: 4Gi
+      nvidia.com/gpu: "1"
+    limits:
+      cpu: "4"
+      memory: 8Gi
+      nvidia.com/gpu: "1"
+
+  keda:
+    enabled: true
+    minReplicaCount: 0
+    maxReplicaCount: 4
+
+# ── PostgreSQL (bundled — disable if using external) ─────────────────────────
+postgresql:
+  enabled: true   # Set false to use external Postgres
+  # Uses CloudNativePG operator (must be pre-installed)
+  instances: 3
+  storage:
+    size: 100Gi
+    storageClass: premium-rwo
+  backup:
+    enabled: true
+    # Configure your own GCS/S3 bucket
+    destinationPath: ""
+  resources:
+    requests: { cpu: "1", memory: 4Gi }
+    limits:   { cpu: "4", memory: 8Gi }
+
+# External Postgres (if postgresql.enabled=false)
+externalDatabase:
+  host: ""
+  port: 5432
+  name: driftguard
+  existingSecret: ""
+  secretKeys:
+    connectionString: DATABASE_URL
+
+# ── Redis HA (bundled) ────────────────────────────────────────────────────────
+redis:
+  enabled: true
+  architecture: replication
+  sentinel:
+    enabled: true
+    quorum: 2
+  auth:
+    existingSecret: redis-auth
+  master:
+    resources:
+      requests: { cpu: 250m, memory: 512Mi }
+      limits:   { cpu: "1",  memory: 2Gi }
+  replica:
+    replicaCount: 2
+
+# ── Observability (optional — disable if using existing stack) ────────────────
+observability:
+  enabled: true
+  otelCollector:
+    enabled: true
+    mode: deployment  # or daemonset
+    config:
+      exporters:
+        tempo_endpoint: "http://tempo:4317"
+        prometheus_endpoint: "http://prometheus:9090/api/v1/write"
+        loki_endpoint: "http://loki:3100/loki/api/v1/push"
+
+  prometheus:
+    enabled: true
+    retention: 15d
+    storage:
+      size: 100Gi
+
+  grafana:
+    enabled: true
+    adminPassword: ""  # Set via secret
+    persistence:
+      size: 10Gi
+    dashboards:
+      enabled: true   # Auto-import DriftGuard dashboards
+
+  loki:
+    enabled: true
+    storage:
+      size: 200Gi
+
+  tempo:
+    enabled: true
+    storage:
+      size: 100Gi
+
+# ── Cert-manager integration ──────────────────────────────────────────────────
+certManager:
+  enabled: true
+  clusterIssuer: letsencrypt-prod
+  email: platform@your-domain.com
+
+# ── External Secrets Operator ─────────────────────────────────────────────────
+externalSecrets:
+  enabled: false     # Set true if using ESO
+  provider: gcpsm    # gcpsm | awssm | vault | k8s
+  gcpsm:
+    projectId: ""
+    workloadIdentity:
+      serviceAccount: ""
+  vault:
+    server: ""
+    path: ""
+    auth:
+      kubernetes:
+        role: ""
+
+# ── Network policies ──────────────────────────────────────────────────────────
+networkPolicies:
+  enabled: true
+
+# ── Pod security ──────────────────────────────────────────────────────────────
+podSecurityStandard: restricted
+
+# ── Kyverno policies ──────────────────────────────────────────────────────────
+kyvernoPolicies:
+  enabled: true
+  imageSignatureVerification: false  # Enable after setting up Cosign

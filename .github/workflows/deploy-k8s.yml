@@ -1,0 +1,203 @@
+# Production Kubernetes deploy — GitOps via ArgoCD image updater
+# Flow: build → push → sign → update gitops repo → ArgoCD auto-sync
+
+name: deploy-k8s
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/api/**"
+      - "apps/web/**"
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options: [dev, staging, prod]
+        default: dev
+
+permissions:
+  contents: read
+  id-token: write       # Workload Identity
+  packages: write
+  security-events: write # SARIF upload
+
+env:
+  REGISTRY: europe-west1-docker.pkg.dev
+  PROJECT: driftguard-prod
+  REGION: europe-west1
+
+jobs:
+  # ── 1. Test ────────────────────────────────────────────────────────────────
+  test-api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: driftguard_test
+        options: --health-cmd pg_isready --health-interval 10s
+        ports: ["5432:5432"]
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: astral-sh/setup-uv@v3
+      with:
+        version: "0.4.x"
+
+    - name: Install deps
+      run: cd apps/api && uv sync --frozen
+
+    - name: Run tests
+      run: |
+        cd apps/api
+        uv run pytest tests/ -q --ignore=tests/eval \
+          --cov=driftguard \
+          --cov-report=xml \
+          --tb=short
+      env:
+        DATABASE_URL: postgresql+asyncpg://postgres:test@localhost:5432/driftguard_test
+        REDIS_URL: redis://localhost:6379/0
+        SECRET_KEY: test-secret-key-at-least-32-chars!!
+        ENVIRONMENT: test
+
+    - name: Lint
+      run: cd apps/api && uv run ruff check . && uv run ruff format --check .
+
+    - name: Upload coverage
+      uses: codecov/codecov-action@v4
+      with:
+        files: apps/api/coverage.xml
+
+  # ── 2. Build + Security scan ──────────────────────────────────────────────
+  build-api:
+    needs: test-api
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.meta.outputs.tags }}
+      digest: ${{ steps.push.outputs.digest }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+        service_account: ${{ vars.GCP_DEPLOYER_SA }}
+
+    - run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
+
+    - uses: docker/setup-buildx-action@v3
+
+    - name: Docker metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.PROJECT }}/api/driftguard-api
+        tags: |
+          type=sha,prefix=,suffix=,format=short
+          type=ref,event=branch
+
+    - name: Build and push
+      id: push
+      uses: docker/build-push-action@v5
+      with:
+        context: apps/api
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        platforms: linux/amd64
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        sbom: true
+        provenance: mode=max
+        build-args: |
+          GIT_SHA=${{ github.sha }}
+
+    - name: Generate SBOM
+      uses: anchore/sbom-action@v0
+      with:
+        image: ${{ env.REGISTRY }}/${{ env.PROJECT }}/api/driftguard-api@${{ steps.push.outputs.digest }}
+        format: spdx-json
+        artifact-name: api-sbom-${{ github.sha }}.spdx.json
+
+    - name: Scan for CVEs
+      id: scan
+      uses: anchore/scan-action@v3
+      with:
+        image: ${{ env.REGISTRY }}/${{ env.PROJECT }}/api/driftguard-api@${{ steps.push.outputs.digest }}
+        fail-build: true
+        severity-cutoff: critical
+        output-format: sarif
+
+    - name: Upload SARIF
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ steps.scan.outputs.sarif }}
+
+    - name: Install Cosign
+      uses: sigstore/cosign-installer@v3
+
+    - name: Sign image
+      run: |
+        cosign sign --yes \
+          ${{ env.REGISTRY }}/${{ env.PROJECT }}/api/driftguard-api@${{ steps.push.outputs.digest }}
+
+  # ── 3. Deploy (GitOps → ArgoCD) ───────────────────────────────────────────
+  deploy:
+    needs: build-api
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment || 'dev' }}
+      url: https://app.driftguard.io
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        repository: UP2CLOUD/driftguard-gitops
+        token: ${{ secrets.GITOPS_PAT }}
+        path: gitops
+
+    - name: Update image digest in gitops repo
+      run: |
+        ENV="${{ github.event.inputs.environment || 'dev' }}"
+        cd gitops
+
+        # Use yq to update image tag
+        yq e ".image.tag = \"${{ github.sha }}\"" \
+          -i envs/${ENV}/api/values-prod.yaml
+
+        # Also update the digest annotation for Kyverno verification
+        yq e ".podAnnotations[\"dg.io/image-digest\"] = \"${{ needs.build-api.outputs.digest }}\"" \
+          -i envs/${ENV}/api/values-prod.yaml
+
+        git config user.name  "DriftGuard CI"
+        git config user.email "ci@driftguard.io"
+        git add -A
+        git diff --staged --quiet || git commit -m \
+          "chore(${ENV}): update api to ${{ github.sha }}
+
+Digest: ${{ needs.build-api.outputs.digest }}
+Triggered by: ${{ github.actor }}
+PR: ${{ github.event.pull_request.html_url }}"
+
+        git push
+
+    - name: Wait for ArgoCD sync
+      run: |
+        # ArgoCD auto-syncs within 3 minutes via webhook
+        # Wait and verify health
+        sleep 30
+        kubectl --kubeconfig=/dev/stdin wait application \
+          driftguard-api \
+          --for=condition=Healthy \
+          --timeout=300s \
+          -n driftguard-argocd <<< "${{ secrets.KUBECONFIG }}"
+
+    - name: Smoke test
+      run: |
+        curl -sf https://api.driftguard.io/api/v1/health | jq .status

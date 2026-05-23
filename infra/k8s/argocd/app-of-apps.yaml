@@ -1,0 +1,128 @@
+# ArgoCD App-of-Apps — GitOps root
+# All platform components managed via this single entry point
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: driftguard-platform
+  namespace: driftguard-argocd
+  labels:
+    app.kubernetes.io/part-of: driftguard
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: driftguard
+  source:
+    repoURL: https://github.com/UP2CLOUD/driftguard-gitops.git
+    targetRevision: HEAD
+    path: apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: driftguard-argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+---
+# AppProject with RBAC
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: driftguard
+  namespace: driftguard-argocd
+spec:
+  description: DriftGuard platform components
+
+  sourceRepos:
+  - https://github.com/UP2CLOUD/driftguard-gitops.git
+  - https://github.com/UP2CLOUD/driftguard.git
+  - https://charts.bitnami.com/bitnami
+  - https://cloudnative-pg.github.io/charts
+  - https://open-telemetry.github.io/opentelemetry-helm-charts
+  - https://kyverno.github.io/kyverno
+  - https://charts.external-secrets.io
+  - https://kedacore.github.io/charts
+  - https://grafana.github.io/helm-charts
+
+  destinations:
+  - namespace: driftguard-*
+    server: https://kubernetes.default.svc
+  - namespace: cnpg-system
+    server: https://kubernetes.default.svc
+  - namespace: keda
+    server: https://kubernetes.default.svc
+  - namespace: cert-manager
+    server: https://kubernetes.default.svc
+
+  clusterResourceWhitelist:
+  - group: ""
+    kind: Namespace
+  - group: "rbac.authorization.k8s.io"
+    kind: ClusterRole
+  - group: "rbac.authorization.k8s.io"
+    kind: ClusterRoleBinding
+  - group: "networking.k8s.io"
+    kind: IngressClass
+  - group: "gateway.networking.k8s.io"
+    kind: GatewayClass
+  - group: "kyverno.io"
+    kind: ClusterPolicy
+  - group: "cilium.io"
+    kind: CiliumNetworkPolicy
+  - group: "scheduling.k8s.io"
+    kind: PriorityClass
+
+  roles:
+  - name: platform-engineer
+    policies:
+    - p, proj:driftguard:platform-engineer, applications, get,    driftguard/*, allow
+    - p, proj:driftguard:platform-engineer, applications, sync,   driftguard/*, allow
+    - p, proj:driftguard:platform-engineer, applications, update, driftguard/*, allow
+    groups: [platform-engineers]
+  - name: developer
+    policies:
+    - p, proj:driftguard:developer, applications, get,  driftguard/driftguard-api, allow
+    - p, proj:driftguard:developer, applications, sync, driftguard/driftguard-api, allow
+    groups: [developers]
+---
+# Individual app: API
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: driftguard-api
+  namespace: driftguard-argocd
+spec:
+  project: driftguard
+  source:
+    repoURL: https://github.com/UP2CLOUD/driftguard-gitops.git
+    targetRevision: HEAD
+    path: envs/prod/api
+    helm:
+      valueFiles: [values.yaml, values-prod.yaml]
+      parameters:
+      - name: image.tag
+        value: "${ARGOCD_APP_REVISION}"   # set by CI
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: driftguard-system
+  syncPolicy:
+    automated:
+      prune: false        # Manual prune for API
+      selfHeal: true
+    syncOptions:
+    - RespectIgnoreDifferences=true
+  ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/replicas            # HPA manages this

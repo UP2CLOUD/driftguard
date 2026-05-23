@@ -1,0 +1,113 @@
+# Grafana dashboard ConfigMaps — auto-loaded via sidecar
+# Covers: API latency, drift detection, cost analysis, GPU workers
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: driftguard-api-dashboard
+  namespace: driftguard-observability
+  labels:
+    grafana_dashboard: "1"
+data:
+  driftguard-api.json: |
+    {
+      "title": "DriftGuard — API & Pipeline",
+      "uid": "dg-api-v1",
+      "panels": [
+        {
+          "title": "PR Analysis P50/P95/P99 Latency",
+          "type": "timeseries",
+          "targets": [{
+            "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job='driftguard-api', path=~'/api/v1/.*'}[5m])) by (le, path))",
+            "legendFormat": "P99 {{path}}"
+          }, {
+            "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{job='driftguard-api'}[5m])) by (le))",
+            "legendFormat": "P50"
+          }]
+        },
+        {
+          "title": "Ingest Event Rate",
+          "type": "stat",
+          "targets": [{
+            "expr": "sum(rate(driftguard_events_ingested_total[5m])) * 60",
+            "legendFormat": "events/min"
+          }]
+        },
+        {
+          "title": "Incidents Created vs Resolved (1h)",
+          "type": "timeseries",
+          "targets": [{
+            "expr": "sum(increase(driftguard_incidents_created_total[1h]))",
+            "legendFormat": "created"
+          }, {
+            "expr": "sum(increase(driftguard_incidents_resolved_total[1h]))",
+            "legendFormat": "resolved"
+          }]
+        },
+        {
+          "title": "Policy Block Rate",
+          "type": "gauge",
+          "targets": [{
+            "expr": "sum(rate(driftguard_policy_blocks_total[5m])) / sum(rate(driftguard_events_ingested_total[5m]))",
+            "legendFormat": "block rate"
+          }]
+        },
+        {
+          "title": "Memory Recall Latency (pgvector)",
+          "type": "timeseries",
+          "targets": [{
+            "expr": "histogram_quantile(0.95, sum(rate(driftguard_memory_recall_duration_seconds_bucket[5m])) by (le))",
+            "legendFormat": "P95"
+          }]
+        },
+        {
+          "title": "Error Rate by Endpoint",
+          "type": "table",
+          "targets": [{
+            "expr": "sum by (path, status) (rate(http_requests_total{job='driftguard-api', status=~'5..'}[5m]))",
+            "instant": true
+          }]
+        }
+      ]
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: driftguard-infra-dashboard
+  namespace: driftguard-observability
+  labels:
+    grafana_dashboard: "1"
+data:
+  driftguard-infra.json: |
+    {
+      "title": "DriftGuard — Infrastructure",
+      "uid": "dg-infra-v1",
+      "panels": [
+        {
+          "title": "Postgres Connections",
+          "targets": [{ "expr": "pg_stat_database_numbackends{datname='driftguard'}" }]
+        },
+        {
+          "title": "Postgres Replication Lag",
+          "targets": [{ "expr": "max(pg_replication_lag)" }]
+        },
+        {
+          "title": "Redis Memory Usage",
+          "targets": [{ "expr": "redis_memory_used_bytes / redis_memory_max_bytes" }]
+        },
+        {
+          "title": "Redis Command Rate",
+          "targets": [{ "expr": "rate(redis_commands_total[5m])" }]
+        },
+        {
+          "title": "GPU Utilization (embedding workers)",
+          "targets": [{ "expr": "DCGM_FI_DEV_GPU_UTIL{namespace='driftguard-ai'}" }]
+        },
+        {
+          "title": "Node Memory Pressure",
+          "targets": [{ "expr": "sum(container_memory_working_set_bytes{namespace=~'driftguard-.*'}) by (node)" }]
+        }
+      ]
+    }

@@ -1,0 +1,127 @@
+# Gateway API (replaces Ingress) — NGINX Gateway Fabric
+# Chosen over classic Ingress: HTTPRoute, GRPCRoute, TCPRoute, cross-NS refs
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: driftguard-nginx
+spec:
+  controllerName: gateway.nginx.org/nginx-gateway-controller
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: driftguard-gateway
+  namespace: driftguard-gateway
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  gatewayClassName: driftguard-nginx
+  listeners:
+  - name: https-api
+    port: 443
+    protocol: HTTPS
+    hostname: "api.driftguard.io"
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: driftguard-api-tls
+  - name: https-app
+    port: 443
+    protocol: HTTPS
+    hostname: "app.driftguard.io"
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: driftguard-app-tls
+  - name: grpc-streaming
+    port: 443
+    protocol: HTTPS
+    hostname: "stream.driftguard.io"
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: driftguard-stream-tls
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: api-route
+  namespace: driftguard-system
+spec:
+  parentRefs:
+  - name: driftguard-gateway
+    namespace: driftguard-gateway
+  hostnames: ["api.driftguard.io"]
+  rules:
+  # Rate limit: ingest endpoint
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /api/v1/ingest
+    filters:
+    - type: RequestHeaderModifier
+      requestHeaderModifier:
+        add:
+        - name: X-Rate-Limit-Policy
+          value: ingest
+    backendRefs:
+    - name: driftguard-api
+      port: 8000
+  # Webhook: higher burst allowance
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /api/v1/webhooks
+    backendRefs:
+    - name: driftguard-api
+      port: 8000
+  # Default
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /api
+    backendRefs:
+    - name: driftguard-api
+      port: 8000
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: GRPCRoute
+metadata:
+  name: streaming-route
+  namespace: driftguard-system
+spec:
+  parentRefs:
+  - name: driftguard-gateway
+    namespace: driftguard-gateway
+  hostnames: ["stream.driftguard.io"]
+  rules:
+  - matches:
+    - method:
+        service: driftguard.v1.EventStream
+    backendRefs:
+    - name: driftguard-streaming
+      port: 9000
+---
+# cert-manager ClusterIssuer
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: platform@driftguard.io
+    privateKeySecretRef:
+      name: letsencrypt-prod-key
+    solvers:
+    - dns01:
+        cloudflare:
+          email: platform@driftguard.io
+          apiTokenSecretRef:
+            name: cloudflare-api-token
+            key: api-token

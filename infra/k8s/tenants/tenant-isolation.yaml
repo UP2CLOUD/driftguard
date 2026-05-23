@@ -1,0 +1,166 @@
+# Enterprise multi-tenancy — namespace-per-tenant isolation
+# Each enterprise customer gets a dedicated namespace with:
+#   - ResourceQuota (hard limits)
+#   - NetworkPolicy (no cross-tenant traffic)
+#   - RBAC (tenant admin, read-only)
+#   - ExternalSecret (per-tenant secrets)
+#   - Separate PVCs (storage isolation)
+
+---
+# Tenant template — applied per-customer via ArgoCD ApplicationSet
+# Replace TENANT_ID with customer slug (e.g. "acme", "globocorp")
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: driftguard-tenant-TENANT_ID
+  labels:
+    app.kubernetes.io/part-of: driftguard
+    driftguard.io/tenant: TENANT_ID
+    driftguard.io/tier: enterprise
+    pod-security.kubernetes.io/enforce: restricted
+    cilium.io/policy: enabled
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: tenant-quota
+  namespace: driftguard-tenant-TENANT_ID
+spec:
+  hard:
+    requests.cpu: "8"
+    requests.memory: 16Gi
+    limits.cpu: "16"
+    limits.memory: 32Gi
+    pods: "40"
+    persistentvolumeclaims: "5"
+    services: "10"
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: tenant-limits
+  namespace: driftguard-tenant-TENANT_ID
+spec:
+  limits:
+  - type: Container
+    default:      { cpu: 200m,  memory: 256Mi }
+    defaultRequest: { cpu: 50m, memory: 64Mi }
+    max:          { cpu: "4",   memory: 8Gi }
+---
+# RBAC: tenant admin role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tenant-admin
+  namespace: driftguard-tenant-TENANT_ID
+rules:
+- apiGroups: [""]
+  resources: [pods, services, configmaps, events]
+  verbs: [get, list, watch]
+- apiGroups: [apps]
+  resources: [deployments, statefulsets]
+  verbs: [get, list, watch]
+- apiGroups: [""]
+  resources: [pods/log]
+  verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tenant-admin-binding
+  namespace: driftguard-tenant-TENANT_ID
+subjects:
+- kind: Group
+  name: driftguard:tenant:TENANT_ID:admin
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: tenant-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+# NetworkPolicy: complete isolation between tenants
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: tenant-isolation
+  namespace: driftguard-tenant-TENANT_ID
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+  ingress:
+  # Allow only from driftguard-system (API routing to this tenant)
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: driftguard-system
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: driftguard-observability
+  egress:
+  # Allow DNS
+  - ports:
+    - port: 53
+      protocol: UDP
+  # Allow to driftguard-data (shared DB, row-level security)
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: driftguard-data
+    ports:
+    - port: 5432
+    - port: 6379
+  # Block cross-tenant: explicit deny prevents tenant-A → tenant-B
+  # (Cilium enforces deny-all by default; only above rules allowed)
+---
+# ArgoCD ApplicationSet — generates one Application per tenant
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: tenant-apps
+  namespace: driftguard-argocd
+spec:
+  generators:
+  - git:
+      repoURL: https://github.com/UP2CLOUD/driftguard-gitops.git
+      revision: HEAD
+      files:
+      - path: "tenants/*/config.json"   # One JSON file per tenant
+  template:
+    metadata:
+      name: "tenant-{{tenant_id}}"
+      namespace: driftguard-argocd
+    spec:
+      project: driftguard
+      source:
+        repoURL: https://github.com/UP2CLOUD/driftguard-gitops.git
+        targetRevision: HEAD
+        path: "tenants/{{tenant_id}}"
+        helm:
+          values: |
+            tenantId: {{tenant_id}}
+            tier: {{tier}}
+            githubInstallationId: {{installation_id}}
+            resourceQuota:
+              cpu: "{{cpu_limit}}"
+              memory: "{{memory_limit}}"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "driftguard-tenant-{{tenant_id}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+---
+# Row-Level Security for shared Postgres (enforced at DB layer)
+# Applied via psql during tenant provisioning
+# Not a K8s resource — documented here for completeness
+# SQL:
+#   ALTER TABLE analyses    ENABLE ROW LEVEL SECURITY;
+#   ALTER TABLE incidents   ENABLE ROW LEVEL SECURITY;
+#   ALTER TABLE runtime_events ENABLE ROW LEVEL SECURITY;
+#   CREATE POLICY tenant_isolation ON analyses
+#     USING (org_id = current_setting('app.tenant_id')::uuid);
+#   -- API sets: SET LOCAL app.tenant_id = '<org_id>' per request

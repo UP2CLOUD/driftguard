@@ -1,0 +1,112 @@
+# Cost optimization — Kubernetes-native strategies
+
+---
+# 1. Descheduler — periodically rebalance pods to spot/cheaper nodes
+apiVersion: operator.descheduler.sigs.k8s.io/v1alpha2
+kind: KubeDescheduler
+metadata:
+  name: driftguard-descheduler
+  namespace: kube-system
+spec:
+  deschedulingIntervalSeconds: 3600   # Run every hour
+  profiles:
+  - name: OptimizeCost
+    pluginConfig:
+    - name: DefaultEvictor
+      args:
+        ignorePvcPods: true
+        evictLocalStoragePods: false
+    plugins:
+      balance:
+        enabled:
+        - name: RemoveDuplicates
+        - name: LowNodeUtilization
+        - name: RemovePodsViolatingTopologySpreadConstraints
+      deschedule:
+        enabled:
+        - name: RemovePodsViolatingNodeAffinity
+        - name: RemovePodsViolatingNodeTaints
+  - name: LowNodeUtilization
+    pluginConfig:
+    - name: LowNodeUtilization
+      args:
+        thresholds:
+          cpu:    20
+          memory: 20
+          pods:   20
+        targetThresholds:
+          cpu:    50
+          memory: 50
+          pods:   50
+---
+# 2. VPA Recommender — right-size all workloads (off mode: no auto-update)
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: driftguard-api-vpa-recommender
+  namespace: driftguard-system
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: driftguard-api
+  updatePolicy:
+    updateMode: "Off"   # Recommend only; apply during deploy
+  resourcePolicy:
+    containerPolicies:
+    - containerName: api
+      minAllowed:
+        cpu: 100m
+        memory: 256Mi
+      maxAllowed:
+        cpu: "4"
+        memory: 8Gi
+      controlledValues: RequestsAndLimits
+---
+# 3. Topology spread — maximize spot node usage, minimize wasted AZ slots
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: driftguard-api-topology-patch
+  namespace: driftguard-system
+  annotations:
+    note: "This patches the API deployment topology — not a standalone resource"
+spec:
+  template:
+    spec:
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: driftguard-api
+      - maxSkew: 2
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: driftguard-api
+---
+# 4. PodDisruptionBudget — allow spot evictions without downtime
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: driftguard-api-pdb
+  namespace: driftguard-system
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: driftguard-api
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: driftguard-worker-pdb
+  namespace: driftguard-system
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: driftguard-worker

@@ -1,0 +1,132 @@
+# HPA + VPA + KEDA — multi-layer autoscaling
+
+---
+# API HPA — scale on CPU + custom metric (request queue depth)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: driftguard-api-hpa
+  namespace: driftguard-system
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: driftguard-api
+  minReplicas: 3
+  maxReplicas: 50
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 30
+      policies:
+      - type: Pods
+        value: 4
+        periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300   # 5 min cooldown
+      policies:
+      - type: Pods
+        value: 2
+        periodSeconds: 120
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Pods
+    pods:
+      metric:
+        name: http_requests_per_second
+      target:
+        type: AverageValue
+        averageValue: "100"
+---
+# Worker KEDA ScaledObject — Redis queue depth
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: driftguard-worker-scaler
+  namespace: driftguard-system
+spec:
+  scaleTargetRef:
+    name: driftguard-worker
+  minReplicaCount: 1
+  maxReplicaCount: 20
+  cooldownPeriod: 120
+  pollingInterval: 10
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleUp:
+          stabilizationWindowSeconds: 30
+          policies:
+          - type: Pods
+            value: 3
+            periodSeconds: 30
+  triggers:
+  - type: redis
+    metadata:
+      address: redis-sentinel.driftguard-data:26379
+      listName: celery
+      listLength: "5"
+      activationListLength: "1"
+  - type: redis
+    metadata:
+      address: redis-sentinel.driftguard-data:26379
+      listName: driftguard:high-priority
+      listLength: "2"
+      activationListLength: "1"
+---
+# VPA for workers — right-size over time (UpdateMode: Auto)
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: driftguard-worker-vpa
+  namespace: driftguard-system
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: driftguard-worker
+  updatePolicy:
+    updateMode: Auto
+  resourcePolicy:
+    containerPolicies:
+    - containerName: worker
+      minAllowed: { cpu: 100m, memory: 256Mi }
+      maxAllowed: { cpu: "4",  memory: 8Gi }
+      controlledResources: [cpu, memory]
+---
+# KEDA ScaledJob for bursty AI analysis tasks
+apiVersion: keda.sh/v1alpha1
+kind: ScaledJob
+metadata:
+  name: pr-analysis-job-scaler
+  namespace: driftguard-system
+spec:
+  jobTargetRef:
+    template:
+      spec:
+        containers:
+        - name: analyzer
+          image: europe-west1-docker.pkg.dev/driftguard-prod/api/analyzer@sha256:DIGEST
+          resources:
+            requests: { cpu: 500m, memory: 1Gi }
+            limits:   { cpu: "2",  memory: 4Gi }
+  pollingInterval: 5
+  maxReplicaCount: 100
+  scalingStrategy:
+    strategy: accurate
+  triggers:
+  - type: redis
+    metadata:
+      address: redis-sentinel.driftguard-data:26379
+      listName: driftguard:analysis:queue
+      listLength: "1"

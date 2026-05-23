@@ -1,0 +1,167 @@
+# OpenTelemetry Collector — fan-out to Prometheus, Tempo, Loki
+# Single collector daemonset + gateway collector deployment
+
+---
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: driftguard-otel-gateway
+  namespace: driftguard-observability
+spec:
+  mode: Deployment
+  replicas: 2
+  resources:
+    requests: { cpu: 200m, memory: 256Mi }
+    limits:   { cpu: 1,    memory: 1Gi }
+
+  config:
+    receivers:
+      otlp:
+        protocols:
+          grpc: { endpoint: 0.0.0.0:4317 }
+          http:  { endpoint: 0.0.0.0:4318 }
+      prometheus:
+        config:
+          scrape_configs:
+          - job_name: driftguard-api
+            kubernetes_sd_configs:
+            - role: pod
+              namespaces: { names: [driftguard-system] }
+            relabel_configs:
+            - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+              action: keep
+              regex: "true"
+            - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port]
+              action: replace
+              target_label: __address__
+              regex: ([^:]+)(?::\d+)?;(\d+)
+              replacement: $1:$2
+
+    processors:
+      batch:
+        timeout: 10s
+        send_batch_size: 1024
+      memory_limiter:
+        check_interval: 5s
+        limit_percentage: 80
+        spike_limit_percentage: 25
+      resource:
+        attributes:
+        - action: insert
+          key: service.namespace
+          value: driftguard
+        - action: insert
+          key: deployment.environment
+          from_attribute: k8s.namespace.name
+      # Drop high-cardinality spans to control costs
+      filter:
+        error_mode: ignore
+        traces:
+          span:
+          - 'name == "healthcheck"'
+          - 'name == "readiness"'
+
+    exporters:
+      # Traces → Tempo
+      otlp/tempo:
+        endpoint: http://tempo.driftguard-observability:4317
+        tls: { insecure: true }
+      # Metrics → Prometheus remote write
+      prometheusremotewrite:
+        endpoint: http://prometheus.driftguard-observability:9090/api/v1/write
+        tls: { insecure: true }
+        resource_to_telemetry_conversion: { enabled: true }
+      # Logs → Loki
+      loki:
+        endpoint: http://loki.driftguard-observability:3100/loki/api/v1/push
+        labels:
+          resource:
+            service.name: service_name
+            k8s.namespace.name: namespace
+            k8s.pod.name: pod
+      # Debug (disable in prod)
+      debug:
+        verbosity: basic
+
+    service:
+      telemetry:
+        metrics: { address: ":8888" }
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [memory_limiter, batch, resource, filter]
+          exporters: [otlp/tempo]
+        metrics:
+          receivers: [otlp, prometheus]
+          processors: [memory_limiter, batch, resource]
+          exporters: [prometheusremotewrite]
+        logs:
+          receivers: [otlp]
+          processors: [memory_limiter, batch, resource]
+          exporters: [loki]
+---
+# Daemonset collector — node-level metrics + k8s events
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: driftguard-otel-node
+  namespace: driftguard-observability
+spec:
+  mode: DaemonSet
+  resources:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits:   { cpu: 500m, memory: 512Mi }
+  config:
+    receivers:
+      kubeletstats:
+        collection_interval: 30s
+        auth_type: serviceAccount
+        endpoint: "https://${env:K8S_NODE_NAME}:10250"
+        insecure_skip_verify: true
+      k8s_events:
+        namespaces: [driftguard-system, driftguard-data, driftguard-ai]
+    processors:
+      batch: { timeout: 30s }
+      resource:
+        attributes:
+        - action: insert
+          key: k8s.node.name
+          from_attribute: k8s.node.name
+    exporters:
+      otlp/gateway:
+        endpoint: http://driftguard-otel-gateway-collector:4317
+        tls: { insecure: true }
+    service:
+      pipelines:
+        metrics:
+          receivers: [kubeletstats]
+          processors: [batch, resource]
+          exporters: [otlp/gateway]
+        logs:
+          receivers: [k8s_events]
+          processors: [batch]
+          exporters: [otlp/gateway]
+---
+# Auto-instrument Python API pods
+apiVersion: opentelemetry.io/v1alpha1
+kind: Instrumentation
+metadata:
+  name: driftguard-python-instrumentation
+  namespace: driftguard-system
+spec:
+  exporter:
+    endpoint: http://driftguard-otel-gateway-collector.driftguard-observability:4317
+  propagators: [tracecontext, baggage, b3]
+  sampler:
+    type: parentbased_traceidratio
+    argument: "0.1"   # 10% sampling in prod, 100% in dev
+  python:
+    env:
+    - name: OTEL_LOGS_EXPORTER
+      value: otlp
+    - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
+      value: "true"
+    - name: OTEL_SERVICE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.labels['app']

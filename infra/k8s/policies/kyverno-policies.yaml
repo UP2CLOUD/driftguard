@@ -1,0 +1,218 @@
+# Kyverno admission policies — enforced at API server admission
+
+---
+# 1. Require all containers have resource limits
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-resource-limits
+  annotations:
+    policies.kyverno.io/title: Require Resource Limits
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: require-limits
+    match:
+      any:
+      - resources:
+          kinds: [Pod]
+          namespaces: [driftguard-system, driftguard-data, driftguard-ai]
+    validate:
+      message: "Resource limits required for CPU and memory."
+      pattern:
+        spec:
+          containers:
+          - resources:
+              limits:
+                memory: "?*"
+                cpu: "?*"
+---
+# 2. Disallow latest tag
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-latest-tag
+  annotations:
+    policies.kyverno.io/title: Disallow Latest Tag
+    policies.kyverno.io/severity: medium
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: require-image-tag
+    match:
+      any:
+      - resources:
+          kinds: [Pod]
+          namespaces:
+          - driftguard-system
+          - driftguard-data
+          - driftguard-ai
+    validate:
+      message: "Image tag 'latest' is not allowed. Use a specific digest or semantic version."
+      deny:
+        conditions:
+          any:
+          - key: "{{ images.containers.*.tag }}"
+            operator: AnyIn
+            value: ["latest", ""]
+---
+# 3. Require image digest (supply-chain security)
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-image-digest
+  annotations:
+    policies.kyverno.io/title: Require Image Digest
+    policies.kyverno.io/severity: high
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: check-digest
+    match:
+      any:
+      - resources:
+          kinds: [Pod]
+          namespaces: [driftguard-system]
+    validate:
+      message: "Images must be referenced by digest (sha256:...) in production."
+      foreach:
+      - list: request.object.spec.containers[]
+        deny:
+          conditions:
+            all:
+            - key: "{{ element.image }}"
+              operator: NotContains
+              value: "@sha256:"
+---
+# 4. Disallow privileged containers
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-privileged
+  annotations:
+    policies.kyverno.io/title: Disallow Privileged Containers
+    policies.kyverno.io/severity: critical
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: no-privileged
+    match:
+      any:
+      - resources:
+          kinds: [Pod]
+          namespaces:
+          - driftguard-system
+          - driftguard-data
+          - driftguard-ai
+          - driftguard-observability
+    validate:
+      message: "Privileged containers are not allowed."
+      pattern:
+        spec:
+          =(initContainers):
+          - =(securityContext):
+              =(privileged): "false"
+          containers:
+          - =(securityContext):
+              =(privileged): "false"
+---
+# 5. Require non-root user
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-non-root
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: check-user
+    match:
+      any:
+      - resources:
+          kinds: [Pod]
+          namespaces: [driftguard-system, driftguard-ai]
+    validate:
+      message: "Containers must run as non-root (runAsNonRoot: true)."
+      pattern:
+        spec:
+          securityContext:
+            runAsNonRoot: true
+---
+# 6. Require read-only root filesystem
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-readonly-root-fs
+spec:
+  validationFailureAction: Audit   # warn before enforcing
+  rules:
+  - name: check-readonly-fs
+    match:
+      any:
+      - resources:
+          kinds: [Pod]
+          namespaces: [driftguard-system]
+    validate:
+      message: "Root filesystem must be read-only."
+      pattern:
+        spec:
+          containers:
+          - securityContext:
+              readOnlyRootFilesystem: true
+---
+# 7. Verify image signatures (Cosign / Sigstore)
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-image-signatures
+  annotations:
+    policies.kyverno.io/title: Verify Image Signatures
+    policies.kyverno.io/severity: critical
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: verify-cosign
+    match:
+      any:
+      - resources:
+          kinds: [Pod]
+          namespaces: [driftguard-system]
+    verifyImages:
+    - imageReferences:
+      - "europe-west1-docker.pkg.dev/*/driftguard/*"
+      attestors:
+      - count: 1
+        entries:
+        - keys:
+            publicKeys: |-
+              -----BEGIN PUBLIC KEY-----
+              # Insert Cosign public key here (from CI pipeline)
+              -----END PUBLIC KEY-----
+---
+# 8. Auto-inject security context (mutating)
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: inject-security-context
+spec:
+  rules:
+  - name: add-security-context
+    match:
+      any:
+      - resources:
+          kinds: [Pod]
+          namespaces: [driftguard-system]
+    mutate:
+      patchStrategicMerge:
+        spec:
+          +(securityContext):
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+          - (name): "*"
+            +(securityContext):
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: [ALL]

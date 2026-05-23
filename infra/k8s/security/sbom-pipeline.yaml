@@ -1,0 +1,46 @@
+# Supply chain security:
+# 1. Syft generates SBOM at build time
+# 2. Grype scans for CVEs
+# 3. Cosign signs image + SBOM
+# 4. Kyverno verifies signatures at admission
+
+# This is a GitHub Actions workflow embedded as documentation reference
+# The actual workflow is at .github/workflows/container-security.yml
+
+---
+# Trivy Operator — continuous cluster CVE scanning
+apiVersion: aquasecurity.github.io/v1alpha1
+kind: ClusterVulnerabilityReport
+metadata:
+  name: driftguard-vuln-config
+spec:
+  namespaces:
+  - driftguard-system
+  - driftguard-data
+  - driftguard-ai
+---
+# VulnerabilityReport threshold policy (Kyverno)
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: block-critical-vulnerabilities
+  annotations:
+    policies.kyverno.io/title: Block Critical CVEs
+    policies.kyverno.io/severity: critical
+spec:
+  validationFailureAction: Audit   # Audit initially, promote to Enforce after baseline
+  background: false
+  rules:
+  - name: check-vulnerabilities
+    match:
+      any:
+      - resources:
+          kinds: [VulnerabilityReport]
+    validate:
+      message: "Image has critical vulnerabilities. Run 'trivy image <name>' for details."
+      deny:
+        conditions:
+          any:
+          - key: "{{ request.object.report.summary.criticalCount }}"
+            operator: GreaterThan
+            value: "0"
