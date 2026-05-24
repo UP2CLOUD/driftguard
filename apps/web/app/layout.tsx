@@ -4,6 +4,8 @@ import { I18nProvider } from "@/components/I18nProvider";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import { isRtlLocale } from "@/i18n/config";
 import { getLocale, getMessages } from "@/i18n/get-locale";
+import { getUserPreferences } from "@/lib/preferences/server";
+import { createTranslator } from "@/i18n/translator";
 import "./globals.css";
 
 const geist = Geist({
@@ -18,66 +20,71 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://driftguard-blue.vercel.app"),
-  title: {
-    default: "DriftGuard — AI runtime safety for Terraform agents",
-    template: "%s · DriftGuard",
-  },
-  description:
-    "DriftGuard reviews every Terraform PR your AI agents open — cost, drift, security, compliance. Semantic memory of past incidents prevents repeat mistakes.",
-  keywords: [
-    "Terraform", "OpenTofu", "AI agents", "infrastructure as code",
-    "drift detection", "cost analysis", "Infracost", "Checkov",
-    "GitOps", "PR review", "runtime safety", "DORA", "NIS2",
-  ],
-  authors: [{ name: "UP2CLOUD", url: "https://driftguard-blue.vercel.app" }],
-  creator: "UP2CLOUD",
-  publisher: "UP2CLOUD",
-  formatDetection: { email: false, address: false, telephone: false },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "/",
-    siteName: "DriftGuard",
-    title: "DriftGuard — AI runtime safety for Terraform agents",
-    description: "Cost · drift · security · compliance on every Terraform PR. Memory prevents repeat incidents.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "DriftGuard",
-    description: "AI runtime safety for Terraform agents.",
-    creator: "@driftguard",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://driftguard-blue.vercel.app";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
+
+  return {
+    metadataBase: new URL(BASE_URL),
+    title: {
+      default: t("seo.title"),
+      template: "%s · DriftGuard",
+    },
+    description: t("seo.description"),
+    keywords: [
+      "Terraform", "OpenTofu", "AI agents", "infrastructure as code",
+      "drift detection", "cost analysis", "Infracost", "Checkov",
+      "GitOps", "PR review", "runtime safety", "DORA", "NIS2",
+    ],
+    authors: [{ name: "UP2CLOUD", url: BASE_URL }],
+    creator: "UP2CLOUD",
+    publisher: "UP2CLOUD",
+    formatDetection: { email: false, address: false, telephone: false },
+    openGraph: {
+      type: "website",
+      locale: preferences.locale.replace("-", "_"),
+      url: "/",
+      siteName: "DriftGuard",
+      title: t("seo.ogTitle"),
+      description: t("seo.ogDesc"),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "DriftGuard",
+      description: t("seo.twitterDesc"),
+      creator: "@driftguard",
+    },
+    robots: {
       index: true,
       follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
-  },
-  icons: {
-    icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-    ],
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
-  },
-  alternates: {
-    canonical: "/",
-    languages: {
-      "en-US": "/",
-      "pt-BR": "/",
-      "es-ES": "/",
-      "zh-CN": "/",
-      "hi-IN": "/",
-      "ar-SA": "/",
+    icons: {
+      icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+      shortcut: "/icon.svg",
+      apple: "/icon.svg",
     },
-  },
-};
+    alternates: {
+      canonical: "/",
+      languages: {
+        "en-US": "/",
+        "pt-BR": "/",
+        "es-ES": "/",
+        "zh-CN": "/",
+        "hi-IN": "/",
+        "ar-SA": "/",
+      },
+    },
+  };
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();

@@ -455,5 +455,12 @@
     "eyebrow": "قانوني",
     "title": "اتفاقية معالجة البيانات",
     "subtitle": "بين DriftGuard (المعالج) والعميل (المتحكم). متوافق مع GDPR المادة 28."
+  },
+  "seo": {
+    "title": "DriftGuard — أمان وقت التشغيل للذكاء الاصطناعي لـ Terraform",
+    "description": "يراجع DriftGuard كل PR من Terraform يفتحه وكلاء الذكاء الاصطناعي — التكلفة والانجراف والأمان والامتثال.",
+    "ogTitle": "DriftGuard — أمان وقت التشغيل للذكاء الاصطناعي لـ Terraform",
+    "ogDesc": "تكلفة · انجراف · أمان · امتثال في كل PR من Terraform.",
+    "twitterDesc": "أمان وقت التشغيل لوكلاء Terraform."
   }
 }

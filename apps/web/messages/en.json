@@ -455,5 +455,12 @@
     "eyebrow": "Legal",
     "title": "Data Processing Agreement",
     "subtitle": "Between DriftGuard (Processor) and Customer (Controller). Compliant with GDPR Art. 28."
+  },
+  "seo": {
+    "title": "DriftGuard — AI runtime safety for Terraform agents",
+    "description": "DriftGuard reviews every Terraform PR your AI agents open — cost, drift, security, compliance. Semantic memory of past incidents prevents repeat mistakes.",
+    "ogTitle": "DriftGuard — AI runtime safety for Terraform agents",
+    "ogDesc": "Cost · drift · security · compliance on every Terraform PR. Memory prevents repeat incidents.",
+    "twitterDesc": "AI runtime safety for Terraform agents."
   }
 }

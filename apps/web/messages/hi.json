@@ -455,5 +455,12 @@
     "eyebrow": "कानूनी",
     "title": "डेटा प्रोसेसिंग अनुबंध",
     "subtitle": "DriftGuard (प्रोसेसर) और ग्राहक (नियंत्रक) के बीच। GDPR अनुच्छेद 28 के अनुपालन में।"
+  },
+  "seo": {
+    "title": "DriftGuard — Terraform एजेंट के लिए AI रनटाइम सुरक्षा",
+    "description": "DriftGuard आपके AI एजेंट द्वारा खोले गए प्रत्येक Terraform PR की समीक्षा करता है — लागत, drift, सुरक्षा, अनुपालन।",
+    "ogTitle": "DriftGuard — Terraform एजेंट के लिए AI रनटाइम सुरक्षा",
+    "ogDesc": "लागत · drift · सुरक्षा · अनुपालन — हर Terraform PR पर।",
+    "twitterDesc": "Terraform एजेंट के लिए AI रनटाइम सुरक्षा।"
   }
 }

@@ -455,5 +455,12 @@
     "eyebrow": "Legal",
     "title": "Acuerdo de Procesamiento de Datos",
     "subtitle": "Entre DriftGuard (Procesador) y el Cliente (Controlador). Conforme al RGPD Art. 28."
+  },
+  "seo": {
+    "title": "DriftGuard — Seguridad en tiempo de ejecución para agentes Terraform",
+    "description": "DriftGuard revisa cada PR de Terraform que abren tus agentes de IA — coste, drift, seguridad, cumplimiento. La memoria semántica de incidentes pasados evita errores repetidos.",
+    "ogTitle": "DriftGuard — Seguridad en tiempo de ejecución para agentes Terraform",
+    "ogDesc": "Coste · drift · seguridad · cumplimiento en cada PR de Terraform.",
+    "twitterDesc": "Seguridad en tiempo de ejecución para agentes Terraform."
   }
 }

@@ -455,5 +455,12 @@
     "eyebrow": "法律",
     "title": "数据处理协议",
     "subtitle": "DriftGuard（处理方）与客户（控制方）之间的协议，符合 GDPR 第 28 条。"
+  },
+  "seo": {
+    "title": "DriftGuard — Terraform AI 代理运行时安全",
+    "description": "DriftGuard 审查 AI 代理提交的每个 Terraform PR — 成本、漂移、安全、合规。语义记忆防止重复错误。",
+    "ogTitle": "DriftGuard — Terraform AI 代理运行时安全",
+    "ogDesc": "成本 · 漂移 · 安全 · 合规，覆盖每个 Terraform PR。",
+    "twitterDesc": "Terraform AI 代理运行时安全。"
   }
 }
