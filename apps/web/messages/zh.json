@@ -12,7 +12,12 @@
     "policies": "策略",
     "memory": "记忆",
     "overview": "概览",
-    "signOutShort": "退出"
+    "signOutShort": "退出",
+    "product": "产品",
+    "architecture": "架构",
+    "integrate": "集成",
+    "docs": "文档",
+    "menuLabel": "菜单"
   },
   "auth": {
     "goToDashboard": "前往控制台 →",
@@ -227,7 +232,27 @@
       "gdpr": "符合 GDPR",
       "colProduct": "产品",
       "colCompany": "公司",
-      "colLegal": "法律"
+      "colLegal": "法律",
+      "colDocs": "文档",
+      "linkPricing": "价格",
+      "linkChangelog": "更新日志",
+      "linkCustomers": "客户",
+      "linkSecurity": "安全",
+      "linkCompliance": "合规",
+      "linkGetStarted": "快速开始",
+      "linkFirstReview": "首次审查",
+      "linkCost": "成本分析",
+      "linkDrift": "漂移检测",
+      "linkMemory": "记忆",
+      "linkPolicies": "策略",
+      "linkApiRef": "API参考",
+      "linkWebhooks": "Webhooks",
+      "linkCareers": "职业",
+      "linkStatus": "状态",
+      "linkPrivacy": "隐私",
+      "linkTerms": "条款",
+      "linkDpa": "DPA",
+      "linkSubproc": "子处理商"
     },
     "incidents": {
       "sectionTitle": "每个代理 PR。每一毫秒。",

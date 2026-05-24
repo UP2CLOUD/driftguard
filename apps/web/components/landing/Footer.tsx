@@ -1,20 +1,20 @@
 import Link from "next/link";
 import { LocaleSwitcher } from "../LocaleSwitcher";
+import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
-import { getUserPreferences } from "@/lib/preferences/server";
 
 export async function Footer() {
-  const prefs = await getUserPreferences();
-  const msgs = await getMessages(prefs.locale);
-  const t = createTranslator(msgs);
-
   const preferences = await getUserPreferences();
-  const commitSha = (process.env.VERCEL_GIT_COMMIT_SHA ?? "local").slice(0, 7);
+  const messages    = await getMessages(preferences.locale);
+  const t           = createTranslator(messages);
+  const commitSha   = (process.env.VERCEL_GIT_COMMIT_SHA ?? "local").slice(0, 7);
+
   return (
     <footer className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 pt-12 sm:pt-16 pb-10 sm:pb-12">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
+
           {/* Brand */}
           <div>
             <Link href="/" className="flex items-center gap-2.5">
@@ -37,39 +37,39 @@ export async function Footer() {
           </div>
 
           {/* Product */}
-          <FootCol title="Product" links={[
-            { l: "Pricing",      h: "/pricing" },
-            { l: "Changelog",    h: "/changelog" },
-            { l: "Customers",    h: "/customers" },
-            { l: "Security",     h: "/security" },
-            { l: "Compliance",   h: "/compliance" },
+          <FootCol title={t("landing.footer.colProduct")} links={[
+            { l: t("landing.footer.linkPricing"),   h: "/pricing" },
+            { l: t("landing.footer.linkChangelog"),  h: "/changelog" },
+            { l: t("landing.footer.linkCustomers"),  h: "/customers" },
+            { l: t("landing.footer.linkSecurity"),   h: "/security" },
+            { l: t("landing.footer.linkCompliance"), h: "/compliance" },
           ]} />
 
           {/* Docs */}
-          <FootCol title="Docs" links={[
-            { l: "Get started",    h: "/docs/install" },
-            { l: "First review",   h: "/docs/first-review" },
-            { l: "Cost analysis",  h: "/docs/cost" },
-            { l: "Drift detection",h: "/docs/drift" },
-            { l: "Memory",         h: "/docs/memory" },
-            { l: "Policies",       h: "/docs/policies" },
-            { l: "API reference",  h: "/docs/api" },
-            { l: "Webhooks",       h: "/docs/webhooks" },
+          <FootCol title={t("landing.footer.colDocs")} links={[
+            { l: t("landing.footer.linkGetStarted"),  h: "/docs/install" },
+            { l: t("landing.footer.linkFirstReview"), h: "/docs/first-review" },
+            { l: t("landing.footer.linkCost"),        h: "/docs/cost" },
+            { l: t("landing.footer.linkDrift"),       h: "/docs/drift" },
+            { l: t("landing.footer.linkMemory"),      h: "/docs/memory" },
+            { l: t("landing.footer.linkPolicies"),    h: "/docs/policies" },
+            { l: t("landing.footer.linkApiRef"),      h: "/docs/api" },
+            { l: t("landing.footer.linkWebhooks"),    h: "/docs/webhooks" },
           ]} />
 
           {/* Company */}
-          <FootCol title="Company" links={[
-            { l: "Careers",  h: "/careers" },
-            { l: "Status",   h: "/status" },
-            { l: "GitHub",   h: "https://github.com/UP2CLOUD/driftguard" },
+          <FootCol title={t("landing.footer.colCompany")} links={[
+            { l: t("landing.footer.linkCareers"), h: "/careers" },
+            { l: t("landing.footer.linkStatus"),  h: "/status" },
+            { l: "GitHub", h: "https://github.com/UP2CLOUD/driftguard" },
           ]} />
 
           {/* Legal */}
-          <FootCol title="Legal" links={[
-            { l: "Privacy",       h: "/privacy" },
-            { l: "Terms",         h: "/terms" },
-            { l: "DPA",           h: "/dpa" },
-            { l: "Subprocessors", h: "/subprocessors" },
+          <FootCol title={t("landing.footer.colLegal")} links={[
+            { l: t("landing.footer.linkPrivacy"), h: "/privacy" },
+            { l: t("landing.footer.linkTerms"),   h: "/terms" },
+            { l: t("landing.footer.linkDpa"),     h: "/dpa" },
+            { l: t("landing.footer.linkSubproc"), h: "/subprocessors" },
           ]} />
         </div>
       </div>

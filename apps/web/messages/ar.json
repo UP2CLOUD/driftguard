@@ -12,7 +12,12 @@
     "policies": "السياسات",
     "memory": "الذاكرة",
     "overview": "نظرة عامة",
-    "signOutShort": "تسجيل الخروج"
+    "signOutShort": "تسجيل الخروج",
+    "product": "المنتج",
+    "architecture": "البنية",
+    "integrate": "التكامل",
+    "docs": "التوثيق",
+    "menuLabel": "القائمة"
   },
   "auth": {
     "goToDashboard": "الانتقال إلى لوحة التحكم →",
@@ -227,7 +232,27 @@
       "gdpr": "متوافق مع GDPR",
       "colProduct": "المنتج",
       "colCompany": "الشركة",
-      "colLegal": "قانوني"
+      "colLegal": "قانوني",
+      "colDocs": "التوثيق",
+      "linkPricing": "الأسعار",
+      "linkChangelog": "التغييرات",
+      "linkCustomers": "العملاء",
+      "linkSecurity": "الأمان",
+      "linkCompliance": "الامتثال",
+      "linkGetStarted": "ابدأ",
+      "linkFirstReview": "أول مراجعة",
+      "linkCost": "تحليل التكلفة",
+      "linkDrift": "كشف الانجراف",
+      "linkMemory": "الذاكرة",
+      "linkPolicies": "السياسات",
+      "linkApiRef": "مرجع API",
+      "linkWebhooks": "Webhooks",
+      "linkCareers": "وظائف",
+      "linkStatus": "الحالة",
+      "linkPrivacy": "الخصوصية",
+      "linkTerms": "الشروط",
+      "linkDpa": "DPA",
+      "linkSubproc": "المعالجون الفرعيون"
     },
     "incidents": {
       "sectionTitle": "كل PR للوكيل. كل ملّي ثانية.",

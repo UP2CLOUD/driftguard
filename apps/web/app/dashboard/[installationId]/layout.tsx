@@ -60,6 +60,7 @@ export default async function DashboardLayout({
         openIncidents={openIncidents}
         labels={{
           overview:  t("nav.overview")  ?? "Overview",
+          docs:      t("nav.docs")      ?? "Docs",
           repos:     t("nav.repos")     ?? "Repos",
           incidents: t("nav.incidents") ?? "Incidents",
           policies:  t("nav.policies")  ?? "Policies",

@@ -12,7 +12,12 @@
     "policies": "Policies",
     "memory": "Memory",
     "overview": "Overview",
-    "signOutShort": "Sign out"
+    "signOutShort": "Sign out",
+    "product": "Product",
+    "architecture": "Architecture",
+    "integrate": "Integrate",
+    "docs": "Docs",
+    "menuLabel": "Menu"
   },
   "auth": {
     "goToDashboard": "Go to Dashboard →",
@@ -227,7 +232,27 @@
       "gdpr": "GDPR‑native",
       "colProduct": "Product",
       "colCompany": "Company",
-      "colLegal": "Legal"
+      "colLegal": "Legal",
+      "colDocs": "Docs",
+      "linkPricing": "Pricing",
+      "linkChangelog": "Changelog",
+      "linkCustomers": "Customers",
+      "linkSecurity": "Security",
+      "linkCompliance": "Compliance",
+      "linkGetStarted": "Get started",
+      "linkFirstReview": "First review",
+      "linkCost": "Cost analysis",
+      "linkDrift": "Drift detection",
+      "linkMemory": "Memory",
+      "linkPolicies": "Policies",
+      "linkApiRef": "API reference",
+      "linkWebhooks": "Webhooks",
+      "linkCareers": "Careers",
+      "linkStatus": "Status",
+      "linkPrivacy": "Privacy",
+      "linkTerms": "Terms",
+      "linkDpa": "DPA",
+      "linkSubproc": "Subprocessors"
     },
     "incidents": {
       "sectionTitle": "Every agent PR. Every millisecond.",

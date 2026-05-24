@@ -1,17 +1,8 @@
 "use client";
 
 import { useT } from "@/components/TranslationProvider";
-
 import Link from "next/link";
 import { useState, useEffect } from "react";
-
-const LINKS = [
-  { href: "/#product", label: "Product" },
-  { href: "/#architecture", label: "Architecture" },
-  { href: "/#integrate", label: "Integrate" },
-  { href: "/#pricing", label: "Pricing" },
-  { href: "/docs", label: "Docs" },
-];
 
 export function MarketingNav({
   isLoggedIn,
@@ -23,6 +14,15 @@ export function MarketingNav({
   const t = useT();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+
+  // Build links inside component so t() is in scope
+  const LINKS = [
+    { href: "/#product",      label: t("nav.product") },
+    { href: "/#architecture", label: t("nav.architecture") },
+    { href: "/#integrate",    label: t("nav.integrate") },
+    { href: "/#pricing",      label: t("nav.pricing") },
+    { href: "/docs",          label: t("nav.docs") },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -53,6 +53,8 @@ export function MarketingNav({
               driftguard
             </span>
           </Link>
+
+          {/* Desktop nav links */}
           <div className="hidden md:flex items-center gap-7 text-[13px] text-[color:var(--dg-fg-muted)]">
             {LINKS.map((l) => (
               <Link key={l.href} href={l.href} className="hover:text-[color:var(--dg-fg)] transition">
@@ -63,6 +65,7 @@ export function MarketingNav({
         </div>
 
         <div className="flex items-center gap-3">
+          {/* GitHub star */}
           <a
             href="https://github.com/UP2CLOUD/driftguard"
             target="_blank"
@@ -77,16 +80,16 @@ export function MarketingNav({
 
           {isLoggedIn ? (
             <Link href="/dashboard" className="dg-button dg-button-ghost text-[12px] sm:text-[13px]">
-              Dashboard →
+              {t("landing.nav.dashboard")}
             </Link>
           ) : (
-            /* cta slot — server-rendered SignInButton passed from page.tsx */
             cta
           )}
 
+          {/* Hamburger */}
           <button
             onClick={() => setOpen(!open)}
-            aria-label="Menu"
+            aria-label={t("nav.menuLabel")}
             className="md:hidden flex flex-col items-center justify-center gap-1 p-2 -mr-2"
           >
             <span className={`h-px w-4 bg-[color:var(--dg-fg)] transition-transform duration-200 ${open ? "translate-y-[3px] rotate-45" : ""}`} />
@@ -95,6 +98,7 @@ export function MarketingNav({
         </div>
       </div>
 
+      {/* Mobile menu */}
       {open && (
         <div className="md:hidden border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]/95 backdrop-blur">
           <div className="flex flex-col px-4 py-3 text-[14px]">

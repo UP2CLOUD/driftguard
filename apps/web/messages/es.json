@@ -12,7 +12,12 @@
     "policies": "Políticas",
     "memory": "Memoria",
     "overview": "Resumen",
-    "signOutShort": "Cerrar sesión"
+    "signOutShort": "Cerrar sesión",
+    "product": "Producto",
+    "architecture": "Arquitectura",
+    "integrate": "Integrar",
+    "docs": "Docs",
+    "menuLabel": "Menú"
   },
   "auth": {
     "goToDashboard": "Ir al panel →",
@@ -227,7 +232,27 @@
       "gdpr": "RGPD‑nativo",
       "colProduct": "Producto",
       "colCompany": "Empresa",
-      "colLegal": "Legal"
+      "colLegal": "Legal",
+      "colDocs": "Docs",
+      "linkPricing": "Precios",
+      "linkChangelog": "Changelog",
+      "linkCustomers": "Clientes",
+      "linkSecurity": "Seguridad",
+      "linkCompliance": "Cumplimiento",
+      "linkGetStarted": "Empezar",
+      "linkFirstReview": "Primera revisión",
+      "linkCost": "Análisis de coste",
+      "linkDrift": "Detección de drift",
+      "linkMemory": "Memoria",
+      "linkPolicies": "Políticas",
+      "linkApiRef": "Referencia API",
+      "linkWebhooks": "Webhooks",
+      "linkCareers": "Carreras",
+      "linkStatus": "Estado",
+      "linkPrivacy": "Privacidad",
+      "linkTerms": "Términos",
+      "linkDpa": "DPA",
+      "linkSubproc": "Subprocesadores"
     },
     "incidents": {
       "sectionTitle": "Cada PR de agente. Cada milisegundo.",

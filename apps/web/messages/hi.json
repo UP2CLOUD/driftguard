@@ -12,7 +12,12 @@
     "policies": "नीतियां",
     "memory": "स्मृति",
     "overview": "अवलोकन",
-    "signOutShort": "साइन आउट"
+    "signOutShort": "साइन आउट",
+    "product": "उत्पाद",
+    "architecture": "आर्किटेक्चर",
+    "integrate": "एकीकृत करें",
+    "docs": "डॉक्स",
+    "menuLabel": "मेनू"
   },
   "auth": {
     "goToDashboard": "डैशबोर्ड पर जाएँ →",
@@ -227,7 +232,27 @@
       "gdpr": "GDPR‑अनुपालित",
       "colProduct": "उत्पाद",
       "colCompany": "कंपनी",
-      "colLegal": "कानूनी"
+      "colLegal": "कानूनी",
+      "colDocs": "डॉक्स",
+      "linkPricing": "मूल्य",
+      "linkChangelog": "Changelog",
+      "linkCustomers": "ग्राहक",
+      "linkSecurity": "सुरक्षा",
+      "linkCompliance": "अनुपालन",
+      "linkGetStarted": "शुरू करें",
+      "linkFirstReview": "पहली समीक्षा",
+      "linkCost": "लागत विश्लेषण",
+      "linkDrift": "ड्रिफ्ट डिटेक्शन",
+      "linkMemory": "स्मृति",
+      "linkPolicies": "नीतियाँ",
+      "linkApiRef": "API संदर्भ",
+      "linkWebhooks": "Webhooks",
+      "linkCareers": "करियर",
+      "linkStatus": "स्थिति",
+      "linkPrivacy": "गोपनीयता",
+      "linkTerms": "नियम",
+      "linkDpa": "DPA",
+      "linkSubproc": "उप-प्रोसेसर"
     },
     "incidents": {
       "sectionTitle": "प्रत्येक एजेंट PR। प्रत्येक मिलीसेकंड।",
