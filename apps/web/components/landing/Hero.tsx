@@ -1,9 +1,89 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { useT } from "@/components/TranslationProvider";
-
 import { LiveTerminal } from "./LiveTerminal";
 import Link from "next/link";
+
+// ── Typewriter hook ───────────────────────────────────────────────────────────
+
+function useTypewriter(lines: string[], { speed = 48, pause = 380 } = {}) {
+  const [displayed, setDisplayed] = useState<[string, string]>(["", ""]);
+  const [done, setDone] = useState(false);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    // Respect prefers-reduced-motion — show full text immediately
+    if (typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDisplayed([lines[0] ?? "", lines[1] ?? ""]);
+      setDone(true);
+      return;
+    }
+
+    // Reset when lines change (locale switch)
+    setDisplayed(["", ""]);
+    setDone(false);
+
+    const [line1, line2] = lines;
+    let cancelled = false;
+
+    const delay = (ms: number) => new Promise<void>((r) => {
+      const id = setTimeout(r, ms);
+      // store for cleanup
+      (delay as any)._last = id;
+    });
+
+    async function animate() {
+      // Type line 1
+      for (let i = 1; i <= line1.length; i++) {
+        if (cancelled) return;
+        setDisplayed([line1.slice(0, i), ""]);
+        await delay(speed);
+      }
+      if (cancelled) return;
+
+      // Pause before line 2
+      await delay(pause);
+      if (cancelled) return;
+
+      // Type line 2
+      for (let i = 1; i <= line2.length; i++) {
+        if (cancelled) return;
+        setDisplayed([line1, line2.slice(0, i)]);
+        await delay(speed);
+      }
+      if (!cancelled) setDone(true);
+    }
+
+    animate();
+
+    return () => {
+      cancelled = true;
+      clearTimeout((delay as any)._last);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lines[0], lines[1]]);
+
+  return { displayed, done };
+}
+
+// ── Cursor ────────────────────────────────────────────────────────────────────
+
+function Cursor({ visible }: { visible: boolean }) {
+  if (!visible) return null;
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-block w-[2px] h-[0.85em] bg-[color:var(--dg-electric)]
+        align-middle ml-[2px] relative top-[-1px]
+        animate-[dg-cursor_1s_step-end_infinite]"
+    />
+  );
+}
+
+// ── Hero ──────────────────────────────────────────────────────────────────────
 
 export function Hero({
   ctaPrimary,
@@ -13,11 +93,20 @@ export function Hero({
   ctaSecondary?: React.ReactNode;
 }) {
   const t = useT();
+
+  const line1 = t("landing.hero.line1");
+  const line2 = t("landing.hero.line2");
+
+  const { displayed, done } = useTypewriter([line1, line2], { speed: 44, pause: 340 });
+
+  const showLine2Cursor = !done && displayed[0] === line1;
+  const showEndCursor  = !done && displayed[0] === line1 && displayed[1].length > 0;
+
   return (
     <section className="relative overflow-hidden border-b border-[color:var(--dg-border)] dg-grid dg-vignette">
       <div className="dg-grain absolute inset-0 pointer-events-none" />
 
-      {/* Spotlight — contained by overflow-hidden */}
+      {/* Spotlight */}
       <div
         className="pointer-events-none absolute -top-32 left-1/2 h-[600px] w-[900px] -translate-x-1/2
           bg-[radial-gradient(closest-side,rgba(63,140,255,0.08),transparent_70%)]"
@@ -26,7 +115,7 @@ export function Hero({
       <div className="relative mx-auto grid max-w-[1400px] gap-10 px-4 sm:px-6 py-14 sm:py-20
         lg:grid-cols-[1fr_1.15fr] lg:gap-16 lg:py-28">
 
-        {/* ── Left: copy ─────────────────────────────────────── */}
+        {/* ── Left: copy ───────────────────────────────────── */}
         <div className="relative flex flex-col justify-center min-w-0 w-full">
 
           {/* Badge */}
@@ -42,12 +131,52 @@ export function Hero({
             </span>
           </div>
 
-          {/* Headline — each line explicit to prevent inline gradient overflow */}
-          <h1 className="font-sans font-semibold leading-[1.1] tracking-[-0.02em] text-[color:var(--dg-fg)]
-            text-[28px] sm:text-[38px] md:text-[46px] lg:text-[54px]">
-            <span className="block">{t("landing.hero.line1")}</span>
-            <span className="block bg-gradient-to-r from-[color:var(--dg-electric)] via-[color:var(--dg-electric-bright)] to-[color:var(--dg-cyan)] bg-clip-text text-transparent">
-              We make sure they ship safer.
+          {/* ── Headline with typewriter ───────────────────── */}
+          <h1
+            className="font-sans font-semibold leading-[1.15] tracking-[-0.02em]
+              text-[28px] sm:text-[38px] md:text-[46px] lg:text-[54px]"
+            /*
+             * aria-label uses the full text for screen readers —
+             * the visible content is animated but the label is always complete.
+             */
+            aria-label={`${line1} ${line2}`}
+          >
+            {/* Line 1 — plain white */}
+            <span className="block relative" aria-hidden="true">
+              {/* Invisible reserve — prevents layout shift as text types */}
+              <span className="invisible whitespace-pre-wrap break-words" aria-hidden="true">
+                {line1}
+              </span>
+              {/* Animated overlay */}
+              <span className="absolute inset-0 text-[color:var(--dg-fg)] whitespace-pre-wrap break-words">
+                {displayed[0]}
+                {/* Cursor on line 1 while line 2 hasn't started */}
+                {!done && displayed[1] === "" && (
+                  <Cursor visible={true} />
+                )}
+              </span>
+            </span>
+
+            {/* Line 2 — gradient */}
+            <span className="block relative" aria-hidden="true">
+              {/* Reserve */}
+              <span
+                className="invisible whitespace-pre-wrap break-words
+                  bg-gradient-to-r from-[color:var(--dg-electric)] via-[color:var(--dg-electric-bright)]
+                  to-[color:var(--dg-cyan)] bg-clip-text text-transparent"
+                aria-hidden="true"
+              >
+                {line2}
+              </span>
+              {/* Animated overlay */}
+              <span
+                className="absolute inset-0 whitespace-pre-wrap break-words
+                  bg-gradient-to-r from-[color:var(--dg-electric)] via-[color:var(--dg-electric-bright)]
+                  to-[color:var(--dg-cyan)] bg-clip-text text-transparent"
+              >
+                {displayed[1]}
+                <Cursor visible={showEndCursor || (!done && showLine2Cursor)} />
+              </span>
             </span>
           </h1>
 
@@ -62,7 +191,7 @@ export function Hero({
             — and remember every failure so your agents stop making the same mistake twice.
           </p>
 
-          {/* Terminal snippet — hidden on smallest screens, visible sm+ */}
+          {/* Config snippet */}
           <div className="mt-6 hidden xs:flex sm:flex items-center gap-2 rounded-lg border
             border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] px-3 py-2.5
             w-fit max-w-full overflow-hidden">
@@ -94,7 +223,7 @@ export function Hero({
           </div>
         </div>
 
-        {/* ── Right: live terminal (hidden on mobile, shown lg+) ─ */}
+        {/* ── Right: live terminal (hidden mobile) ─────────── */}
         <div className="relative hidden lg:flex items-center">
           <div className="w-full">
             <LiveTerminal />
