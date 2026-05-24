@@ -16,8 +16,9 @@
     "product": "उत्पाद",
     "architecture": "आर्किटेक्चर",
     "integrate": "एकीकृत करें",
-    "docs": "डॉक्स",
-    "menuLabel": "मेनू"
+    "docs": "दस्तावेज़",
+    "menuLabel": "मेनू",
+    "howItWorks": "▸ कैसे काम करता है"
   },
   "auth": {
     "goToDashboard": "डैशबोर्ड पर जाएँ →",
@@ -63,7 +64,9 @@
   },
   "footer": {
     "privacy": "गोपनीयता",
-    "terms": "शर्तें"
+    "terms": "शर्तें",
+    "tagline": "रनटाइम सुरक्षा + सिमेंटिक मेमोरी। स्वायत्त इन्फ्रा एजेंटों के लिए निर्मित।",
+    "version": "v0.1.0‑beta"
   },
   "notFound": {
     "code": "404",
@@ -487,5 +490,30 @@
     "ogTitle": "DriftGuard — Terraform एजेंट के लिए AI रनटाइम सुरक्षा",
     "ogDesc": "लागत · drift · सुरक्षा · अनुपालन — हर Terraform PR पर।",
     "twitterDesc": "Terraform एजेंट के लिए AI रनटाइम सुरक्षा।"
+  },
+  "hero": {
+    "badge": "v0.1.0-beta · अर्ली एक्सेस",
+    "costSurprises": "लागत की चौंक",
+    "drift": "drift",
+    "securityMisconfigs": "सुरक्षा गलत-कॉन्फ़िग",
+    "complianceGaps": "अनुपालन अंतराल",
+    "configLabel": "# driftguard.yml",
+    "configBlock": "ब्लॉक:",
+    "configResource": "aws_rds.*.delete",
+    "howItWorks": "▸ कैसे काम करता है",
+    "terminalLabel": "fig 01 ▸ रनटाइम सुपरवाइज़र (लाइव)",
+    "terminalRefresh": "ऑटो‑रिफ्रेश ▪ 1.4s",
+    "statP99": "P99",
+    "statMemory": "मेमोरी",
+    "statCompliance": "अनुपालन",
+    "statMemorySub": "सिमेंटिक",
+    "statComplianceSub": "NIS2 · ISO",
+    "subText": "DriftGuard हर Terraform और OpenTofu PR की समीक्षा करता है — मनुष्यों या AI एजेंटों द्वारा लिखा गया। हम {cost}, {drift}, {security} और {compliance} पकड़ते हैं।"
+  },
+  "cta": {
+    "headline": "अपनी cloud पर नियंत्रण वापस लें।",
+    "readDocs": "दस्तावेज़ पढ़ें →",
+    "otuCompatible": "OpenTofu संगत",
+    "noCodeChange": "कोई कोड परिवर्तन नहीं"
   }
 }

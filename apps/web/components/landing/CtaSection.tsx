@@ -2,59 +2,38 @@
 
 import { useT } from "@/components/TranslationProvider";
 
-import Link from "next/link";
-
 export function CtaSection({
   cta,
-  title,
-  subtitle,
-  readDocsLabel,
 }: {
   cta: React.ReactNode;
-  title?: string;
-  subtitle?: string;
-  readDocsLabel?: string;
 }) {
   const t = useT();
+
   return (
-    <section className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-20 sm:py-28 overflow-hidden">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
-        {/* Glow */}
-        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 h-64 w-[600px] bg-[radial-gradient(closest-side,rgba(63,140,255,0.12),transparent_80%)]" />
-
-        <div className="relative text-center">
-          <div className="dg-label mb-4">{t("landing.cta.headline")}</div>
-          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[color:var(--dg-fg)] mb-6">
-            {title ?? "Regain control of your cloud."}
+    <section id="waitlist" className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-16 sm:py-24">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="font-sans text-3xl sm:text-4xl font-semibold tracking-tight text-[color:var(--dg-fg)] mb-6">
+            {t("cta.headline")}
           </h2>
-          <p className="text-[14px] sm:text-[15px] text-[color:var(--dg-fg-muted)] max-w-xl mx-auto mb-10">
-            {subtitle ?? "Install in 30 seconds. No credit card required. Works with GitHub, AWS, OpenTofu, and any Terraform-compatible toolchain."}
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
+          <div className="flex flex-wrap justify-center gap-3 mb-6">
             {cta}
-            <Link
-              href="/docs/install"
+            <a
+              href="/docs"
               className="dg-button dg-button-ghost text-[13px]"
             >
-              {readDocsLabel ?? "Read the docs →"}
-            </Link>
+              {t("cta.readDocs")}
+            </a>
           </div>
-
-          {/* Trust signals */}
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-            {[
-              "EU data residency",
-              "SOC 2 Type II Q4 2026",
-              "GDPR-native",
-              "OpenTofu compatible",
-              "No code changes",
-            ].map((t) => (
-              <span key={t} className="flex items-center gap-2">
-                <span className="text-allowed">✓</span>
-                {t}
-              </span>
-            ))}
+          <div className="flex flex-wrap justify-center gap-4 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+            <span className="flex items-center gap-1.5">
+              <span className="h-1 w-1 rounded-full bg-allowed" />
+              {t("cta.otuCompatible")}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-1 w-1 rounded-full bg-[color:var(--dg-electric)]" />
+              {t("cta.noCodeChange")}
+            </span>
           </div>
         </div>
       </div>

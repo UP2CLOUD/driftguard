@@ -98,9 +98,6 @@ export default async function Page() {
 
       {/* 11. CTA */}
       <CtaSection
-        title={t("landing.ctaTitle") || undefined}
-        subtitle={t("landing.ctaSubtitle") || undefined}
-        readDocsLabel={t("landing.ctaReadDocs") || undefined}
         cta={
           <SignInButton className="dg-button dg-button-primary text-[14px] px-6 py-3">
             {t("landing.ctaButton") ?? "Install GitHub App — free"}

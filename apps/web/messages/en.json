@@ -17,7 +17,8 @@
     "architecture": "Architecture",
     "integrate": "Integrate",
     "docs": "Docs",
-    "menuLabel": "Menu"
+    "menuLabel": "Menu",
+    "howItWorks": "▸ how it works"
   },
   "auth": {
     "goToDashboard": "Go to Dashboard →",
@@ -63,7 +64,9 @@
   },
   "footer": {
     "privacy": "Privacy",
-    "terms": "Terms"
+    "terms": "Terms",
+    "tagline": "AI runtime safety + semantic memory. Built for autonomous infrastructure agents.",
+    "version": "v0.1.0‑beta"
   },
   "notFound": {
     "code": "404",
@@ -487,5 +490,30 @@
     "ogTitle": "DriftGuard — AI runtime safety for Terraform agents",
     "ogDesc": "Cost · drift · security · compliance on every Terraform PR. Memory prevents repeat incidents.",
     "twitterDesc": "AI runtime safety for Terraform agents."
+  },
+  "hero": {
+    "badge": "v0.1.0-beta · Now in early access",
+    "costSurprises": "cost surprises",
+    "drift": "drift",
+    "securityMisconfigs": "security misconfigs",
+    "complianceGaps": "compliance gaps",
+    "configLabel": "# driftguard.yml",
+    "configBlock": "block:",
+    "configResource": "aws_rds.*.delete",
+    "howItWorks": "▸ how it works",
+    "terminalLabel": "fig 01 ▸ runtime supervisor (live)",
+    "terminalRefresh": "auto‑refresh ▪ 1.4s",
+    "statP99": "P99",
+    "statMemory": "Memory",
+    "statCompliance": "Compliance",
+    "statMemorySub": "semantic",
+    "statComplianceSub": "NIS2 · ISO",
+    "subText": "DriftGuard reviews every Terraform & OpenTofu PR — written by humans or AI agents. We catch {cost}, {drift}, {security}, and {compliance} — and remember every failure so your agents stop making the same mistake twice."
+  },
+  "cta": {
+    "headline": "Regain control of your cloud.",
+    "readDocs": "Read the docs →",
+    "otuCompatible": "OpenTofu compatible",
+    "noCodeChange": "No code changes"
   }
 }

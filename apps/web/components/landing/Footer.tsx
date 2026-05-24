@@ -87,7 +87,7 @@ export async function Footer() {
           <div className="flex items-center gap-4">
             <LocaleSwitcher initialPreferences={preferences} compact />
             <span className="opacity-50">●</span>
-            <span>v0.1.0‑beta</span>
+            <span>{t("footer.version")}</span>
             <span className="opacity-50">●</span>
             <span>commit {commitSha}</span>
           </div>

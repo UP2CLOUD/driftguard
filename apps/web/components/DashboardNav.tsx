@@ -83,7 +83,7 @@ export function DashboardNav({
             href="/docs"
             className="hidden sm:inline font-mono text-[11px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
           >
-            Docs
+            {l("docs", "Docs")}
           </Link>
           <form action={signOutToHome}>
             <button type="submit" className="dg-button dg-button-ghost text-[11px] py-1.5 gap-1.5">

@@ -17,7 +17,8 @@
     "architecture": "Arquitectura",
     "integrate": "Integrar",
     "docs": "Docs",
-    "menuLabel": "Menú"
+    "menuLabel": "Menú",
+    "howItWorks": "▸ cómo funciona"
   },
   "auth": {
     "goToDashboard": "Ir al panel →",
@@ -63,7 +64,9 @@
   },
   "footer": {
     "privacy": "Privacidad",
-    "terms": "Términos"
+    "terms": "Términos",
+    "tagline": "Seguridad de runtime + memoria semántica. Construido para agentes de infra autónomos.",
+    "version": "v0.1.0‑beta"
   },
   "notFound": {
     "code": "404",
@@ -487,5 +490,30 @@
     "ogTitle": "DriftGuard — Seguridad en tiempo de ejecución para agentes Terraform",
     "ogDesc": "Coste · drift · seguridad · cumplimiento en cada PR de Terraform.",
     "twitterDesc": "Seguridad en tiempo de ejecución para agentes Terraform."
+  },
+  "hero": {
+    "badge": "v0.1.0-beta · Acceso anticipado",
+    "costSurprises": "costes inesperados",
+    "drift": "drift",
+    "securityMisconfigs": "misconfig de seguridad",
+    "complianceGaps": "brechas de cumplimiento",
+    "configLabel": "# driftguard.yml",
+    "configBlock": "bloquear:",
+    "configResource": "aws_rds.*.delete",
+    "howItWorks": "▸ cómo funciona",
+    "terminalLabel": "fig 01 ▸ supervisor de runtime (en vivo)",
+    "terminalRefresh": "auto‑actualiza ▪ 1.4s",
+    "statP99": "P99",
+    "statMemory": "Memoria",
+    "statCompliance": "Cumplimiento",
+    "statMemorySub": "semántica",
+    "statComplianceSub": "NIS2 · ISO",
+    "subText": "DriftGuard revisa cada PR de Terraform y OpenTofu — escrito por humanos o agentes IA. Detectamos {cost}, {drift}, {security} y {compliance} — y recordamos cada fallo para que tus agentes no repitan los mismos errores."
+  },
+  "cta": {
+    "headline": "Recupera el control de tu cloud.",
+    "readDocs": "Leer la documentación →",
+    "otuCompatible": "Compatible con OpenTofu",
+    "noCodeChange": "Sin cambios de código"
   }
 }

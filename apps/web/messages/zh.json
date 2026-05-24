@@ -17,7 +17,8 @@
     "architecture": "架构",
     "integrate": "集成",
     "docs": "文档",
-    "menuLabel": "菜单"
+    "menuLabel": "菜单",
+    "howItWorks": "▸ 工作原理"
   },
   "auth": {
     "goToDashboard": "前往控制台 →",
@@ -63,7 +64,9 @@
   },
   "footer": {
     "privacy": "隐私",
-    "terms": "条款"
+    "terms": "条款",
+    "tagline": "运行时安全 + 语义记忆。专为自主基础设施代理构建。",
+    "version": "v0.1.0‑beta"
   },
   "notFound": {
     "code": "404",
@@ -487,5 +490,30 @@
     "ogTitle": "DriftGuard — Terraform AI 代理运行时安全",
     "ogDesc": "成本 · 漂移 · 安全 · 合规，覆盖每个 Terraform PR。",
     "twitterDesc": "Terraform AI 代理运行时安全。"
+  },
+  "hero": {
+    "badge": "v0.1.0-beta · 早期访问",
+    "costSurprises": "成本意外",
+    "drift": "漂移",
+    "securityMisconfigs": "安全错误配置",
+    "complianceGaps": "合规漏洞",
+    "configLabel": "# driftguard.yml",
+    "configBlock": "阻断:",
+    "configResource": "aws_rds.*.delete",
+    "howItWorks": "▸ 工作原理",
+    "terminalLabel": "图 01 ▸ 运行时监控（实时）",
+    "terminalRefresh": "自动刷新 ▪ 1.4s",
+    "statP99": "P99",
+    "statMemory": "记忆",
+    "statCompliance": "合规",
+    "statMemorySub": "语义",
+    "statComplianceSub": "NIS2 · ISO",
+    "subText": "DriftGuard 审查每个 Terraform 和 OpenTofu PR — 无论是人类还是 AI 代理编写的。我们发现{cost}、{drift}、{security}和{compliance} — 并记住每次失败，让你的代理不再重蹈覆辙。"
+  },
+  "cta": {
+    "headline": "重新掌控你的云。",
+    "readDocs": "阅读文档 →",
+    "otuCompatible": "兼容 OpenTofu",
+    "noCodeChange": "无需修改代码"
   }
 }

@@ -17,7 +17,8 @@
     "architecture": "البنية",
     "integrate": "التكامل",
     "docs": "التوثيق",
-    "menuLabel": "القائمة"
+    "menuLabel": "القائمة",
+    "howItWorks": "▸ كيف يعمل"
   },
   "auth": {
     "goToDashboard": "الانتقال إلى لوحة التحكم →",
@@ -63,7 +64,9 @@
   },
   "footer": {
     "privacy": "الخصوصية",
-    "terms": "الشروط"
+    "terms": "الشروط",
+    "tagline": "أمان وقت التشغيل + الذاكرة الدلالية. مبني لوكلاء البنية التحتية المستقلين.",
+    "version": "v0.1.0‑beta"
   },
   "notFound": {
     "code": "404",
@@ -487,5 +490,30 @@
     "ogTitle": "DriftGuard — أمان وقت التشغيل للذكاء الاصطناعي لـ Terraform",
     "ogDesc": "تكلفة · انجراف · أمان · امتثال في كل PR من Terraform.",
     "twitterDesc": "أمان وقت التشغيل لوكلاء Terraform."
+  },
+  "hero": {
+    "badge": "v0.1.0-beta · وصول مبكر",
+    "costSurprises": "مفاجآت التكلفة",
+    "drift": "الانجراف",
+    "securityMisconfigs": "أخطاء الإعداد الأمني",
+    "complianceGaps": "ثغرات الامتثال",
+    "configLabel": "# driftguard.yml",
+    "configBlock": "حظر:",
+    "configResource": "aws_rds.*.delete",
+    "howItWorks": "▸ كيف يعمل",
+    "terminalLabel": "شكل 01 ▸ مشرف وقت التشغيل (مباشر)",
+    "terminalRefresh": "تحديث تلقائي ▪ 1.4s",
+    "statP99": "P99",
+    "statMemory": "الذاكرة",
+    "statCompliance": "الامتثال",
+    "statMemorySub": "دلالية",
+    "statComplianceSub": "NIS2 · ISO",
+    "subText": "يراجع DriftGuard كل PR من Terraform وOpenTofu — سواء كتبه البشر أو وكلاء الذكاء الاصطناعي. نكتشف {cost} و{drift} و{security} و{compliance}."
+  },
+  "cta": {
+    "headline": "استعد السيطرة على سحابتك.",
+    "readDocs": "اقرأ التوثيق ←",
+    "otuCompatible": "متوافق مع OpenTofu",
+    "noCodeChange": "بدون تغييرات في الكود"
   }
 }
