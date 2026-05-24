@@ -1,7 +1,5 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { auth } from "@/auth";
-import { SignInButton } from "@/components/SignInButton";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
@@ -18,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
     path:        "/docs",
     locale,
     title:       t("docs.meta.title")       || "Documentation — DriftGuard",
-    description: t("docs.meta.description") || "DriftGuard documentation: install guide, API reference, core concepts, integrations.",
+    description: t("docs.meta.description") || "DriftGuard documentation: install guide, API reference, core concepts.",
     keywords:    ["DriftGuard docs", "Terraform PR review docs", "infrastructure as code review"],
   });
 }
@@ -62,9 +60,9 @@ const SECTIONS = [
   {
     label: "Deploy",
     items: [
-      { t: "Self-hosted",            h: "/docs/self-host", desc: "Helm chart + container images" },
-      { t: "Cloud Run",              h: "/docs/cloud-run", desc: "Reference GCP deployment" },
-      { t: "Environment variables",  h: "/docs/env",       desc: "Full reference" },
+      { t: "Self-hosted",           h: "/docs/self-host", desc: "Helm chart + container images" },
+      { t: "Cloud Run",             h: "/docs/cloud-run", desc: "Reference GCP deployment" },
+      { t: "Environment variables", h: "/docs/env",       desc: "Full reference" },
     ],
   },
   {
@@ -90,8 +88,6 @@ compliance:
 # 3. Open a PR — DriftGuard comments with cost, security, compliance.`;
 
 export default async function DocsPage() {
-  const session = await auth();
-
   return (
     <MarketingPageShell>
       <div className="max-w-3xl">
@@ -112,7 +108,10 @@ export default async function DocsPage() {
         <pre className="overflow-x-auto p-5 font-mono text-[12.5px] leading-relaxed text-[color:var(--dg-fg)]">{QUICKSTART}</pre>
         <div className="border-t border-[color:var(--dg-border)] px-4 py-2.5 flex items-center justify-between font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
           <span>config.driftguard.yml ▪ committed to repo</span>
-          <a href="https://github.com/apps/driftguard-app/installations/new" className="text-[color:var(--dg-electric-bright)] hover:underline">▸ install now</a>
+          <a href="https://github.com/apps/driftguard-app/installations/new"
+            className="text-[color:var(--dg-electric-bright)] hover:underline">
+            ▸ install now
+          </a>
         </div>
       </div>
 
@@ -154,7 +153,8 @@ export default async function DocsPage() {
           <a href="mailto:support@driftguard.io" className="dg-button dg-button-ghost text-[12px]">
             support@driftguard.io
           </a>
-          <a href="https://github.com/UP2CLOUD/driftguard/issues" target="_blank" rel="noreferrer" className="dg-button dg-button-primary text-[12px]">
+          <a href="https://github.com/UP2CLOUD/driftguard/issues" target="_blank" rel="noreferrer"
+            className="dg-button dg-button-primary text-[12px]">
             GitHub issues →
           </a>
         </div>

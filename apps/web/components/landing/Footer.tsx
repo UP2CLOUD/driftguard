@@ -25,7 +25,7 @@ export async function Footer() {
               <span className="font-sans text-base font-semibold tracking-tight text-[color:var(--dg-fg)]">driftguard</span>
             </Link>
             <p className="mt-4 max-w-xs text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
-              AI runtime safety + semantic memory. Built for autonomous infrastructure agents.
+              {t("footer.tagline")}
             </p>
             <div className="mt-6 flex items-center gap-1.5">
               <span className="relative flex h-2 w-2 shrink-0">
