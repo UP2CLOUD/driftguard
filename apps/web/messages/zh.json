@@ -375,6 +375,10 @@
       "eyebrow": "文档 · 集成",
       "title": "出站 Webhooks",
       "subtitle": "在 Slack、Teams 或您自己的端点接收 DriftGuard 事件。"
+    },
+    "meta": {
+      "title": "文档 — DriftGuard",
+      "description": "安装指南、API 参考、核心概念和合规控制。"
     }
   },
   "status": {
@@ -463,7 +467,11 @@
   },
   "pricing": {
     "eyebrow": "价格",
-    "perRepo": "按仓库计费。年付节省 15%。"
+    "perRepo": "按仓库计费。年付节省 15%。",
+    "meta": {
+      "title": "定价 — DriftGuard",
+      "description": "免费计划、Team €29/仓库/月、Enterprise 定制。随时取消。"
+    }
   },
   "legal": {
     "languageNote": "本文件以英文提供以确保法律准确性，翻译仅供参考。",

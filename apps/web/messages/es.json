@@ -375,6 +375,10 @@
       "eyebrow": "Docs · Integraciones",
       "title": "Webhooks salientes",
       "subtitle": "Recibe eventos de DriftGuard en Slack, Teams o tu propio endpoint."
+    },
+    "meta": {
+      "title": "Documentación — DriftGuard",
+      "description": "Guía de instalación, referencia de API, conceptos principales y cumplimiento."
     }
   },
   "status": {
@@ -463,7 +467,11 @@
   },
   "pricing": {
     "eyebrow": "Precios",
-    "perRepo": "Por repo. Anual ahorra un 15%."
+    "perRepo": "Por repo. Anual ahorra un 15%.",
+    "meta": {
+      "title": "Precios — DriftGuard",
+      "description": "Plan Gratuito, Team €29/repo/mes, Enterprise personalizado. Sin tarjeta de crédito."
+    }
   },
   "legal": {
     "languageNote": "Este documento se proporciona en inglés por exactitud legal. Las traducciones son solo informativas.",

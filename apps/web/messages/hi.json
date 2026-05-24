@@ -375,6 +375,10 @@
       "eyebrow": "डॉक्स · एकीकरण",
       "title": "आउटबाउंड Webhooks",
       "subtitle": "Slack, Teams या अपने endpoint में DriftGuard इवेंट प्राप्त करें।"
+    },
+    "meta": {
+      "title": "दस्तावेज़ीकरण — DriftGuard",
+      "description": "इंस्टॉल गाइड, API संदर्भ, मुख्य अवधारणाएं और अनुपालन नियंत्रण।"
     }
   },
   "status": {
@@ -463,7 +467,11 @@
   },
   "pricing": {
     "eyebrow": "मूल्य निर्धारण",
-    "perRepo": "प्रति repo। वार्षिक पर 15% बचत।"
+    "perRepo": "प्रति repo। वार्षिक पर 15% बचत।",
+    "meta": {
+      "title": "मूल्य निर्धारण — DriftGuard",
+      "description": "निःशुल्क प्लान, Team €29/repo/माह, Enterprise कस्टम। कभी भी रद्द करें।"
+    }
   },
   "legal": {
     "languageNote": "यह दस्तावेज़ कानूनी सटीकता के लिए अंग्रेजी में प्रदान किया गया है। अनुवाद केवल सूचनात्मक हैं।",

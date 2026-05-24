@@ -5,20 +5,34 @@ import { MarketingNav } from "@/components/landing/MarketingNav";
 import { Footer } from "@/components/landing/Footer";
 import { Pricing } from "@/components/landing/Pricing";
 import type { Metadata } from "next";
-import { pageMeta, jsonLdFaq } from "@/lib/seo";
+import { localizedPageMeta, jsonLdFaq } from "@/lib/seo";
+import { getUserPreferences } from "@/lib/preferences/server";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+import { type Locale } from "@/i18n/config";
+import { TranslationProvider } from "@/components/TranslationProvider";
 import { JsonLd } from "@/components/JsonLd";
 
-export const metadata: Metadata = {
-  ...pageMeta({
-    title: "Pricing — DriftGuard",
-    description: "DriftGuard pricing: Free plan, Team €29/repo/month, Enterprise custom. No credit card required. Cancel anytime.",
-    path: "/pricing",
-    keywords: ["Terraform PR review pricing", "infrastructure security SaaS", "platform engineering tools"],
-  }),
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const prefs    = await getUserPreferences();
+  const locale   = prefs.locale as Locale;
+  const messages = await getMessages(locale);
+  const t        = createTranslator(messages);
+  return localizedPageMeta({
+    path:        "/pricing",
+    locale,
+    title:       t("pricing.meta.title")       || "Pricing — DriftGuard",
+    description: t("pricing.meta.description") || "DriftGuard pricing: Free plan, Team €29/repo/month, Enterprise custom.",
+    keywords:    ["Terraform PR review pricing", "infrastructure security SaaS", "platform engineering tools"],
+  });
+}
 
 export default async function PricingPage() {
-  const session = await auth();
+  const prefs    = await getUserPreferences();
+  const locale   = prefs.locale as Locale;
+  const messages = await getMessages(locale);
+
+    const session = await auth();
   const faqData = jsonLdFaq([
     { question: "Is DriftGuard free?", answer: "Yes. The Free plan allows unlimited reviews on public repositories. Team plan starts at €29/repo/month for private repos with advanced features." },
     { question: "Does DriftGuard work with OpenTofu?", answer: "Yes. DriftGuard supports any Terraform-compatible toolchain including OpenTofu, Terragrunt, and CDK for Terraform." },
