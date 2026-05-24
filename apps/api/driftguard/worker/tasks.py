@@ -191,3 +191,99 @@ async def _send_notification_async(analysis_id: str, repo_full_name: str, pr_num
             findings_count=findings_count,
             analysis_url=f"https://driftguard.io/dashboard/{org.github_installation_id}/analyses/{analysis_id}",
         )
+
+
+@celery_app.task(name="run_manual_scan", bind=True, max_retries=2, default_retry_delay=30)
+def run_manual_scan(
+    self,
+    *,
+    installation_id: int,
+    repo_full_name: str,
+    ref: str = "main",
+) -> dict:
+    """
+    Download a GitHub repo tarball and run the static scanner on it.
+    Persists results as Analysis + Finding rows.
+    No terraform binary or AWS credentials needed.
+    """
+    import asyncio
+    import io
+    import tarfile
+    import tempfile
+    from pathlib import Path
+
+    async def _run():
+
+        import httpx
+        from sqlalchemy import select
+        from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+        from sqlalchemy.orm import sessionmaker as _sm
+
+        from driftguard.api.v1.scans import _persist_scan
+        from driftguard.core.config import settings
+        from driftguard.db.models import Organization
+        from driftguard.services.scanner.engine import scan_directory
+
+        engine = create_async_engine(settings.database_url, echo=False)
+        async_session = _sm(engine, class_=AsyncSession, expire_on_commit=False)
+
+        async with async_session() as db:
+            org = (
+                await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
+            ).scalar_one_or_none()
+            if not org:
+                return {"status": "error", "reason": "org_not_found"}
+
+            # Download tarball
+            try:
+                from driftguard.integrations.github import installation_token, tarball_url
+
+                token = await installation_token(installation_id)
+                url = tarball_url(repo_full_name, ref)
+            except Exception:
+                # Fall back to public repo if no GitHub App configured
+                url = f"https://api.github.com/repos/{repo_full_name}/tarball/{ref}"
+                token = None
+
+            headers = {"Accept": "application/vnd.github+json"}
+            if token:
+                headers["Authorization"] = f"Bearer {token}"
+
+            async with httpx.AsyncClient(timeout=60, follow_redirects=True) as client:
+                resp = await client.get(url, headers=headers)
+                resp.raise_for_status()
+                archive = resp.content
+
+            # Extract and scan
+            with tempfile.TemporaryDirectory() as tmpdir:
+                root = Path(tmpdir)
+                try:
+                    with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as tf:
+                        safe = [m for m in tf.getmembers() if not m.name.startswith("/") and ".." not in m.name]
+                        tf.extractall(root, members=safe)  # noqa: S202
+                    # GitHub adds a top-level folder — unwrap it
+                    subdirs = [d for d in root.iterdir() if d.is_dir()]
+                    scan_root = subdirs[0] if len(subdirs) == 1 else root
+                except Exception as e:
+                    return {"status": "error", "reason": str(e)}
+
+                result = await scan_directory(scan_root)
+
+            analysis_id = await _persist_scan(
+                db=db,
+                org_id=org.id,
+                result=result,
+                source=f"{repo_full_name}@{ref}",
+                ref=ref,
+            )
+            return {
+                "status": "completed",
+                "analysis_id": analysis_id,
+                "risk_score": result.risk_score,
+                "findings": len(result.findings),
+            }
+
+    try:
+        return asyncio.run(_run())
+    except Exception as exc:
+        raise self.retry(exc=exc) from exc

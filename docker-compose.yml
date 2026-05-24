@@ -1,24 +1,140 @@
+# DriftGuard — full local development stack
+# Usage:
+#   cp .env.example .env        # fill in secrets
+#   docker compose up -d        # start everything
+#   docker compose logs -f api  # tail API logs
+#
+# Quickstart (no GitHub App needed):
+#   Use DEMO_MODE=true in .env to bypass GitHub OAuth
+#   Run: docker compose exec api uv run python -m driftguard.db.seed
+
+version: "3.9"
+
 services:
+
+  # ── Infrastructure ──────────────────────────────────────────────────────────
   postgres:
     image: postgres:16-alpine
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: driftguard
+      POSTGRES_USER:     driftguard
       POSTGRES_PASSWORD: driftguard
-      POSTGRES_DB: driftguard
+      POSTGRES_DB:       driftguard
     ports: ["5432:5432"]
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U driftguard"]
       interval: 5s
-      retries: 5
+      retries: 10
+      start_period: 10s
 
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
     ports: ["6379:6379"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
+      retries: 5
+
+  # ── API (FastAPI) ───────────────────────────────────────────────────────────
+  api:
+    build:
+      context: apps/api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis:    { condition: service_healthy }
+    ports: ["8000:8000"]
+    environment:
+      ENVIRONMENT:            ${ENVIRONMENT:-dev}
+      DATABASE_URL:           postgresql+asyncpg://driftguard:driftguard@postgres:5432/driftguard
+      REDIS_URL:              redis://redis:6379/0
+      SECRET_KEY:             ${SECRET_KEY:-dev-secret-key-change-in-production-!!}
+      ANTHROPIC_API_KEY:      ${ANTHROPIC_API_KEY:-}
+      GITHUB_APP_ID:          ${GITHUB_APP_ID:-}
+      GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY:-}
+      GITHUB_WEBHOOK_SECRET:  ${GITHUB_WEBHOOK_SECRET:-dev-webhook-secret}
+      DEMO_MODE:              ${DEMO_MODE:-false}
+      # CORS — allow web container + local dev
+      CORS_ORIGINS:           "http://localhost:3000,http://web:3000"
+    volumes:
+      # Hot reload for development
+      - ./apps/api/driftguard:/app/driftguard:ro
+    command: >
+      sh -c "
+        uv run alembic upgrade head &&
+        uvicorn driftguard.main:app
+          --host 0.0.0.0
+          --port 8000
+          --reload
+          --reload-dir /app/driftguard
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:8000/api/v1/health"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+
+  # ── Celery worker ───────────────────────────────────────────────────────────
+  worker:
+    build:
+      context: apps/api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis:    { condition: service_healthy }
+    environment:
+      DATABASE_URL:           postgresql+asyncpg://driftguard:driftguard@postgres:5432/driftguard
+      REDIS_URL:              redis://redis:6379/0
+      SECRET_KEY:             ${SECRET_KEY:-dev-secret-key-change-in-production-!!}
+      ANTHROPIC_API_KEY:      ${ANTHROPIC_API_KEY:-}
+      GITHUB_APP_ID:          ${GITHUB_APP_ID:-}
+      GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY:-}
+      ENVIRONMENT:            ${ENVIRONMENT:-dev}
+    volumes:
+      - ./apps/api/driftguard:/app/driftguard:ro
+    command: >
+      sh -c "
+        uv run celery -A driftguard.worker.app worker
+          --loglevel=info
+          --queues=default,analysis,notifications
+          --concurrency=2
+      "
+
+  # ── Next.js frontend ────────────────────────────────────────────────────────
+  web:
+    build:
+      context: apps/web
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      api: { condition: service_healthy }
+    ports: ["3000:3000"]
+    environment:
+      NEXT_PUBLIC_API_URL:              http://localhost:8000
+      NEXTAUTH_URL:                     ${NEXTAUTH_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET:                  ${AUTH_SECRET:-dev-nextauth-secret-change-in-production}
+      AUTH_SECRET:                      ${AUTH_SECRET:-dev-nextauth-secret-change-in-production}
+      AUTH_GITHUB_ID:                   ${AUTH_GITHUB_ID:-}
+      AUTH_GITHUB_SECRET:               ${AUTH_GITHUB_SECRET:-}
+      NEXT_PUBLIC_GITHUB_APP_SLUG:      ${GITHUB_APP_SLUG:-driftguard-dev}
+      NEXT_PUBLIC_GITHUB_APP_INSTALL_URL: ${GITHUB_APP_INSTALL_URL:-https://github.com/apps/driftguard-dev/installations/new}
+      SECRET_KEY:                       ${SECRET_KEY:-dev-secret-key-change-in-production-!!}
+
+  # ── Dev tools (optional) ────────────────────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    profiles: ["tools"]   # only starts with: docker compose --profile tools up
+    environment:
+      PGADMIN_DEFAULT_EMAIL:    admin@driftguard.io
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports: ["5050:80"]
+    depends_on: [postgres]
 
 volumes:
   pgdata:

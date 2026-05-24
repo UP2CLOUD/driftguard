@@ -13,7 +13,9 @@ from driftguard.api.v1 import (
     orgs,
     policies,
     repos,
+    scans,
     stripe_webhooks,
+    tokens,
     webhooks,
 )
 from driftguard.core.auth import verify_api_key
@@ -33,3 +35,5 @@ router.include_router(ingest.router)
 router.include_router(incidents.router)
 router.include_router(events.router)
 router.include_router(policies.router)
+router.include_router(scans.router, tags=["scans"])
+router.include_router(tokens.router, tags=["tokens"])
