@@ -54,7 +54,27 @@
     "open": "open",
     "investigating": "investigating",
     "resolved": "resolved",
-    "suppressed": "suppressed"
+    "suppressed": "suppressed",
+    "scanResult": "Scan result",
+    "riskScore": "Risk score",
+    "noFindings": "No findings",
+    "noFindingsDesc": "All checks passed. No issues detected.",
+    "noFindingsEmpty": "No IaC files were found in this scan.",
+    "scanner": "Infrastructure scanner",
+    "repos": "Repositories",
+    "recentScans": "Recent scans",
+    "noScansYet": "No scans yet.",
+    "noScansDesc": "Run your first scan above to see findings here.",
+    "repository": "Repository",
+    "status": "Status",
+    "removeDriftGuard": "Remove DriftGuard",
+    "awsIntegration": "AWS integration",
+    "severity": "Severity",
+    "resource": "Resource",
+    "message": "Message",
+    "noFixSuggestion": "No fix suggestion available.",
+    "errorTitle": "Error",
+    "errorDesc": "Something went wrong loading this page."
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -213,7 +233,11 @@
       "colPlan": "Terraform plan",
       "colLiveState": "Live state",
       "colPlanned": "Planned",
-      "colActual": "Actual"
+      "colActual": "Actual",
+      "delta": "Delta",
+      "waste": "Waste",
+      "costImpact": "Cost impact",
+      "sectionAriaLabel": "Every AI agent output, reviewed before merge."
     },
     "featureGrid": {
       "sectionTitle": "Six layers. One review. Zero config overhead.",
@@ -296,12 +320,16 @@
       "toggleAria": "Toggle billing period",
       "billingMonthly": "Monthly",
       "billingAnnual": "Annual",
-      "footer": "All plans include SOC 2 Type II (Q4 2026) · GDPR-native · EU data residency"
+      "footer": "All plans include SOC 2 Type II (Q4 2026) · GDPR-native · EU data residency",
+      "ariaLabel": "Simple, per-repo pricing",
+      "ariaDesc": "Start free. Add repos as you grow. Cancel anytime."
     },
     "semanticMemory": {
       "sectionTitle": "Your agents learn from production. Permanently.",
       "sectionSubtitle": "Every incident — blocked deploy, drift event, policy violation — becomes a 384-d embedding. The next similar PR surfaces the original incident automatically.",
-      "recalledLabel": "Recalled incidents"
+      "recalledLabel": "Recalled incidents",
+      "ariaLabel": "Your agents learn from production. Permanently.",
+      "query": "Query"
     }
   },
   "incidents": {
@@ -402,7 +430,40 @@
     "meta": {
       "title": "Documentation — DriftGuard",
       "description": "DriftGuard docs: install guide, API reference, core concepts, integrations, and compliance controls."
-    }
+    },
+    "documentation": "Documentation",
+    "needHelp": "Need a human?",
+    "auth": "Authentication",
+    "endpoints": "Endpoints",
+    "method": "Method",
+    "description": "Description",
+    "recallExample": "Semantic recall — example",
+    "openApiSpec": "OpenAPI spec",
+    "requestAccess": "Request access →",
+    "poweredByInfracost": "Powered by Infracost",
+    "thresholds": "Thresholds",
+    "currency": "Currency",
+    "howItWorks": "How it works",
+    "awsIntegration": "AWS integration",
+    "withoutAws": "Without AWS access",
+    "whatTriggers": "What triggers a review",
+    "prAnatomy": "The PR comment anatomy",
+    "checkRun": "GitHub Check Run",
+    "checkRunDesc": "After posting the comment, DriftGuard creates a Check Run on the head commit — used as a required status check for branch protection rules.",
+    "branchProtection": "Settings → Branches → Require status checks → DriftGuard",
+    "turnaround": "Turnaround time",
+    "configurePolicies": "Configure policies →",
+    "driftDetection": "Drift detection →",
+    "getHelp": "Get help",
+    "patternSyntax": "Pattern syntax",
+    "opaRego": "OPA / Rego (Enterprise)",
+    "setup": "Setup",
+    "webhookPath": "Dashboard → Settings → Webhooks",
+    "signature": "X-DriftGuard-Signature",
+    "events": "Events",
+    "retryPolicy": "Retry policy",
+    "postRecall": "POST /api/v1/memory/recall",
+    "apiRef": "API reference"
   },
   "status": {
     "eyebrow": "System status",
@@ -414,7 +475,7 @@
     "lastChecked": "Last checked:",
     "components": "Components",
     "metrics": "Metrics",
-    "uptime": "99.9% uptime",
+    "uptime": "Uptime — last 90 days",
     "p99": "P99 <2s",
     "memory": "Memory index",
     "pipeline": "Core review pipeline",
@@ -422,7 +483,12 @@
     "webhooks": "GitHub Webhooks",
     "checkov": "Checkov + AI triage",
     "infracost": "Infracost integration",
-    "costAnalysis": "Cost analysis"
+    "costAnalysis": "Cost analysis",
+    "system": "System",
+    "status": "Status",
+    "today": "Today",
+    "recentIncidents": "Recent incidents",
+    "incidentAlerts": "Incident alerts"
   },
   "security": {
     "eyebrow": "Trust & security",
@@ -436,7 +502,10 @@
     "depScan": "Dependency scanning",
     "dataResid": "Data residency",
     "awsCreds": "AWS credentials",
-    "sdlc": "Secure development"
+    "sdlc": "Secure development",
+    "controls": "Security controls",
+    "disclosure": "Responsible disclosure",
+    "reportVuln": "Report a vulnerability"
   },
   "compliance": {
     "eyebrow": "Regulatory compliance",
@@ -448,7 +517,10 @@
     "status": "Status",
     "partial": "Partial",
     "full": "Full",
-    "planned": "Planned"
+    "planned": "Planned",
+    "evidencePack": "Evidence pack",
+    "evidencePackDesc": "Need a pre-packaged compliance evidence export for your auditor? Available for SOC 2, ISO 27001, DORA, and NIS2.",
+    "requestPack": "Request evidence pack"
   },
   "customers": {
     "eyebrow": "Customers",
@@ -461,7 +533,8 @@
     "reviews7d": "PR reviews / day",
     "p50": "P50 review latency",
     "driftCost": "drift cost surfaced",
-    "uptime": "uptime SLA"
+    "uptime": "uptime SLA",
+    "yourTeamNext": "Your team next"
   },
   "careers": {
     "eyebrow": "Careers",
@@ -476,7 +549,8 @@
     "whyUs": "Why DriftGuard",
     "highOwn": "High ownership",
     "openSource": "Open source core",
-    "euOnly": "EU timezone preferred"
+    "euOnly": "EU timezone preferred",
+    "noRole": "Don't see your role?"
   },
   "changelog": {
     "eyebrow": "Release history",
@@ -508,7 +582,11 @@
     "name": "Subprocessor",
     "purpose": "Purpose",
     "location": "Data location",
-    "updated": "Last updated:"
+    "updated": "Last updated:",
+    "subprocessor": "Subprocessor",
+    "country": "Country",
+    "objection": "Objection to subprocessor change",
+    "viewDpa": "View DPA →"
   },
   "dpa": {
     "eyebrow": "Legal",
@@ -546,5 +624,39 @@
     "readDocs": "Read the docs →",
     "otuCompatible": "OpenTofu compatible",
     "noCodeChange": "No code changes"
+  },
+  "common": {
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "legal": "Legal",
+    "language": "Language",
+    "close": "Close",
+    "loading": "Loading",
+    "error": "Error",
+    "retry": "Try again",
+    "noData": "No data",
+    "comingSoon": "Coming soon",
+    "learnMore": "Learn more",
+    "viewAll": "View all",
+    "back": "Back",
+    "next": "Next",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "openInNew": "Open in new tab"
+  },
+  "findings": {
+    "critical": "Critical",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low",
+    "info": "Info"
+  },
+  "aws": {
+    "step1": "Step 1 — Create IAM role",
+    "step2": "Step 2 — Paste role ARN",
+    "externalId": "External ID:"
   }
 }

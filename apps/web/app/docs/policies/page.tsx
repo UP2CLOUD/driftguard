@@ -28,9 +28,9 @@ export default async function Policies() {
   warn:
     - aws_security_group.ingress.0.0.0.0/0
     - aws_s3_bucket.*.acl=public-read`}</pre></div>
-        <div><h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-2">Pattern syntax</h2>
+        <div><h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-2">{t("docs.patternSyntax")}</h2>
         <p>Patterns follow <code className="font-mono text-[color:var(--dg-electric-bright)]">resource_type.name.attribute=value</code>. Wildcards (<code className="font-mono text-[color:var(--dg-electric-bright)]">*</code>) match any value. Patterns are evaluated against every resource change in the Terraform plan.</p></div>
-        <div><h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-2">OPA / Rego (Enterprise)</h2>
+        <div><h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-2">{t("docs.opaRego")}</h2>
         <p>Enterprise plans support full OPA Rego policy bundles for complex logic — multi-environment rules, team-based access, time-based restrictions. Contact us for the Rego integration guide.</p></div>
       </div>
     </MarketingPageShell>

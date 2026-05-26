@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/components/I18nProvider";
+
 import { useState } from "react";
 import type { Org } from "@/lib/api";
 
@@ -14,6 +16,7 @@ export function AwsIntegrationForm({
   installationId: string;
   org: Org | null;
 }) {
+  const t = useT();
   const externalId = org?.aws_external_id ?? `driftguard-${installationId}`;
   const [roleArn, setRoleArn] = useState(org?.aws_role_arn ?? "");
   const [stateBucket, setStateBucket] = useState("");
@@ -57,7 +60,7 @@ export function AwsIntegrationForm({
       <div className="border-b border-[color:var(--dg-border)] p-5">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <div className="dg-label mb-1">Step 1 — Create IAM role</div>
+            <div className="dg-label mb-1">{t("aws.step1")}</div>
             <p className="text-[12px] text-[color:var(--dg-fg-muted)] max-w-sm">
               Deploy the read-only Terraform module in your AWS account.
               Creates a role with external ID condition — no wildcard access.
@@ -66,7 +69,7 @@ export function AwsIntegrationForm({
               {`module "driftguard" {\n  source = "github.com/UP2CLOUD/driftguard//infra/terraform/modules/customer-iam"\n  driftguard_aws_account_id = "<your-aws-account-id>"\n  state_bucket = "my-tfstate-bucket" # optional\n}`}
             </pre>
             <div className="mt-3 flex items-center gap-2">
-              <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">External ID:</span>
+              <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{t("aws.externalId")}</span>
               <code className="font-mono text-[11px] text-[color:var(--dg-electric-bright)] select-all">
                 {externalId}
               </code>
@@ -85,7 +88,7 @@ export function AwsIntegrationForm({
 
       {/* Step 2 — paste role ARN */}
       <div className="border-b border-[color:var(--dg-border)] p-5">
-        <div className="dg-label mb-3">Step 2 — Paste role ARN</div>
+        <div className="dg-label mb-3">{t("aws.step2")}</div>
         <div className="space-y-3">
           <div>
             <label className="block font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1.5">

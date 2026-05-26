@@ -102,10 +102,10 @@ export default async function Compliance() {
 
       <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-6 sm:p-8 flex flex-col sm:flex-row items-start gap-4 sm:justify-between">
         <div>
-          <div className="dg-label mb-2">Evidence pack</div>
+          <div className="dg-label mb-2">{t("compliance.evidencePack")}</div>
           <p className="text-[13px] text-[color:var(--dg-fg-muted)] max-w-md">Need a pre-packaged compliance evidence export for your auditor? Available on Team and Enterprise plans.</p>
         </div>
-        <a href="mailto:compliance@driftguard.io" className="dg-button dg-button-ghost text-[12px] shrink-0">Request evidence pack</a>
+        <a href="mailto:compliance@driftguard.io" className="dg-button dg-button-ghost text-[12px] shrink-0">{t("compliance.requestPack")}</a>
       </div>
     </MarketingPageShell>
   );

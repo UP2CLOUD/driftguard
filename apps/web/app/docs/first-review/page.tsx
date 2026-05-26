@@ -22,7 +22,7 @@ export default async function FirstReview() {
       <div className="space-y-10 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
 
         <section>
-          <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-3">What triggers a review</h2>
+          <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-3">{t("docs.whatTriggers")}</h2>
           <p>DriftGuard listens for <code className="font-mono text-[11px] text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-surface)] px-1.5 py-0.5 rounded">pull_request</code> events
           with actions <code className="font-mono text-[11px] text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-surface)] px-1.5 py-0.5 rounded">opened</code>, <code className="font-mono text-[11px] text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-surface)] px-1.5 py-0.5 rounded">synchronize</code>, and <code className="font-mono text-[11px] text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-surface)] px-1.5 py-0.5 rounded">reopened</code>.
           Any PR that modifies a <code className="font-mono text-[11px] text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-surface)] px-1.5 py-0.5 rounded">.tf</code> or <code className="font-mono text-[11px] text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-surface)] px-1.5 py-0.5 rounded">.tofu</code> file triggers the pipeline.
@@ -30,7 +30,7 @@ export default async function FirstReview() {
         </section>
 
         <section>
-          <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-3">The PR comment anatomy</h2>
+          <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-3">{t("docs.prAnatomy")}</h2>
           <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] overflow-hidden">
             {[
               { label: "Risk score", desc: "0–100 weighted by severity. ≥70 posts a failing check run that can block merge." },
@@ -49,8 +49,8 @@ export default async function FirstReview() {
         </section>
 
         <section>
-          <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-3">GitHub Check Run</h2>
-          <p>After posting the comment, DriftGuard creates a Check Run on the head commit:</p>
+          <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-3">{t("docs.checkRun")}</h2>
+          <p>{t("docs.checkRunDesc")}</p>
           <ul className="mt-3 space-y-2">
             {[
               ["✓ success", "Risk < 40 — safe to merge"],
@@ -63,18 +63,18 @@ export default async function FirstReview() {
               </li>
             ))}
           </ul>
-          <p className="mt-4">Enable branch protection: <em>Settings → Branches → Require status checks → DriftGuard</em>.</p>
+          <p className="mt-4">Enable branch protection: <em>{t("docs.branchProtection")}</em>.</p>
         </section>
 
         <section>
-          <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-3">Turnaround time</h2>
+          <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-3">{t("docs.turnaround")}</h2>
           <p>P50 latency is ~18s. P99 is ~90s for large monorepos with multiple Terraform directories.
           The bottleneck is <code className="font-mono text-[11px] text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-surface)] px-1.5 py-0.5 rounded">terraform init + plan</code> — we run up to 3 directories in parallel.</p>
         </section>
 
         <div className="flex gap-3 pt-4 border-t border-[color:var(--dg-border)]">
-          <a href="/docs/policies" className="dg-button dg-button-ghost text-[12px]">Configure policies →</a>
-          <a href="/docs/drift" className="dg-button dg-button-ghost text-[12px]">Drift detection →</a>
+          <a href="/docs/policies" className="dg-button dg-button-ghost text-[12px]">{t("docs.configurePolicies")}</a>
+          <a href="/docs/drift" className="dg-button dg-button-ghost text-[12px]">{t("docs.driftDetection")}</a>
         </div>
       </div>
     </MarketingPageShell>

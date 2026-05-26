@@ -28,9 +28,9 @@ export default async function Subprocessors() {
     >
       <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden mb-10">
         <div className="grid grid-cols-[1fr_2fr_1fr] border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-          <span>Subprocessor</span>
-          <span className="hidden sm:inline">Purpose</span>
-          <span>Country</span>
+          <span>{t("subprocessors.subprocessor")}</span>
+          <span className="hidden sm:inline">{t("subprocessors.purpose")}</span>
+          <span>{t("subprocessors.country")}</span>
         </div>
         {SUBPROCESSORS.map((s) => (
           <div key={s.name} className="grid grid-cols-1 sm:grid-cols-[1fr_2fr_1fr] border-b border-[color:var(--dg-border)] last:border-b-0 px-4 py-4 bg-[color:var(--dg-surface)] hover:bg-[color:var(--dg-surface-raised)] transition gap-1 sm:gap-4 sm:items-start">
@@ -46,13 +46,13 @@ export default async function Subprocessors() {
 
       <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-6 flex flex-col sm:flex-row items-start gap-4 sm:justify-between">
         <div>
-          <div className="dg-label mb-2">Objection to subprocessor change</div>
+          <div className="dg-label mb-2">{t("subprocessors.objection")}</div>
           <p className="text-[13px] text-[color:var(--dg-fg-muted)] max-w-md">
             Per our DPA, you may object to a new subprocessor within 30 days of notification. Contact{" "}
             <a href="mailto:legal@driftguard.io" className="text-[color:var(--dg-electric-bright)] hover:underline">legal@driftguard.io</a>.
           </p>
         </div>
-        <a href="/dpa" className="dg-button dg-button-ghost text-[12px] shrink-0">View DPA →</a>
+        <a href="/dpa" className="dg-button dg-button-ghost text-[12px] shrink-0">{t("subprocessors.viewDpa")}</a>
       </div>
     </MarketingPageShell>
   );

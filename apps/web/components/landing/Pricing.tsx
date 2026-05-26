@@ -69,7 +69,7 @@ export function Pricing() {
   return (
     <section id="pricing" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
-        <SectionHeader eyebrow="Pricing" title="Simple, per-repo pricing" subtitle="Start free. Add repos as you grow. Cancel anytime." />
+        <SectionHeader eyebrow="Pricing" title={t("landing.pricing.sectionTitle")} subtitle={t("landing.pricing.sectionSubtitle")} />
 
         {/* Billing toggle */}
         <div className="mt-8 mb-12 flex items-center justify-center gap-4">

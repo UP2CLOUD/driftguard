@@ -54,7 +54,27 @@
     "open": "مفتوح",
     "investigating": "قيد التحقيق",
     "resolved": "محلول",
-    "suppressed": "مكتوم"
+    "suppressed": "مكتوم",
+    "scanResult": "نتيجة الفحص",
+    "riskScore": "درجة المخاطرة",
+    "noFindings": "لا اكتشافات",
+    "noFindingsDesc": "اجتازت جميع الفحوصات. لم تُكتشف مشكلات.",
+    "noFindingsEmpty": "لم يتم العثور على ملفات IaC في هذا الفحص.",
+    "scanner": "ماسح البنية التحتية",
+    "repos": "المستودعات",
+    "recentScans": "الفحوصات الأخيرة",
+    "noScansYet": "لا فحوصات بعد.",
+    "noScansDesc": "شغّل فحصك الأول أعلاه لرؤية النتائج هنا.",
+    "repository": "المستودع",
+    "status": "الحالة",
+    "removeDriftGuard": "إزالة DriftGuard",
+    "awsIntegration": "تكامل AWS",
+    "severity": "الخطورة",
+    "resource": "المورد",
+    "message": "الرسالة",
+    "noFixSuggestion": "لا يوجد اقتراح إصلاح.",
+    "errorTitle": "خطأ",
+    "errorDesc": "حدث خطأ أثناء تحميل هذه الصفحة."
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -213,7 +233,11 @@
       "colPlan": "خطة Terraform",
       "colLiveState": "الحالة المباشرة",
       "colPlanned": "مخطط",
-      "colActual": "فعلي"
+      "colActual": "فعلي",
+      "delta": "الفرق",
+      "waste": "الهدر",
+      "costImpact": "تأثير التكلفة",
+      "sectionAriaLabel": "كل مخرجات وكيل الذكاء الاصطناعي، مراجعة قبل الدمج."
     },
     "featureGrid": {
       "sectionTitle": "ست طبقات. مراجعة واحدة. صفر تكوين.",
@@ -296,12 +320,16 @@
       "toggleAria": "تبديل فترة الفوترة",
       "billingMonthly": "شهري",
       "billingAnnual": "سنوي",
-      "footer": "جميع الخطط تشمل SOC 2 Type II · متوافق مع GDPR · بيانات EU"
+      "footer": "جميع الخطط تشمل SOC 2 Type II · متوافق مع GDPR · بيانات EU",
+      "ariaLabel": "تسعير بسيط لكل مستودع",
+      "ariaDesc": "ابدأ مجاناً. أضف مستودعات مع النمو."
     },
     "semanticMemory": {
       "sectionTitle": "وكلاؤك يتعلمون من الإنتاج. بشكل دائم.",
       "sectionSubtitle": "كل حادثة تصبح embedding بـ 384 بُعداً.",
-      "recalledLabel": "الحوادث المستردة"
+      "recalledLabel": "الحوادث المستردة",
+      "ariaLabel": "وكلاؤك يتعلمون من الإنتاج. بشكل دائم.",
+      "query": "استعلام"
     }
   },
   "incidents": {
@@ -402,7 +430,40 @@
     "meta": {
       "title": "التوثيق — DriftGuard",
       "description": "دليل التثبيت، مرجع API، المفاهيم الأساسية وضوابط الامتثال."
-    }
+    },
+    "documentation": "التوثيق",
+    "needHelp": "تحتاج مساعدة بشرية؟",
+    "auth": "المصادقة",
+    "endpoints": "نقاط النهاية",
+    "method": "الطريقة",
+    "description": "الوصف",
+    "recallExample": "الاستدعاء الدلالي — مثال",
+    "openApiSpec": "مواصفات OpenAPI",
+    "requestAccess": "طلب الوصول ←",
+    "poweredByInfracost": "مدعوم بـ Infracost",
+    "thresholds": "العتبات",
+    "currency": "العملة",
+    "howItWorks": "كيف يعمل",
+    "awsIntegration": "تكامل AWS",
+    "withoutAws": "بدون وصول AWS",
+    "whatTriggers": "ما الذي يُشغّل المراجعة",
+    "prAnatomy": "تشريح تعليق PR",
+    "checkRun": "GitHub Check Run",
+    "checkRunDesc": "بعد نشر التعليق، يُنشئ DriftGuard Check Run على الالتزام الرأسي.",
+    "branchProtection": "الإعدادات → الفروع → طلب فحوصات الحالة → DriftGuard",
+    "turnaround": "وقت الاستجابة",
+    "configurePolicies": "تكوين السياسات ←",
+    "driftDetection": "اكتشاف الانجراف ←",
+    "getHelp": "الحصول على مساعدة",
+    "patternSyntax": "بناء جملة النمط",
+    "opaRego": "OPA / Rego (Enterprise)",
+    "setup": "الإعداد",
+    "webhookPath": "لوحة التحكم → الإعدادات → Webhooks",
+    "signature": "X-DriftGuard-Signature",
+    "events": "الأحداث",
+    "retryPolicy": "سياسة إعادة المحاولة",
+    "postRecall": "POST /api/v1/memory/recall",
+    "apiRef": "مرجع API"
   },
   "status": {
     "eyebrow": "حالة النظام",
@@ -414,7 +475,7 @@
     "lastChecked": "آخر فحص:",
     "components": "المكونات",
     "metrics": "المقاييس",
-    "uptime": "99.9% وقت تشغيل",
+    "uptime": "وقت التشغيل — آخر 90 يوماً",
     "p99": "P99 <2s",
     "memory": "فهرس الذاكرة",
     "pipeline": "خط أنابيب المراجعة",
@@ -422,7 +483,12 @@
     "webhooks": "GitHub Webhooks",
     "checkov": "Checkov + فرز AI",
     "infracost": "تكامل Infracost",
-    "costAnalysis": "تحليل التكلفة"
+    "costAnalysis": "تحليل التكلفة",
+    "system": "النظام",
+    "status": "الحالة",
+    "today": "اليوم",
+    "recentIncidents": "الحوادث الأخيرة",
+    "incidentAlerts": "تنبيهات الحوادث"
   },
   "security": {
     "eyebrow": "الثقة والأمان",
@@ -436,7 +502,10 @@
     "depScan": "فحص التبعيات",
     "dataResid": "إقامة البيانات",
     "awsCreds": "بيانات AWS",
-    "sdlc": "التطوير الآمن"
+    "sdlc": "التطوير الآمن",
+    "controls": "ضوابط الأمان",
+    "disclosure": "الإفصاح المسؤول",
+    "reportVuln": "الإبلاغ عن ثغرة"
   },
   "compliance": {
     "eyebrow": "الامتثال التنظيمي",
@@ -448,7 +517,10 @@
     "status": "الحالة",
     "partial": "جزئي",
     "full": "كامل",
-    "planned": "مخطط"
+    "planned": "مخطط",
+    "evidencePack": "حزمة الأدلة",
+    "evidencePackDesc": "تحتاج تصدير أدلة امتثال مُعبّأة لمدققك؟ متاح لـ SOC 2 وISO 27001 وDORA وNIS2.",
+    "requestPack": "طلب حزمة الأدلة"
   },
   "customers": {
     "eyebrow": "العملاء",
@@ -461,7 +533,8 @@
     "reviews7d": "مراجعة PR / يوم",
     "p50": "زمن استجابة P50",
     "driftCost": "تكلفة الانجراف المكتشفة",
-    "uptime": "SLA وقت التشغيل"
+    "uptime": "SLA وقت التشغيل",
+    "yourTeamNext": "فريقك التالي"
   },
   "careers": {
     "eyebrow": "وظائف",
@@ -476,7 +549,8 @@
     "whyUs": "لماذا DriftGuard",
     "highOwn": "مسؤولية عالية",
     "openSource": "نواة مفتوحة المصدر",
-    "euOnly": "المنطقة الزمنية EU مفضلة"
+    "euOnly": "المنطقة الزمنية EU مفضلة",
+    "noRole": "لم تجد وظيفتك؟"
   },
   "changelog": {
     "eyebrow": "سجل الإصدارات",
@@ -508,7 +582,11 @@
     "name": "المعالج الفرعي",
     "purpose": "الغرض",
     "location": "موقع البيانات",
-    "updated": "آخر تحديث:"
+    "updated": "آخر تحديث:",
+    "subprocessor": "المعالج الفرعي",
+    "country": "الدولة",
+    "objection": "اعتراض على تغيير المعالج الفرعي",
+    "viewDpa": "عرض DPA ←"
   },
   "dpa": {
     "eyebrow": "قانوني",
@@ -546,5 +624,39 @@
     "readDocs": "اقرأ التوثيق ←",
     "otuCompatible": "متوافق مع OpenTofu",
     "noCodeChange": "بدون تغييرات في الكود"
+  },
+  "common": {
+    "privacy": "الخصوصية",
+    "terms": "الشروط",
+    "legal": "قانوني",
+    "language": "اللغة",
+    "close": "إغلاق",
+    "loading": "جارٍ التحميل",
+    "error": "خطأ",
+    "retry": "إعادة المحاولة",
+    "noData": "لا بيانات",
+    "comingSoon": "قريباً",
+    "learnMore": "معرفة المزيد",
+    "viewAll": "عرض الكل",
+    "back": "رجوع",
+    "next": "التالي",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "copy": "نسخ",
+    "copied": "تم النسخ!",
+    "openInNew": "فتح في تبويب جديد"
+  },
+  "findings": {
+    "critical": "حرج",
+    "high": "عالٍ",
+    "medium": "متوسط",
+    "low": "منخفض",
+    "info": "معلومات"
+  },
+  "aws": {
+    "step1": "الخطوة 1 — إنشاء دور IAM",
+    "step2": "الخطوة 2 — لصق دور ARN",
+    "externalId": "المعرف الخارجي:"
   }
 }

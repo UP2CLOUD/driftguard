@@ -54,7 +54,27 @@
     "open": "aberto",
     "investigating": "investigando",
     "resolved": "resolvido",
-    "suppressed": "suprimido"
+    "suppressed": "suprimido",
+    "scanResult": "Resultado do scan",
+    "riskScore": "Pontuação de risco",
+    "noFindings": "Sem descobertas",
+    "noFindingsDesc": "Todos os controlos passaram. Nenhum problema detectado.",
+    "noFindingsEmpty": "Não foram encontrados ficheiros IaC neste scan.",
+    "scanner": "Scanner de infraestrutura",
+    "repos": "Repositórios",
+    "recentScans": "Scans recentes",
+    "noScansYet": "Sem scans ainda.",
+    "noScansDesc": "Executa o teu primeiro scan acima para ver os resultados aqui.",
+    "repository": "Repositório",
+    "status": "Estado",
+    "removeDriftGuard": "Remover DriftGuard",
+    "awsIntegration": "Integração AWS",
+    "severity": "Severidade",
+    "resource": "Recurso",
+    "message": "Mensagem",
+    "noFixSuggestion": "Sugestão de correcção não disponível.",
+    "errorTitle": "Erro",
+    "errorDesc": "Ocorreu um erro ao carregar esta página."
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -213,7 +233,11 @@
       "colPlan": "Plano Terraform",
       "colLiveState": "Estado live",
       "colPlanned": "Planeado",
-      "colActual": "Real"
+      "colActual": "Real",
+      "delta": "Delta",
+      "waste": "Desperdício",
+      "costImpact": "Impacto de custo",
+      "sectionAriaLabel": "Cada output de agente IA, revisto antes do merge."
     },
     "featureGrid": {
       "sectionTitle": "Seis camadas. Uma revisão. Zero overhead de configuração.",
@@ -296,12 +320,16 @@
       "toggleAria": "Alternar período de facturação",
       "billingMonthly": "Mensal",
       "billingAnnual": "Anual",
-      "footer": "Todos os planos incluem SOC 2 Tipo II (Q4 2026) · RGPD‑nativo · Dados na EU"
+      "footer": "Todos os planos incluem SOC 2 Tipo II (Q4 2026) · RGPD‑nativo · Dados na EU",
+      "ariaLabel": "Preços simples por repo",
+      "ariaDesc": "Começa grátis. Adiciona repos à medida que cresces."
     },
     "semanticMemory": {
       "sectionTitle": "Os teus agentes aprendem de produção. Permanentemente.",
       "sectionSubtitle": "Cada incidente — deploy bloqueado, evento de drift, violação de política — torna-se um embedding 384-d. O próximo PR semelhante recupera o incidente original automaticamente.",
-      "recalledLabel": "Incidentes recuperados"
+      "recalledLabel": "Incidentes recuperados",
+      "ariaLabel": "Os teus agentes aprendem de produção. Permanentemente.",
+      "query": "Consulta"
     }
   },
   "incidents": {
@@ -402,7 +430,40 @@
     "meta": {
       "title": "Documentação — DriftGuard",
       "description": "Guia de instalação, referência de API, conceitos principais e conformidade."
-    }
+    },
+    "documentation": "Documentação",
+    "needHelp": "Precisas de ajuda?",
+    "auth": "Autenticação",
+    "endpoints": "Endpoints",
+    "method": "Método",
+    "description": "Descrição",
+    "recallExample": "Recall semântico — exemplo",
+    "openApiSpec": "Especificação OpenAPI",
+    "requestAccess": "Solicitar acesso →",
+    "poweredByInfracost": "Desenvolvido por Infracost",
+    "thresholds": "Thresholds",
+    "currency": "Moeda",
+    "howItWorks": "Como funciona",
+    "awsIntegration": "Integração AWS",
+    "withoutAws": "Sem acesso AWS",
+    "whatTriggers": "O que despoleta uma revisão",
+    "prAnatomy": "Anatomia do comentário PR",
+    "checkRun": "GitHub Check Run",
+    "checkRunDesc": "Após publicar o comentário, DriftGuard cria um Check Run no commit — usado como verificação de estado obrigatória para regras de protecção de branch.",
+    "branchProtection": "Definições → Branches → Exigir verificações de estado → DriftGuard",
+    "turnaround": "Tempo de resposta",
+    "configurePolicies": "Configurar políticas →",
+    "driftDetection": "Detecção de drift →",
+    "getHelp": "Obter ajuda",
+    "patternSyntax": "Sintaxe de padrões",
+    "opaRego": "OPA / Rego (Enterprise)",
+    "setup": "Configuração",
+    "webhookPath": "Dashboard → Definições → Webhooks",
+    "signature": "X-DriftGuard-Signature",
+    "events": "Eventos",
+    "retryPolicy": "Política de reenvio",
+    "postRecall": "POST /api/v1/memory/recall",
+    "apiRef": "Referência da API"
   },
   "status": {
     "eyebrow": "Estado do sistema",
@@ -414,7 +475,7 @@
     "lastChecked": "Última verificação:",
     "components": "Componentes",
     "metrics": "Métricas",
-    "uptime": "99.9% uptime",
+    "uptime": "Uptime — últimos 90 dias",
     "p99": "P99 <2s",
     "memory": "Índice de memória",
     "pipeline": "Pipeline de revisão",
@@ -422,7 +483,12 @@
     "webhooks": "GitHub Webhooks",
     "checkov": "Checkov + triagem IA",
     "infracost": "Integração Infracost",
-    "costAnalysis": "Análise de custo"
+    "costAnalysis": "Análise de custo",
+    "system": "Sistema",
+    "status": "Estado",
+    "today": "Hoje",
+    "recentIncidents": "Incidentes recentes",
+    "incidentAlerts": "Alertas de incidentes"
   },
   "security": {
     "eyebrow": "Confiança e segurança",
@@ -436,7 +502,10 @@
     "depScan": "Scan de dependências",
     "dataResid": "Residência de dados",
     "awsCreds": "Credenciais AWS",
-    "sdlc": "Desenvolvimento seguro"
+    "sdlc": "Desenvolvimento seguro",
+    "controls": "Controlos de segurança",
+    "disclosure": "Divulgação responsável",
+    "reportVuln": "Reportar uma vulnerabilidade"
   },
   "compliance": {
     "eyebrow": "Conformidade regulatória",
@@ -448,7 +517,10 @@
     "status": "Estado",
     "partial": "Parcial",
     "full": "Completo",
-    "planned": "Planeado"
+    "planned": "Planeado",
+    "evidencePack": "Pack de evidências",
+    "evidencePackDesc": "Precisas de um export de evidências de conformidade para o teu auditor? Disponível para SOC 2, ISO 27001, DORA e NIS2.",
+    "requestPack": "Solicitar pack de evidências"
   },
   "customers": {
     "eyebrow": "Clientes",
@@ -461,13 +533,14 @@
     "reviews7d": "revisões PR / dia",
     "p50": "Latência P50",
     "driftCost": "custo drift detectado",
-    "uptime": "SLA uptime"
+    "uptime": "SLA uptime",
+    "yourTeamNext": "A tua equipa a seguir"
   },
   "careers": {
     "eyebrow": "Carreiras",
     "title": "Junta-te à equipa",
     "subtitle": "A construir segurança de runtime para Terraform. Remote-first, base EU.",
-    "openRoles": "Posições abertas",
+    "openRoles": "Vagas abertas",
     "fullTime": "Tempo inteiro",
     "remote": "Remote · EU",
     "apply": "Candidatar →",
@@ -476,7 +549,8 @@
     "whyUs": "Porquê o DriftGuard",
     "highOwn": "Alta responsabilidade",
     "openSource": "Core open source",
-    "euOnly": "Fuso horário EU preferido"
+    "euOnly": "Fuso horário EU preferido",
+    "noRole": "Não vês a tua vaga?"
   },
   "changelog": {
     "eyebrow": "Histórico de versões",
@@ -508,7 +582,11 @@
     "name": "Subprocessador",
     "purpose": "Finalidade",
     "location": "Localização dos dados",
-    "updated": "Última actualização:"
+    "updated": "Última actualização:",
+    "subprocessor": "Subprocessador",
+    "country": "País",
+    "objection": "Objecção a alteração de subprocessador",
+    "viewDpa": "Ver DPA →"
   },
   "dpa": {
     "eyebrow": "Legal",
@@ -546,5 +624,39 @@
     "readDocs": "Ler a documentação →",
     "otuCompatible": "Compatível com OpenTofu",
     "noCodeChange": "Sem alterações de código"
+  },
+  "common": {
+    "privacy": "Privacidade",
+    "terms": "Termos",
+    "legal": "Legal",
+    "language": "Idioma",
+    "close": "Fechar",
+    "loading": "A carregar",
+    "error": "Erro",
+    "retry": "Tentar novamente",
+    "noData": "Sem dados",
+    "comingSoon": "Em breve",
+    "learnMore": "Saber mais",
+    "viewAll": "Ver tudo",
+    "back": "Voltar",
+    "next": "Seguinte",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "openInNew": "Abrir em nova aba"
+  },
+  "findings": {
+    "critical": "Crítico",
+    "high": "Alto",
+    "medium": "Médio",
+    "low": "Baixo",
+    "info": "Info"
+  },
+  "aws": {
+    "step1": "Passo 1 — Criar role IAM",
+    "step2": "Passo 2 — Colar role ARN",
+    "externalId": "ID externo:"
   }
 }

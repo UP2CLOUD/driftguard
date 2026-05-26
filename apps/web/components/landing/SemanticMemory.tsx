@@ -55,7 +55,7 @@ export function SemanticMemory() {
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
           eyebrow="Operational memory"
-          title="Your agents learn from production. Permanently."
+          title={t("landing.semanticMemory.ariaLabel")}
           subtitle="Every incident — blocked deploy, drift event, policy violation — becomes a 384-d vector. When an AI agent submits a similar pattern weeks later, DriftGuard surfaces the original incident with a similarity score before the merge button is available."
         />
 
@@ -63,7 +63,7 @@ export function SemanticMemory() {
           {/* Query panel */}
           <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)]">
             <div className="border-b border-[color:var(--dg-border)] px-4 py-2.5">
-              <div className="dg-label">Query</div>
+              <div className="dg-label">{t("landing.semanticMemory.query")}</div>
             </div>
             <div className="p-5 font-mono text-[13px]">
               <div className="text-[color:var(--dg-fg-subtle)] mb-3">$ driftguard.recall(intent)</div>

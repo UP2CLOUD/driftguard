@@ -42,7 +42,7 @@ export default async function Security() {
       narrow
     >
       <section className="mb-12">
-        <div className="dg-label mb-4">Security controls</div>
+        <div className="dg-label mb-4">{t("security.controls")}</div>
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
           {CONTROLS.map((c) => (
             <div key={c.label} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 border-b border-[color:var(--dg-border)] last:border-b-0 px-4 py-3 bg-[color:var(--dg-surface)] hover:bg-[color:var(--dg-surface-raised)] transition">
@@ -54,7 +54,7 @@ export default async function Security() {
       </section>
 
       <section className="mb-12">
-        <div className="dg-label mb-4">Responsible disclosure</div>
+        <div className="dg-label mb-4">{t("security.disclosure")}</div>
         <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-6">
           <p className="text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)] mb-4">
             If you discover a security vulnerability in DriftGuard, please report it to{" "}
@@ -66,7 +66,7 @@ export default async function Security() {
             We will acknowledge your report, keep you updated on our progress, and credit you in our security advisory if desired.
           </p>
           <div className="mt-5 flex items-center gap-3">
-            <a href="mailto:security@driftguard.io" className="dg-button dg-button-primary text-[12px]">Report a vulnerability</a>
+            <a href="mailto:security@driftguard.io" className="dg-button dg-button-primary text-[12px]">{t("security.reportVuln")}</a>
           </div>
         </div>
       </section>

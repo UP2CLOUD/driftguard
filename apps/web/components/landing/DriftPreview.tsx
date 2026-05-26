@@ -83,7 +83,7 @@ export function DriftPreview() {
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
           eyebrow="PR review"
-          title="Every AI agent output, reviewed before merge."
+          title={t("landing.driftPreview.sectionAriaLabel")}
           subtitle="Four analysis engines run in parallel — cost delta (Infracost), security (Checkov), live drift (STS), and compliance mapping. Results appear in the PR within 2 seconds."
         />
 
@@ -200,7 +200,7 @@ export function DriftPreview() {
                       <Th>{t("landing.driftPreview.colResource")}</Th>
                       <Th>{t("landing.driftPreview.colPlan")}</Th>
                       <Th>{t("landing.driftPreview.colLiveState")}</Th>
-                      <Th>Delta</Th>
+                      <Th>{t("landing.driftPreview.delta")}</Th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[color:var(--dg-border)]">
@@ -225,7 +225,7 @@ export function DriftPreview() {
                       <Th>{t("landing.driftPreview.colResource")}</Th>
                       <Th>{t("landing.driftPreview.colPlanned")}</Th>
                       <Th>{t("landing.driftPreview.colActual")}</Th>
-                      <Th>Waste</Th>
+                      <Th>{t("landing.driftPreview.waste")}</Th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[color:var(--dg-border)]">

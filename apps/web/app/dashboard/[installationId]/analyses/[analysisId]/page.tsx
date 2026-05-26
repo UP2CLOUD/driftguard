@@ -1,6 +1,10 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getUserPreferences } from "@/lib/preferences/server";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+
 
 const API  = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const HDRS = () => ({
@@ -36,6 +40,10 @@ export default async function AnalysisPage({
 }: {
   params: Promise<{ installationId: string; analysisId: string }>;
 }) {
+  const _prefs = await getUserPreferences();
+  const _msgs  = await getMessages(_prefs.locale);
+  const t      = createTranslator(_msgs);
+
   const session = await auth();
   if (!session) redirect("/");
 
@@ -72,7 +80,7 @@ export default async function AnalysisPage({
       {/* Header */}
       <div className="mb-8 flex flex-wrap items-start gap-4 justify-between">
         <div>
-          <div className="dg-label mb-1">Scan result</div>
+          <div className="dg-label mb-1">{t("dashboard.scanResult")}</div>
           <h1 className="font-sans text-2xl font-semibold text-[color:var(--dg-fg)]">
             Analysis <span className="font-mono text-[color:var(--dg-fg-muted)] text-lg">{analysisId.slice(0,8)}</span>
           </h1>
@@ -85,7 +93,7 @@ export default async function AnalysisPage({
             }}>
               {data.risk_score}
             </div>
-            <div className="dg-label mt-0.5">Risk score</div>
+            <div className="dg-label mt-0.5">{t("dashboard.riskScore")}</div>
           </div>
           <div className={`px-3 py-1.5 rounded border font-mono text-[11px] uppercase tracking-widest ${
             data.status === "completed" ? "text-allowed border-allowed/30 bg-allowed/5" :
@@ -127,11 +135,11 @@ export default async function AnalysisPage({
       {findings.length === 0 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
           <div className="text-2xl mb-3">✓</div>
-          <p className="font-sans text-[14px] font-medium text-allowed mb-1">No findings</p>
+          <p className="font-sans text-[14px] font-medium text-allowed mb-1">{t("dashboard.noFindings")}</p>
           <p className="text-[12px] text-[color:var(--dg-fg-subtle)]">
             {data.files_scanned === 0
-              ? "No IaC files were found in this scan."
-              : "All checks passed. No issues detected."}
+              ? t("dashboard.noFindingsEmpty")
+              : t("dashboard.noFindingsDesc")}
           </p>
         </div>
       ) : (

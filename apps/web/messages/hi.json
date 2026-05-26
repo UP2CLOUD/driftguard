@@ -54,7 +54,27 @@
     "open": "खुला",
     "investigating": "जांच में",
     "resolved": "हल किया गया",
-    "suppressed": "दबाया गया"
+    "suppressed": "दबाया गया",
+    "scanResult": "स्कैन परिणाम",
+    "riskScore": "जोखिम स्कोर",
+    "noFindings": "कोई खोज नहीं",
+    "noFindingsDesc": "सभी जाँचें पास हुईं। कोई समस्या नहीं मिली।",
+    "noFindingsEmpty": "इस स्कैन में कोई IaC फ़ाइलें नहीं मिलीं।",
+    "scanner": "इन्फ्रास्ट्रक्चर स्कैनर",
+    "repos": "रेपो",
+    "recentScans": "हाल के स्कैन",
+    "noScansYet": "अभी तक कोई स्कैन नहीं।",
+    "noScansDesc": "परिणाम देखने के लिए ऊपर पहला स्कैन चलाएं।",
+    "repository": "रेपोजिटरी",
+    "status": "स्थिति",
+    "removeDriftGuard": "DriftGuard हटाएं",
+    "awsIntegration": "AWS एकीकरण",
+    "severity": "गंभीरता",
+    "resource": "संसाधन",
+    "message": "संदेश",
+    "noFixSuggestion": "सुधार सुझाव उपलब्ध नहीं।",
+    "errorTitle": "त्रुटि",
+    "errorDesc": "इस पृष्ठ को लोड करते समय कुछ गलत हुआ।"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -213,7 +233,11 @@
       "colPlan": "Terraform प्लान",
       "colLiveState": "लाइव स्थिति",
       "colPlanned": "योजनाबद्ध",
-      "colActual": "वास्तविक"
+      "colActual": "वास्तविक",
+      "delta": "डेल्टा",
+      "waste": "अपव्यय",
+      "costImpact": "लागत प्रभाव",
+      "sectionAriaLabel": "हर AI एजेंट आउटपुट, merge से पहले समीक्षित।"
     },
     "featureGrid": {
       "sectionTitle": "छह परतें। एक समीक्षा। शून्य कॉन्फ़िग ओवरहेड।",
@@ -296,12 +320,16 @@
       "toggleAria": "बिलिंग अवधि बदलें",
       "billingMonthly": "मासिक",
       "billingAnnual": "वार्षिक",
-      "footer": "सभी प्लान में SOC 2 Type II · GDPR-अनुपालित · EU डेटा"
+      "footer": "सभी प्लान में SOC 2 Type II · GDPR-अनुपालित · EU डेटा",
+      "ariaLabel": "सरल प्रति-repo मूल्य निर्धारण",
+      "ariaDesc": "मुफ्त शुरू करें। बढ़ते समय repos जोड़ें।"
     },
     "semanticMemory": {
       "sectionTitle": "आपके एजेंट प्रोडक्शन से सीखते हैं। स्थायी रूप से।",
       "sectionSubtitle": "प्रत्येक घटना 384-d embedding बन जाती है। अगला समान PR मूल घटना को स्वचालित रूप से दिखाता है।",
-      "recalledLabel": "याद किए गए incidents"
+      "recalledLabel": "याद किए गए incidents",
+      "ariaLabel": "आपके एजेंट उत्पादन से सीखते हैं। स्थायी रूप से।",
+      "query": "क्वेरी"
     }
   },
   "incidents": {
@@ -402,7 +430,40 @@
     "meta": {
       "title": "दस्तावेज़ीकरण — DriftGuard",
       "description": "इंस्टॉल गाइड, API संदर्भ, मुख्य अवधारणाएं और अनुपालन नियंत्रण।"
-    }
+    },
+    "documentation": "दस्तावेज़ीकरण",
+    "needHelp": "किसी इंसान की जरूरत है?",
+    "auth": "प्रमाणीकरण",
+    "endpoints": "एंडपॉइंट",
+    "method": "विधि",
+    "description": "विवरण",
+    "recallExample": "सिमेंटिक रिकॉल — उदाहरण",
+    "openApiSpec": "OpenAPI स्पेक",
+    "requestAccess": "एक्सेस अनुरोध करें →",
+    "poweredByInfracost": "Infracost द्वारा संचालित",
+    "thresholds": "थ्रेशोल्ड",
+    "currency": "मुद्रा",
+    "howItWorks": "यह कैसे काम करता है",
+    "awsIntegration": "AWS एकीकरण",
+    "withoutAws": "AWS एक्सेस के बिना",
+    "whatTriggers": "समीक्षा क्या ट्रिगर करती है",
+    "prAnatomy": "PR टिप्पणी संरचना",
+    "checkRun": "GitHub Check Run",
+    "checkRunDesc": "टिप्पणी पोस्ट करने के बाद, DriftGuard हेड कमिट पर Check Run बनाता है।",
+    "branchProtection": "सेटिंग्स → शाखाएं → स्थिति जाँच की आवश्यकता → DriftGuard",
+    "turnaround": "प्रतिक्रिया समय",
+    "configurePolicies": "नीतियाँ कॉन्फ़िगर करें →",
+    "driftDetection": "Drift पहचान →",
+    "getHelp": "मदद प्राप्त करें",
+    "patternSyntax": "पैटर्न सिंटैक्स",
+    "opaRego": "OPA / Rego (Enterprise)",
+    "setup": "सेटअप",
+    "webhookPath": "डैशबोर्ड → सेटिंग्स → Webhooks",
+    "signature": "X-DriftGuard-Signature",
+    "events": "इवेंट",
+    "retryPolicy": "पुनः प्रयास नीति",
+    "postRecall": "POST /api/v1/memory/recall",
+    "apiRef": "API संदर्भ"
   },
   "status": {
     "eyebrow": "सिस्टम स्थिति",
@@ -414,7 +475,7 @@
     "lastChecked": "अंतिम जांच:",
     "components": "घटक",
     "metrics": "मेट्रिक्स",
-    "uptime": "99.9% अपटाइम",
+    "uptime": "अपटाइम — पिछले 90 दिन",
     "p99": "P99 <2s",
     "memory": "मेमोरी इंडेक्स",
     "pipeline": "समीक्षा पाइपलाइन",
@@ -422,7 +483,12 @@
     "webhooks": "GitHub Webhooks",
     "checkov": "Checkov + AI ट्राइज",
     "infracost": "Infracost एकीकरण",
-    "costAnalysis": "लागत विश्लेषण"
+    "costAnalysis": "लागत विश्लेषण",
+    "system": "सिस्टम",
+    "status": "स्थिति",
+    "today": "आज",
+    "recentIncidents": "हाल की घटनाएं",
+    "incidentAlerts": "घटना अलर्ट"
   },
   "security": {
     "eyebrow": "विश्वास और सुरक्षा",
@@ -436,7 +502,10 @@
     "depScan": "डिपेंडेंसी स्कैन",
     "dataResid": "डेटा रेजिडेंसी",
     "awsCreds": "AWS क्रेडेंशियल",
-    "sdlc": "सुरक्षित विकास"
+    "sdlc": "सुरक्षित विकास",
+    "controls": "सुरक्षा नियंत्रण",
+    "disclosure": "जिम्मेदार प्रकटीकरण",
+    "reportVuln": "भेद्यता रिपोर्ट करें"
   },
   "compliance": {
     "eyebrow": "नियामक अनुपालन",
@@ -448,7 +517,10 @@
     "status": "स्थिति",
     "partial": "आंशिक",
     "full": "पूर्ण",
-    "planned": "नियोजित"
+    "planned": "नियोजित",
+    "evidencePack": "साक्ष्य पैक",
+    "evidencePackDesc": "अपने ऑडिटर के लिए पूर्व-पैकेज्ड अनुपालन साक्ष्य निर्यात चाहिए?",
+    "requestPack": "साक्ष्य पैक अनुरोध करें"
   },
   "customers": {
     "eyebrow": "ग्राहक",
@@ -461,13 +533,14 @@
     "reviews7d": "PR समीक्षा / दिन",
     "p50": "P50 लेटेंसी",
     "driftCost": "ड्रिफ्ट लागत",
-    "uptime": "अपटाइम SLA"
+    "uptime": "अपटाइम SLA",
+    "yourTeamNext": "अगली आपकी टीम"
   },
   "careers": {
     "eyebrow": "करियर",
     "title": "टीम में शामिल हों",
     "subtitle": "Terraform के लिए AI रनटाइम सुरक्षा बना रहे हैं। Remote-first, EU आधारित।",
-    "openRoles": "खुले पद",
+    "openRoles": "खुली भूमिकाएं",
     "fullTime": "पूर्णकालिक",
     "remote": "रिमोट · EU",
     "apply": "आवेदन करें →",
@@ -476,7 +549,8 @@
     "highOwn": "उच्च जिम्मेदारी",
     "openSource": "ओपन सोर्स कोर",
     "euOnly": "EU टाइमज़ोन पसंदीदा",
-    "noRolesBody": "हम जरूरत के अनुसार भर्ती करते हैं। LinkedIn पर फॉलो करें।"
+    "noRolesBody": "हम जरूरत के अनुसार भर्ती करते हैं। LinkedIn पर फॉलो करें।",
+    "noRole": "अपनी भूमिका नहीं दिख रही?"
   },
   "changelog": {
     "eyebrow": "रिलीज़ इतिहास",
@@ -508,7 +582,11 @@
     "name": "उप-प्रोसेसर",
     "purpose": "उद्देश्य",
     "location": "डेटा स्थान",
-    "updated": "अंतिम अपडेट:"
+    "updated": "अंतिम अपडेट:",
+    "subprocessor": "उप-प्रसंस्करणकर्ता",
+    "country": "देश",
+    "objection": "उप-प्रसंस्करणकर्ता परिवर्तन पर आपत्ति",
+    "viewDpa": "DPA देखें →"
   },
   "dpa": {
     "eyebrow": "कानूनी",
@@ -546,5 +624,39 @@
     "readDocs": "दस्तावेज़ पढ़ें →",
     "otuCompatible": "OpenTofu संगत",
     "noCodeChange": "कोई कोड परिवर्तन नहीं"
+  },
+  "common": {
+    "privacy": "गोपनीयता",
+    "terms": "शर्तें",
+    "legal": "कानूनी",
+    "language": "भाषा",
+    "close": "बंद करें",
+    "loading": "लोड हो रहा है",
+    "error": "त्रुटि",
+    "retry": "पुनः प्रयास",
+    "noData": "कोई डेटा नहीं",
+    "comingSoon": "जल्द आ रहा है",
+    "learnMore": "और जानें",
+    "viewAll": "सब देखें",
+    "back": "वापस",
+    "next": "अगला",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं",
+    "copy": "कॉपी करें",
+    "copied": "कॉपी हो गया!",
+    "openInNew": "नए टैब में खोलें"
+  },
+  "findings": {
+    "critical": "गंभीर",
+    "high": "उच्च",
+    "medium": "मध्यम",
+    "low": "निम्न",
+    "info": "जानकारी"
+  },
+  "aws": {
+    "step1": "चरण 1 — IAM रोल बनाएं",
+    "step2": "चरण 2 — रोल ARN पेस्ट करें",
+    "externalId": "बाहरी ID:"
   }
 }

@@ -53,7 +53,7 @@ export default async function ApiReference() {
     >
       {/* Auth */}
       <section className="mb-12">
-        <div className="dg-label mb-4">Authentication</div>
+        <div className="dg-label mb-4">{t("docs.auth")}</div>
         <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] overflow-hidden">
           <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
             Example request
@@ -68,10 +68,10 @@ export default async function ApiReference() {
 
       {/* Endpoints */}
       <section className="mb-12">
-        <div className="dg-label mb-4">Endpoints</div>
+        <div className="dg-label mb-4">{t("docs.endpoints")}</div>
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
           <div className="grid border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] grid-cols-[80px_1fr_1fr]">
-            <span>Method</span><span>Path</span><span className="hidden md:inline">Description</span>
+            <span>{t("docs.method")}</span><span>Path</span><span className="hidden md:inline">{t("docs.description")}</span>
           </div>
           {ENDPOINTS.map((e) => (
             <div key={e.path} className="grid grid-cols-[80px_1fr] md:grid-cols-[80px_1fr_1fr] gap-2 items-start border-b border-[color:var(--dg-border)] last:border-b-0 bg-[color:var(--dg-surface)] hover:bg-[color:var(--dg-surface-raised)] px-4 py-3 transition">
@@ -85,7 +85,7 @@ export default async function ApiReference() {
 
       {/* Memory recall example */}
       <section className="mb-12">
-        <div className="dg-label mb-4">Semantic recall — example</div>
+        <div className="dg-label mb-4">{t("docs.recallExample")}</div>
         <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] overflow-hidden">
           <pre className="overflow-x-auto p-5 font-mono text-[12.5px] leading-relaxed text-[color:var(--dg-fg)]">{`POST /api/v1/memory/recall
 {
@@ -112,10 +112,10 @@ export default async function ApiReference() {
 
       <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-6 flex flex-col sm:flex-row items-start gap-4 justify-between">
         <div>
-          <div className="dg-label mb-2">OpenAPI spec</div>
+          <div className="dg-label mb-2">{t("docs.openApiSpec")}</div>
           <p className="text-[13px] text-[color:var(--dg-fg-muted)]">Full spec available at <code className="font-mono text-[color:var(--dg-electric-bright)]">/api/v1/openapi.json</code> on self-hosted deployments.</p>
         </div>
-        <a href="mailto:support@driftguard.io" className="dg-button dg-button-ghost text-[12px] shrink-0">Request access →</a>
+        <a href="mailto:support@driftguard.io" className="dg-button dg-button-ghost text-[12px] shrink-0">{t("docs.requestAccess")}</a>
       </div>
     </MarketingPageShell>
   );

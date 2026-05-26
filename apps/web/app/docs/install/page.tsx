@@ -46,7 +46,7 @@ export default async function Install() {
         ))}
         <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-5 flex items-center justify-between gap-4 flex-wrap">
           <p className="text-[13px] text-[color:var(--dg-fg-muted)]">Having trouble? Check the <a href="/docs/webhooks" className="text-[color:var(--dg-electric-bright)] hover:underline">webhook guide</a> or email us.</p>
-          <a href="mailto:support@driftguard.io" className="dg-button dg-button-ghost text-[12px]">Get help</a>
+          <a href="mailto:support@driftguard.io" className="dg-button dg-button-ghost text-[12px]">{t("docs.getHelp")}</a>
         </div>
       </div>
     </MarketingPageShell>

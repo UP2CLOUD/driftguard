@@ -24,7 +24,7 @@ export async function LegalPageShell({ children, active }: LegalPageShellProps) 
 
         <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10 sm:py-14">
           <nav
-            aria-label="Legal"
+            aria-label={/* Legal nav */ "Legal"}
             className="mb-8 flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest"
           >
             <span className="h-px w-4 bg-[color:var(--dg-electric)]" />

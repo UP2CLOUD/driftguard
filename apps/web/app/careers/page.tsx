@@ -77,7 +77,7 @@ export default async function Careers() {
 
         {/* Open roles */}
         <section>
-          <div className="dg-label mb-5">Open roles</div>
+          <div className="dg-label mb-5">{t("careers.openRoles")}</div>
           <div className="space-y-4">
             {ROLES.map((role) => (
               <div
@@ -127,7 +127,7 @@ export default async function Careers() {
         {/* No match CTA */}
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <div className="dg-label mb-1">Don&apos;t see your role?</div>
+            <div className="dg-label mb-1">{t("careers.noRole")}</div>
             <p className="text-[12px] text-[color:var(--dg-fg-muted)]">
               We hire on skills, not titles. Send your background and what you want to build.
             </p>

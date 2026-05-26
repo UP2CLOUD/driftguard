@@ -65,11 +65,11 @@ export default async function Webhooks() {
       <div className="space-y-10">
         {/* Setup */}
         <section className="space-y-3 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
-          <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)]">Setup</h2>
+          <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.setup")}</h2>
           <p>
-            Go to <strong className="text-[color:var(--dg-fg)]">Dashboard → Settings → Webhooks</strong> and add your endpoint URL.
+            Go to <strong className="text-[color:var(--dg-fg)]">{t("docs.webhookPath")}</strong> and add your endpoint URL.
             DriftGuard signs every request with an HMAC-SHA256 signature in the
-            <code className="mx-1 font-mono text-[11px] text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-surface)] px-1.5 py-0.5 rounded">X-DriftGuard-Signature</code>
+            <code className="mx-1 font-mono text-[11px] text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-surface)] px-1.5 py-0.5 rounded">{t("docs.signature")}</code>
             header.
           </p>
           <pre className="overflow-x-auto rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-4 font-mono text-[12px] text-[color:var(--dg-fg)]">{`# Verify signature (Python)
@@ -88,7 +88,7 @@ def verify(payload: bytes, sig: str, secret: str) -> bool:
 
         {/* Events */}
         <section>
-          <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-5">Events</h2>
+          <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-5">{t("docs.events")}</h2>
           <div className="space-y-6">
             {EVENTS.map((e) => (
               <div key={e.name} className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
@@ -104,7 +104,7 @@ def verify(payload: bytes, sig: str, secret: str) -> bool:
 
         {/* Retry policy */}
         <section className="space-y-3 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
-          <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)]">Retry policy</h2>
+          <h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.retryPolicy")}</h2>
           <p>
             DriftGuard retries failed deliveries (non-2xx or timeout) with exponential backoff:
             1s → 5s → 30s → 5min → 30min. After 5 failures the webhook is suspended.

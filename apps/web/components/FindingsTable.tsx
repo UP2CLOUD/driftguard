@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/components/I18nProvider";
+
 import { useState } from "react";
 import type { Finding } from "@/lib/api";
 
@@ -18,6 +20,7 @@ const SEV_DOT: Record<string, string> = {
 };
 
 export function FindingsTable({ findings }: { findings: Finding[] }) {
+  const t = useT();
   const [expanded, setExpanded] = useState<number | null>(null);
   const [copied, setCopied] = useState<number | null>(null);
 
@@ -42,9 +45,9 @@ export function FindingsTable({ findings }: { findings: Finding[] }) {
     <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
       {/* Header */}
       <div className="hidden sm:grid grid-cols-[90px_1fr_1fr_80px] border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] gap-4">
-        <span>Severity</span>
-        <span>Resource</span>
-        <span>Message</span>
+        <span>{t("dashboard.severity")}</span>
+        <span>{t("dashboard.resource")}</span>
+        <span>{t("dashboard.message")}</span>
         <span>Type</span>
       </div>
 
@@ -104,7 +107,7 @@ export function FindingsTable({ findings }: { findings: Finding[] }) {
                     </pre>
                   </>
                 ) : (
-                  <p className="text-[12px] text-[color:var(--dg-fg-muted)]">No fix suggestion available.</p>
+                  <p className="text-[12px] text-[color:var(--dg-fg-muted)]">{t("dashboard.noFixSuggestion")}</p>
                 )}
               </div>
             )}

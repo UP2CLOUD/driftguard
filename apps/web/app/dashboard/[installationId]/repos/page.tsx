@@ -3,6 +3,10 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ScanTrigger } from "@/components/dashboard/ScanTrigger";
 import { UploadScan } from "@/components/dashboard/UploadScan";
+import { getUserPreferences } from "@/lib/preferences/server";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+
 
 const API  = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const HDRS = () => ({
@@ -40,6 +44,10 @@ export default async function ReposPage({
 }: {
   params: Promise<{ installationId: string }>;
 }) {
+  const _prefs = await getUserPreferences();
+  const _msgs  = await getMessages(_prefs.locale);
+  const t      = createTranslator(_msgs);
+
   const session = await auth();
   if (!session) redirect("/");
   const { installationId } = await params;
@@ -55,9 +63,9 @@ export default async function ReposPage({
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8">
       <div className="mb-8 flex items-end justify-between flex-wrap gap-4">
         <div>
-          <div className="dg-label mb-2">Infrastructure scanner</div>
+          <div className="dg-label mb-2">{t("dashboard.scanner")}</div>
           <h1 className="font-sans text-2xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
-            Repositories
+            {t("dashboard.repos")}
           </h1>
         </div>
       </div>
@@ -99,15 +107,15 @@ export default async function ReposPage({
 
       {/* Recent scans */}
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-sans text-[15px] font-semibold text-[color:var(--dg-fg)]">Recent scans</h2>
+        <h2 className="font-sans text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("dashboard.recentScans")}</h2>
         <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{recentAnalyses.length} total</span>
       </div>
 
       {recentAnalyses.length === 0 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
-          <p className="text-[13px] text-[color:var(--dg-fg-muted)]">No scans yet.</p>
+          <p className="text-[13px] text-[color:var(--dg-fg-muted)]">{t("dashboard.noScansYet")}</p>
           <p className="mt-1 text-[11px] text-[color:var(--dg-fg-subtle)]">
-            Run your first scan above to see findings here.
+            {t("dashboard.noScansDesc")}
           </p>
         </div>
       ) : (

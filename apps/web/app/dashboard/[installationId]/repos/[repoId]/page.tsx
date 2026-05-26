@@ -2,12 +2,20 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { requireOrg } from "@/lib/org-server";
+import { getUserPreferences } from "@/lib/preferences/server";
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
+
 
 export default async function RepoPage({
   params,
 }: {
   params: Promise<{ installationId: string; repoId: string }>;
 }) {
+  const _prefs = await getUserPreferences();
+  const _msgs  = await getMessages(_prefs.locale);
+  const t      = createTranslator(_msgs);
+
   const session = await auth();
   if (!session) redirect("/");
 
@@ -36,7 +44,7 @@ export default async function RepoPage({
         ← Repositories
       </Link>
 
-      <div className="dg-label mb-2">Repository</div>
+      <div className="dg-label mb-2">{t("dashboard.repository")}</div>
       <h1 className="font-sans text-2xl sm:text-3xl font-semibold tracking-tight text-[color:var(--dg-fg)] mb-8">
         Analyses
       </h1>
@@ -53,7 +61,7 @@ export default async function RepoPage({
             <span>Risk</span>
             <span>PR</span>
             <span className="hidden md:inline">SHA</span>
-            <span>Status</span>
+            <span>{t("dashboard.status")}</span>
           </div>
           {analyses.map((a: any) => (
             <Link

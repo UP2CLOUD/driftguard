@@ -102,7 +102,7 @@ export default async function Customers() {
 
       {/* CTA */}
       <div className="mt-12 rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-8 text-center">
-        <div className="dg-label mb-3">Your team next</div>
+        <div className="dg-label mb-3">{t("customers.yourTeamNext")}</div>
         <h2 className="font-sans text-xl font-semibold tracking-tight text-[color:var(--dg-fg)] mb-2">
           Start reviewing PRs in 30 seconds
         </h2>

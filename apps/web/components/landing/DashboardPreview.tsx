@@ -182,7 +182,7 @@ export function DashboardPreview() {
                   <tr className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)]/30 text-[10px] text-[color:var(--dg-fg-subtle)] uppercase tracking-widest font-mono">
                     <th className="px-5 py-3 font-medium">{t("landing.dashboardPreview.colCategory")}</th>
                     <th className="px-4 py-3 font-medium text-right">{t("landing.dashboardPreview.colResources")}</th>
-                    <th className="px-4 py-3 font-medium text-right pr-6">Cost impact</th>
+                    <th className="px-4 py-3 font-medium text-right pr-6">{t("landing.driftPreview.costImpact")}</th>
                   </tr>
                 </thead>
                 <tbody>

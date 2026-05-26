@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/components/I18nProvider";
+
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -10,16 +12,15 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useT();
   useEffect(() => {
     console.error(error);
   }, [error]);
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-4 text-center">
-      <div className="dg-label text-blocked">Error</div>
-      <h2 className="font-sans text-xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
-        Something went wrong
-      </h2>
+      <div className="dg-label text-blocked">{t("dashboard.errorTitle")}</div>
+      <h2 className="font-sans text-xl font-semibold tracking-tight text-[color:var(--dg-fg)]">{t("dashboard.errorDesc")}</h2>
       <p className="text-[13px] text-[color:var(--dg-fg-muted)] max-w-sm">
         {error.message || "An unexpected error occurred. Please try again."}
       </p>

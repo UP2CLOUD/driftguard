@@ -1,9 +1,13 @@
+import { getMessages } from "@/i18n/get-locale";
+import { createTranslator } from "@/i18n/translator";
 import Link from "next/link";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 export async function DashboardFooter() {
   const preferences = await getUserPreferences();
+  const messages = await getMessages(preferences.locale);
+  const t = createTranslator(messages);
 
   return (
     <footer className="border-t border-[color:var(--dg-border)] mt-auto">
@@ -13,9 +17,9 @@ export async function DashboardFooter() {
           <span className="opacity-40">·</span>
           <Link href="/docs" className="hover:text-[color:var(--dg-fg)] transition">Docs</Link>
           <span className="opacity-40">·</span>
-          <Link href="/privacy" className="hover:text-[color:var(--dg-fg)] transition">Privacy</Link>
+          <Link href="/privacy" className="hover:text-[color:var(--dg-fg)] transition">{t("common.privacy")}</Link>
           <span className="opacity-40">·</span>
-          <Link href="/terms" className="hover:text-[color:var(--dg-fg)] transition">Terms</Link>
+          <Link href="/terms" className="hover:text-[color:var(--dg-fg)] transition">{t("common.terms")}</Link>
         </div>
         <div className="flex items-center gap-3">
           <LocaleSwitcher initialPreferences={preferences} compact />

@@ -57,7 +57,7 @@ export default async function Settings({
 
       {/* ── AWS Integration ─────────────────────────────────────── */}
       <Section
-        title="AWS integration"
+        title={t("dashboard.awsIntegration")}
         description={t("settings.awsDesc")}
       >
         <AwsIntegrationForm installationId={installationId} org={org} />
@@ -98,7 +98,7 @@ export default async function Settings({
       <Section title={t("settings.dangerZone")} description={t("settings.dangerZoneDesc")} danger>
         <div className="rounded-md border border-blocked/30 bg-blocked/5 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <div className="text-[13px] font-semibold text-[color:var(--dg-fg)]">Remove DriftGuard</div>
+            <div className="text-[13px] font-semibold text-[color:var(--dg-fg)]">{t("dashboard.removeDriftGuard")}</div>
             <p className="mt-1 text-[12px] text-[color:var(--dg-fg-muted)]">
               Uninstall the GitHub App. All analyses and memory will be deleted within 30 days.
             </p>

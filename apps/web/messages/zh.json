@@ -54,7 +54,27 @@
     "open": "开放",
     "investigating": "调查中",
     "resolved": "已解决",
-    "suppressed": "已抑制"
+    "suppressed": "已抑制",
+    "scanResult": "扫描结果",
+    "riskScore": "风险评分",
+    "noFindings": "无发现",
+    "noFindingsDesc": "所有检查通过，未检测到问题。",
+    "noFindingsEmpty": "此次扫描未找到 IaC 文件。",
+    "scanner": "基础设施扫描器",
+    "repos": "仓库",
+    "recentScans": "最近扫描",
+    "noScansYet": "暂无扫描。",
+    "noScansDesc": "在上方运行你的第一次扫描以在此查看结果。",
+    "repository": "仓库",
+    "status": "状态",
+    "removeDriftGuard": "移除 DriftGuard",
+    "awsIntegration": "AWS 集成",
+    "severity": "严重性",
+    "resource": "资源",
+    "message": "消息",
+    "noFixSuggestion": "暂无修复建议。",
+    "errorTitle": "错误",
+    "errorDesc": "加载此页面时出错。"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -213,7 +233,11 @@
       "colPlan": "Terraform 计划",
       "colLiveState": "实时状态",
       "colPlanned": "计划值",
-      "colActual": "实际值"
+      "colActual": "实际值",
+      "delta": "差值",
+      "waste": "浪费",
+      "costImpact": "成本影响",
+      "sectionAriaLabel": "每个 AI 代理输出，在合并前审查。"
     },
     "featureGrid": {
       "sectionTitle": "六层防护。一次审查。零配置开销。",
@@ -296,12 +320,16 @@
       "toggleAria": "切换计费周期",
       "billingMonthly": "月付",
       "billingAnnual": "年付",
-      "footer": "所有计划均包含 SOC 2 Type II（Q4 2026）· 符合 GDPR · EU 数据驻留"
+      "footer": "所有计划均包含 SOC 2 Type II（Q4 2026）· 符合 GDPR · EU 数据驻留",
+      "ariaLabel": "简单的按仓库定价",
+      "ariaDesc": "免费开始，随增长添加仓库。"
     },
     "semanticMemory": {
       "sectionTitle": "你的代理从生产中学习。永久保留。",
       "sectionSubtitle": "每个事件 — 被阻断的部署、漂移事件、策略违规 — 都成为 384 维嵌入。下一个相似 PR 自动浮现原始事件。",
-      "recalledLabel": "已召回事件"
+      "recalledLabel": "已召回事件",
+      "ariaLabel": "你的代理从生产中学习。永久保留。",
+      "query": "查询"
     }
   },
   "incidents": {
@@ -402,7 +430,40 @@
     "meta": {
       "title": "文档 — DriftGuard",
       "description": "安装指南、API 参考、核心概念和合规控制。"
-    }
+    },
+    "documentation": "文档",
+    "needHelp": "需要帮助？",
+    "auth": "认证",
+    "endpoints": "端点",
+    "method": "方法",
+    "description": "描述",
+    "recallExample": "语义召回 — 示例",
+    "openApiSpec": "OpenAPI 规范",
+    "requestAccess": "申请访问 →",
+    "poweredByInfracost": "由 Infracost 驱动",
+    "thresholds": "阈值",
+    "currency": "货币",
+    "howItWorks": "工作原理",
+    "awsIntegration": "AWS 集成",
+    "withoutAws": "无 AWS 访问",
+    "whatTriggers": "什么触发审查",
+    "prAnatomy": "PR 评论结构",
+    "checkRun": "GitHub Check Run",
+    "checkRunDesc": "发布评论后，DriftGuard 在提交头上创建 Check Run。",
+    "branchProtection": "设置 → 分支 → 要求状态检查 → DriftGuard",
+    "turnaround": "响应时间",
+    "configurePolicies": "配置策略 →",
+    "driftDetection": "漂移检测 →",
+    "getHelp": "获取帮助",
+    "patternSyntax": "模式语法",
+    "opaRego": "OPA / Rego（企业版）",
+    "setup": "设置",
+    "webhookPath": "控制台 → 设置 → Webhook",
+    "signature": "X-DriftGuard-Signature",
+    "events": "事件",
+    "retryPolicy": "重试策略",
+    "postRecall": "POST /api/v1/memory/recall",
+    "apiRef": "API 参考"
   },
   "status": {
     "eyebrow": "系统状态",
@@ -414,7 +475,7 @@
     "lastChecked": "最后检查：",
     "components": "组件",
     "metrics": "指标",
-    "uptime": "99.9% 正常运行时间",
+    "uptime": "正常运行时间 — 过去 90 天",
     "p99": "P99 <2s",
     "memory": "记忆索引",
     "pipeline": "核心审查流水线",
@@ -422,7 +483,12 @@
     "webhooks": "GitHub Webhooks",
     "checkov": "Checkov + AI 分类",
     "infracost": "Infracost 集成",
-    "costAnalysis": "成本分析"
+    "costAnalysis": "成本分析",
+    "system": "系统",
+    "status": "状态",
+    "today": "今天",
+    "recentIncidents": "最近事件",
+    "incidentAlerts": "事件提醒"
   },
   "security": {
     "eyebrow": "信任与安全",
@@ -436,7 +502,10 @@
     "depScan": "依赖扫描",
     "dataResid": "数据驻留",
     "awsCreds": "AWS 凭证",
-    "sdlc": "安全开发"
+    "sdlc": "安全开发",
+    "controls": "安全控制",
+    "disclosure": "负责任披露",
+    "reportVuln": "报告漏洞"
   },
   "compliance": {
     "eyebrow": "监管合规",
@@ -448,7 +517,10 @@
     "status": "状态",
     "partial": "部分",
     "full": "完整",
-    "planned": "计划中"
+    "planned": "计划中",
+    "evidencePack": "证据包",
+    "evidencePackDesc": "需要为审计师打包合规证据导出？支持 SOC 2、ISO 27001、DORA 和 NIS2。",
+    "requestPack": "申请证据包"
   },
   "customers": {
     "eyebrow": "客户",
@@ -461,13 +533,14 @@
     "reviews7d": "PR 审查 / 天",
     "p50": "P50 延迟",
     "driftCost": "检测到的漂移成本",
-    "uptime": "正常运行时间 SLA"
+    "uptime": "正常运行时间 SLA",
+    "yourTeamNext": "接下来是你的团队"
   },
   "careers": {
     "eyebrow": "职业机会",
     "title": "加入团队",
     "subtitle": "为 Terraform 构建 AI 运行时安全。远程优先，EU 时区。",
-    "openRoles": "开放职位",
+    "openRoles": "招聘职位",
     "fullTime": "全职",
     "remote": "远程 · EU",
     "apply": "申请 →",
@@ -476,7 +549,8 @@
     "whyUs": "为什么选择 DriftGuard",
     "highOwn": "高度自主",
     "openSource": "核心开源",
-    "euOnly": "EU 时区优先"
+    "euOnly": "EU 时区优先",
+    "noRole": "没有看到你的职位？"
   },
   "changelog": {
     "eyebrow": "发布历史",
@@ -508,7 +582,11 @@
     "name": "子处理商",
     "purpose": "用途",
     "location": "数据位置",
-    "updated": "最后更新："
+    "updated": "最后更新：",
+    "subprocessor": "次级处理者",
+    "country": "国家",
+    "objection": "对次级处理者变更提出异议",
+    "viewDpa": "查看 DPA →"
   },
   "dpa": {
     "eyebrow": "法律",
@@ -546,5 +624,39 @@
     "readDocs": "阅读文档 →",
     "otuCompatible": "兼容 OpenTofu",
     "noCodeChange": "无需修改代码"
+  },
+  "common": {
+    "privacy": "隐私",
+    "terms": "条款",
+    "legal": "法律",
+    "language": "语言",
+    "close": "关闭",
+    "loading": "加载中",
+    "error": "错误",
+    "retry": "重试",
+    "noData": "无数据",
+    "comingSoon": "即将推出",
+    "learnMore": "了解更多",
+    "viewAll": "查看全部",
+    "back": "返回",
+    "next": "下一步",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "copy": "复制",
+    "copied": "已复制！",
+    "openInNew": "在新标签页打开"
+  },
+  "findings": {
+    "critical": "严重",
+    "high": "高",
+    "medium": "中",
+    "low": "低",
+    "info": "信息"
+  },
+  "aws": {
+    "step1": "步骤 1 — 创建 IAM 角色",
+    "step2": "步骤 2 — 粘贴角色 ARN",
+    "externalId": "外部 ID："
   }
 }

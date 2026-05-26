@@ -88,10 +88,13 @@ compliance:
 # 3. Open a PR — DriftGuard comments with cost, security, compliance.`;
 
 export default async function DocsPage() {
+  const prefs = await getUserPreferences();
+  const msgs  = await getMessages(prefs.locale);
+  const t     = createTranslator(msgs);
   return (
     <MarketingPageShell>
       <div className="max-w-3xl">
-        <div className="dg-label">Documentation</div>
+        <div className="dg-label">{t("docs.documentation")}</div>
         <h1 className="mt-3 font-sans text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
           Build, deploy, and operate DriftGuard.
         </h1>
@@ -144,7 +147,7 @@ export default async function DocsPage() {
 
       <div className="mt-16 rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:justify-between">
         <div>
-          <div className="dg-label">Need a human?</div>
+          <div className="dg-label">{t("docs.needHelp")}</div>
           <p className="mt-2 text-[14px] text-[color:var(--dg-fg-muted)] max-w-md">
             We&apos;re a small team. Email us — we reply in &lt; 24h on weekdays.
           </p>
