@@ -4,6 +4,8 @@ import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { DashboardNav } from "@/components/DashboardNav";
 import { DashboardFooter } from "@/components/DashboardFooter";
+import { UpgradeIntent } from "@/components/UpgradeIntent";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { checkInstallationAccess } from "@/lib/auth-utils";
 
@@ -68,7 +70,12 @@ export default async function DashboardLayout({
           settings:  t("nav.settings")  ?? "Settings",
         }}
       />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">
+        <Suspense fallback={null}>
+          <UpgradeIntent installationId={installationId} />
+        </Suspense>
+        {children}
+      </main>
       <DashboardFooter />
     </div>
   );

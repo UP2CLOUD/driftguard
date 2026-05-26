@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono, Geist } from "next/font/google";
 import { I18nProvider } from "@/components/I18nProvider";
 import { PostHogProvider } from "@/components/PostHogProvider";
+import { AuthProvider } from "@/components/AuthProvider";
 import { isRtlLocale } from "@/i18n/config";
 import { getLocale, getMessages } from "@/i18n/get-locale";
 import { getUserPreferences } from "@/lib/preferences/server";
@@ -103,9 +104,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             jsonLdWebSite(locale as import("@/i18n/config").Locale),
           ]} />
         <I18nProvider locale={locale} messages={messages}>
-          <PostHogProvider>
-            {children}
-          </PostHogProvider>
+          <AuthProvider>
+            <PostHogProvider>
+              {children}
+            </PostHogProvider>
+          </AuthProvider>
         </I18nProvider>
       </body>
     </html>

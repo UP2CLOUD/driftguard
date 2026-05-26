@@ -2,9 +2,9 @@
 
 import { useT } from "@/components/TranslationProvider";
 
-import Link from "next/link";
 import { useState } from "react";
 import { SectionHeader } from "./Architecture";
+import { PricingCta } from "./PricingCta";
 
 const PLANS = [
   {
@@ -149,16 +149,15 @@ export function Pricing() {
                 ))}
               </ul>
 
-              <Link
+              <PricingCta
+                tier={p.tier}
                 href={p.href}
-                target={p.external ? "_blank" : undefined}
-                rel={p.external ? "noreferrer" : undefined}
+                external={p.external}
+                label={p.cta}
                 className={`dg-button w-full justify-center text-[12px] ${
                   p.highlighted ? "dg-button-primary" : "dg-button-ghost"
                 }`}
-              >
-                {p.cta}
-              </Link>
+              />
             </div>
           ))}
         </div>
