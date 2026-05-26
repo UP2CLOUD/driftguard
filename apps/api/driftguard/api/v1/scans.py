@@ -29,6 +29,7 @@ from driftguard.core.db import get_db
 from driftguard.core.logging import log
 from driftguard.db.models import Analysis, AuditLog, Organization, PullRequest, Repository
 from driftguard.db.models import Finding as FindingModel
+from driftguard.services.analysis.ai_review import run_ai_review
 from driftguard.services.scanner.engine import ScanResult, scan_directory
 
 router = APIRouter(prefix="/scans", tags=["scans"])
@@ -123,18 +124,24 @@ async def scan_upload(
 
         result: ScanResult = await scan_directory(root)
 
+    # Phase 5: AI review layer (grounded on scanner output, optional)
+    ai_review = await run_ai_review(result, context={"repo": file.filename, "ref": "upload"})
+
     duration_ms = int((time.monotonic() - started) * 1000)
 
-    # Persist to DB
+    # Persist to DB (with AI summary)
     analysis_id = await _persist_scan(
         db=db,
         org_id=org.id,
         result=result,
         source="manual_upload",
         ref=file.filename,
+        ai_summary=ai_review.narrative,
     )
 
-    return _to_response(result, duration_ms, analysis_id)
+    resp = _to_response(result, duration_ms, analysis_id)
+    resp.ai_summary = ai_review.narrative
+    return resp
 
 
 @router.post(
@@ -231,6 +238,7 @@ async def _persist_scan(
     result: ScanResult,
     source: str,
     ref: str,
+    ai_summary: str | None = None,
 ) -> str:
     """Persist scan results to DB. Returns analysis_id."""
     from datetime import datetime
@@ -275,6 +283,7 @@ async def _persist_scan(
         started_at=now,
         finished_at=now,
         risk_score=result.risk_score,
+        summary_md=ai_summary,
     )
     db.add(analysis)
     await db.flush()
@@ -338,4 +347,5 @@ def _to_response(result: ScanResult, duration_ms: int, analysis_id: str | None) 
         errors=result.errors,
         duration_ms=duration_ms,
         analysis_id=analysis_id,
+        ai_summary=None,
     )

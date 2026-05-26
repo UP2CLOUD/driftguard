@@ -35,6 +35,39 @@ const CAT_ICON: Record<string, string> = {
   secrets: "★", kubernetes: "☸", github_actions: "⚡", best_practice: "◎", general: "◈",
 };
 
+
+function AiMarkdown({ content }: { content: string }) {
+  // Simple inline markdown: **bold**, `code`, ## heading, - list, > blockquote
+  const lines = content.split("\n");
+  return (
+    <div>
+      {lines.map((line, i) => {
+        if (line.startsWith("## "))
+          return <h2 key={i}>{line.slice(3)}</h2>;
+        if (line.startsWith("- [ ] "))
+          return <li key={i} className="list-none flex gap-2"><span>☐</span>{line.slice(6)}</li>;
+        if (line.startsWith("- "))
+          return <li key={i} className="list-disc ml-4">{renderInline(line.slice(2))}</li>;
+        if (line.startsWith("> "))
+          return <blockquote key={i}>{line.slice(2)}</blockquote>;
+        if (line.trim() === "") return <br key={i} />;
+        return <p key={i}>{renderInline(line)}</p>;
+      })}
+    </div>
+  );
+}
+
+function renderInline(text: string): React.ReactNode {
+  const parts = text.split(/(`[^`]+`|\*\*[^*]+\*\*)/);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**"))
+      return <strong key={i}>{part.slice(2, -2)}</strong>;
+    if (part.startsWith("`") && part.endsWith("`"))
+      return <code key={i}>{part.slice(1, -1)}</code>;
+    return part;
+  });
+}
+
 export default async function AnalysisPage({
   params,
 }: {
@@ -128,6 +161,29 @@ export default async function AnalysisPage({
               {count} {s}
             </span>
           ))}
+        </div>
+      )}
+
+
+      {/* AI Review — shown when available */}
+      {data.ai_summary && (
+        <div className="mb-6 rounded-md border border-[color:var(--dg-electric)]/20 bg-[color:var(--dg-electric)]/5 p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
+              ⬡ AI review
+            </span>
+            <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">grounded on scanner output</span>
+          </div>
+          <div className="prose prose-invert prose-sm max-w-none
+            [&_h2]:font-sans [&_h2]:text-[13px] [&_h2]:font-semibold [&_h2]:text-[color:var(--dg-fg)] [&_h2]:mt-4 [&_h2]:mb-2
+            [&_p]:text-[12px] [&_p]:text-[color:var(--dg-fg-muted)] [&_p]:leading-relaxed
+            [&_li]:text-[12px] [&_li]:text-[color:var(--dg-fg-muted)]
+            [&_strong]:text-[color:var(--dg-fg)] [&_code]:text-[color:var(--dg-electric-bright)]
+            [&_code]:bg-[color:var(--dg-surface)] [&_code]:px-1 [&_code]:rounded
+            [&_blockquote]:border-l-2 [&_blockquote]:border-[color:var(--dg-electric)]/30
+            [&_blockquote]:pl-3 [&_blockquote]:text-[color:var(--dg-fg-muted)]">
+            <AiMarkdown content={data.ai_summary} />
+          </div>
         </div>
       )}
 
