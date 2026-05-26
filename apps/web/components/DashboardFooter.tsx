@@ -22,7 +22,7 @@ export async function DashboardFooter() {
           <Link href="/terms" className="hover:text-[color:var(--dg-fg)] transition">{t("common.terms")}</Link>
         </div>
         <div className="flex items-center gap-3">
-          <LocaleSwitcher initialPreferences={preferences} compact />
+          <LocaleSwitcher initialPreferences={preferences} compact label={t("common.language")} />
           <span className="opacity-40">·</span>
           <span className="flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-allowed dg-pulse" />

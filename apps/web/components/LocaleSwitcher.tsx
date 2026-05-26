@@ -26,9 +26,10 @@ type Props = {
   initialPreferences?: UserPreferences;
   className?: string;
   compact?: boolean;
+  label?: string;   // accessible name — translated by parent
 };
 
-export function LocaleSwitcher({ initialPreferences, className = "", compact = false }: Props) {
+export function LocaleSwitcher({ initialPreferences, className = "", compact = false, label = "Language" }: Props) {
   const { preferences, loading, saving, setLocale } = useUserPreferences(initialPreferences);
   const value = preferences?.locale ?? "en";
 
@@ -43,7 +44,7 @@ export function LocaleSwitcher({ initialPreferences, className = "", compact = f
         <path d="M1.5 8h13M8 1.5a10 10 0 010 13M8 1.5a10 10 0 000 13" />
       </svg>
       <select
-        aria-label="Language"
+        aria-label={label}
         disabled={loading || saving}
         value={value}
         onChange={(e) => void setLocale(e.target.value as Locale)}

@@ -37,7 +37,7 @@ export default async function Image() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "#9aa0a6" }}>
             <span style={{ width: 8, height: 8, borderRadius: 99, background: "#22d38d" }} />
-            <span style={{ textTransform: "uppercase", letterSpacing: "0.18em" }}>SYSTEM OPERATIONAL</span>
+            <span style={{ textTransform: "uppercase", letterSpacing: "0.18em", fontFamily: "monospace" }}>driftguard.io</span>
           </div>
         </div>
 

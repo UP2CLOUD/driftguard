@@ -85,7 +85,7 @@ export async function Footer() {
             <span>{t("landing.footer.gdpr")}</span>
           </div>
           <div className="flex items-center gap-4">
-            <LocaleSwitcher initialPreferences={preferences} compact />
+            <LocaleSwitcher initialPreferences={preferences} compact label={t("common.language")} />
             <span className="opacity-50">●</span>
             <span>{t("footer.version")}</span>
             <span className="opacity-50">●</span>
