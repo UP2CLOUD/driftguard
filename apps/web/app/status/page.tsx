@@ -1,19 +1,12 @@
+import { type Locale } from "@/i18n/config";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
-import { pageMeta } from "@/lib/seo";
+import { pageMeta, localizedPageMeta } from "@/lib/seo";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 
-export const metadata: Metadata = {
-  ...pageMeta({
-    title: "Status — DriftGuard",
-    description: "Real-time DriftGuard system status. Check uptime for the review pipeline, dashboard, GitHub webhooks, and Infracost integration.",
-    path: "/status",
-    keywords: ["DriftGuard status", "system status", "uptime"],
-  }),
-};
 
 const SYSTEMS = [
   { name: "API",                 description: "Core review pipeline",          status: "operational" },
@@ -27,11 +20,7 @@ const SYSTEMS = [
 
 type SystemStatus = "operational" | "degraded" | "outage";
 
-const STATUS_LABEL: Record<SystemStatus, string> = {
-  operational: "Operational",
-  degraded:    "Degraded",
-  outage:      "Major outage",
-};
+// STATUS_LABEL replaced with t() calls below
 
 const STATUS_COLOR: Record<SystemStatus, string> = {
   operational: "text-allowed border-allowed/30 bg-allowed/10",
@@ -44,6 +33,19 @@ const DOT_COLOR: Record<SystemStatus, string> = {
   degraded:    "bg-warned",
   outage:      "bg-blocked",
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const prefs  = await getUserPreferences();
+  const locale = prefs.locale as Locale;
+  const msgs   = await getMessages(locale);
+  const t      = createTranslator(msgs);
+  return localizedPageMeta({
+    path:        "/status",
+    locale,
+    title:       t("status.meta.title"),
+    description: t("status.meta.description"),
+  });
+}
 
 export default async function StatusPage() {
   const allOperational = SYSTEMS.every((s) => s.status === "operational");
@@ -70,7 +72,7 @@ export default async function StatusPage() {
         <span className={`font-mono text-[12px] font-semibold uppercase tracking-widest ${
           allOperational ? "text-allowed" : "text-warned"
         }`}>
-          {allOperational ? "All systems operational" : "Partial outage"}
+          {allOperational ? t("status_labels.allOperational") : t("status_labels.partialOutage")}
         </span>
       </div>
 
@@ -92,7 +94,7 @@ export default async function StatusPage() {
             <div className="flex items-center gap-2 shrink-0">
               <span className={`h-1.5 w-1.5 rounded-full ${DOT_COLOR[s.status]} ${s.status === "operational" ? "dg-pulse" : ""}`} />
               <span className={`rounded border px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest ${STATUS_COLOR[s.status]}`}>
-                {STATUS_LABEL[s.status]}
+                {t(`status_labels.${s.status}`)}
               </span>
             </div>
           </div>

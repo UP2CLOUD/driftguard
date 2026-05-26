@@ -1,3 +1,5 @@
+import { type Locale } from "@/i18n/config";
+import type { Metadata } from "next";
 import { BillingActions } from "@/components/BillingActions";
 import { UserPreferencesSettings } from "@/components/UserPreferencesSettings";
 import { AwsIntegrationForm } from "@/components/AwsIntegrationForm";
@@ -6,8 +8,21 @@ import { createTranslator } from "@/i18n/translator";
 import { requireOrg } from "@/lib/org-server";
 import { getUserPreferences } from "@/lib/preferences/server";
 import type { Org } from "@/lib/api";
+import { localizedPageMeta } from "@/lib/seo";
 
-export const metadata = { title: "Settings · DriftGuard" };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const prefs  = await getUserPreferences();
+  const locale = prefs.locale as Locale;
+  const msgs   = await getMessages(locale);
+  const t      = createTranslator(msgs);
+  return localizedPageMeta({
+    path:        "/dashboard",
+    locale,
+    title:       t("settings.meta.title"),
+    description: t("settings.meta.description"),
+  });
+}
 
 export default async function Settings({
   params,

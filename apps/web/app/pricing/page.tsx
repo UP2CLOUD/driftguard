@@ -1,3 +1,4 @@
+import { type Locale } from "@/i18n/config";
 import { auth } from "@/auth";
 import { SignInButton } from "@/components/SignInButton";
 import { StatusBar } from "@/components/landing/StatusBar";
@@ -9,7 +10,6 @@ import { localizedPageMeta, jsonLdFaq } from "@/lib/seo";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
-import { type Locale } from "@/i18n/config";
 import { TranslationProvider } from "@/components/TranslationProvider";
 import { JsonLd } from "@/components/JsonLd";
 

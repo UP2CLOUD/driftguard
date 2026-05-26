@@ -1,11 +1,12 @@
+import { type Locale } from "@/i18n/config";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
+import { localizedPageMeta } from "@/lib/seo";
 
 
-export const metadata: Metadata = { title: "Data Processing Agreement — DriftGuard" };
 
 const SECTIONS = [
   {
@@ -49,6 +50,19 @@ const SECTIONS = [
     body: `This DPA is governed by the laws of Portugal and the mandatory provisions of EU Regulation 2016/679 (GDPR).`,
   },
 ];
+
+export async function generateMetadata(): Promise<Metadata> {
+  const prefs  = await getUserPreferences();
+  const locale = prefs.locale as Locale;
+  const msgs   = await getMessages(locale);
+  const t      = createTranslator(msgs);
+  return localizedPageMeta({
+    path:        "/dpa",
+    locale,
+    title:       t("dpa.meta.title"),
+    description: t("dpa.meta.description"),
+  });
+}
 
 export default async function DPA() {
   const preferences = await getUserPreferences();

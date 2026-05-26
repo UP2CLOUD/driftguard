@@ -1,3 +1,4 @@
+import { type Locale } from "@/i18n/config";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
@@ -5,7 +6,6 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { localizedPageMeta } from "@/lib/seo";
-import { type Locale } from "@/i18n/config";
 
 export async function generateMetadata(): Promise<Metadata> {
   const prefs    = await getUserPreferences();

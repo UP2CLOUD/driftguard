@@ -1,11 +1,11 @@
+import { type Locale } from "@/i18n/config";
 import type { Metadata } from "next";
-import { pageMeta, jsonLdBreadcrumb, jsonLdArticle } from "@/lib/seo";
+import { pageMeta, jsonLdBreadcrumb, jsonLdArticle, localizedPageMeta } from "@/lib/seo";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
-export const metadata = { title: "Install — DriftGuard Docs" };
 
 const STEPS = [
   { n: "01", title: "Install the GitHub App", code: "open https://github.com/apps/driftguard-app/installations/new", desc: "Select your organisation or personal account. Grant access to the repositories that have Terraform." },
@@ -23,6 +23,19 @@ cost:
 EOF`, desc: "Commit this file to any branch. DriftGuard reads it on every PR." },
   { n: "03", title: "Open a Terraform PR", code: "git checkout -b test/driftguard-review\n# edit any .tf file\ngit push && open a PR", desc: "DriftGuard will comment within ~30s. Check the Actions tab if it doesn\'t appear." },
 ];
+
+export async function generateMetadata(): Promise<Metadata> {
+  const prefs  = await getUserPreferences();
+  const locale = prefs.locale as Locale;
+  const msgs   = await getMessages(locale);
+  const t      = createTranslator(msgs);
+  return localizedPageMeta({
+    path:        "/docs/install",
+    locale,
+    title:       t("docs.meta.title"),
+    description: t("docs.meta.description"),
+  });
+}
 
 export default async function Install() {
   const preferences = await getUserPreferences();

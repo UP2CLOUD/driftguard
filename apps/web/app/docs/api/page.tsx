@@ -1,19 +1,12 @@
+import { type Locale } from "@/i18n/config";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
-import { pageMeta, jsonLdBreadcrumb, jsonLdArticle } from "@/lib/seo";
+import { pageMeta, jsonLdBreadcrumb, jsonLdArticle, localizedPageMeta } from "@/lib/seo";
 
 
-export const metadata: Metadata = {
-  ...pageMeta({
-    title: "API Reference — DriftGuard",
-    description: "DriftGuard REST API reference. All endpoints, authentication, request/response examples for organisations, analyses, billing, and webhooks.",
-    path: "/docs/api",
-    keywords: ["DriftGuard API", "Terraform review API", "infrastructure review REST API"],
-  }),
-};
 
 const ENDPOINTS = [
   { method: "GET",    path: "/api/v1/health",                      desc: "Liveness probe. Returns status + uptime + version." },
@@ -39,6 +32,19 @@ const METHOD_STYLE: Record<string, string> = {
   DELETE: "text-blocked border-blocked/30 bg-blocked/10",
   PATCH:  "text-warned border-warned/30 bg-warned/10",
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const prefs  = await getUserPreferences();
+  const locale = prefs.locale as Locale;
+  const msgs   = await getMessages(locale);
+  const t      = createTranslator(msgs);
+  return localizedPageMeta({
+    path:        "/docs/api",
+    locale,
+    title:       t("docs.meta.title"),
+    description: t("docs.meta.description"),
+  });
+}
 
 export default async function ApiReference() {
   const preferences = await getUserPreferences();

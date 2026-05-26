@@ -1,11 +1,25 @@
+import { type Locale } from "@/i18n/config";
 import type { Metadata } from "next";
-import { pageMeta, jsonLdBreadcrumb, jsonLdArticle } from "@/lib/seo";
+import { pageMeta, jsonLdBreadcrumb, jsonLdArticle, localizedPageMeta } from "@/lib/seo";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
-export const metadata = { title: "Policies — DriftGuard Docs" };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const prefs  = await getUserPreferences();
+  const locale = prefs.locale as Locale;
+  const msgs   = await getMessages(locale);
+  const t      = createTranslator(msgs);
+  return localizedPageMeta({
+    path:        "/docs/policies",
+    locale,
+    title:       t("docs.meta.title"),
+    description: t("docs.meta.description"),
+  });
+}
+
 export default async function Policies() {
   const preferences = await getUserPreferences();
   const messages = await getMessages(preferences.locale);

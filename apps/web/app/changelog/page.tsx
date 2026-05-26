@@ -1,19 +1,12 @@
+import { type Locale } from "@/i18n/config";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
-import { pageMeta } from "@/lib/seo";
+import { pageMeta, localizedPageMeta } from "@/lib/seo";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 
-export const metadata: Metadata = {
-  ...pageMeta({
-    title: "Changelog — DriftGuard",
-    description: "DriftGuard platform release history. All features, fixes, and breaking changes — newest first.",
-    path: "/changelog",
-    keywords: ["DriftGuard updates", "Terraform review changelog", "release notes"],
-  }),
-};
 
 const RELEASES = [
   {
@@ -77,6 +70,19 @@ const TYPE_STYLE = {
   fix: "text-[color:var(--dg-electric-bright)] border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/10",
   breaking: "text-blocked border-blocked/30 bg-blocked/10",
 } as const;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const prefs  = await getUserPreferences();
+  const locale = prefs.locale as Locale;
+  const msgs   = await getMessages(locale);
+  const t      = createTranslator(msgs);
+  return localizedPageMeta({
+    path:        "/changelog",
+    locale,
+    title:       t("changelog.meta.title"),
+    description: t("changelog.meta.description"),
+  });
+}
 
 export default async function Changelog() {
   const preferences = await getUserPreferences();

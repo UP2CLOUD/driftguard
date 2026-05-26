@@ -124,7 +124,11 @@
     "stripeCustomer": "Stripe 客户",
     "stripeActive": "活跃",
     "dangerZone": "危险区域",
-    "dangerZoneDesc": "不可逆操作，请谨慎操作。"
+    "dangerZoneDesc": "不可逆操作，请谨慎操作。",
+    "meta": {
+      "title": "设置 — DriftGuard",
+      "description": "管理您的 DriftGuard 组织设置、集成和策略。"
+    }
   },
   "installApp": {
     "title": "安装 GitHub 应用",
@@ -488,7 +492,11 @@
     "status": "状态",
     "today": "今天",
     "recentIncidents": "最近事件",
-    "incidentAlerts": "事件提醒"
+    "incidentAlerts": "事件提醒",
+    "meta": {
+      "title": "系统状态 — DriftGuard",
+      "description": "DriftGuard 系统实时状态。"
+    }
   },
   "security": {
     "eyebrow": "信任与安全",
@@ -505,7 +513,11 @@
     "sdlc": "安全开发",
     "controls": "安全控制",
     "disclosure": "负责任披露",
-    "reportVuln": "报告漏洞"
+    "reportVuln": "报告漏洞",
+    "meta": {
+      "title": "安全 — DriftGuard",
+      "description": "安全实践、负责任披露和漏洞报告。"
+    }
   },
   "compliance": {
     "eyebrow": "监管合规",
@@ -520,7 +532,11 @@
     "planned": "计划中",
     "evidencePack": "证据包",
     "evidencePackDesc": "需要为审计师打包合规证据导出？支持 SOC 2、ISO 27001、DORA 和 NIS2。",
-    "requestPack": "申请证据包"
+    "requestPack": "申请证据包",
+    "meta": {
+      "title": "合规 — DriftGuard",
+      "description": "每次 PR 审查内置 DORA、NIS2、ISO 27001 和 SOC 2 合规控制。"
+    }
   },
   "customers": {
     "eyebrow": "客户",
@@ -534,7 +550,11 @@
     "p50": "P50 延迟",
     "driftCost": "检测到的漂移成本",
     "uptime": "正常运行时间 SLA",
-    "yourTeamNext": "接下来是你的团队"
+    "yourTeamNext": "接下来是你的团队",
+    "meta": {
+      "title": "客户 — DriftGuard",
+      "description": "使用 DriftGuard 管理 AI 生成基础设施代码的团队。"
+    }
   },
   "careers": {
     "eyebrow": "职业机会",
@@ -550,7 +570,11 @@
     "highOwn": "高度自主",
     "openSource": "核心开源",
     "euOnly": "EU 时区优先",
-    "noRole": "没有看到你的职位？"
+    "noRole": "没有看到你的职位？",
+    "meta": {
+      "title": "职业机会 — DriftGuard",
+      "description": "加入我们，为基础设施工程师构建 AI 运行时安全。"
+    }
   },
   "changelog": {
     "eyebrow": "发布历史",
@@ -560,7 +584,11 @@
     "fix": "修复",
     "breaking": "破坏性变更",
     "improved": "改进",
-    "note": "技术条目保留英文作为规范发布记录。"
+    "note": "技术条目保留英文作为规范发布记录。",
+    "meta": {
+      "title": "更新日志 — DriftGuard",
+      "description": "DriftGuard 产品更新、新功能和改进。"
+    }
   },
   "pricing": {
     "eyebrow": "价格",
@@ -586,12 +614,20 @@
     "subprocessor": "次级处理者",
     "country": "国家",
     "objection": "对次级处理者变更提出异议",
-    "viewDpa": "查看 DPA →"
+    "viewDpa": "查看 DPA →",
+    "meta": {
+      "title": "次级处理者 — DriftGuard",
+      "description": "DriftGuard 使用的第三方次级处理者列表。"
+    }
   },
   "dpa": {
     "eyebrow": "法律",
     "title": "数据处理协议",
-    "subtitle": "DriftGuard（处理方）与客户（控制方）之间的协议，符合 GDPR 第 28 条。"
+    "subtitle": "DriftGuard（处理方）与客户（控制方）之间的协议，符合 GDPR 第 28 条。",
+    "meta": {
+      "title": "数据处理协议 — DriftGuard",
+      "description": "DriftGuard 数据处理协议（GDPR 合规）。"
+    }
   },
   "seo": {
     "title": "DriftGuard — Terraform AI 代理运行时安全",
@@ -658,5 +694,24 @@
     "step1": "步骤 1 — 创建 IAM 角色",
     "step2": "步骤 2 — 粘贴角色 ARN",
     "externalId": "外部 ID："
+  },
+  "terms": {
+    "meta": {
+      "title": "服务条款 — DriftGuard",
+      "description": "DriftGuard 服务条款。"
+    }
+  },
+  "privacy": {
+    "meta": {
+      "title": "隐私政策 — DriftGuard",
+      "description": "DriftGuard 如何收集、使用和保护个人数据。"
+    }
+  },
+  "status_labels": {
+    "operational": "正常运行",
+    "degraded": "性能下降",
+    "outage": "严重故障",
+    "allOperational": "所有系统正常运行",
+    "partialOutage": "部分故障"
   }
 }

@@ -124,7 +124,11 @@
     "stripeCustomer": "Stripe ग्राहक",
     "stripeActive": "सक्रिय",
     "dangerZone": "खतरनाक क्षेत्र",
-    "dangerZoneDesc": "अपरिवर्तनीय क्रियाएं। सावधानी से आगे बढ़ें।"
+    "dangerZoneDesc": "अपरिवर्तनीय क्रियाएं। सावधानी से आगे बढ़ें।",
+    "meta": {
+      "title": "सेटिंग्स — DriftGuard",
+      "description": "अपनी DriftGuard संगठन सेटिंग्स प्रबंधित करें।"
+    }
   },
   "installApp": {
     "title": "GitHub App इंस्टॉल करें",
@@ -488,7 +492,11 @@
     "status": "स्थिति",
     "today": "आज",
     "recentIncidents": "हाल की घटनाएं",
-    "incidentAlerts": "घटना अलर्ट"
+    "incidentAlerts": "घटना अलर्ट",
+    "meta": {
+      "title": "स्थिति — DriftGuard",
+      "description": "DriftGuard सिस्टम की रीयल-टाइम स्थिति।"
+    }
   },
   "security": {
     "eyebrow": "विश्वास और सुरक्षा",
@@ -505,7 +513,11 @@
     "sdlc": "सुरक्षित विकास",
     "controls": "सुरक्षा नियंत्रण",
     "disclosure": "जिम्मेदार प्रकटीकरण",
-    "reportVuln": "भेद्यता रिपोर्ट करें"
+    "reportVuln": "भेद्यता रिपोर्ट करें",
+    "meta": {
+      "title": "सुरक्षा — DriftGuard",
+      "description": "सुरक्षा प्रथाएं, जिम्मेदार प्रकटीकरण और भेद्यता रिपोर्टिंग।"
+    }
   },
   "compliance": {
     "eyebrow": "नियामक अनुपालन",
@@ -520,7 +532,11 @@
     "planned": "नियोजित",
     "evidencePack": "साक्ष्य पैक",
     "evidencePackDesc": "अपने ऑडिटर के लिए पूर्व-पैकेज्ड अनुपालन साक्ष्य निर्यात चाहिए?",
-    "requestPack": "साक्ष्य पैक अनुरोध करें"
+    "requestPack": "साक्ष्य पैक अनुरोध करें",
+    "meta": {
+      "title": "अनुपालन — DriftGuard",
+      "description": "प्रत्येक PR समीक्षा में DORA, NIS2, ISO 27001 नियंत्रण।"
+    }
   },
   "customers": {
     "eyebrow": "ग्राहक",
@@ -534,7 +550,11 @@
     "p50": "P50 लेटेंसी",
     "driftCost": "ड्रिफ्ट लागत",
     "uptime": "अपटाइम SLA",
-    "yourTeamNext": "अगली आपकी टीम"
+    "yourTeamNext": "अगली आपकी टीम",
+    "meta": {
+      "title": "ग्राहक — DriftGuard",
+      "description": "AI-जनित इन्फ्रा कोड के लिए DriftGuard का उपयोग करने वाली टीमें।"
+    }
   },
   "careers": {
     "eyebrow": "करियर",
@@ -550,7 +570,11 @@
     "openSource": "ओपन सोर्स कोर",
     "euOnly": "EU टाइमज़ोन पसंदीदा",
     "noRolesBody": "हम जरूरत के अनुसार भर्ती करते हैं। LinkedIn पर फॉलो करें।",
-    "noRole": "अपनी भूमिका नहीं दिख रही?"
+    "noRole": "अपनी भूमिका नहीं दिख रही?",
+    "meta": {
+      "title": "करियर — DriftGuard",
+      "description": "इन्फ्रास्ट्रक्चर इंजीनियरों के लिए AI रनटाइम सुरक्षा बनाने वाली टीम में शामिल हों।"
+    }
   },
   "changelog": {
     "eyebrow": "रिलीज़ इतिहास",
@@ -560,7 +584,11 @@
     "fix": "सुधार",
     "breaking": "Breaking",
     "improved": "बेहतर",
-    "note": "तकनीकी प्रविष्टियां अंग्रेजी में रखी गई हैं।"
+    "note": "तकनीकी प्रविष्टियां अंग्रेजी में रखी गई हैं।",
+    "meta": {
+      "title": "चेंजलॉग — DriftGuard",
+      "description": "DriftGuard उत्पाद अपडेट, नई सुविधाएं और सुधार।"
+    }
   },
   "pricing": {
     "eyebrow": "मूल्य निर्धारण",
@@ -586,12 +614,20 @@
     "subprocessor": "उप-प्रसंस्करणकर्ता",
     "country": "देश",
     "objection": "उप-प्रसंस्करणकर्ता परिवर्तन पर आपत्ति",
-    "viewDpa": "DPA देखें →"
+    "viewDpa": "DPA देखें →",
+    "meta": {
+      "title": "उप-प्रसंस्करणकर्ता — DriftGuard",
+      "description": "DriftGuard द्वारा उपयोग किए गए तृतीय-पक्ष उप-प्रसंस्करणकर्ताओं की सूची।"
+    }
   },
   "dpa": {
     "eyebrow": "कानूनी",
     "title": "डेटा प्रोसेसिंग अनुबंध",
-    "subtitle": "DriftGuard (प्रोसेसर) और ग्राहक (नियंत्रक) के बीच। GDPR अनुच्छेद 28 के अनुपालन में।"
+    "subtitle": "DriftGuard (प्रोसेसर) और ग्राहक (नियंत्रक) के बीच। GDPR अनुच्छेद 28 के अनुपालन में।",
+    "meta": {
+      "title": "डेटा प्रसंस्करण समझौता — DriftGuard",
+      "description": "GDPR अनुपालन के लिए DriftGuard डेटा प्रसंस्करण समझौता।"
+    }
   },
   "seo": {
     "title": "DriftGuard — Terraform एजेंट के लिए AI रनटाइम सुरक्षा",
@@ -658,5 +694,24 @@
     "step1": "चरण 1 — IAM रोल बनाएं",
     "step2": "चरण 2 — रोल ARN पेस्ट करें",
     "externalId": "बाहरी ID:"
+  },
+  "terms": {
+    "meta": {
+      "title": "सेवा की शर्तें — DriftGuard",
+      "description": "DriftGuard सेवा की शर्तें।"
+    }
+  },
+  "privacy": {
+    "meta": {
+      "title": "गोपनीयता नीति — DriftGuard",
+      "description": "DriftGuard व्यक्तिगत डेटा कैसे एकत्र करता है।"
+    }
+  },
+  "status_labels": {
+    "operational": "सक्रिय",
+    "degraded": "क्षमता में कमी",
+    "outage": "बड़ी विफलता",
+    "allOperational": "सभी सिस्टम सक्रिय",
+    "partialOutage": "आंशिक विफलता"
   }
 }

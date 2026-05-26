@@ -1,19 +1,12 @@
+import { type Locale } from "@/i18n/config";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
-import { pageMeta } from "@/lib/seo";
+import { pageMeta, localizedPageMeta } from "@/lib/seo";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 
-export const metadata: Metadata = {
-  ...pageMeta({
-    title: "Compliance — DriftGuard",
-    description: "How DriftGuard maps to DORA, NIS2 Article 21, ISO 27001:2022, and CIS Benchmarks. Compliance evidence as a side effect of PR review.",
-    path: "/compliance",
-    keywords: ["DORA compliance", "NIS2 compliance", "ISO 27001 Terraform", "CIS benchmarks IaC"],
-  }),
-};
 
 const FRAMEWORKS = [
   {
@@ -63,6 +56,19 @@ const STATUS_LABEL: Record<string, string> = {
   "compliant": "Compliant",
   "in-progress": "In progress",
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const prefs  = await getUserPreferences();
+  const locale = prefs.locale as Locale;
+  const msgs   = await getMessages(locale);
+  const t      = createTranslator(msgs);
+  return localizedPageMeta({
+    path:        "/compliance",
+    locale,
+    title:       t("compliance.meta.title"),
+    description: t("compliance.meta.description"),
+  });
+}
 
 export default async function Compliance() {
   const preferences = await getUserPreferences();

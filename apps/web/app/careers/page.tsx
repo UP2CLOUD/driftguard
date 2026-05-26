@@ -1,19 +1,12 @@
+import { type Locale } from "@/i18n/config";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
-import { pageMeta } from "@/lib/seo";
+import { pageMeta, localizedPageMeta } from "@/lib/seo";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 
-export const metadata: Metadata = {
-  ...pageMeta({
-    title: "Careers — DriftGuard",
-    description: "Join the team building AI runtime safety for Terraform infrastructure. Remote-first, EU-based. Senior engineers wanted.",
-    path: "/careers",
-    keywords: ["DriftGuard jobs", "infrastructure engineering jobs", "EU remote engineering"],
-  }),
-};
 
 const ROLES = [
   {
@@ -52,6 +45,19 @@ const VALUES = [
   { v: "Ship fast", desc: "We iterate weekly. Strong opinions about scope." },
   { v: "Open-core", desc: "Core analyzer is open source. You build in public." },
 ];
+
+export async function generateMetadata(): Promise<Metadata> {
+  const prefs  = await getUserPreferences();
+  const locale = prefs.locale as Locale;
+  const msgs   = await getMessages(locale);
+  const t      = createTranslator(msgs);
+  return localizedPageMeta({
+    path:        "/careers",
+    locale,
+    title:       t("careers.meta.title"),
+    description: t("careers.meta.description"),
+  });
+}
 
 export default async function Careers() {
   const preferences = await getUserPreferences();

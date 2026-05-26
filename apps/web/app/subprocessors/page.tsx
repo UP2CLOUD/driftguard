@@ -1,11 +1,12 @@
+import { type Locale } from "@/i18n/config";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
+import { localizedPageMeta } from "@/lib/seo";
 
 
-export const metadata: Metadata = { title: "Subprocessors — DriftGuard" };
 
 const SUBPROCESSORS = [
   { name: "Google Cloud Platform", purpose: "Cloud infrastructure, storage, database, compute (Cloud Run, Cloud SQL, Cloud Storage)", country: "EU (Belgium, Netherlands)", entity: "Google Ireland Limited" },
@@ -15,6 +16,19 @@ const SUBPROCESSORS = [
   { name: "Infracost", purpose: "Cloud cost estimation from Terraform plans", country: "USA", entity: "Infracost Inc." },
   { name: "Sentry", purpose: "Error monitoring and performance tracing (backend only, no PR content)", country: "USA", entity: "Functional Software, Inc." },
 ];
+
+export async function generateMetadata(): Promise<Metadata> {
+  const prefs  = await getUserPreferences();
+  const locale = prefs.locale as Locale;
+  const msgs   = await getMessages(locale);
+  const t      = createTranslator(msgs);
+  return localizedPageMeta({
+    path:        "/subprocessors",
+    locale,
+    title:       t("subprocessors.meta.title"),
+    description: t("subprocessors.meta.description"),
+  });
+}
 
 export default async function Subprocessors() {
   const preferences = await getUserPreferences();

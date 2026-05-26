@@ -1,19 +1,12 @@
+import { type Locale } from "@/i18n/config";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
-import { pageMeta } from "@/lib/seo";
+import { pageMeta, localizedPageMeta } from "@/lib/seo";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 
-export const metadata: Metadata = {
-  ...pageMeta({
-    title: "Customers — DriftGuard",
-    description: "Platform and DevOps teams using DriftGuard to govern AI-written Terraform at scale. Real results from engineering teams.",
-    path: "/customers",
-    keywords: ["Terraform governance", "AI agent safety", "platform engineering"],
-  }),
-};
 
 const QUOTES = [
   {
@@ -50,6 +43,19 @@ const METRICS = [
 ];
 
 const TAG_STYLE = "rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const prefs  = await getUserPreferences();
+  const locale = prefs.locale as Locale;
+  const msgs   = await getMessages(locale);
+  const t      = createTranslator(msgs);
+  return localizedPageMeta({
+    path:        "/customers",
+    locale,
+    title:       t("customers.meta.title"),
+    description: t("customers.meta.description"),
+  });
+}
 
 export default async function Customers() {
   const preferences = await getUserPreferences();

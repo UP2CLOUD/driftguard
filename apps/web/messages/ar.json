@@ -124,7 +124,11 @@
     "stripeCustomer": "عميل Stripe",
     "stripeActive": "نشط",
     "dangerZone": "منطقة الخطر",
-    "dangerZoneDesc": "إجراءات لا رجعة فيها. تابع بحذر."
+    "dangerZoneDesc": "إجراءات لا رجعة فيها. تابع بحذر.",
+    "meta": {
+      "title": "الإعدادات — DriftGuard",
+      "description": "إدارة إعدادات مؤسسة DriftGuard والتكاملات والسياسات."
+    }
   },
   "installApp": {
     "title": "تثبيت تطبيق GitHub",
@@ -488,7 +492,11 @@
     "status": "الحالة",
     "today": "اليوم",
     "recentIncidents": "الحوادث الأخيرة",
-    "incidentAlerts": "تنبيهات الحوادث"
+    "incidentAlerts": "تنبيهات الحوادث",
+    "meta": {
+      "title": "الحالة — DriftGuard",
+      "description": "حالة نظام DriftGuard في الوقت الفعلي."
+    }
   },
   "security": {
     "eyebrow": "الثقة والأمان",
@@ -505,7 +513,11 @@
     "sdlc": "التطوير الآمن",
     "controls": "ضوابط الأمان",
     "disclosure": "الإفصاح المسؤول",
-    "reportVuln": "الإبلاغ عن ثغرة"
+    "reportVuln": "الإبلاغ عن ثغرة",
+    "meta": {
+      "title": "الأمان — DriftGuard",
+      "description": "ممارسات الأمان والإفصاح المسؤول والإبلاغ عن الثغرات."
+    }
   },
   "compliance": {
     "eyebrow": "الامتثال التنظيمي",
@@ -520,7 +532,11 @@
     "planned": "مخطط",
     "evidencePack": "حزمة الأدلة",
     "evidencePackDesc": "تحتاج تصدير أدلة امتثال مُعبّأة لمدققك؟ متاح لـ SOC 2 وISO 27001 وDORA وNIS2.",
-    "requestPack": "طلب حزمة الأدلة"
+    "requestPack": "طلب حزمة الأدلة",
+    "meta": {
+      "title": "الامتثال — DriftGuard",
+      "description": "ضوابط DORA وNIS2 وISO 27001 وSOC 2 في كل مراجعة PR."
+    }
   },
   "customers": {
     "eyebrow": "العملاء",
@@ -534,7 +550,11 @@
     "p50": "زمن استجابة P50",
     "driftCost": "تكلفة الانجراف المكتشفة",
     "uptime": "SLA وقت التشغيل",
-    "yourTeamNext": "فريقك التالي"
+    "yourTeamNext": "فريقك التالي",
+    "meta": {
+      "title": "العملاء — DriftGuard",
+      "description": "الفرق التي تستخدم DriftGuard لإدارة الكود البنيوي الذي ينتجه الذكاء الاصطناعي."
+    }
   },
   "careers": {
     "eyebrow": "وظائف",
@@ -550,7 +570,11 @@
     "highOwn": "مسؤولية عالية",
     "openSource": "نواة مفتوحة المصدر",
     "euOnly": "المنطقة الزمنية EU مفضلة",
-    "noRole": "لم تجد وظيفتك؟"
+    "noRole": "لم تجد وظيفتك؟",
+    "meta": {
+      "title": "الوظائف — DriftGuard",
+      "description": "انضم إلى الفريق الذي يبني أمان وقت التشغيل لمهندسي البنية التحتية."
+    }
   },
   "changelog": {
     "eyebrow": "سجل الإصدارات",
@@ -560,7 +584,11 @@
     "fix": "إصلاح",
     "breaking": "تغيير جذري",
     "improved": "محسّن",
-    "note": "تُحفظ الإدخالات التقنية باللغة الإنجليزية كسجل رسمي."
+    "note": "تُحفظ الإدخالات التقنية باللغة الإنجليزية كسجل رسمي.",
+    "meta": {
+      "title": "سجل التغييرات — DriftGuard",
+      "description": "تحديثات منتج DriftGuard والميزات الجديدة والتحسينات."
+    }
   },
   "pricing": {
     "eyebrow": "الأسعار",
@@ -586,12 +614,20 @@
     "subprocessor": "المعالج الفرعي",
     "country": "الدولة",
     "objection": "اعتراض على تغيير المعالج الفرعي",
-    "viewDpa": "عرض DPA ←"
+    "viewDpa": "عرض DPA ←",
+    "meta": {
+      "title": "المعالجون الفرعيون — DriftGuard",
+      "description": "قائمة المعالجين الفرعيين من جهات خارجية الذين يستخدمهم DriftGuard."
+    }
   },
   "dpa": {
     "eyebrow": "قانوني",
     "title": "اتفاقية معالجة البيانات",
-    "subtitle": "بين DriftGuard (المعالج) والعميل (المتحكم). متوافق مع GDPR المادة 28."
+    "subtitle": "بين DriftGuard (المعالج) والعميل (المتحكم). متوافق مع GDPR المادة 28.",
+    "meta": {
+      "title": "اتفاقية معالجة البيانات — DriftGuard",
+      "description": "اتفاقية معالجة بيانات DriftGuard للامتثال للائحة العامة لحماية البيانات."
+    }
   },
   "seo": {
     "title": "DriftGuard — أمان وقت التشغيل للذكاء الاصطناعي لـ Terraform",
@@ -658,5 +694,24 @@
     "step1": "الخطوة 1 — إنشاء دور IAM",
     "step2": "الخطوة 2 — لصق دور ARN",
     "externalId": "المعرف الخارجي:"
+  },
+  "terms": {
+    "meta": {
+      "title": "شروط الخدمة — DriftGuard",
+      "description": "شروط خدمة DriftGuard."
+    }
+  },
+  "privacy": {
+    "meta": {
+      "title": "سياسة الخصوصية — DriftGuard",
+      "description": "كيف يجمع DriftGuard البيانات الشخصية ويستخدمها ويحميها."
+    }
+  },
+  "status_labels": {
+    "operational": "يعمل",
+    "degraded": "أداء منخفض",
+    "outage": "انقطاع كبير",
+    "allOperational": "جميع الأنظمة تعمل",
+    "partialOutage": "انقطاع جزئي"
   }
 }

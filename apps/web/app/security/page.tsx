@@ -1,19 +1,12 @@
+import { type Locale } from "@/i18n/config";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
-import { pageMeta } from "@/lib/seo";
+import { pageMeta, localizedPageMeta } from "@/lib/seo";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
 
-export const metadata: Metadata = {
-  ...pageMeta({
-    title: "Security — DriftGuard",
-    description: "DriftGuard security architecture: AES-256 encryption, GitHub OAuth, append-only audit log, EU data residency, annual pentest.",
-    path: "/security",
-    keywords: ["Terraform security", "infrastructure security", "GDPR", "EU data residency"],
-  }),
-};
 
 const CONTROLS = [
   { label: "Encryption at rest", value: "AES-256 (GCP Cloud Storage + Cloud SQL)" },
@@ -29,6 +22,19 @@ const CONTROLS = [
   { label: "Penetration testing", value: "Annual third-party pentest (2026 Q3 scheduled)" },
   { label: "SOC 2 Type II", value: "In progress — target Q4 2026" },
 ];
+
+export async function generateMetadata(): Promise<Metadata> {
+  const prefs  = await getUserPreferences();
+  const locale = prefs.locale as Locale;
+  const msgs   = await getMessages(locale);
+  const t      = createTranslator(msgs);
+  return localizedPageMeta({
+    path:        "/security",
+    locale,
+    title:       t("security.meta.title"),
+    description: t("security.meta.description"),
+  });
+}
 
 export default async function Security() {
   const preferences = await getUserPreferences();

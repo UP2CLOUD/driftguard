@@ -124,7 +124,11 @@
     "stripeCustomer": "Cliente Stripe",
     "stripeActive": "activo",
     "dangerZone": "Zona de peligro",
-    "dangerZoneDesc": "Acciones irreversibles. Proceder con cuidado."
+    "dangerZoneDesc": "Acciones irreversibles. Proceder con cuidado.",
+    "meta": {
+      "title": "Configuración — DriftGuard",
+      "description": "Gestiona la configuración de tu organización, integraciones y políticas."
+    }
   },
   "installApp": {
     "title": "Instalar la GitHub App",
@@ -488,7 +492,11 @@
     "status": "Estado",
     "today": "Hoy",
     "recentIncidents": "Incidentes recientes",
-    "incidentAlerts": "Alertas de incidentes"
+    "incidentAlerts": "Alertas de incidentes",
+    "meta": {
+      "title": "Estado — DriftGuard",
+      "description": "Estado del sistema DriftGuard en tiempo real."
+    }
   },
   "security": {
     "eyebrow": "Confianza y seguridad",
@@ -505,7 +513,11 @@
     "sdlc": "Desarrollo seguro",
     "controls": "Controles de seguridad",
     "disclosure": "Divulgación responsable",
-    "reportVuln": "Reportar una vulnerabilidad"
+    "reportVuln": "Reportar una vulnerabilidad",
+    "meta": {
+      "title": "Seguridad — DriftGuard",
+      "description": "Prácticas de seguridad, divulgación responsable y reporte de vulnerabilidades."
+    }
   },
   "compliance": {
     "eyebrow": "Cumplimiento normativo",
@@ -520,7 +532,11 @@
     "planned": "Planificado",
     "evidencePack": "Pack de evidencias",
     "evidencePackDesc": "¿Necesitas un export de evidencias de cumplimiento para tu auditor? Disponible para SOC 2, ISO 27001, DORA y NIS2.",
-    "requestPack": "Solicitar pack de evidencias"
+    "requestPack": "Solicitar pack de evidencias",
+    "meta": {
+      "title": "Cumplimiento — DriftGuard",
+      "description": "Controles DORA, NIS2, ISO 27001 y SOC 2 integrados en cada revisión de PR."
+    }
   },
   "customers": {
     "eyebrow": "Clientes",
@@ -534,7 +550,11 @@
     "p50": "Latencia P50",
     "driftCost": "coste drift detectado",
     "uptime": "SLA uptime",
-    "yourTeamNext": "Tu equipo a continuación"
+    "yourTeamNext": "Tu equipo a continuación",
+    "meta": {
+      "title": "Clientes — DriftGuard",
+      "description": "Equipos que usan DriftGuard para gobernar código de infraestructura generado por IA."
+    }
   },
   "careers": {
     "eyebrow": "Carreras",
@@ -550,7 +570,11 @@
     "highOwn": "Alta responsabilidad",
     "openSource": "Core open source",
     "euOnly": "Zona horaria EU preferida",
-    "noRole": "¿No ves tu puesto?"
+    "noRole": "¿No ves tu puesto?",
+    "meta": {
+      "title": "Carreras — DriftGuard",
+      "description": "Únete al equipo que construye seguridad en tiempo de ejecución para ingenieros de infraestructura."
+    }
   },
   "changelog": {
     "eyebrow": "Historial de versiones",
@@ -560,7 +584,11 @@
     "fix": "Corrección",
     "breaking": "Breaking",
     "improved": "Mejorado",
-    "note": "Las entradas técnicas se mantienen en inglés como registro canónico."
+    "note": "Las entradas técnicas se mantienen en inglés como registro canónico.",
+    "meta": {
+      "title": "Changelog — DriftGuard",
+      "description": "Actualizaciones de producto, nuevas funcionalidades y mejoras de DriftGuard."
+    }
   },
   "pricing": {
     "eyebrow": "Precios",
@@ -586,12 +614,20 @@
     "subprocessor": "Subencargado",
     "country": "País",
     "objection": "Objeción a cambio de subencargado",
-    "viewDpa": "Ver DPA →"
+    "viewDpa": "Ver DPA →",
+    "meta": {
+      "title": "Subencargados — DriftGuard",
+      "description": "Lista de subencargados de tratamiento de DriftGuard."
+    }
   },
   "dpa": {
     "eyebrow": "Legal",
     "title": "Acuerdo de Procesamiento de Datos",
-    "subtitle": "Entre DriftGuard (Procesador) y el Cliente (Controlador). Conforme al RGPD Art. 28."
+    "subtitle": "Entre DriftGuard (Procesador) y el Cliente (Controlador). Conforme al RGPD Art. 28.",
+    "meta": {
+      "title": "Acuerdo de Procesamiento de Datos — DriftGuard",
+      "description": "Acuerdo de Procesamiento de Datos de DriftGuard para cumplimiento del RGPD."
+    }
   },
   "seo": {
     "title": "DriftGuard — Seguridad en tiempo de ejecución para agentes Terraform",
@@ -658,5 +694,24 @@
     "step1": "Paso 1 — Crear rol IAM",
     "step2": "Paso 2 — Pegar rol ARN",
     "externalId": "ID externo:"
+  },
+  "terms": {
+    "meta": {
+      "title": "Términos de Servicio — DriftGuard",
+      "description": "Términos de Servicio de DriftGuard."
+    }
+  },
+  "privacy": {
+    "meta": {
+      "title": "Política de Privacidad — DriftGuard",
+      "description": "Cómo DriftGuard recopila, usa y protege los datos personales."
+    }
+  },
+  "status_labels": {
+    "operational": "Operativo",
+    "degraded": "Degradado",
+    "outage": "Fallo grave",
+    "allOperational": "Todos los sistemas operativos",
+    "partialOutage": "Fallo parcial"
   }
 }

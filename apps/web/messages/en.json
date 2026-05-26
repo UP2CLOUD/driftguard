@@ -139,7 +139,11 @@
     "stripeCustomer": "Stripe customer",
     "stripeActive": "active",
     "dangerZone": "Danger zone",
-    "dangerZoneDesc": "Irreversible actions. Proceed with care."
+    "dangerZoneDesc": "Irreversible actions. Proceed with care.",
+    "meta": {
+      "title": "Settings — DriftGuard",
+      "description": "Manage your DriftGuard organisation settings, integrations, and policies."
+    }
   },
   "installApp": {
     "title": "Install the GitHub App",
@@ -488,7 +492,11 @@
     "status": "Status",
     "today": "Today",
     "recentIncidents": "Recent incidents",
-    "incidentAlerts": "Incident alerts"
+    "incidentAlerts": "Incident alerts",
+    "meta": {
+      "title": "Status — DriftGuard",
+      "description": "Real-time DriftGuard system status. Check uptime for the review pipeline, dashboard, GitHub webhooks, and integrations."
+    }
   },
   "security": {
     "eyebrow": "Trust & security",
@@ -505,7 +513,11 @@
     "sdlc": "Secure development",
     "controls": "Security controls",
     "disclosure": "Responsible disclosure",
-    "reportVuln": "Report a vulnerability"
+    "reportVuln": "Report a vulnerability",
+    "meta": {
+      "title": "Security — DriftGuard",
+      "description": "DriftGuard security practices, responsible disclosure, and vulnerability reporting."
+    }
   },
   "compliance": {
     "eyebrow": "Regulatory compliance",
@@ -520,7 +532,11 @@
     "planned": "Planned",
     "evidencePack": "Evidence pack",
     "evidencePackDesc": "Need a pre-packaged compliance evidence export for your auditor? Available for SOC 2, ISO 27001, DORA, and NIS2.",
-    "requestPack": "Request evidence pack"
+    "requestPack": "Request evidence pack",
+    "meta": {
+      "title": "Compliance — DriftGuard",
+      "description": "DORA, NIS2, ISO 27001, and SOC 2 compliance controls built into every PR review."
+    }
   },
   "customers": {
     "eyebrow": "Customers",
@@ -534,7 +550,11 @@
     "p50": "P50 review latency",
     "driftCost": "drift cost surfaced",
     "uptime": "uptime SLA",
-    "yourTeamNext": "Your team next"
+    "yourTeamNext": "Your team next",
+    "meta": {
+      "title": "Customers — DriftGuard",
+      "description": "Teams using DriftGuard to govern AI-generated infrastructure code."
+    }
   },
   "careers": {
     "eyebrow": "Careers",
@@ -550,7 +570,11 @@
     "highOwn": "High ownership",
     "openSource": "Open source core",
     "euOnly": "EU timezone preferred",
-    "noRole": "Don't see your role?"
+    "noRole": "Don't see your role?",
+    "meta": {
+      "title": "Careers — DriftGuard",
+      "description": "Join the team building AI runtime safety for infrastructure engineers."
+    }
   },
   "changelog": {
     "eyebrow": "Release history",
@@ -560,7 +584,11 @@
     "fix": "Fix",
     "breaking": "Breaking",
     "improved": "Improved",
-    "note": "Technical entries kept in English as canonical release record."
+    "note": "Technical entries kept in English as canonical release record.",
+    "meta": {
+      "title": "Changelog — DriftGuard",
+      "description": "DriftGuard product updates, new features, and improvements."
+    }
   },
   "pricing": {
     "eyebrow": "Pricing",
@@ -586,12 +614,20 @@
     "subprocessor": "Subprocessor",
     "country": "Country",
     "objection": "Objection to subprocessor change",
-    "viewDpa": "View DPA →"
+    "viewDpa": "View DPA →",
+    "meta": {
+      "title": "Subprocessors — DriftGuard",
+      "description": "List of third-party subprocessors used by DriftGuard."
+    }
   },
   "dpa": {
     "eyebrow": "Legal",
     "title": "Data Processing Agreement",
-    "subtitle": "Between DriftGuard (Processor) and Customer (Controller). Compliant with GDPR Art. 28."
+    "subtitle": "Between DriftGuard (Processor) and Customer (Controller). Compliant with GDPR Art. 28.",
+    "meta": {
+      "title": "Data Processing Agreement — DriftGuard",
+      "description": "DriftGuard Data Processing Agreement for GDPR compliance."
+    }
   },
   "seo": {
     "title": "DriftGuard — AI runtime safety for Terraform agents",
@@ -658,5 +694,24 @@
     "step1": "Step 1 — Create IAM role",
     "step2": "Step 2 — Paste role ARN",
     "externalId": "External ID:"
+  },
+  "terms": {
+    "meta": {
+      "title": "Terms of Service — DriftGuard",
+      "description": "DriftGuard Terms of Service."
+    }
+  },
+  "privacy": {
+    "meta": {
+      "title": "Privacy Policy — DriftGuard",
+      "description": "How DriftGuard collects, uses, and protects personal data."
+    }
+  },
+  "status_labels": {
+    "operational": "Operational",
+    "degraded": "Degraded",
+    "outage": "Major outage",
+    "allOperational": "All systems operational",
+    "partialOutage": "Partial outage"
   }
 }
