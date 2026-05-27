@@ -1,9 +1,10 @@
 """PR analyzer — core pipeline.
 
 Flow:
-  download tarball → find tf dirs → parallel plan+scan → AI review
-  → post PR comment → persist Analysis+Findings → upload plan to R2
-  → return {analysis_id, status, findings, duration_ms, risk_score}
+  download tarball → static scan (K8s/GHA/TF rules, no binary needed)
+  + plan-based analysis (TF dirs only) → merge findings → AI review
+  → post PR comment + Check Run → persist Analysis+Findings
+  → upload plan to R2 → return {analysis_id, status, findings, ...}
 """
 
 import asyncio
@@ -17,6 +18,7 @@ from driftguard.ai.findings import (
     from_checkov,
     from_infracost,
     from_plan_changes,
+    from_static_scan,
 )
 from driftguard.ai.formatter import format_comment
 from driftguard.ai.reviewer import review as ai_review
@@ -28,6 +30,7 @@ from driftguard.events.schemas import Severity  # noqa: F401
 from driftguard.integrations import checkov, infracost, terraform
 from driftguard.integrations.git import download_tarball, find_terraform_dirs
 from driftguard.integrations.github import installation_token, post_check_run, post_pr_comment
+from driftguard.services.scanner.engine import scan_directory_sync
 from driftguard.services.terraform.plan_parser import TerraformPlan, parse_plan
 from driftguard.services.terraform.risk_scorer import RiskResult
 from driftguard.services.terraform.risk_scorer import score as score_plan
@@ -228,6 +231,42 @@ def _compute_risk(findings: list[Finding], plan: "TerraformPlan | None" = None) 
     return min(100, sum(weights.get(f.severity, 0) for f in findings))
 
 
+async def _run_static_scan(root: Path) -> list[Finding]:
+    """Run the static IaC scanner on the repo root. No external tools required.
+
+    Scans all .tf, K8s YAML, and .github/workflows files in the repo tree.
+    Converts ScanFinding objects to Finding objects with compliance controls.
+    """
+    try:
+        result = await asyncio.to_thread(scan_directory_sync, root)
+        converted = from_static_scan(result.findings)
+        log.info(
+            "static_scan_complete",
+            tf=result.tf_files,
+            k8s=result.k8s_files,
+            gha=result.gha_files,
+            findings=len(converted),
+        )
+        return converted
+    except Exception as exc:
+        log.warning("static_scan_failed", error=str(exc))
+        return []
+
+
+def _merge_findings(static: list[Finding], plan: list[Finding]) -> list[Finding]:
+    """Merge static + plan-based findings without duplicating TF coverage.
+
+    When plan-based analysis ran (Checkov + plan.json), it covers TF files
+    more accurately with actual plan context. We keep plan findings and only
+    append static findings for K8s (K8S*) and GHA (GHA*) rule IDs.
+    When no plan findings exist (no TF dirs or plan failed), return all static.
+    """
+    if not plan:
+        return static
+    k8s_gha = [f for f in static if f.rule_id and not f.rule_id.startswith("TF")]
+    return plan + k8s_gha
+
+
 async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: int, head_sha: str) -> dict:
     started = time.monotonic()
     pr_ctx = {"repo": repo_full_name, "pr_number": pr_number, "head_sha": head_sha}
@@ -248,34 +287,42 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         root = await download_tarball(token, repo_full_name, head_sha, ws)
         tf_dirs = find_terraform_dirs(root)
 
-        if not tf_dirs:
-            log.info("no_terraform", repo=repo_full_name, pr=pr_number)
-            return {"status": "skipped", "reason": "no terraform files"}
-
         real_state: set[str] | None = None
         if aws_env:
             real_state = await _fetch_real_state(repo_settings, aws_env)
 
-        findings, plan_bytes = await _analyze_all_dirs(
-            tf_dirs,
-            aws_env=aws_env,
-            backend_config=backend_config,
-            real_state=real_state,
-        )
+        # Static scan runs on every PR — catches K8s, GHA, and TF rule violations
+        # without requiring a Terraform binary or AWS credentials.
+        static_findings = await _run_static_scan(root)
+
+        if not tf_dirs and not static_findings:
+            log.info("no_iac_files", repo=repo_full_name, pr=pr_number)
+            return {"status": "skipped", "reason": "no IaC files found"}
+
+        # Plan-based analysis: only when TF files exist and terraform binary available
+        plan_findings: list[Finding] = []
+        plan_bytes: bytes | None = None
+        if tf_dirs:
+            plan_findings, plan_bytes = await _analyze_all_dirs(
+                tf_dirs,
+                aws_env=aws_env,
+                backend_config=backend_config,
+                real_state=real_state,
+            )
+
+    # Plan-based TF findings (Checkov + plan context) take precedence over
+    # static TF findings; K8s and GHA findings from static scan are always kept.
+    findings = _merge_findings(static_findings, plan_findings)
 
     risk_score = _compute_risk(findings)
-    # Store resource snapshots in DB for drift baseline
-    # (fire-and-forget — non-blocking)
     review_md = await ai_review(findings, pr_ctx)
     duration_ms = int((time.monotonic() - started) * 1000)
 
     body = format_comment(
         findings=findings,
-        review_md=review_md,
-        meta={
-            "repo": repo_full_name,
-            "pr_number": pr_number,
-            "head_sha": head_sha,
+        ai_review_md=review_md,
+        summary_meta={
+            "sha": head_sha,
             "duration_ms": duration_ms,
             "has_real_aws": bool(aws_env),
             "risk_score": risk_score,

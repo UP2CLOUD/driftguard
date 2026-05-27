@@ -111,6 +111,47 @@ def from_checkov(results: list[dict]) -> list[Finding]:
     return findings
 
 
+def from_static_scan(scan_findings: list) -> "list[Finding]":
+    """Convert ScanFinding objects from services/scanner/engine.py to Finding objects.
+
+    Category → FindingType mapping:
+      iam / network / encryption / storage / compute / secrets /
+      kubernetes / github_actions  →  "security"
+      best_practice                →  "policy"
+    """
+    from driftguard.compliance.mappings import controls_for_rule
+
+    _category_type: dict[str, FindingType] = {
+        "iam": "security",
+        "network": "security",
+        "encryption": "security",
+        "storage": "security",
+        "compute": "security",
+        "secrets": "security",
+        "kubernetes": "security",
+        "github_actions": "security",
+        "best_practice": "policy",
+    }
+
+    findings: list[Finding] = []
+    for sf in scan_findings:
+        finding_type: FindingType = _category_type.get(str(sf.category), "security")
+        sev: Severity = str(sf.severity)  # type: ignore[assignment]
+        controls = controls_for_rule(sf.rule_id) if sf.rule_id else ()
+        findings.append(
+            Finding(
+                type=finding_type,
+                severity=sev,
+                resource=sf.resource or sf.file,
+                message=sf.message,
+                suggestion=sf.suggestion,
+                rule_id=sf.rule_id,
+                controls=controls,
+            )
+        )
+    return findings
+
+
 def aggregate_cost_cents(findings: list[Finding]) -> int:
     return sum(f.extra.get("cents", 0) for f in findings if f.type == "cost")
 
