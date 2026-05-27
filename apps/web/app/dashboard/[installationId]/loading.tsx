@@ -1,77 +1,32 @@
-import { Suspense } from "react";
-import Link from "next/link";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
-import { getMessages } from "@/i18n/get-locale";
-import { createTranslator } from "@/i18n/translator";
-import { getUserPreferences } from "@/lib/preferences/server";
-
-import { StatsStripSection } from "./_sections/StatsStrip";
-import { RecentAnalysesSection } from "./_sections/RecentAnalyses";
-import { IncidentsSection } from "./_sections/Incidents";
-import { EventsSection } from "./_sections/Events";
-import { NavStatusSection } from "./_sections/NavStatus";
-
-export default async function DashboardPage({
-  params,
-}: {
-  params: Promise<{ installationId: string }>;
-}) {
-  const session = await auth();
-  if (!session) redirect("/");
-
-  const { installationId } = await params;
-  const preferences = await getUserPreferences();
-  const messages = await getMessages(preferences.locale);
-  const t = createTranslator(messages);
-
+export default function Loading() {
   return (
     <main className="min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
       <nav className="sticky top-0 z-40 border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]/90 backdrop-blur-md px-4 sm:px-6 py-3 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="text-[color:var(--dg-electric)]">
             <path d="M2 3 L10 7 L18 3 L18 13 L10 17 L2 13 Z" stroke="currentColor" strokeWidth="1.4" />
           </svg>
           <span className="font-sans text-[14px] font-semibold tracking-tight">driftguard</span>
-        </Link>
-        <Suspense fallback={<NavStatusFallback />}>
-          <NavStatusSection installationId={installationId} t={t} />
-        </Suspense>
+        </div>
+        <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+          loading
+        </span>
       </nav>
 
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-8">
-        <Suspense fallback={<StatsStripFallback />}>
-          <StatsStripSection installationId={installationId} t={t} />
-        </Suspense>
-
+        <StatsStripSkeleton />
         <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
           <div className="space-y-6">
-            <Suspense fallback={<PanelFallback label={t("repos.recentAnalyses") ?? "Recent analyses"} rows={5} />}>
-              <RecentAnalysesSection installationId={installationId} t={t} />
-            </Suspense>
-            <Suspense fallback={null}>
-              <IncidentsSection installationId={installationId} t={t} />
-            </Suspense>
+            <PanelSkeleton label="Recent analyses" rows={5} />
           </div>
-
-          <Suspense fallback={<PanelFallback label={t("dashboard.eventFeed") ?? "Event feed"} rows={8} />}>
-            <EventsSection installationId={installationId} t={t} />
-          </Suspense>
+          <PanelSkeleton label="Event feed" rows={8} />
         </div>
       </div>
     </main>
   );
 }
 
-function NavStatusFallback() {
-  return (
-    <div className="flex items-center gap-3">
-      <span className="h-3 w-16 rounded bg-[color:var(--dg-border)] animate-pulse" />
-    </div>
-  );
-}
-
-function StatsStripFallback() {
+function StatsStripSkeleton() {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)]">
       {Array.from({ length: 6 }).map((_, i) => (
@@ -84,7 +39,7 @@ function StatsStripFallback() {
   );
 }
 
-function PanelFallback({ label, rows }: { label: string; rows: number }) {
+function PanelSkeleton({ label, rows }: { label: string; rows: number }) {
   return (
     <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
       <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">

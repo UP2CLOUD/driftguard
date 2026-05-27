@@ -47,7 +47,7 @@ export default async function Image() {
         {/* Main */}
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ fontSize: 14, color: "#525c6b", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 16 }}>
-            ▸ Terraform PR review · semantic memory
+            Terraform PR review / semantic memory
           </div>
           <div style={{ fontSize: 60, fontWeight: 700, lineHeight: 1.05, letterSpacing: "-0.02em", color: "#e8eaed" }}>
             Your AI agents write Terraform.
@@ -61,7 +61,7 @@ export default async function Image() {
         <div style={{ display: "flex", marginTop: 56, gap: 48, fontSize: 14 }}>
           <Stat label="P99 review" value="<2s" />
           <Stat label="Memory" value="384-d" />
-          <Stat label="Compliance" value="DORA · NIS2 · ISO 27001" />
+          <Stat label="Compliance" value="DORA / NIS2 / ISO 27001" />
         </div>
       </div>
     ),
