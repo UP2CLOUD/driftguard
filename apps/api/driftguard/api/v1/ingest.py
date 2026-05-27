@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
@@ -159,7 +159,7 @@ async def ingest_event(
 
     if body.severity in INCIDENT_THRESHOLD:
         fp = _fingerprint(body.event_type, body.message, body.repo_full_name)
-        window_start = datetime.utcnow() - timedelta(hours=RECURRENCE_WINDOW_HOURS)
+        window_start = datetime.now(timezone.utc) - timedelta(hours=RECURRENCE_WINDOW_HOURS)
 
         existing = (
             await db.execute(
@@ -177,7 +177,7 @@ async def ingest_event(
         if existing:
             # Update recurrence
             existing.recurrence_count += 1
-            existing.last_seen_at = datetime.utcnow()
+            existing.last_seen_at = datetime.now(timezone.utc)
             if body.severity == "critical" and not existing.suggested_fix:
                 existing.suggested_fix = _auto_fix_hint(body.event_type, body.message)
             recurrence = existing.recurrence_count
@@ -195,8 +195,8 @@ async def ingest_event(
                 root_cause=_root_cause_hint(body.event_type),
                 suggested_fix=_auto_fix_hint(body.event_type, body.message),
                 fingerprint=fp,
-                first_seen_at=datetime.utcnow(),
-                last_seen_at=datetime.utcnow(),
+                first_seen_at=datetime.now(timezone.utc),
+                last_seen_at=datetime.now(timezone.utc),
             )
             db.add(incident)
             await db.flush()
