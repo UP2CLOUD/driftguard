@@ -28,7 +28,7 @@ _SCRIPT_INJECTION = re.compile(
     r"\$\{\{\s*github\.event\.(issue|pull_request|comment)\.(title|body|head\.ref|head\.label)\s*\}\}"
 )
 _CURL_BASH = re.compile(r"curl\s+.+\|\s*(bash|sh)\b", re.IGNORECASE)
-_PR_TARGET = re.compile(r"pull_request_target:", re.MULTILINE)
+_PR_TARGET = re.compile(r"pull_request_target", re.MULTILINE)
 _PERMISSIONS_KEY = re.compile(r"^permissions:", re.MULTILINE)
 _SECRET_IN_ENV = re.compile(r"(?:^|\n)\s+([A-Z_]+)\s*:\s*\$\{\{\s*secrets\.(\w+)\s*\}\}", re.MULTILINE)
 _UNTRUSTED_INPUT = re.compile(r"\$\{\{\s*github\.event\.(issue|pull_request|comment)\.\w+")
@@ -95,8 +95,16 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
             )
         )
 
-    # GHA003: Script injection
+    # GHA003: Script injection — only in run: blocks, not env: blocks.
+    # The env: indirection pattern (assign to env var, reference $VAR in run) is
+    # the recommended safe mitigation, so we skip matches whose nearest YAML key
+    # before the interpolation is env: rather than run:.
     for match in _SCRIPT_INJECTION.finditer(content):
+        before = content[: match.start()]
+        last_run = before.rfind("run:")
+        last_env = before.rfind("env:")
+        if last_env > last_run:
+            continue  # inside an env: block — the safe pattern, skip
         line = content[: match.start()].count("\n") + 1
         findings.append(
             ScanFinding(
