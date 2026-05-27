@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useT } from "@/components/TranslationProvider";
 import { LiveTerminal } from "./LiveTerminal";
 import Link from "next/link";
@@ -59,6 +59,18 @@ function Cursor({ visible }: { visible: boolean }) {
         align-middle ml-[2px] relative top-[-1px]
         animate-[dg-cursor_1s_step-end_infinite]"
     />
+  );
+}
+
+function interpolateReact(
+  template: string,
+  replacements: Record<string, React.ReactNode>,
+): React.ReactNode {
+  const parts = template.split(/\{(\w+)\}/g);
+  return parts.map((part, i) =>
+    i % 2 === 1
+      ? <Fragment key={i}>{replacements[part] ?? `{${part}}`}</Fragment>
+      : part,
   );
 }
 
@@ -126,17 +138,12 @@ export function Hero({
 
           {/* Sub */}
           <p className="mt-5 text-[13px] sm:text-[15px] leading-relaxed text-[color:var(--dg-fg-muted)]">
-            {t("landing.hero.cta_docs") ? (
-              <>
-                DriftGuard reviews every Terraform &amp; OpenTofu PR — written by humans or AI agents.
-                We catch{" "}
-                <span className="text-[color:var(--dg-fg)]">{t("hero.costSurprises")}</span>,{" "}
-                <span className="text-[color:var(--dg-fg)]">{t("hero.drift")}</span>,{" "}
-                <span className="text-[color:var(--dg-fg)]">{t("hero.securityMisconfigs")}</span>, and{" "}
-                <span className="text-[color:var(--dg-fg)]">{t("hero.complianceGaps")}</span>
-                {" "}— and remember every failure so your agents stop making the same mistake twice.
-              </>
-            ) : null}
+            {interpolateReact(t("hero.subText"), {
+              cost: <span className="text-[color:var(--dg-fg)]">{t("hero.costSurprises")}</span>,
+              drift: <span className="text-[color:var(--dg-fg)]">{t("hero.drift")}</span>,
+              security: <span className="text-[color:var(--dg-fg)]">{t("hero.securityMisconfigs")}</span>,
+              compliance: <span className="text-[color:var(--dg-fg)]">{t("hero.complianceGaps")}</span>,
+            })}
           </p>
 
           {/* Config snippet */}
