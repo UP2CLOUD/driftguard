@@ -285,3 +285,127 @@ output "name" {
 }
 '''
     assert _scan_single(content, "vars.tf") == []
+
+
+# ── TF002: S3 missing public access block ────────────────────────────────────
+
+def test_tf002_missing_public_access_block_triggers():
+    content = '''
+resource "aws_s3_bucket" "data" {
+  bucket = "my-data-bucket"
+}
+'''
+    assert_triggers("TF002", content)
+
+def test_tf002_with_access_block_passes():
+    content = '''
+resource "aws_s3_bucket" "data" {
+  bucket = "my-data-bucket"
+}
+resource "aws_s3_bucket_public_access_block" "data" {
+  bucket                  = aws_s3_bucket.data.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+'''
+    assert_passes("TF002", content)
+
+
+# ── TF008: KMS deletion window too short ─────────────────────────────────────
+
+def test_tf008_short_deletion_window_triggers():
+    content = '''
+resource "aws_kms_key" "main" {
+  description             = "My key"
+  deletion_window_in_days = 3
+}
+'''
+    assert_triggers("TF008", content)
+
+def test_tf008_safe_deletion_window_passes():
+    content = '''
+resource "aws_kms_key" "main" {
+  description             = "My key"
+  deletion_window_in_days = 30
+}
+'''
+    assert_passes("TF008", content)
+
+
+# ── TF009: Missing provider version constraints ───────────────────────────────
+
+def test_tf009_no_required_providers_triggers():
+    content = '''
+provider "aws" {
+  region = "us-east-1"
+}
+resource "aws_s3_bucket" "data" {}
+'''
+    assert_triggers("TF009", content)
+
+def test_tf009_with_required_providers_passes():
+    content = '''
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+provider "aws" {
+  region = "us-east-1"
+}
+'''
+    assert_passes("TF009", content)
+
+
+# ── TF011: Lambda missing reserved_concurrent_executions ─────────────────────
+
+def test_tf011_no_concurrency_limit_triggers():
+    content = '''
+resource "aws_lambda_function" "handler" {
+  function_name = "my-handler"
+  runtime       = "python3.12"
+  handler       = "main.handler"
+  role          = aws_iam_role.lambda.arn
+}
+'''
+    assert_triggers("TF011", content)
+
+def test_tf011_with_concurrency_limit_passes():
+    content = '''
+resource "aws_lambda_function" "handler" {
+  function_name                  = "my-handler"
+  runtime                        = "python3.12"
+  handler                        = "main.handler"
+  role                           = aws_iam_role.lambda.arn
+  reserved_concurrent_executions = 100
+}
+'''
+    assert_passes("TF011", content)
+
+
+# ── TF015: Secrets Manager missing rotation ───────────────────────────────────
+
+def test_tf015_no_rotation_triggers():
+    content = '''
+resource "aws_secretsmanager_secret" "db_pass" {
+  name = "prod/db/password"
+}
+'''
+    assert_triggers("TF015", content)
+
+def test_tf015_with_rotation_resource_passes():
+    content = '''
+resource "aws_secretsmanager_secret" "db_pass" {
+  name = "prod/db/password"
+}
+resource "aws_secretsmanager_secret_rotation" "db_pass" {
+  secret_id           = aws_secretsmanager_secret.db_pass.id
+  rotation_lambda_arn = aws_lambda_function.rotate.arn
+}
+'''
+    assert_passes("TF015", content)

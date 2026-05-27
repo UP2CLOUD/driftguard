@@ -394,3 +394,64 @@ def test_finding_has_resource_field():
     assert k8s001 is not None
     assert k8s001.resource is not None
     assert "safe-app" in k8s001.resource
+
+
+# ── K8S008: Missing securityContext ──────────────────────────────────────────
+
+def test_k8s008_no_security_context_triggers():
+    content = """\
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  template:
+    spec:
+      containers:
+        - name: app
+          image: myrepo/app:1.0.0
+"""
+    assert_triggers("K8S008", content)
+
+def test_k8s008_with_security_context_passes():
+    assert_passes("K8S008", _SAFE_DEPLOYMENT)
+
+
+# ── K8S010: ALL capabilities ─────────────────────────────────────────────────
+
+def test_k8s010_all_capabilities_triggers():
+    content = """\
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  template:
+    spec:
+      containers:
+        - name: app
+          image: myrepo/app:1.0.0
+          securityContext:
+            capabilities:
+              add: ["ALL"]
+"""
+    assert_triggers("K8S010", content)
+
+def test_k8s010_no_all_capability_passes():
+    content = """\
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  template:
+    spec:
+      containers:
+        - name: app
+          image: myrepo/app:1.0.0
+          securityContext:
+            capabilities:
+              drop: ["ALL"]
+              add: ["NET_BIND_SERVICE"]
+"""
+    assert_passes("K8S010", content)

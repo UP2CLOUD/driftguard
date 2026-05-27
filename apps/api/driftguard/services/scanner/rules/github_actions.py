@@ -24,6 +24,11 @@ _UNPINNED_ACTION = re.compile(
     re.MULTILINE,
 )
 _UNSECURE_COMMANDS = re.compile(r"ACTIONS_ALLOW_UNSECURE_COMMANDS\s*:\s*true", re.IGNORECASE)
+_SECRET_IN_RUN = re.compile(r"\$\{\{\s*secrets\.\w+\s*\}\}")
+_UNTRUSTED_IF = re.compile(
+    r"if:\s*[^\n]*\$\{\{\s*github\.event\.(issue|pull_request|comment)\.\w+",
+    re.MULTILINE,
+)
 _SCRIPT_INJECTION = re.compile(
     r"\$\{\{\s*github\.event\.(issue|pull_request|comment)\.(title|body|head\.ref|head\.label)\s*\}\}"
 )
@@ -180,6 +185,52 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
                 line=line,
                 suggestion="Download the script, verify its checksum, then execute it separately.",
                 controls=["supply_chain"],
+            )
+        )
+
+    # GHA006: Secret directly interpolated in run: block (can leak via logs/set-output).
+    # Skip matches whose nearest context key is env: — that's the safe pattern.
+    for match in _SECRET_IN_RUN.finditer(content):
+        before = content[: match.start()]
+        last_run = before.rfind("run:")
+        last_env = before.rfind("env:")
+        if last_env > last_run:
+            continue
+        line = content[: match.start()].count("\n") + 1
+        findings.append(
+            ScanFinding(
+                rule_id="GHA006",
+                severity=Severity.HIGH,
+                category=Category.GITHUB_ACTIONS,
+                title="Secret directly interpolated in run step",
+                message=(
+                    "Direct ${{ secrets.* }} in run step may be leaked via debug logs or set-output abuse."
+                ),
+                file=rel_path,
+                line=line,
+                suggestion="Assign to an env var first: env: MY_SECRET: ${{ secrets.MY_SECRET }}, then use $MY_SECRET in run:",
+                controls=["secrets_management", "least_privilege"],
+            )
+        )
+
+    # GHA008: Untrusted github.event.* input used in if: conditions.
+    # An attacker can craft PR/issue data to bypass checks or alter control flow.
+    for match in _UNTRUSTED_IF.finditer(content):
+        line = content[: match.start()].count("\n") + 1
+        findings.append(
+            ScanFinding(
+                rule_id="GHA008",
+                severity=Severity.MEDIUM,
+                category=Category.GITHUB_ACTIONS,
+                title="Untrusted event data in if: condition",
+                message=(
+                    "github.event.* user-controlled data used in if: condition. "
+                    "An attacker can manipulate PR/issue content to influence workflow control flow."
+                ),
+                file=rel_path,
+                line=line,
+                suggestion="Validate or sanitize the value before using it in conditions; prefer github.actor or other non-user-controlled fields.",
+                controls=["injection_prevention", "access_control"],
             )
         )
 

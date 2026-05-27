@@ -156,6 +156,49 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
             )
         )
 
+    # ── TF002: S3 bucket missing public access block ──────────────────────────
+    # Fire once per file if an aws_s3_bucket exists but no public access block resource
+    if re.search(r'resource\s+"aws_s3_bucket"', content) and not re.search(
+        r'resource\s+"aws_s3_bucket_public_access_block"', content
+    ):
+        for m in re.finditer(r'resource\s+"aws_s3_bucket"\s+"([^"]+)"', content):
+            start = content[: m.start()].count("\n") + 1
+            findings.append(
+                ScanFinding(
+                    rule_id="TF002",
+                    severity=Severity.HIGH,
+                    category=Category.STORAGE,
+                    title="S3 bucket missing public access block",
+                    message=(
+                        f'aws_s3_bucket.{m.group(1)} has no aws_s3_bucket_public_access_block. '
+                        "Objects may be publicly accessible."
+                    ),
+                    file=rel_path,
+                    line=start,
+                    resource=f"aws_s3_bucket.{m.group(1)}",
+                    suggestion="Add aws_s3_bucket_public_access_block with block_public_acls = block_public_policy = true",
+                    controls=["public_exposure", "data_protection"],
+                )
+            )
+
+    # ── TF009: Missing provider version constraints ───────────────────────────
+    if re.search(r'\bprovider\s+"', content) and not re.search(
+        r'\brequired_providers\s*\{', content
+    ):
+        findings.append(
+            ScanFinding(
+                rule_id="TF009",
+                severity=Severity.LOW,
+                category=Category.BEST_PRACTICE,
+                title="Missing provider version constraints",
+                message="No required_providers block found. Provider versions are unpinned and may break on updates.",
+                file=rel_path,
+                line=1,
+                suggestion='Add terraform { required_providers { aws = { source = "hashicorp/aws", version = "~> 5.0" } } }',
+                controls=["change_management"],
+            )
+        )
+
     # ── Per-resource structured rules (requires parsed blocks) ────────────────
     resource_blocks = _extract_resource_blocks(content)
 
@@ -256,6 +299,75 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
                         resource=f"{res_type}.{res_name}",
                         suggestion="Add encrypted = true and kms_key_id for compliance",
                         controls=["encryption_at_rest"],
+                    )
+                )
+
+        # TF008: KMS key deletion window too short
+        if res_type == "aws_kms_key":
+            val = _attr_value(body, "deletion_window_in_days")
+            if val is not None:
+                try:
+                    if int(val) < 7:
+                        findings.append(
+                            ScanFinding(
+                                rule_id="TF008",
+                                severity=Severity.MEDIUM,
+                                category=Category.ENCRYPTION,
+                                title="KMS key deletion window is too short",
+                                message=f"{res_type}.{res_name}: deletion_window_in_days={val}. Minimum recommended is 7.",
+                                file=rel_path,
+                                line=start_line,
+                                resource=f"{res_type}.{res_name}",
+                                suggestion="Set deletion_window_in_days to at least 7 (max 30) to allow recovery",
+                                controls=["data_protection", "encryption_at_rest"],
+                            )
+                        )
+                except ValueError:
+                    pass
+
+        # TF011: Lambda missing reserved_concurrent_executions
+        if res_type == "aws_lambda_function":
+            if _attr_value(body, "reserved_concurrent_executions") is None:
+                findings.append(
+                    ScanFinding(
+                        rule_id="TF011",
+                        severity=Severity.LOW,
+                        category=Category.COMPUTE,
+                        title="Lambda missing reserved_concurrent_executions",
+                        message=(
+                            f"{res_type}.{res_name}: No concurrency limit set. "
+                            "An event storm can exhaust the regional Lambda concurrency pool."
+                        ),
+                        file=rel_path,
+                        line=start_line,
+                        resource=f"{res_type}.{res_name}",
+                        suggestion="Set reserved_concurrent_executions to an appropriate limit (or 0 to disable)",
+                        controls=["resource_management"],
+                    )
+                )
+
+        # TF015: Secrets Manager secret missing rotation
+        if res_type == "aws_secretsmanager_secret":
+            has_rotation = (
+                "rotation_lambda_arn" in body
+                or re.search(r'resource\s+"aws_secretsmanager_secret_rotation"', content)
+            )
+            if not has_rotation:
+                findings.append(
+                    ScanFinding(
+                        rule_id="TF015",
+                        severity=Severity.MEDIUM,
+                        category=Category.SECRETS,
+                        title="Secrets Manager secret missing rotation",
+                        message=(
+                            f"{res_type}.{res_name}: No rotation configured. "
+                            "Long-lived secrets increase breach impact."
+                        ),
+                        file=rel_path,
+                        line=start_line,
+                        resource=f"{res_type}.{res_name}",
+                        suggestion="Add aws_secretsmanager_secret_rotation or set rotation_lambda_arn",
+                        controls=["secrets_management", "access_control"],
                     )
                 )
 

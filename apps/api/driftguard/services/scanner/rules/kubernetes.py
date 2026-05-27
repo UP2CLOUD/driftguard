@@ -103,6 +103,41 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
             cname = container.get("name", "unknown")
             sc = container.get("securityContext", {})
 
+            # K8S008: missing securityContext entirely
+            if "securityContext" not in container:
+                findings.append(
+                    ScanFinding(
+                        rule_id="K8S008",
+                        severity=Severity.MEDIUM,
+                        category=Category.KUBERNETES,
+                        title="Container missing securityContext",
+                        message=f"{resource}/{cname}: No securityContext defined. Runs with default (permissive) settings.",
+                        file=rel_path,
+                        line=None,
+                        resource=f"{resource}/{cname}",
+                        suggestion="Add securityContext with runAsNonRoot, readOnlyRootFilesystem, and allowPrivilegeEscalation: false",
+                        controls=["container_isolation", "least_privilege"],
+                    )
+                )
+
+            # K8S010: ALL capabilities granted
+            caps = sc.get("capabilities", {})
+            if "ALL" in (caps.get("add") or []):
+                findings.append(
+                    ScanFinding(
+                        rule_id="K8S010",
+                        severity=Severity.CRITICAL,
+                        category=Category.KUBERNETES,
+                        title="Container granted ALL capabilities",
+                        message=f"{resource}/{cname}: capabilities.add includes ALL — equivalent to root on the host.",
+                        file=rel_path,
+                        line=None,
+                        resource=f"{resource}/{cname}",
+                        suggestion="Remove ALL from capabilities.add. Grant only the specific capabilities required.",
+                        controls=["container_isolation", "least_privilege"],
+                    )
+                )
+
             # K8S001: privileged
             if sc.get("privileged"):
                 findings.append(

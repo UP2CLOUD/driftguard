@@ -291,3 +291,69 @@ jobs:
 
 def test_safe_workflow_has_no_findings():
     assert _scan_single(_SAFE_WORKFLOW, ".github/workflows/ci.yml") == []
+
+
+# ── GHA006: Secret directly in run step ──────────────────────────────────────
+
+def test_gha006_secret_in_run_triggers():
+    content = """\
+on: push
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -H "Authorization: ${{ secrets.API_TOKEN }}" https://api.example.com/deploy
+"""
+    assert_triggers("GHA006", content)
+
+def test_gha006_secret_via_env_var_passes():
+    content = """\
+on: push
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+        run: curl -H "Authorization: $API_TOKEN" https://api.example.com/deploy
+"""
+    assert_passes("GHA006", content)
+
+
+# ── GHA008: Untrusted event data in if: condition ─────────────────────────────
+
+def test_gha008_untrusted_input_in_if_triggers():
+    content = """\
+on: pull_request
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.title != 'skip' }}
+    steps:
+      - run: echo "running"
+"""
+    assert_triggers("GHA008", content)
+
+def test_gha008_safe_if_condition_passes():
+    content = """\
+on: pull_request
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
+    steps:
+      - run: echo "running"
+"""
+    assert_passes("GHA008", content)
