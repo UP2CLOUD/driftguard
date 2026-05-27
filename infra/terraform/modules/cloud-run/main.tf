@@ -26,6 +26,25 @@ variable "secret_env" {
   default     = {}
   description = "Map of env var name -> Secret Manager secret id (latest version)."
 }
+variable "command" {
+  type        = list(string)
+  default     = []
+  description = "Override container CMD. Empty = use Dockerfile CMD."
+}
+variable "cpu_idle" {
+  type        = bool
+  default     = true
+  description = "If true, CPU is throttled when no requests — cheap to keep min_instances>0 warm."
+}
+variable "startup_cpu_boost" {
+  type        = bool
+  default     = true
+  description = "Boost CPU during instance startup — meaningful cold start reduction."
+}
+variable "container_port" {
+  type    = number
+  default = 8000
+}
 
 resource "google_cloud_run_v2_service" "this" {
   name     = var.name
@@ -41,11 +60,15 @@ resource "google_cloud_run_v2_service" "this" {
     containers {
       image = var.image
 
+      command = length(var.command) > 0 ? var.command : null
+
       resources {
         limits = {
           cpu    = var.cpu
           memory = var.memory
         }
+        cpu_idle          = var.cpu_idle
+        startup_cpu_boost = var.startup_cpu_boost
       }
 
       dynamic "env" {
@@ -70,7 +93,7 @@ resource "google_cloud_run_v2_service" "this" {
       }
 
       ports {
-        container_port = 8000
+        container_port = var.container_port
       }
     }
   }
@@ -85,11 +108,4 @@ resource "google_cloud_run_v2_service_iam_member" "public" {
 
 output "url" {
   value = google_cloud_run_v2_service.this.uri
-}
-
-# Optional command override (for Celery worker vs API)
-variable "command" {
-  type        = list(string)
-  default     = []
-  description = "Override container CMD. Empty = use Dockerfile CMD."
 }
