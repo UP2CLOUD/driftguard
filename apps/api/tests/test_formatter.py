@@ -1,5 +1,6 @@
 from driftguard.ai.findings import Finding
-from driftguard.ai.formatter import format_comment
+from driftguard.ai.formatter import _esc, format_comment
+from driftguard.workers.analyzer import _merge_findings
 
 
 def test_format_comment_with_findings():
@@ -126,3 +127,48 @@ def test_format_comment_plan_changes_section():
     assert "Plan changes" in body
     assert "aws_instance.web" in body
     assert "**Changes:** 2" in body
+
+
+def test_esc_slices_before_escaping():
+    # pipe at position 5 in a 6-char string, limit=5 — pipe must be cut before escaping
+    assert _esc("hello|x", 5) == "hello"
+    # pipe within limit — should be escaped but not cause the slice to eat the backslash
+    assert _esc("ab|cd", 10) == "ab\\|cd"
+    # pipe exactly at limit boundary — should be excluded, not leave a dangling backslash
+    result = _esc("a" * 9 + "|", 9)
+    assert result == "a" * 9
+    assert "\\" not in result
+
+
+def test_merge_findings_partial_plan_keeps_uncovered_tf():
+    # Static has TF findings for two resources; plan only covers resource A.
+    # Resource B (not in plan) should be kept from static.
+    static = [
+        Finding(type="security", severity="high", resource="aws_s3.a", message="public", rule_id="TF003"),
+        Finding(type="security", severity="high", resource="aws_s3.b", message="unencrypted", rule_id="TF005"),
+    ]
+    plan = [
+        Finding(type="security", severity="critical", resource="aws_s3.a", message="checkov: public ACL", rule_id="CKV_AWS_20"),
+    ]
+    merged = _merge_findings(static, plan)
+    resources = {f.resource for f in merged}
+    # Plan finding for .a kept; static TF finding for .b kept (not covered by plan)
+    assert "aws_s3.a" in resources
+    assert "aws_s3.b" in resources
+    # No duplicate for .a
+    assert sum(1 for f in merged if f.resource == "aws_s3.a") == 1
+
+
+def test_merge_findings_k8s_always_kept():
+    static = [
+        Finding(type="security", severity="high", resource="deploy/api", message="privileged", rule_id="K8S002"),
+        Finding(type="security", severity="medium", resource="aws_sg.x", message="wide open", rule_id="TF007"),
+    ]
+    plan = [
+        Finding(type="security", severity="high", resource="aws_sg.x", message="checkov hit", rule_id="CKV_AWS_25"),
+    ]
+    merged = _merge_findings(static, plan)
+    rule_ids = {f.rule_id for f in merged}
+    assert "K8S002" in rule_ids   # K8s always kept
+    assert "CKV_AWS_25" in rule_ids  # plan finding kept
+    assert "TF007" not in rule_ids   # TF static for covered resource dropped

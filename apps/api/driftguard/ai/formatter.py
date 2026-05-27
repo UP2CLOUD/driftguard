@@ -26,7 +26,7 @@ def _domain(f: Finding) -> str:
 
 
 def _esc(s: str, limit: int) -> str:
-    return s.replace("|", "\\|")[:limit]
+    return s[:limit].replace("|", "\\|")
 
 
 def _cost_section(findings: list[Finding]) -> str:
