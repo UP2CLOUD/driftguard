@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useT } from "@/components/TranslationProvider";
 import { LiveTerminal } from "./LiveTerminal";
 import Link from "next/link";
@@ -8,8 +8,6 @@ import Link from "next/link";
 function useTypewriter(lines: string[], { speed = 48, pause = 380 } = {}) {
   const [displayed, setDisplayed] = useState<[string, string]>(["", ""]);
   const [done, setDone] = useState(false);
-  const rafRef = useRef<number | null>(null);
-
   useEffect(() => {
     if (typeof window !== "undefined" &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -45,7 +43,6 @@ function useTypewriter(lines: string[], { speed = 48, pause = 380 } = {}) {
     return () => {
       cancelled = true;
       clearTimeout((delay as any)._last);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lines[0], lines[1]]);
