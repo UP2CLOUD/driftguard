@@ -1,15 +1,19 @@
 "use client";
 
 import { useT } from "@/components/TranslationProvider";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import type { UserPreferences } from "@/lib/preferences/config";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export function MarketingNav({
   isLoggedIn,
   cta,
+  initialPreferences,
 }: {
   isLoggedIn?: boolean;
   cta?: React.ReactNode;
+  initialPreferences?: UserPreferences;
 }) {
   const t = useT();
   const [scrolled, setScrolled] = useState(false);
@@ -86,6 +90,8 @@ export function MarketingNav({
             cta
           )}
 
+          <LocaleSwitcher initialPreferences={initialPreferences} compact label={t("common.language")} />
+
           {/* Hamburger */}
           <button
             onClick={() => setOpen(!open)}
@@ -112,6 +118,10 @@ export function MarketingNav({
                 {l.label}
               </Link>
             ))}
+            <div className="py-2.5 flex items-center gap-2 text-[color:var(--dg-fg-muted)]">
+              <span className="text-[12px]">{t("common.language")}</span>
+              <LocaleSwitcher initialPreferences={initialPreferences} label={t("common.language")} />
+            </div>
           </div>
         </div>
       )}
