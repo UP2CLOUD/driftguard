@@ -53,11 +53,18 @@ export default async function Page() {
       <Hero
         ctaPrimary={
           !isLoggedIn ? (
-            <SignInButton className="dg-button dg-button-primary text-[13px] px-5 py-2.5">
+            <SignInButton
+              className="dg-button dg-button-primary text-[13px] px-5 py-2.5"
+              dataTransition="github"
+            >
               Install GitHub App — free
             </SignInButton>
           ) : (
-            <Link href="/dashboard" className="dg-button dg-button-primary text-[13px] px-5 py-2.5">
+            <Link
+              href="/dashboard"
+              data-transition="dashboard"
+              className="dg-button dg-button-primary text-[13px] px-5 py-2.5"
+            >
               Dashboard →
             </Link>
           )
@@ -99,7 +106,10 @@ export default async function Page() {
       {/* 11. CTA */}
       <CtaSection
         cta={
-          <SignInButton className="dg-button dg-button-primary text-[14px] px-6 py-3">
+          <SignInButton
+            className="dg-button dg-button-primary text-[14px] px-6 py-3"
+            dataTransition="github"
+          >
             {t("landing.ctaButton") ?? "Install GitHub App — free"}
           </SignInButton>
         }

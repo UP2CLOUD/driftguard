@@ -208,7 +208,7 @@
       "step05Body": "O resultado do merge e o estado pós-deploy tornam-se nova memória. Os teus agentes e engenheiros melhoram todos os dias."
     },
     "codeIntegration": {
-      "title": "Instalar em 30 segundos.",
+      "title": "Instale em 30 segundos",
       "subtitle": "GitHub App + configuração de repo. Sem SDK, sem reescritas, sem alterações de infra.",
       "worksWith": "Funciona com"
     },
@@ -261,7 +261,7 @@
         },
         "security": {
           "title": "Descobertas de segurança",
-          "body": "Checkov + triagem AI. 255 regras mapeadas a controlos de conformidade.",
+          "body": "Checkov + triagem IA. 255 regras mapeadas a controlos de conformidade.",
           "example": "aws_s3_bucket.tf-state\nAcesso público removido\nCKV_AWS_19 · NIS2 Art.21 → BLOQUEADO"
         },
         "memory": {
@@ -427,7 +427,7 @@
     "install": {
       "label": "Instalação",
       "eyebrow": "Docs · Começar",
-      "title": "Instalar em 30 segundos",
+      "title": "Instale em 30 segundos",
       "subtitle": "Três passos. Sem SDK, sem reescritas, sem alterações de infra.",
       "step1Title": "Instalar o GitHub App",
       "step1Desc": "Selecione sua organização ou conta pessoal. Conceda acesso aos repositórios que têm Terraform.",

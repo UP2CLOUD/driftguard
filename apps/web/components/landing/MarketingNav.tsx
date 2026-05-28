@@ -83,7 +83,11 @@ export function MarketingNav({
           </a>
 
           {isLoggedIn ? (
-            <Link href="/dashboard" className="dg-button dg-button-ghost text-[12px] sm:text-[13px]">
+            <Link
+              href="/dashboard"
+              data-transition="dashboard"
+              className="dg-button dg-button-ghost text-[12px] sm:text-[13px]"
+            >
               {t("landing.nav.dashboard")}
             </Link>
           ) : (
@@ -118,8 +122,7 @@ export function MarketingNav({
                 {l.label}
               </Link>
             ))}
-            <div className="py-2.5 flex items-center gap-2 text-[color:var(--dg-fg-muted)]">
-              <span className="text-[12px]">{t("common.language")}</span>
+            <div className="pt-1.5">
               <LocaleSwitcher initialPreferences={initialPreferences} label={t("common.language")} />
             </div>
           </div>
