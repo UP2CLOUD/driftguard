@@ -33,16 +33,12 @@ def _cost_section(findings: list[Finding]) -> str:
     cost = [f for f in findings if f.type == "cost"]
     if not cost:
         return ""
-    lines = ["", "<details><summary>💰 Cost changes (%d)</summary>" % len(cost), ""]
+    lines = ["", f"<details><summary>💰 Cost changes ({len(cost)})</summary>", ""]
     lines.append("| Severity | Resource | Monthly delta |")
     lines.append("|---|---|---|")
     for f in cost[:25]:
         cents = f.extra.get("cents", 0)
-        lines.append(
-            f"| {_icon(f.severity)} {f.severity} "
-            f"| `{_esc(f.resource, 60)}` "
-            f"| **${cents / 100:+.2f}/mo** |"
-        )
+        lines.append(f"| {_icon(f.severity)} {f.severity} | `{_esc(f.resource, 60)}` | **${cents / 100:+.2f}/mo** |")
     lines.append("")
     lines.append("</details>")
     return "\n".join(lines) + "\n"
@@ -53,15 +49,11 @@ def _changes_section(findings: list[Finding]) -> str:
     if not changes:
         return ""
     label = "📝 Plan changes" if all(f.type == "change" for f in changes) else "📝 Plan changes & drift"
-    lines = ["", "<details><summary>%s (%d)</summary>" % (label, len(changes)), ""]
+    lines = ["", f"<details><summary>{label} ({len(changes)})</summary>", ""]
     lines.append("| Severity | Resource | Action |")
     lines.append("|---|---|---|")
     for f in changes[:30]:
-        lines.append(
-            f"| {_icon(f.severity)} {f.severity} "
-            f"| `{_esc(f.resource, 60)}` "
-            f"| {_esc(f.message, 80)} |"
-        )
+        lines.append(f"| {_icon(f.severity)} {f.severity} | `{_esc(f.resource, 60)}` | {_esc(f.message, 80)} |")
     if len(changes) > 30:
         lines.append(f"\n_+{len(changes) - 30} more_")
     lines.append("")
@@ -72,7 +64,7 @@ def _changes_section(findings: list[Finding]) -> str:
 def _security_section(title: str, findings: list[Finding]) -> str:
     if not findings:
         return ""
-    lines = ["", "<details><summary>%s (%d)</summary>" % (title, len(findings)), ""]
+    lines = ["", f"<details><summary>{title} ({len(findings)})</summary>", ""]
     lines.append("| Sev | Rule | Resource | Finding | Remediation |")
     lines.append("|---|---|---|---|---|")
     for f in findings[:30]:
@@ -96,16 +88,13 @@ def _policy_section(findings: list[Finding]) -> str:
     policy = [f for f in findings if f.type == "policy"]
     if not policy:
         return ""
-    lines = ["", "<details><summary>📋 Policy findings (%d)</summary>" % len(policy), ""]
+    lines = ["", f"<details><summary>📋 Policy findings ({len(policy)})</summary>", ""]
     lines.append("| Sev | Rule | Resource | Message |")
     lines.append("|---|---|---|---|")
     for f in policy[:20]:
         rule = f"`{f.rule_id}`" if f.rule_id else "—"
         lines.append(
-            f"| {_icon(f.severity)} {f.severity} "
-            f"| {rule} "
-            f"| `{_esc(f.resource, 60)}` "
-            f"| {_esc(f.message, 120)} |"
+            f"| {_icon(f.severity)} {f.severity} | {rule} | `{_esc(f.resource, 60)}` | {_esc(f.message, 120)} |"
         )
     lines.append("")
     lines.append("</details>")

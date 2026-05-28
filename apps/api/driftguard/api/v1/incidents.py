@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
@@ -75,13 +75,13 @@ async def patch_incident(
             raise HTTPException(422, f"status must be one of: {VALID_STATUSES}")
         inc.status = body.status
         if body.status == "resolved" and not inc.resolved_at:
-            inc.resolved_at = datetime.now(timezone.utc)
+            inc.resolved_at = datetime.now(UTC)
     if body.root_cause is not None:
         inc.root_cause = body.root_cause
     if body.suggested_fix is not None:
         inc.suggested_fix = body.suggested_fix
 
-    inc.updated_at = datetime.now(timezone.utc)
+    inc.updated_at = datetime.now(UTC)
     await db.commit()
     return _serialize(inc)
 

@@ -269,8 +269,7 @@ def _merge_findings(static: list[Finding], plan: list[Finding]) -> list[Finding]
     non_tf = [f for f in static if f.rule_id and not f.rule_id.startswith("TF")]
     # Keep static TF findings for resources the plan didn't cover (partial failure).
     uncovered_tf = [
-        f for f in static
-        if (not f.rule_id or f.rule_id.startswith("TF")) and f.resource not in plan_resources
+        f for f in static if (not f.rule_id or f.rule_id.startswith("TF")) and f.resource not in plan_resources
     ]
     return plan + non_tf + uncovered_tf
 

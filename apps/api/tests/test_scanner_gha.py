@@ -1,8 +1,9 @@
 """Tests for GitHub Actions static analysis rules (GHA001–GHA007)."""
-import pytest
+
 from driftguard.services.scanner.rules.github_actions import _scan_single
 
 # ── helpers ──────────────────────────────────────────────────────────────────
+
 
 def rule_ids(content: str) -> set[str]:
     return {f.rule_id for f in _scan_single(content, ".github/workflows/ci.yml")}
@@ -35,6 +36,7 @@ jobs:
 
 # ── GHA001: Unpinned action ───────────────────────────────────────────────────
 
+
 def test_gha001_branch_ref_triggers():
     content = """\
 on: push
@@ -48,6 +50,7 @@ jobs:
       - uses: actions/checkout@main
 """
     assert_triggers("GHA001", content)
+
 
 def test_gha001_semver_ref_triggers():
     content = """\
@@ -63,8 +66,10 @@ jobs:
 """
     assert_triggers("GHA001", content)
 
+
 def test_gha001_sha_pinned_passes():
     assert_passes("GHA001", _SAFE_WORKFLOW)
+
 
 def test_gha001_master_branch_triggers():
     content = """\
@@ -83,6 +88,7 @@ jobs:
 
 # ── GHA002: ACTIONS_ALLOW_UNSECURE_COMMANDS ───────────────────────────────────
 
+
 def test_gha002_unsecure_commands_triggers():
     content = """\
 on: push
@@ -99,11 +105,13 @@ jobs:
 """
     assert_triggers("GHA002", content)
 
+
 def test_gha002_not_set_passes():
     assert_passes("GHA002", _SAFE_WORKFLOW)
 
 
 # ── GHA003: Script injection ──────────────────────────────────────────────────
+
 
 def test_gha003_pr_title_injection_triggers():
     content = """\
@@ -119,6 +127,7 @@ jobs:
 """
     assert_triggers("GHA003", content)
 
+
 def test_gha003_issue_body_injection_triggers():
     content = """\
 on: issues
@@ -133,6 +142,7 @@ jobs:
           echo "${{ github.event.issue.body }}"
 """
     assert_triggers("GHA003", content)
+
 
 def test_gha003_env_var_indirection_passes():
     content = """\
@@ -150,11 +160,13 @@ jobs:
 """
     assert_passes("GHA003", content)
 
+
 def test_gha003_safe_context_passes():
     assert_passes("GHA003", _SAFE_WORKFLOW)
 
 
 # ── GHA004: Missing permissions ───────────────────────────────────────────────
+
 
 def test_gha004_no_permissions_triggers():
     content = """\
@@ -169,11 +181,13 @@ jobs:
 """
     assert_triggers("GHA004", content)
 
+
 def test_gha004_with_permissions_passes():
     assert_passes("GHA004", _SAFE_WORKFLOW)
 
 
 # ── GHA005: pull_request_target unsafe checkout ───────────────────────────────
+
 
 def test_gha005_pr_target_unsafe_checkout_triggers():
     content = """\
@@ -192,6 +206,7 @@ jobs:
 """
     assert_triggers("GHA005", content)
 
+
 def test_gha005_pr_target_safe_ref_passes():
     content = """\
 on: pull_request_target
@@ -207,11 +222,13 @@ jobs:
 """
     assert_passes("GHA005", content)
 
+
 def test_gha005_regular_pr_trigger_passes():
     assert_passes("GHA005", _SAFE_WORKFLOW)
 
 
 # ── GHA007: curl | bash ───────────────────────────────────────────────────────
+
 
 def test_gha007_curl_pipe_bash_triggers():
     content = """\
@@ -227,6 +244,7 @@ jobs:
 """
     assert_triggers("GHA007", content)
 
+
 def test_gha007_curl_pipe_sh_triggers():
     content = """\
 on: push
@@ -240,6 +258,7 @@ jobs:
       - run: curl https://example.com/install.sh | sh
 """
     assert_triggers("GHA007", content)
+
 
 def test_gha007_safe_curl_passes():
     content = """\
@@ -261,6 +280,7 @@ jobs:
 
 # ── non-workflow files are ignored ───────────────────────────────────────────
 
+
 def test_non_workflow_yaml_ignored():
     content = """\
 name: my-config
@@ -270,6 +290,7 @@ value: 123
 
 
 # ── finding metadata ─────────────────────────────────────────────────────────
+
 
 def test_finding_has_line_number():
     content = """\
@@ -289,11 +310,13 @@ jobs:
     assert gha001.file == ".github/workflows/ci.yml"
     assert gha001.suggestion
 
+
 def test_safe_workflow_has_no_findings():
     assert _scan_single(_SAFE_WORKFLOW, ".github/workflows/ci.yml") == []
 
 
 # ── GHA006: Secret directly in run step ──────────────────────────────────────
+
 
 def test_gha006_secret_in_run_triggers():
     content = """\
@@ -308,6 +331,7 @@ jobs:
       - run: curl -H "Authorization: ${{ secrets.API_TOKEN }}" https://api.example.com/deploy
 """
     assert_triggers("GHA006", content)
+
 
 def test_gha006_secret_via_env_var_passes():
     content = """\
@@ -328,6 +352,7 @@ jobs:
 
 # ── GHA008: Untrusted event data in if: condition ─────────────────────────────
 
+
 def test_gha008_untrusted_input_in_if_triggers():
     content = """\
 on: pull_request
@@ -342,6 +367,7 @@ jobs:
       - run: echo "running"
 """
     assert_triggers("GHA008", content)
+
 
 def test_gha008_safe_if_condition_passes():
     content = """\
