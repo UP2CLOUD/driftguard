@@ -428,7 +428,16 @@
       "label": "安装",
       "eyebrow": "文档 · 快速开始",
       "title": "30秒内完成安装",
-      "subtitle": "三个步骤。无需 SDK、无需重写、无需更改基础设施。"
+      "subtitle": "三个步骤。无需 SDK、无需重写、无需更改基础设施。",
+      "step1Title": "安装 GitHub App",
+      "step1Desc": "选择您的组织或个人账户，授予包含 Terraform 的仓库访问权限。",
+      "step2Title": "向仓库添加配置",
+      "step2Desc": "将此文件提交到任意分支，DriftGuard 会在每个 PR 上读取它。",
+      "step3Title": "开启 Terraform PR",
+      "step3Desc": "DriftGuard 将在约 30 秒内评论。若未出现，请检查 Actions 标签页。",
+      "troublePrefix": "遇到问题？请查看",
+      "webhookGuide": "Webhook 指南",
+      "troubleSuffix": "，或发送邮件给我们。"
     },
     "firstReview": {
       "label": "首次 PR 审查",

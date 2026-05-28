@@ -1,15 +1,14 @@
 import { type Locale } from "@/i18n/config";
 import type { Metadata } from "next";
-import { pageMeta, jsonLdBreadcrumb, jsonLdArticle, localizedPageMeta } from "@/lib/seo";
+import { jsonLdBreadcrumb, localizedPageMeta } from "@/lib/seo";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
-
-const STEPS = [
-  { n: "01", title: "Install the GitHub App", code: "open https://github.com/apps/driftguard-app/installations/new", desc: "Select your organisation or personal account. Grant access to the repositories that have Terraform." },
-  { n: "02", title: "Add config to your repo", code: `cat > .github/driftguard.yml << 'EOF'
+const STEP_CODES = [
+  "open https://github.com/apps/driftguard-app/installations/new",
+  `cat > .github/driftguard.yml << 'EOF'
 policy:
   block:
     - aws_rds_cluster.*.delete
@@ -20,8 +19,8 @@ compliance:
   frameworks: [DORA, NIS2, ISO27001]
 cost:
   threshold_monthly_usd: 500
-EOF`, desc: "Commit this file to any branch. DriftGuard reads it on every PR." },
-  { n: "03", title: "Open a Terraform PR", code: "git checkout -b test/driftguard-review\n# edit any .tf file\ngit push && open a PR", desc: "DriftGuard will comment within ~30s. Check the Actions tab if it doesn\'t appear." },
+EOF`,
+  "git checkout -b test/driftguard-review\n# edit any .tf file\ngit push && open a PR",
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -42,6 +41,11 @@ export default async function Install() {
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
 
+  const STEPS = [
+    { n: "01", title: t("docs.install.step1Title"), code: STEP_CODES[0], desc: t("docs.install.step1Desc") },
+    { n: "02", title: t("docs.install.step2Title"), code: STEP_CODES[1], desc: t("docs.install.step2Desc") },
+    { n: "03", title: t("docs.install.step3Title"), code: STEP_CODES[2], desc: t("docs.install.step3Desc") },
+  ];
 
   return (
     <MarketingPageShell
@@ -58,7 +62,11 @@ export default async function Install() {
           </div>
         ))}
         <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-5 flex items-center justify-between gap-4 flex-wrap">
-          <p className="text-[13px] text-[color:var(--dg-fg-muted)]">Having trouble? Check the <a href="/docs/webhooks" className="text-[color:var(--dg-electric-bright)] hover:underline">webhook guide</a> or email us.</p>
+          <p className="text-[13px] text-[color:var(--dg-fg-muted)]">
+            {t("docs.install.troublePrefix")}
+            <a href="/docs/webhooks" className="text-[color:var(--dg-electric-bright)] hover:underline">{t("docs.install.webhookGuide")}</a>
+            {t("docs.install.troubleSuffix")}
+          </p>
           <a href="mailto:support@driftguard.io" className="dg-button dg-button-ghost text-[12px]">{t("docs.getHelp")}</a>
         </div>
       </div>
