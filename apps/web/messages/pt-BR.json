@@ -260,7 +260,7 @@
         },
         "security": {
           "title": "Descobertas de segurança",
-          "body": "Checkov + triagem AI. 255 regras mapeadas a controlos de conformidade.",
+          "body": "Checkov + triagem IA. 255 regras mapeadas a controlos de conformidade.",
           "example": "aws_s3_bucket.tf-state\nAcesso público removido\nCKV_AWS_19 · NIS2 Art.21 → BLOQUEADO"
         },
         "memory": {
