@@ -63,9 +63,9 @@ export default async function Install() {
         ))}
         <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-5 flex items-center justify-between gap-4 flex-wrap">
           <p className="text-[13px] text-[color:var(--dg-fg-muted)]">
-            {t("docs.install.troublePrefix")}
+            {t("docs.install.troubleText").split("{link}")[0]}
             <a href="/docs/webhooks" className="text-[color:var(--dg-electric-bright)] hover:underline">{t("docs.install.webhookGuide")}</a>
-            {t("docs.install.troubleSuffix")}
+            {t("docs.install.troubleText").split("{link}")[1]}
           </p>
           <a href="mailto:support@driftguard.io" className="dg-button dg-button-ghost text-[12px]">{t("docs.getHelp")}</a>
         </div>

@@ -435,9 +435,8 @@
       "step2Desc": "Haz commit de este archivo en cualquier rama. DriftGuard lo lee en cada PR.",
       "step3Title": "Abrir un PR de Terraform",
       "step3Desc": "DriftGuard comentará en ~30s. Revisa la pestaña Actions si no aparece.",
-      "troublePrefix": "¿Problemas? Consulta la ",
-      "webhookGuide": "guía de webhooks",
-      "troubleSuffix": " o escríbenos un correo."
+      "troubleText": "¿Problemas? Consulta la {link} o escríbenos un correo.",
+      "webhookGuide": "guía de webhooks"
     },
     "firstReview": {
       "label": "Tu primera revisión",

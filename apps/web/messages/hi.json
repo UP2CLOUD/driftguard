@@ -434,9 +434,8 @@
       "step2Desc": "इस फ़ाइल को किसी भी ब्रांच में कमिट करें। DriftGuard इसे हर PR पर पढ़ता है।",
       "step3Title": "Terraform PR खोलें",
       "step3Desc": "DriftGuard ~30 सेकंड में कमेंट करेगा। यदि नहीं दिखे तो Actions टैब जाँचें।",
-      "troublePrefix": "समस्या है? ",
-      "webhookGuide": "वेबहुक गाइड",
-      "troubleSuffix": " देखें या हमें ईमेल करें।"
+      "troubleText": "समस्या है? {link} देखें या हमें ईमेल करें।",
+      "webhookGuide": "वेबहुक गाइड"
     },
     "firstReview": {
       "label": "आपकी पहली समीक्षा",
