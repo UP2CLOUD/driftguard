@@ -1,80 +1,90 @@
 "use client";
 
 import { useT } from "@/components/TranslationProvider";
-
 import { useState } from "react";
 import { SectionHeader } from "./Architecture";
 import { PricingCta } from "./PricingCta";
-
-const PLANS = [
-  {
-    tier: "OSS",
-    monthlyPrice: null,
-    annualPrice: null,
-    freeLabel: "Free forever",
-    desc: "Self-host the analyzer. Community policies.",
-    features: [
-      "Up to 50 PR reviews / mo",
-      "1 repo",
-      "30-day memory retention",
-      "Community support",
-    ],
-    cta: "Self-host →",
-    href: "https://github.com/UP2CLOUD/driftguard",
-    external: true,
-  },
-  {
-    tier: "Team",
-    monthlyPrice: 29,
-    annualPrice: 23,
-    desc: "Production PR reviews for human and agent contributors.",
-    features: [
-      "Unlimited PR analyses",
-      "Cost · drift · security · compliance",
-      "Semantic memory — 1 year retention",
-      "OPA policy bundles",
-      "Slack + email alerts",
-      "Priority support",
-    ],
-    highlighted: true,
-    cta: "Start free trial →",
-    href: "https://github.com/apps/driftguard-app/installations/new",
-    external: true,
-    badge: "Most popular",
-  },
-  {
-    tier: "Enterprise",
-    monthlyPrice: null,
-    annualPrice: null,
-    freeLabel: "Custom",
-    desc: "Self-hosted, air-gapped, regulated environments.",
-    features: [
-      "BYO-cloud / on-prem",
-      "SSO / SCIM provisioning",
-      "Custom policy modules",
-      "Dedicated VPC",
-      "99.95% SLA",
-      "DORA / NIS2 / ISO 27001 evidence",
-    ],
-    cta: "Contact sales →",
-    href: "mailto:sales@driftguard.io",
-    external: true,
-  },
-];
 
 export function Pricing() {
   const t = useT();
   const [annual, setAnnual] = useState(false);
 
+  const PLANS = [
+    {
+      key: "oss",
+      tier: t("landing.pricing.plans.oss.tier"),
+      monthlyPrice: null,
+      annualPrice: null,
+      freeLabel: t("landing.pricing.plans.oss.freeLabel"),
+      desc: t("landing.pricing.plans.oss.desc"),
+      features: [
+        t("landing.pricing.plans.oss.f1"),
+        t("landing.pricing.plans.oss.f2"),
+        t("landing.pricing.plans.oss.f3"),
+        t("landing.pricing.plans.oss.f4"),
+      ],
+      cta: t("landing.pricing.plans.oss.cta"),
+      href: "https://github.com/UP2CLOUD/driftguard",
+      external: true,
+    },
+    {
+      key: "team",
+      tier: t("landing.pricing.plans.team.tier"),
+      monthlyPrice: 29,
+      annualPrice: 23,
+      desc: t("landing.pricing.plans.team.desc"),
+      features: [
+        t("landing.pricing.plans.team.f1"),
+        t("landing.pricing.plans.team.f2"),
+        t("landing.pricing.plans.team.f3"),
+        t("landing.pricing.plans.team.f4"),
+        t("landing.pricing.plans.team.f5"),
+        t("landing.pricing.plans.team.f6"),
+      ],
+      highlighted: true,
+      cta: t("landing.pricing.plans.team.cta"),
+      href: "https://github.com/apps/driftguard-app/installations/new",
+      external: true,
+      badge: t("landing.pricing.plans.team.badge"),
+    },
+    {
+      key: "enterprise",
+      tier: t("landing.pricing.plans.enterprise.tier"),
+      monthlyPrice: null,
+      annualPrice: null,
+      freeLabel: t("landing.pricing.plans.enterprise.freeLabel"),
+      desc: t("landing.pricing.plans.enterprise.desc"),
+      features: [
+        t("landing.pricing.plans.enterprise.f1"),
+        t("landing.pricing.plans.enterprise.f2"),
+        t("landing.pricing.plans.enterprise.f3"),
+        t("landing.pricing.plans.enterprise.f4"),
+        t("landing.pricing.plans.enterprise.f5"),
+        t("landing.pricing.plans.enterprise.f6"),
+      ],
+      cta: t("landing.pricing.plans.enterprise.cta"),
+      href: "mailto:sales@driftguard.io",
+      external: true,
+    },
+  ];
+
   return (
     <section id="pricing" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
-        <SectionHeader eyebrow="Pricing" title={t("landing.pricing.sectionTitle")} subtitle={t("landing.pricing.sectionSubtitle")} />
+        <SectionHeader
+          eyebrow={t("landing.pricing.eyebrow")}
+          title={t("landing.pricing.sectionTitle")}
+          subtitle={t("landing.pricing.sectionSubtitle")}
+        />
 
         {/* Billing toggle */}
         <div className="mt-8 mb-12 flex items-center justify-center gap-4">
-          <span className={`font-mono text-[12px] uppercase tracking-widest transition ${!annual ? "text-[color:var(--dg-fg)]" : "text-[color:var(--dg-fg-subtle)]"}`}>
-            Monthly
+          <span
+            className={`font-mono text-[12px] uppercase tracking-widest transition ${
+              !annual ? "text-[color:var(--dg-fg)]" : "text-[color:var(--dg-fg-subtle)]"
+            }`}
+          >
+            {t("landing.pricing.billingMonthly")}
           </span>
           <button
             onClick={() => setAnnual((a) => !a)}
@@ -86,16 +96,20 @@ export function Pricing() {
             }`}
           >
             <span
-              className={`absolute top-0.5 left-0.5 h-4.5 w-4.5 rounded-full bg-[color:var(--dg-electric)] transition-transform duration-200 ${
+              className={`absolute top-0.5 left-0.5 rounded-full bg-[color:var(--dg-electric)] transition-transform duration-200 ${
                 annual ? "translate-x-5" : "translate-x-0"
               }`}
               style={{ height: "18px", width: "18px" }}
             />
           </button>
-          <span className={`font-mono text-[12px] uppercase tracking-widest transition ${annual ? "text-[color:var(--dg-fg)]" : "text-[color:var(--dg-fg-subtle)]"}`}>
-            Annual
+          <span
+            className={`font-mono text-[12px] uppercase tracking-widest transition ${
+              annual ? "text-[color:var(--dg-fg)]" : "text-[color:var(--dg-fg-subtle)]"
+            }`}
+          >
+            {t("landing.pricing.billingAnnual")}
             <span className="ml-2 rounded border border-allowed/40 bg-allowed/10 px-1.5 py-0.5 text-[9px] text-allowed">
-              -20%
+              {t("landing.pricing.savingsDiscount")}
             </span>
           </span>
         </div>
@@ -103,7 +117,7 @@ export function Pricing() {
         <div className="grid gap-4 md:grid-cols-3">
           {PLANS.map((p) => (
             <div
-              key={p.tier}
+              key={p.key}
               className={`relative flex flex-col rounded-md border p-6 transition-all ${
                 p.highlighted
                   ? "border-[color:var(--dg-electric)]/40 bg-[color:var(--dg-electric)]/5 shadow-[0_0_40px_-10px_rgba(63,140,255,0.15)]"
@@ -128,7 +142,8 @@ export function Pricing() {
                       €{annual ? p.annualPrice : p.monthlyPrice}
                     </span>
                     <span className="mb-1 font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">
-                      / repo / mo{annual ? " (billed annually)" : ""}
+                      {t("landing.pricing.perRepoMo")}
+                      {annual ? ` ${t("landing.pricing.billedAnnually")}` : ""}
                     </span>
                   </>
                 ) : (
@@ -141,8 +156,8 @@ export function Pricing() {
               <p className="mb-5 text-[12px] text-[color:var(--dg-fg-muted)]">{p.desc}</p>
 
               <ul className="mb-6 flex-1 space-y-2.5">
-                {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-[12px] text-[color:var(--dg-fg-muted)]">
+                {p.features.map((f, i) => (
+                  <li key={i} className="flex items-start gap-2 text-[12px] text-[color:var(--dg-fg-muted)]">
                     <span className="mt-0.5 shrink-0 text-allowed">✓</span>
                     {f}
                   </li>
@@ -150,7 +165,7 @@ export function Pricing() {
               </ul>
 
               <PricingCta
-                tier={p.tier}
+                tier={p.key}
                 href={p.href}
                 external={p.external}
                 label={p.cta}
@@ -164,7 +179,7 @@ export function Pricing() {
 
         {/* Bottom note */}
         <p className="mt-8 text-center font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">
-          All plans include SOC 2 Type II (Q4 2026) · GDPR-native · EU data residency
+          {t("landing.pricing.footer")}
         </p>
       </div>
     </section>

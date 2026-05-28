@@ -33,7 +33,7 @@
     "subtitle": "Driftguard 在 30 秒内审查每个 OpenTofu 和 Terraform PR。成本变化、漂移风险、安全配置错误以及 DORA / NIS2 / ISO 27001 证据 — 统一在一个 PR 评论中。",
     "footerTagline": "欧盟托管。GDPR 原生。无垃圾邮件。",
     "pricingTitle": "定价",
-    "pricingSubtitle": "按仓库计费。年付节省 15%。",
+    "pricingSubtitle": "按仓库计费。年付节省 20%。",
     "waitlistTitle": "率先交付更安全的基础设施。",
     "waitlistSubtitle": "早期访问向 50 个平台团队开放。前 20 名终身享受 50% 折扣。"
   },
@@ -246,6 +246,7 @@
     "featureGrid": {
       "sectionTitle": "六层防护。一次审查。零配置开销。",
       "sectionSubtitle": "成本、漂移、安全、合规、语义记忆和 AI 原生分析 — 一个 PR 全覆盖。",
+      "eyebrow": "全栈治理",
       "hoverHint": "悬停每张卡片查看真实示例",
       "features": {
         "cost": {
@@ -326,7 +327,47 @@
       "billingAnnual": "年付",
       "footer": "所有计划均包含 SOC 2 Type II（Q4 2026）· 符合 GDPR · EU 数据驻留",
       "ariaLabel": "简单的按仓库定价",
-      "ariaDesc": "免费开始，随增长添加仓库。"
+      "ariaDesc": "免费开始，随增长添加仓库。",
+      "savingsDiscount": "-20%",
+      "perRepoMo": "/ 仓库 / 月",
+      "billedAnnually": "（按年计费）",
+      "eyebrow": "定价",
+      "plans": {
+        "oss": {
+          "tier": "OSS",
+          "freeLabel": "永久免费",
+          "desc": "自托管分析器。社区策略。",
+          "f1": "每月最多50次PR审查",
+          "f2": "1个仓库",
+          "f3": "30天内存保留",
+          "f4": "社区支持",
+          "cta": "自托管 →"
+        },
+        "team": {
+          "tier": "团队版",
+          "badge": "最受欢迎",
+          "desc": "为人类和AI代理贡献者提供生产环境PR审查。",
+          "f1": "无限PR分析",
+          "f2": "成本·漂移·安全·合规",
+          "f3": "语义内存——1年保留期",
+          "f4": "OPA策略包",
+          "f5": "Slack+邮件提醒",
+          "f6": "优先支持",
+          "cta": "开始免费试用 →"
+        },
+        "enterprise": {
+          "tier": "企业版",
+          "freeLabel": "自定义",
+          "desc": "自托管、气隙隔离、受监管环境。",
+          "f1": "自带云/本地部署",
+          "f2": "SSO/SCIM",
+          "f3": "自定义策略模块",
+          "f4": "专用VPC",
+          "f5": "99.95% SLA",
+          "f6": "DORA/NIS2/ISO 27001证据",
+          "cta": "联系销售 →"
+        }
+      }
     },
     "semanticMemory": {
       "sectionTitle": "你的代理从生产中学习。永久保留。",
@@ -592,7 +633,7 @@
   },
   "pricing": {
     "eyebrow": "价格",
-    "perRepo": "按仓库计费。年付节省 15%。",
+    "perRepo": "按仓库计费。年付节省 20%。",
     "meta": {
       "title": "定价 — DriftGuard",
       "description": "免费计划、Team €29/仓库/月、Enterprise 定制。随时取消。"

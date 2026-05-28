@@ -5,60 +5,20 @@ import { useT } from "@/components/TranslationProvider";
 import { useEffect, useRef, useState } from "react";
 import { SectionHeader } from "./Architecture";
 
-const FEATURES = [
-  {
-    tag: "cost",
-    title: "Cost delta on every PR",
-    body: "Infracost-powered monthly cost diff per resource. Threshold-based blocks (€500/mo? €5k/mo?). No surprises in the AWS bill at the end of the month.",
-    glyph: "$",
-    accent: "var(--dg-warned)",
-    example: "aws_rds_cluster.prod\ndb.r5.large → db.r5.4xlarge\n+€480/mo · threshold exceeded → BLOCKED",
-  },
-  {
-    tag: "drift",
-    title: "Live state vs. plan diff",
-    body: "Compares the PR's terraform plan against the real cloud state. Catches manual changes, orphan resources, and out-of-band edits before merge.",
-    glyph: "△",
-    accent: "var(--dg-orange)",
-    example: "aws_security_group.web-sg\nIngress 0.0.0.0/0 added via Console\n→ DRIFT DETECTED · 3h ago",
-  },
-  {
-    tag: "security",
-    title: "Curated security findings",
-    body: "Checkov + AI triage. 255 rules mapped to compliance controls. Public S3 buckets, wildcard IAM, missing encryption — flagged with fix suggestions.",
-    glyph: "⬡",
-    accent: "var(--dg-blocked)",
-    example: "aws_s3_bucket.tf-state\nPublic access block removed\nCKV_AWS_19 · NIS2 Art.21 → BLOCKED",
-  },
-  {
-    tag: "memory",
-    title: "Semantic memory of failures",
-    body: "Every blocked deploy and compliance violation embedded and indexed. Open a similar PR — the original incident appears in the comment.",
-    glyph: "◉",
-    accent: "var(--dg-purple)",
-    example: "rds.delete.prod recalled\ncos 0.94 · 2026-04-22\n→ Same misconfig blocked twice",
-  },
-  {
-    tag: "compliance",
-    title: "DORA / NIS2 / ISO 27001",
-    body: "Each finding mapped to compliance controls. Audit evidence collected on every PR — no extra workflow, no questionnaires.",
-    glyph: "✦",
-    accent: "var(--dg-allowed)",
-    example: "DORA Art.11 · NIS2 Art.21\nISO 27001 A.8.8 · CIS v8\n→ Evidence exported automatically",
-  },
-  {
-    tag: "ai-native",
-    title: "Built for agent contributors",
-    body: "AI agents (Cursor, Devin, Claude Code) write half your IaC. DriftGuard treats them like junior engineers: reviewed, mentored, fast-tracked when safe.",
-    glyph: "◈",
-    accent: "var(--dg-electric)",
-    example: "agent.cursor opened PR #847\n23 resources · risk 84/100\n→ 2 critical findings · BLOCKED",
-  },
-] as const;
+const FEATURE_GLYPHS = {
+  cost: { glyph: "$", accent: "var(--dg-warned)" },
+  drift: { glyph: "△", accent: "var(--dg-orange)" },
+  security: { glyph: "⬡", accent: "var(--dg-blocked)" },
+  memory: { glyph: "◉", accent: "var(--dg-purple)" },
+  compliance: { glyph: "✦", accent: "var(--dg-allowed)" },
+  aiNative: { glyph: "◈", accent: "var(--dg-electric)" },
+} as const;
+
+type FeatureKey = keyof typeof FEATURE_GLYPHS;
 
 function FeatureCell({
-  tag, title, body, glyph, accent, example, index,
-}: (typeof FEATURES)[number] & { index: number }) {
+  title, body, glyph, accent, example, index,
+}: { title: string; body: string; glyph: string; accent: string; example: string; index: number }) {
   const [hovered, setHovered] = useState(false);
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -143,21 +103,69 @@ function FeatureCell({
 
 export function FeatureGrid() {
   const t = useT();
+
+  const FEATURES: { key: FeatureKey; title: string; body: string; example: string }[] = [
+    {
+      key: "cost",
+      title: t("landing.featureGrid.features.cost.title"),
+      body: t("landing.featureGrid.features.cost.body"),
+      example: t("landing.featureGrid.features.cost.example"),
+    },
+    {
+      key: "drift",
+      title: t("landing.featureGrid.features.drift.title"),
+      body: t("landing.featureGrid.features.drift.body"),
+      example: t("landing.featureGrid.features.drift.example"),
+    },
+    {
+      key: "security",
+      title: t("landing.featureGrid.features.security.title"),
+      body: t("landing.featureGrid.features.security.body"),
+      example: t("landing.featureGrid.features.security.example"),
+    },
+    {
+      key: "memory",
+      title: t("landing.featureGrid.features.memory.title"),
+      body: t("landing.featureGrid.features.memory.body"),
+      example: t("landing.featureGrid.features.memory.example"),
+    },
+    {
+      key: "compliance",
+      title: t("landing.featureGrid.features.compliance.title"),
+      body: t("landing.featureGrid.features.compliance.body"),
+      example: t("landing.featureGrid.features.compliance.example"),
+    },
+    {
+      key: "aiNative",
+      title: t("landing.featureGrid.features.aiNative.title"),
+      body: t("landing.featureGrid.features.aiNative.body"),
+      example: t("landing.featureGrid.features.aiNative.example"),
+    },
+  ];
+
   return (
     <section id="product" className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-16 sm:py-24">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
-          eyebrow="Full-stack governance"
+          eyebrow={t("landing.featureGrid.eyebrow")}
           title={t("landing.featureGrid.sectionTitle")}
-          subtitle="Cost intelligence, live drift detection, security scanning, compliance evidence, semantic memory, and AI-native analysis — all triggered by a PR, all without changing your Terraform workflow."
+          subtitle={t("landing.featureGrid.sectionSubtitle")}
         />
         <div className="mt-16 grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] md:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f, i) => (
-            <FeatureCell key={f.tag} {...f} index={i} />
+            <FeatureCell
+              key={f.key}
+              title={f.title}
+              body={f.body}
+              example={f.example}
+              glyph={FEATURE_GLYPHS[f.key].glyph}
+              accent={FEATURE_GLYPHS[f.key].accent}
+              index={i}
+            />
           ))}
         </div>
         <p className="mt-4 text-center font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-          Hover each card to see a real example
+          {t("landing.featureGrid.hoverHint")}
         </p>
       </div>
     </section>

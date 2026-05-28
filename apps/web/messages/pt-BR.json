@@ -33,7 +33,7 @@
     "subtitle": "O Driftguard revisa cada PR Terraform em 30 segundos. Delta de custo, risco de drift, misconfigs de segurança e evidências DORA / NIS2 / ISO 27001 — em um único comentário de PR.",
     "footerTagline": "Hospedado na UE. Nativo GDPR. Sem spam.",
     "pricingTitle": "Preços",
-    "pricingSubtitle": "Por repositório. Anual economiza 15%.",
+    "pricingSubtitle": "Por repositório. Anual economiza 20%.",
     "waitlistTitle": "Seja o primeiro a entregar infra mais segura.",
     "waitlistSubtitle": "Acesso antecipado para 50 equipes de plataforma. Os 20 primeiros ganham 50% vitalício."
   },
@@ -246,6 +246,7 @@
     "featureGrid": {
       "sectionTitle": "Seis camadas. Uma revisão. Zero overhead de configuração.",
       "sectionSubtitle": "Custo, drift, segurança, conformidade, memória semântica e análise AI-native — tudo num único PR, sem alterar o workflow Terraform.",
+      "eyebrow": "Governança full-stack",
       "hoverHint": "Passa o cursor em cada card para ver um exemplo real",
       "features": {
         "cost": {
@@ -326,7 +327,47 @@
       "billingAnnual": "Anual",
       "footer": "Todos os planos incluem SOC 2 Tipo II (Q4 2026) · RGPD‑nativo · Dados na EU",
       "ariaLabel": "Preços simples por repo",
-      "ariaDesc": "Começa grátis. Adiciona repos à medida que cresces."
+      "ariaDesc": "Começa grátis. Adiciona repos à medida que cresces.",
+      "savingsDiscount": "-20%",
+      "perRepoMo": "/ repo / mês",
+      "billedAnnually": "(faturado anualmente)",
+      "eyebrow": "Preços",
+      "plans": {
+        "oss": {
+          "tier": "OSS",
+          "freeLabel": "Gratuito para sempre",
+          "desc": "Auto-hospede o analisador. Políticas da comunidade.",
+          "f1": "Até 50 revisões de PR / mês",
+          "f2": "1 repositório",
+          "f3": "Retenção de memória 30 dias",
+          "f4": "Suporte da comunidade",
+          "cta": "Auto-hospedagem →"
+        },
+        "team": {
+          "tier": "Team",
+          "badge": "Mais popular",
+          "desc": "Revisões de PR de produção para contribuidores humanos e agentes.",
+          "f1": "Análises de PR ilimitadas",
+          "f2": "Custo · drift · segurança · conformidade",
+          "f3": "Memória semântica — 1 ano de retenção",
+          "f4": "Bundles de políticas OPA",
+          "f5": "Alertas via Slack + email",
+          "f6": "Suporte prioritário",
+          "cta": "Iniciar avaliação gratuita →"
+        },
+        "enterprise": {
+          "tier": "Enterprise",
+          "freeLabel": "Personalizado",
+          "desc": "Auto-hospedado, air-gapped, ambientes regulados.",
+          "f1": "BYO-cloud / on-prem",
+          "f2": "SSO / SCIM",
+          "f3": "Módulos de política personalizados",
+          "f4": "VPC dedicado",
+          "f5": "SLA 99,95%",
+          "f6": "Evidências DORA / NIS2 / ISO 27001",
+          "cta": "Contactar vendas →"
+        }
+      }
     },
     "semanticMemory": {
       "sectionTitle": "Os teus agentes aprendem de produção. Permanentemente.",
@@ -592,7 +633,7 @@
   },
   "pricing": {
     "eyebrow": "Preços",
-    "perRepo": "Por repo. Anual poupa 15%.",
+    "perRepo": "Por repo. Anual poupa 20%.",
     "meta": {
       "title": "Preços — DriftGuard",
       "description": "Plano Gratuito, Team €29/repo/mês, Enterprise sob consulta. Cancela quando quiser."
