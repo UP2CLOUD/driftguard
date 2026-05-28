@@ -203,12 +203,12 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
                 severity=Severity.HIGH,
                 category=Category.GITHUB_ACTIONS,
                 title="Secret directly interpolated in run step",
-                message=(
-                    "Direct ${{ secrets.* }} in run step may be leaked via debug logs or set-output abuse."
-                ),
+                message=("Direct ${{ secrets.* }} in run step may be leaked via debug logs or set-output abuse."),
                 file=rel_path,
                 line=line,
-                suggestion="Assign to an env var first: env: MY_SECRET: ${{ secrets.MY_SECRET }}, then use $MY_SECRET in run:",
+                suggestion=(
+                    "Assign to an env var first: env: MY_SECRET: ${{ secrets.MY_SECRET }}, then use $MY_SECRET in run:"
+                ),
                 controls=["secrets_management", "least_privilege"],
             )
         )
@@ -229,7 +229,10 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
                 ),
                 file=rel_path,
                 line=line,
-                suggestion="Validate or sanitize the value before using it in conditions; prefer github.actor or other non-user-controlled fields.",
+                suggestion=(
+                    "Validate or sanitize the value before using it in conditions; "
+                    "prefer github.actor or other non-user-controlled fields."
+                ),
                 controls=["injection_prevention", "access_control"],
             )
         )

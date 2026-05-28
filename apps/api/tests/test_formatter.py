@@ -148,7 +148,13 @@ def test_merge_findings_partial_plan_keeps_uncovered_tf():
         Finding(type="security", severity="high", resource="aws_s3.b", message="unencrypted", rule_id="TF005"),
     ]
     plan = [
-        Finding(type="security", severity="critical", resource="aws_s3.a", message="checkov: public ACL", rule_id="CKV_AWS_20"),
+        Finding(
+            type="security",
+            severity="critical",
+            resource="aws_s3.a",
+            message="checkov: public ACL",
+            rule_id="CKV_AWS_20",
+        ),
     ]
     merged = _merge_findings(static, plan)
     resources = {f.resource for f in merged}
@@ -169,6 +175,6 @@ def test_merge_findings_k8s_always_kept():
     ]
     merged = _merge_findings(static, plan)
     rule_ids = {f.rule_id for f in merged}
-    assert "K8S002" in rule_ids   # K8s always kept
+    assert "K8S002" in rule_ids  # K8s always kept
     assert "CKV_AWS_25" in rule_ids  # plan finding kept
-    assert "TF007" not in rule_ids   # TF static for covered resource dropped
+    assert "TF007" not in rule_ids  # TF static for covered resource dropped

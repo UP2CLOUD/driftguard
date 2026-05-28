@@ -170,21 +170,21 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
                     category=Category.STORAGE,
                     title="S3 bucket missing public access block",
                     message=(
-                        f'aws_s3_bucket.{m.group(1)} has no aws_s3_bucket_public_access_block. '
+                        f"aws_s3_bucket.{m.group(1)} has no aws_s3_bucket_public_access_block. "
                         "Objects may be publicly accessible."
                     ),
                     file=rel_path,
                     line=start,
                     resource=f"aws_s3_bucket.{m.group(1)}",
-                    suggestion="Add aws_s3_bucket_public_access_block with block_public_acls = block_public_policy = true",
+                    suggestion=(
+                        "Add aws_s3_bucket_public_access_block with block_public_acls = block_public_policy = true"
+                    ),
                     controls=["public_exposure", "data_protection"],
                 )
             )
 
     # ── TF009: Missing provider version constraints ───────────────────────────
-    if re.search(r'\bprovider\s+"', content) and not re.search(
-        r'\brequired_providers\s*\{', content
-    ):
+    if re.search(r'\bprovider\s+"', content) and not re.search(r"\brequired_providers\s*\{", content):
         findings.append(
             ScanFinding(
                 rule_id="TF009",
@@ -194,7 +194,9 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
                 message="No required_providers block found. Provider versions are unpinned and may break on updates.",
                 file=rel_path,
                 line=1,
-                suggestion='Add terraform { required_providers { aws = { source = "hashicorp/aws", version = "~> 5.0" } } }',
+                suggestion=(
+                    'Add terraform { required_providers { aws = { source = "hashicorp/aws", version = "~> 5.0" } } }'
+                ),
                 controls=["change_management"],
             )
         )
@@ -314,7 +316,9 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
                                 severity=Severity.MEDIUM,
                                 category=Category.ENCRYPTION,
                                 title="KMS key deletion window is too short",
-                                message=f"{res_type}.{res_name}: deletion_window_in_days={val}. Minimum recommended is 7.",
+                                message=(
+                                    f"{res_type}.{res_name}: deletion_window_in_days={val}. Minimum recommended is 7."
+                                ),
                                 file=rel_path,
                                 line=start_line,
                                 resource=f"{res_type}.{res_name}",
@@ -348,9 +352,8 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
 
         # TF015: Secrets Manager secret missing rotation
         if res_type == "aws_secretsmanager_secret":
-            has_rotation = (
-                "rotation_lambda_arn" in body
-                or re.search(r'resource\s+"aws_secretsmanager_secret_rotation"', content)
+            has_rotation = "rotation_lambda_arn" in body or re.search(
+                r'resource\s+"aws_secretsmanager_secret_rotation"', content
             )
             if not has_rotation:
                 findings.append(
@@ -360,8 +363,7 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
                         category=Category.SECRETS,
                         title="Secrets Manager secret missing rotation",
                         message=(
-                            f"{res_type}.{res_name}: No rotation configured. "
-                            "Long-lived secrets increase breach impact."
+                            f"{res_type}.{res_name}: No rotation configured. Long-lived secrets increase breach impact."
                         ),
                         file=rel_path,
                         line=start_line,

@@ -111,11 +111,16 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
                         severity=Severity.MEDIUM,
                         category=Category.KUBERNETES,
                         title="Container missing securityContext",
-                        message=f"{resource}/{cname}: No securityContext defined. Runs with default (permissive) settings.",
+                        message=(
+                            f"{resource}/{cname}: No securityContext defined. Runs with default (permissive) settings."
+                        ),
                         file=rel_path,
                         line=None,
                         resource=f"{resource}/{cname}",
-                        suggestion="Add securityContext with runAsNonRoot, readOnlyRootFilesystem, and allowPrivilegeEscalation: false",
+                        suggestion=(
+                            "Add securityContext with runAsNonRoot, readOnlyRootFilesystem, "
+                            "and allowPrivilegeEscalation: false"
+                        ),
                         controls=["container_isolation", "least_privilege"],
                     )
                 )

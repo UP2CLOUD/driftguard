@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func, select
@@ -35,7 +35,7 @@ async def overview(
     if not org:
         return _empty_overview()
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     window_7d = now - timedelta(days=7)
     window_30d = now - timedelta(days=30)
 
