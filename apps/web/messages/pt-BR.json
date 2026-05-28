@@ -208,7 +208,7 @@
       "step05Body": "O resultado do merge e o estado pós-deploy tornam-se nova memória. Os teus agentes e engenheiros melhoram todos os dias."
     },
     "codeIntegration": {
-      "title": "Instalar em 30 segundos.",
+      "title": "Instale em 30 segundos",
       "subtitle": "GitHub App + configuração de repo. Sem SDK, sem reescritas, sem alterações de infra.",
       "worksWith": "Funciona com"
     },
@@ -386,7 +386,7 @@
     "install": {
       "label": "Instalação",
       "eyebrow": "Docs · Começar",
-      "title": "Instalar em 30 segundos",
+      "title": "Instale em 30 segundos",
       "subtitle": "Três passos. Sem SDK, sem reescritas, sem alterações de infra."
     },
     "firstReview": {
