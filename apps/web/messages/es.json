@@ -428,7 +428,15 @@
       "label": "Instalación",
       "eyebrow": "Docs · Empezar",
       "title": "Instalar en 30 segundos",
-      "subtitle": "Tres pasos. Sin SDK, sin reescrituras, sin cambios de infra."
+      "subtitle": "Tres pasos. Sin SDK, sin reescrituras, sin cambios de infra.",
+      "step1Title": "Instalar la GitHub App",
+      "step1Desc": "Selecciona tu organización o cuenta personal. Concede acceso a los repositorios que tienen Terraform.",
+      "step2Title": "Agregar configuración al repositorio",
+      "step2Desc": "Haz commit de este archivo en cualquier rama. DriftGuard lo lee en cada PR.",
+      "step3Title": "Abrir un PR de Terraform",
+      "step3Desc": "DriftGuard comentará en ~30s. Revisa la pestaña Actions si no aparece.",
+      "troubleText": "¿Problemas? Consulta la {link} o escríbenos un correo.",
+      "webhookGuide": "guía de webhooks"
     },
     "firstReview": {
       "label": "Tu primera revisión",

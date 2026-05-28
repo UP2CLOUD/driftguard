@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Geist } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
 import { I18nProvider } from "@/components/I18nProvider";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import { AuthProvider } from "@/components/AuthProvider";
@@ -13,13 +13,13 @@ import { JsonLd } from "@/components/JsonLd";
 import { NavigationTransition } from "@/components/NavigationTransition";
 import "./globals.css";
 
-const geist = Geist({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   display: "swap",
@@ -98,7 +98,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = isRtlLocale(locale) ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} dir={dir} className={`${geist.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+    <html lang={locale} dir={dir} className={`${inter.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <body className="min-h-screen font-sans text-sm antialiased relative" suppressHydrationWarning>
         <JsonLd data={[
             jsonLdOrganization({ name: "DriftGuard", description: "AI runtime safety for Terraform agents", locale: locale as import("@/i18n/config").Locale }),

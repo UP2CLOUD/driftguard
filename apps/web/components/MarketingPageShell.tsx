@@ -33,7 +33,7 @@ export async function MarketingPageShell({
       <main className="min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
         {jsonLd && <JsonLd data={jsonLd} />}
         <StatusBar />
-        <MarketingNav isLoggedIn={!!session} />
+        <MarketingNav isLoggedIn={!!session} initialPreferences={preferences} />
         <div className={`mx-auto ${narrow ? "max-w-3xl" : "max-w-[1400px]"} px-4 sm:px-6 py-12 sm:py-16`}>
           {(eyebrow || title || subtitle) && (
             <div className="mb-12 sm:mb-16 border-b border-[color:var(--dg-border)] pb-10">

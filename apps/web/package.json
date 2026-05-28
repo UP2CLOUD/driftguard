@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/validate-i18n.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "validate-i18n": "tsx scripts/validate-i18n.ts"
+    "validate-i18n": "node scripts/validate-i18n.mjs"
   },
   "dependencies": {
     "next": "^15.0.3",
