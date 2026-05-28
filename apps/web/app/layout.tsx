@@ -10,6 +10,7 @@ import { createTranslator } from "@/i18n/translator";
 import { hreflangAlternates, jsonLdOrganization, jsonLdWebSite, jsonLdProduct, ogImageUrl } from "@/lib/seo";
 import { type Locale } from "@/i18n/config";
 import { JsonLd } from "@/components/JsonLd";
+import { NavigationTransition } from "@/components/NavigationTransition";
 import "./globals.css";
 
 const geist = Geist({
@@ -107,6 +108,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <AuthProvider>
             <PostHogProvider>
               {children}
+              <NavigationTransition />
             </PostHogProvider>
           </AuthProvider>
         </I18nProvider>

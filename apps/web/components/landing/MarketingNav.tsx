@@ -83,7 +83,11 @@ export function MarketingNav({
           </a>
 
           {isLoggedIn ? (
-            <Link href="/dashboard" className="dg-button dg-button-ghost text-[12px] sm:text-[13px]">
+            <Link
+              href="/dashboard"
+              data-transition="dashboard"
+              className="dg-button dg-button-ghost text-[12px] sm:text-[13px]"
+            >
               {t("landing.nav.dashboard")}
             </Link>
           ) : (
