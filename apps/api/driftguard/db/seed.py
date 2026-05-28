@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import random
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from driftguard.core.db import SessionLocal
 from driftguard.db.models import (
@@ -159,7 +159,7 @@ async def seed() -> None:
                 status=status,
                 risk_score=risk,
                 summary_md=f"AI review: {len(findings_data)} finding(s). Risk score {risk}/100.",
-                created_at=datetime.utcnow() - timedelta(days=days_ago),
+                created_at=datetime.now(timezone.utc) - timedelta(days=days_ago),
             )
             db.add(analysis)
             await db.flush()
@@ -199,7 +199,7 @@ async def seed() -> None:
                     severity=esev,
                     source=esrc,
                     message=emsg,
-                    created_at=datetime.utcnow() - timedelta(hours=i * 3),
+                    created_at=datetime.now(timezone.utc) - timedelta(hours=i * 3),
                 )
             )
 
@@ -251,8 +251,8 @@ async def seed() -> None:
                     root_cause=root,
                     suggested_fix=fix,
                     recurrence_count=recurrence,
-                    first_seen_at=datetime.utcnow() - timedelta(days=random.randint(1, 14)),  # noqa: S311
-                    last_seen_at=datetime.utcnow() - timedelta(hours=random.randint(1, 48)),  # noqa: S311
+                    first_seen_at=datetime.now(timezone.utc) - timedelta(days=random.randint(1, 14)),  # noqa: S311
+                    last_seen_at=datetime.now(timezone.utc) - timedelta(hours=random.randint(1, 48)),  # noqa: S311
                 )
             )
 

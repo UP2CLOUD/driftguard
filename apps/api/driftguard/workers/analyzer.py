@@ -256,15 +256,23 @@ async def _run_static_scan(root: Path) -> list[Finding]:
 def _merge_findings(static: list[Finding], plan: list[Finding]) -> list[Finding]:
     """Merge static + plan-based findings without duplicating TF coverage.
 
-    When plan-based analysis ran (Checkov + plan.json), it covers TF files
-    more accurately with actual plan context. We keep plan findings and only
-    append static findings for K8s (K8S*) and GHA (GHA*) rule IDs.
-    When no plan findings exist (no TF dirs or plan failed), return all static.
+    Plan-based analysis (Checkov + plan.json) covers TF resources more
+    accurately than static regex rules. For any TF resource already covered
+    by a plan finding, we prefer the plan finding. For resources NOT seen in
+    the plan (e.g. dirs that failed to plan), we keep the static TF findings.
+    K8s (K8S*) and GHA (GHA*) static findings are always kept.
     """
     if not plan:
         return static
-    k8s_gha = [f for f in static if f.rule_id and not f.rule_id.startswith("TF")]
-    return plan + k8s_gha
+    # Resources already analysed by the plan runner — skip static TF dupes for these.
+    plan_resources = {f.resource for f in plan}
+    non_tf = [f for f in static if f.rule_id and not f.rule_id.startswith("TF")]
+    # Keep static TF findings for resources the plan didn't cover (partial failure).
+    uncovered_tf = [
+        f for f in static
+        if (not f.rule_id or f.rule_id.startswith("TF")) and f.resource not in plan_resources
+    ]
+    return plan + non_tf + uncovered_tf
 
 
 async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: int, head_sha: str) -> dict:

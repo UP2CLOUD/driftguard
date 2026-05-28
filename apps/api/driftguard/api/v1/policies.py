@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
@@ -106,7 +106,7 @@ async def patch_policy(
         if val is not None:
             setattr(rule, field, val)
 
-    rule.updated_at = datetime.utcnow()
+    rule.updated_at = datetime.now(timezone.utc)
     await db.commit()
     return _ser(rule)
 

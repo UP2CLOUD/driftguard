@@ -47,7 +47,7 @@ export default async function Page() {
       <HashScroll />
       <JsonLd data={[jsonLdSoftware(), jsonLdOrg()]} />
       <StatusBar />
-      <MarketingNav isLoggedIn={isLoggedIn} cta={!isLoggedIn ? cta : undefined} />
+      <MarketingNav isLoggedIn={isLoggedIn} cta={!isLoggedIn ? cta : undefined} initialPreferences={preferences} />
 
       {/* 1. Hook — what we do and why it matters */}
       <Hero
@@ -64,7 +64,7 @@ export default async function Page() {
         }
         ctaSecondary={
           <Link href="/docs/install" className="dg-button dg-button-ghost text-[12px]">
-            Read the docs
+            {t("landing.hero.cta_docs")}
           </Link>
         }
       />
