@@ -375,6 +375,26 @@
       "recalledLabel": "Recalled incidents",
       "ariaLabel": "Your agents learn from production. Permanently.",
       "query": "Query"
+    },
+    "navTransition": {
+      "github": {
+        "title": "establishing secure channel",
+        "line1": "{domain} handshake",
+        "line2": "requesting app permissions",
+        "line3": "redirecting to {domain}"
+      },
+      "dashboard": {
+        "title": "mounting runtime supervisor",
+        "line1": "loading workspace",
+        "line2": "syncing repositories",
+        "line3": "ready"
+      },
+      "generic": {
+        "title": "loading",
+        "line1": "routing",
+        "line2": "hydrating",
+        "line3": "ready"
+      }
     }
   },
   "incidents": {
@@ -645,6 +665,18 @@
     "meta": {
       "title": "Pricing — DriftGuard",
       "description": "DriftGuard pricing: Free plan, Team €29/repo/month, Enterprise custom. No credit card required."
+    },
+    "faq": {
+      "q1": "Is DriftGuard free for open-source projects?",
+      "a1": "Yes. The OSS plan is free forever, supports 1 repo, and includes up to 50 PR reviews per month with 30-day memory retention.",
+      "q2": "Can I try the Team plan before paying?",
+      "a2": "Yes. The Team plan includes a free trial — no credit card required. You can upgrade, downgrade, or cancel at any time.",
+      "q3": "How does per-repo pricing work?",
+      "a3": "You pay per repository connected to DriftGuard. Repos you disconnect are not billed. You can add or remove repos at any time and billing adjusts automatically.",
+      "q4": "What data stays in the EU?",
+      "a4": "All processing and storage happens in EU data centers. No Terraform plan data, secrets, or logs leave the EU region.",
+      "q5": "What is semantic memory retention?",
+      "a5": "DriftGuard embeds every drift event, policy violation, and cost alert as a 384-dimension vector. When a similar change is detected, past incidents are surfaced automatically to prevent repeat mistakes."
     }
   },
   "legal": {

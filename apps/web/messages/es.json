@@ -375,6 +375,26 @@
       "recalledLabel": "Incidentes recuperados",
       "ariaLabel": "Tus agentes aprenden de producción. Permanentemente.",
       "query": "Consulta"
+    },
+    "navTransition": {
+      "github": {
+        "title": "estableciendo canal seguro",
+        "line1": "handshake {domain}",
+        "line2": "solicitando permisos de la app",
+        "line3": "redirigiendo a {domain}"
+      },
+      "dashboard": {
+        "title": "montando supervisor de runtime",
+        "line1": "cargando workspace",
+        "line2": "sincronizando repositorios",
+        "line3": "listo"
+      },
+      "generic": {
+        "title": "cargando",
+        "line1": "enrutando",
+        "line2": "hidratando",
+        "line3": "listo"
+      }
     }
   },
   "incidents": {
@@ -645,6 +665,18 @@
     "meta": {
       "title": "Precios — DriftGuard",
       "description": "Plan Gratuito, Team €29/repo/mes, Enterprise personalizado. Sin tarjeta de crédito."
+    },
+    "faq": {
+      "q1": "¿DriftGuard es gratuito para proyectos de código abierto?",
+      "a1": "Sí. El plan OSS es gratuito para siempre, soporta 1 repo e incluye hasta 50 análisis de PR por mes con retención de 30 días.",
+      "q2": "¿Puedo probar el plan Team antes de pagar?",
+      "a2": "Sí. El plan Team incluye prueba gratuita — sin tarjeta de crédito. Puedes hacer upgrade, downgrade o cancelar en cualquier momento.",
+      "q3": "¿Cómo funciona el precio por repositorio?",
+      "a3": "Pagas por repositorio conectado a DriftGuard. Los repos desconectados no se facturan. Puedes agregar o eliminar repos en cualquier momento.",
+      "q4": "¿Qué datos permanecen en la UE?",
+      "a4": "Todo el procesamiento y almacenamiento ocurre en centros de datos de la UE. Ningún dato de plan Terraform, secretos o logs sale de la región europea.",
+      "q5": "¿Qué es la retención de memoria semántica?",
+      "a5": "DriftGuard convierte cada evento de drift, violación de política y alerta de costos en un vector de 384 dimensiones. Cuando se detecta un cambio similar, los incidentes pasados se muestran automáticamente para evitar errores repetidos."
     }
   },
   "legal": {
