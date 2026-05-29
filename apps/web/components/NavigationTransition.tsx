@@ -1,34 +1,42 @@
 "use client";
 
+import { useT } from "@/components/I18nProvider";
+
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
 type Variant = "github" | "dashboard" | "generic";
 
-const COPY: Record<Variant, { title: string; lines: string[] }> = {
-  github: {
-    title: "establishing secure channel",
-    lines: [
-      "› oauth.github.com handshake",
-      "› requesting app permissions",
-      "› redirecting to github.com",
-    ],
-  },
-  dashboard: {
-    title: "mounting runtime supervisor",
-    lines: [
-      "› resolving workspace",
-      "› loading semantic memory index",
-      "› subscribing to event stream",
-    ],
-  },
-  generic: {
-    title: "loading",
-    lines: ["› routing", "› hydrating", "› ready"],
-  },
-};
-
 export function NavigationTransition() {
+  const t = useT();
+
+  const COPY: Record<Variant, { title: string; lines: string[] }> = {
+    github: {
+      title: t("landing.navTransition.github.title"),
+      lines: [
+        `› ${t("landing.navTransition.github.line1", { domain: "oauth.github.com" })}`,
+        `› ${t("landing.navTransition.github.line2")}`,
+        `› ${t("landing.navTransition.github.line3", { domain: "github.com" })}`,
+      ],
+    },
+    dashboard: {
+      title: t("landing.navTransition.dashboard.title"),
+      lines: [
+        `› ${t("landing.navTransition.dashboard.line1")}`,
+        `› ${t("landing.navTransition.dashboard.line2")}`,
+        `› ${t("landing.navTransition.dashboard.line3")}`,
+      ],
+    },
+    generic: {
+      title: t("landing.navTransition.generic.title"),
+      lines: [
+        `› ${t("landing.navTransition.generic.line1")}`,
+        `› ${t("landing.navTransition.generic.line2")}`,
+        `› ${t("landing.navTransition.generic.line3")}`,
+      ],
+    },
+  };
+
   const [variant, setVariant] = useState<Variant | null>(null);
   const [visibleLines, setVisibleLines] = useState(0);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);

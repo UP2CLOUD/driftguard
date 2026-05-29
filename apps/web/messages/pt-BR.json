@@ -375,6 +375,26 @@
       "recalledLabel": "Incidentes recuperados",
       "ariaLabel": "Os teus agentes aprendem de produção. Permanentemente.",
       "query": "Consulta"
+    },
+    "navTransition": {
+      "github": {
+        "title": "estabelecendo canal seguro",
+        "line1": "handshake {domain}",
+        "line2": "solicitando permissões do app",
+        "line3": "redirecionando para {domain}"
+      },
+      "dashboard": {
+        "title": "montando supervisor de runtime",
+        "line1": "carregando workspace",
+        "line2": "sincronizando repositórios",
+        "line3": "pronto"
+      },
+      "generic": {
+        "title": "a carregar",
+        "line1": "roteando",
+        "line2": "hidratando",
+        "line3": "pronto"
+      }
     }
   },
   "incidents": {
@@ -645,6 +665,18 @@
     "meta": {
       "title": "Preços — DriftGuard",
       "description": "Plano Gratuito, Team €29/repo/mês, Enterprise sob consulta. Cancela quando quiser."
+    },
+    "faq": {
+      "q1": "O DriftGuard é gratuito para projetos open-source?",
+      "a1": "Sim. O plano OSS é gratuito para sempre, suporta 1 repo e inclui até 50 análises de PR por mês com retenção de 30 dias.",
+      "q2": "Posso testar o plano Team antes de pagar?",
+      "a2": "Sim. O plano Team inclui um período de teste gratuito — sem cartão de crédito. Pode fazer upgrade, downgrade ou cancelar a qualquer momento.",
+      "q3": "Como funciona o preço por repositório?",
+      "a3": "Paga por repositório ligado ao DriftGuard. Repos desligados não são faturados. Pode adicionar ou remover repos a qualquer momento.",
+      "q4": "Que dados permanecem na UE?",
+      "a4": "Todo o processamento e armazenamento acontece em datacenters na UE. Nenhum dado de plano Terraform, segredos ou logs sai da região europeia.",
+      "q5": "O que é a retenção de memória semântica?",
+      "a5": "O DriftGuard converte cada evento de drift, violação de política e alerta de custo num vetor de 384 dimensões. Quando uma alteração semelhante é detetada, incidentes passados são apresentados automaticamente para evitar erros repetidos."
     }
   },
   "legal": {
