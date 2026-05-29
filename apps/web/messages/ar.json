@@ -317,7 +317,41 @@
       "liveDemo": "مباشر · تجريبي"
     },
     "metrics": {
-      "connectPrompt": "قم بتوصيل تثبيت GitHub الخاص بك لعرض مقاييس مساحة العمل المباشرة."
+      "connectPrompt": "قم بتوصيل تثبيت GitHub الخاص بك لعرض مقاييس مساحة العمل المباشرة.",
+      "liveEyebrow": "بيانات مساحة العمل المباشرة",
+      "staticEyebrow": "قدرات المنصة",
+      "liveTitle": "مساحة عمل DriftGuard الخاصة بك",
+      "staticTitle": "مبني لبنية التحتية الإنتاجية.",
+      "liveSubtitle": "بيانات مجمّعة في الوقت الفعلي من مستودعاتك المتصلة.",
+      "staticSubtitle": "ضمانات قابلة للقياس على كل PR لـ Terraform — التغطية والدقة والكمون.",
+      "liveLabel1": "تحليلات PR / 7d",
+      "liveLabel2": "الحوادث المفتوحة",
+      "liveLabel3": "إدخالات الذاكرة",
+      "liveLabel4": "متوسط درجة الخطر",
+      "liveSub1": "عبر جميع المستودعات",
+      "liveSub2": "عبر مساحات العمل",
+      "liveSub3": "تضمينات مفهرسة",
+      "liveSub4": "من 100",
+      "staticLabel1": "قواعد Checkov",
+      "staticLabel2": "ضوابط الامتثال",
+      "staticLabel3": "دقة الذاكرة",
+      "staticLabel4": "كمون P99",
+      "staticSub1": "فحوصات أمنية / PR",
+      "staticSub2": "DORA/NIS2/ISO27001/CIS",
+      "staticSub3": "تشابه precision@k",
+      "staticSub4": "ثانية خطة → تعليق"
+    },
+    "trustBar": {
+      "platformEngineers": "مهندسو المنصات",
+      "devopsTeams": "فرق DevOps",
+      "infraLeads": "قادة البنية التحتية",
+      "sreTeams": "فرق SRE",
+      "aiAgentOperators": "مشغلو وكلاء الذكاء الاصطناعي",
+      "cloudArchitects": "مهندسو السحابة",
+      "complianceEngineers": "مهندسو الامتثال",
+      "finopsAnalysts": "محللو FinOps",
+      "securityEngineers": "مهندسو الأمن",
+      "staffEngineers": "المهندسون الكبار"
     },
     "pricing": {
       "sectionTitle": "تسعير بسيط لكل مستودع",

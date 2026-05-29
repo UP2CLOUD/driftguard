@@ -75,26 +75,26 @@ export function Metrics({ installationId }: { installationId?: number }) {
   const m3 = useCount(live ? live.memory_entries : STATIC_FALLBACK.memory_accuracy, 1600, start);
   const m4 = useCount(live ? (live.avg_risk_7d ?? 0) : STATIC_FALLBACK.p99_latency, 1600, start);
 
-  const label1 = live ? "PR analyses / 7d"     : "Checkov rules";
-  const label2 = live ? "Open incidents"        : "Compliance controls";
-  const label3 = live ? "Memory entries"        : "Memory accuracy";
-  const label4 = live ? "Avg risk score"        : "P99 latency";
-  const sub1   = live ? "across all repos"      : "security checks / PR";
-  const sub2   = live ? "across workspaces"     : "DORA/NIS2/ISO27001/CIS";
-  const sub3   = live ? "indexed embeddings"    : "precision@k similarity";
-  const sub4   = live ? "out of 100"            : "seconds plan → comment";
+  const label1 = live ? t("landing.metrics.liveLabel1")   : t("landing.metrics.staticLabel1");
+  const label2 = live ? t("landing.metrics.liveLabel2")   : t("landing.metrics.staticLabel2");
+  const label3 = live ? t("landing.metrics.liveLabel3")   : t("landing.metrics.staticLabel3");
+  const label4 = live ? t("landing.metrics.liveLabel4")   : t("landing.metrics.staticLabel4");
+  const sub1   = live ? t("landing.metrics.liveSub1")     : t("landing.metrics.staticSub1");
+  const sub2   = live ? t("landing.metrics.liveSub2")     : t("landing.metrics.staticSub2");
+  const sub3   = live ? t("landing.metrics.liveSub3")     : t("landing.metrics.staticSub3");
+  const sub4   = live ? t("landing.metrics.liveSub4")     : t("landing.metrics.staticSub4");
   const val4   = live ? `${m4}` : `<${m4}s`;
 
   return (
     <section ref={ref} className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-16 sm:py-24">
       <div className="mx-auto max-w-[1400px] px-6">
         <SectionHeader
-          eyebrow={live ? "Live workspace data" : "Platform capabilities"}
-          title={live ? "Your DriftGuard workspace" : "Built for production infrastructure."}
+          eyebrow={live ? t("landing.metrics.liveEyebrow") : t("landing.metrics.staticEyebrow")}
+          title={live ? t("landing.metrics.liveTitle") : t("landing.metrics.staticTitle")}
           subtitle={
             live
-              ? "Real-time aggregated data from your connected repositories."
-              : "Measurable guarantees on every Terraform PR — coverage, accuracy, and latency."
+              ? t("landing.metrics.liveSubtitle")
+              : t("landing.metrics.staticSubtitle")
           }
         />
         <div className="mt-12 grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border-strong)] grid-cols-2 md:grid-cols-4">
@@ -105,7 +105,7 @@ export function Metrics({ installationId }: { installationId?: number }) {
         </div>
         {!live && (
           <p className="mt-4 text-center font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-            Connect your GitHub installation to see live workspace metrics.
+            {t("landing.metrics.connectPrompt")}
           </p>
         )}
       </div>

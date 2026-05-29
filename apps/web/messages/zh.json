@@ -317,7 +317,41 @@
       "liveDemo": "实时 · 演示"
     },
     "metrics": {
-      "connectPrompt": "连接你的 GitHub 安装以查看实时工作区指标。"
+      "connectPrompt": "连接你的 GitHub 安装以查看实时工作区指标。",
+      "liveEyebrow": "实时工作区数据",
+      "staticEyebrow": "平台能力",
+      "liveTitle": "你的 DriftGuard 工作区",
+      "staticTitle": "为生产基础设施而构建。",
+      "liveSubtitle": "来自已连接仓库的实时聚合数据。",
+      "staticSubtitle": "每个 Terraform PR 的可量化保证 — 覆盖率、准确性和延迟。",
+      "liveLabel1": "PR 分析 / 7天",
+      "liveLabel2": "开放事件",
+      "liveLabel3": "内存条目",
+      "liveLabel4": "平均风险评分",
+      "liveSub1": "跨所有仓库",
+      "liveSub2": "跨工作区",
+      "liveSub3": "已索引嵌入",
+      "liveSub4": "满分 100",
+      "staticLabel1": "Checkov 规则",
+      "staticLabel2": "合规控制",
+      "staticLabel3": "内存准确性",
+      "staticLabel4": "P99 延迟",
+      "staticSub1": "安全检查 / PR",
+      "staticSub2": "DORA/NIS2/ISO27001/CIS",
+      "staticSub3": "精度@k 相似度",
+      "staticSub4": "秒 计划→评论"
+    },
+    "trustBar": {
+      "platformEngineers": "平台工程师",
+      "devopsTeams": "DevOps 团队",
+      "infraLeads": "基础设施负责人",
+      "sreTeams": "SRE 团队",
+      "aiAgentOperators": "AI 代理运维",
+      "cloudArchitects": "云架构师",
+      "complianceEngineers": "合规工程师",
+      "finopsAnalysts": "FinOps 分析师",
+      "securityEngineers": "安全工程师",
+      "staffEngineers": "资深工程师"
     },
     "pricing": {
       "sectionTitle": "简单的按仓库定价",

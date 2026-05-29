@@ -317,7 +317,41 @@
       "liveDemo": "EN VIVO · DEMO"
     },
     "metrics": {
-      "connectPrompt": "Conecta tu instalación GitHub para ver métricas live del workspace."
+      "connectPrompt": "Conecta tu instalación GitHub para ver métricas live del workspace.",
+      "liveEyebrow": "Datos del workspace en tiempo real",
+      "staticEyebrow": "Capacidades de la plataforma",
+      "liveTitle": "Tu workspace DriftGuard",
+      "staticTitle": "Construido para infraestructura de producción.",
+      "liveSubtitle": "Datos en tiempo real de tus repositorios conectados.",
+      "staticSubtitle": "Garantías medibles en cada PR de Terraform — cobertura, precisión y latencia.",
+      "liveLabel1": "Análisis de PR / 7d",
+      "liveLabel2": "Incidentes abiertos",
+      "liveLabel3": "Entradas de memoria",
+      "liveLabel4": "Riesgo promedio",
+      "liveSub1": "en todos los repos",
+      "liveSub2": "en todos los workspaces",
+      "liveSub3": "embeddings indexados",
+      "liveSub4": "de 100",
+      "staticLabel1": "Reglas Checkov",
+      "staticLabel2": "Controles de cumplimiento",
+      "staticLabel3": "Precisión de memoria",
+      "staticLabel4": "Latencia P99",
+      "staticSub1": "verificaciones de seguridad / PR",
+      "staticSub2": "DORA/NIS2/ISO27001/CIS",
+      "staticSub3": "precisión@k similarity",
+      "staticSub4": "segundos plan → comentario"
+    },
+    "trustBar": {
+      "platformEngineers": "Ingenieros de plataforma",
+      "devopsTeams": "Equipos DevOps",
+      "infraLeads": "Líderes de infraestructura",
+      "sreTeams": "Equipos SRE",
+      "aiAgentOperators": "Operadores de agentes IA",
+      "cloudArchitects": "Arquitectos cloud",
+      "complianceEngineers": "Ingenieros de cumplimiento",
+      "finopsAnalysts": "Analistas FinOps",
+      "securityEngineers": "Ingenieros de seguridad",
+      "staffEngineers": "Ingenieros staff"
     },
     "pricing": {
       "sectionTitle": "Precios simples, por repo",

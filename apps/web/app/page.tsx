@@ -37,7 +37,7 @@ export default async function Page() {
 
   const cta = (
     <SignInButton className="dg-button dg-button-primary text-[12px] sm:text-[13px]">
-      Get started
+      {t("landing.hero.cta_start")}
     </SignInButton>
   );
 
@@ -57,7 +57,7 @@ export default async function Page() {
               className="dg-button dg-button-primary text-[13px] px-5 py-2.5"
               dataTransition="github"
             >
-              Install GitHub App — free
+              {t("landing.hero.cta_install")}
             </SignInButton>
           ) : (
             <Link
@@ -65,7 +65,7 @@ export default async function Page() {
               data-transition="dashboard"
               className="dg-button dg-button-primary text-[13px] px-5 py-2.5"
             >
-              Dashboard →
+              {t("landing.hero.cta_dashboard")}
             </Link>
           )
         }
@@ -110,7 +110,7 @@ export default async function Page() {
             className="dg-button dg-button-primary text-[14px] px-6 py-3"
             dataTransition="github"
           >
-            {t("landing.ctaButton") ?? "Install GitHub App — free"}
+            {t("landing.ctaButton")}
           </SignInButton>
         }
       />

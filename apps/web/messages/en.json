@@ -317,7 +317,41 @@
       "liveDemo": "LIVE · DEMO"
     },
     "metrics": {
-      "connectPrompt": "Connect your GitHub installation to see live workspace metrics."
+      "connectPrompt": "Connect your GitHub installation to see live workspace metrics.",
+      "liveEyebrow": "Live workspace data",
+      "staticEyebrow": "Platform capabilities",
+      "liveTitle": "Your DriftGuard workspace",
+      "staticTitle": "Built for production infrastructure.",
+      "liveSubtitle": "Real-time aggregated data from your connected repositories.",
+      "staticSubtitle": "Measurable guarantees on every Terraform PR — coverage, accuracy, and latency.",
+      "liveLabel1": "PR analyses / 7d",
+      "liveLabel2": "Open incidents",
+      "liveLabel3": "Memory entries",
+      "liveLabel4": "Avg risk score",
+      "liveSub1": "across all repos",
+      "liveSub2": "across workspaces",
+      "liveSub3": "indexed embeddings",
+      "liveSub4": "out of 100",
+      "staticLabel1": "Checkov rules",
+      "staticLabel2": "Compliance controls",
+      "staticLabel3": "Memory accuracy",
+      "staticLabel4": "P99 latency",
+      "staticSub1": "security checks / PR",
+      "staticSub2": "DORA/NIS2/ISO27001/CIS",
+      "staticSub3": "precision@k similarity",
+      "staticSub4": "seconds plan → comment"
+    },
+    "trustBar": {
+      "platformEngineers": "Platform engineers",
+      "devopsTeams": "DevOps teams",
+      "infraLeads": "Infrastructure leads",
+      "sreTeams": "SRE teams",
+      "aiAgentOperators": "AI agent operators",
+      "cloudArchitects": "Cloud architects",
+      "complianceEngineers": "Compliance engineers",
+      "finopsAnalysts": "FinOps analysts",
+      "securityEngineers": "Security engineers",
+      "staffEngineers": "Staff engineers"
     },
     "pricing": {
       "sectionTitle": "Simple, per-repo pricing",
