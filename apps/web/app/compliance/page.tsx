@@ -8,7 +8,7 @@ import { getUserPreferences } from "@/lib/preferences/server";
 
 
 
-const FRAMEWORKS: { name: string; key: string; status: string; articles: string[] }[] = [
+const FRAMEWORKS: { name: string; key: string; status: "evidence-ready" | "compliant" | "in-progress"; articles: string[] }[] = [
   {
     name: "DORA",
     key: "dora",
