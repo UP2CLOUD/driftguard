@@ -2,7 +2,7 @@
 
 import { useT } from "@/components/I18nProvider";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
 type Variant = "github" | "dashboard" | "generic";
@@ -10,7 +10,7 @@ type Variant = "github" | "dashboard" | "generic";
 export function NavigationTransition() {
   const t = useT();
 
-  const COPY: Record<Variant, { title: string; lines: string[] }> = {
+  const COPY = useMemo<Record<Variant, { title: string; lines: string[] }>>(() => ({
     github: {
       title: t("landing.navTransition.github.title"),
       lines: [
@@ -35,7 +35,7 @@ export function NavigationTransition() {
         `› ${t("landing.navTransition.generic.line3")}`,
       ],
     },
-  };
+  }), [t]);
 
   const [variant, setVariant] = useState<Variant | null>(null);
   const [visibleLines, setVisibleLines] = useState(0);
@@ -95,7 +95,7 @@ export function NavigationTransition() {
     };
     document.addEventListener("click", handler, true);
     return () => document.removeEventListener("click", handler, true);
-  }, []);
+  }, [COPY]);
 
   // ESC dismiss
   useEffect(() => {

@@ -115,7 +115,7 @@ export default async function Changelog() {
                   className="flex items-start gap-3 border-b border-[color:var(--dg-border)] last:border-b-0 bg-[color:var(--dg-surface)] px-4 py-3"
                 >
                   <span className={`mt-0.5 shrink-0 rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${TYPE_STYLE[item.type]}`}>
-                    {item.type}
+                    {t(`changelog.${item.type}` as any)}
                   </span>
                   <span className="text-[12px] text-[color:var(--dg-fg-muted)]">{item.text}</span>
                 </div>
