@@ -9,6 +9,7 @@ import { DashboardFooter } from "@/components/DashboardFooter";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { cookies } from "next/headers";
 import Link from "next/link";
+import Image from "next/image";
 
 const LAST_INSTALLATION_COOKIE = "dg_installation";
 
@@ -110,11 +111,12 @@ export default async function DashboardRoot({
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     {inst.account?.avatar_url && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={inst.account.avatar_url}
                         alt={inst.account.login}
-                        className="w-7 h-7 rounded border border-[color:var(--dg-border)]"
+                        width={28}
+                        height={28}
+                        className="rounded border border-[color:var(--dg-border)]"
                       />
                     )}
                     <span className="font-mono text-[13px] font-medium text-[color:var(--dg-fg)] group-hover:text-[color:var(--dg-electric-bright)] transition truncate">

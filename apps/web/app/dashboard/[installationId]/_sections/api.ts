@@ -1,21 +1,8 @@
 import { cache } from "react";
+import { beGet } from "@/lib/backend";
 
-const API = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const TOKEN = () => `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}`;
-
-async function _fetch(path: string, revalidate: number) {
-  try {
-    const res = await fetch(`${API()}${path}`, {
-      headers: { Authorization: TOKEN() },
-      next: { revalidate },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
-}
+const _fetch = (path: string, revalidate: number) =>
+  beGet(path, { revalidate, timeout: 8000 });
 
 // React.cache dedupes calls within a single render pass —
 // OverviewSection + RecentAnalysesSection partilham o mesmo fetch.

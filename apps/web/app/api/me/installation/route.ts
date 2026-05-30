@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { getInstallations } from "@/lib/installations";
-
-const API  = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const HDRS = () => ({ Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}` });
+import { beGet } from "@/lib/backend";
 
 /** Resolve the current user's installation and org_id for checkout. */
 export async function GET() {
@@ -18,17 +16,9 @@ export async function GET() {
     return NextResponse.json({ orgId: null, installationId: null });
   }
 
-  try {
-    const res = await fetch(
-      `${API()}/api/v1/orgs/by-installation/${installation.id}`,
-      { headers: HDRS(), signal: AbortSignal.timeout(3000) },
-    );
-    if (!res.ok) {
-      return NextResponse.json({ orgId: null, installationId: installation.id });
-    }
-    const data = await res.json();
-    return NextResponse.json({ orgId: data.id, installationId: installation.id });
-  } catch {
+  const data = await beGet<{ id: string }>(`/api/v1/orgs/by-installation/${installation.id}`, { timeout: 3000 });
+  if (!data) {
     return NextResponse.json({ orgId: null, installationId: installation.id });
   }
+  return NextResponse.json({ orgId: data.id, installationId: installation.id });
 }

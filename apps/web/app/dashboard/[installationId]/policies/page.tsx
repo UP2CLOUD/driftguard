@@ -4,17 +4,13 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
-const API  = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const HDRS = () => ({ Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}` });
+import { beGet } from "@/lib/backend";
 
 async function fetchPolicies(id: string) {
-  try {
-    const res = await fetch(`${API()}/api/v1/policies?installation_id=${id}`, {
-      headers: HDRS(), next: { revalidate: 30 }, signal: AbortSignal.timeout(3000),
-    });
-    if (!res.ok) return [];
-    return res.json();
-  } catch { return []; }
+  return (await beGet<unknown[]>(
+    `/api/v1/policies?installation_id=${id}`,
+    { revalidate: 30, timeout: 3000 },
+  )) ?? [];
 }
 
 const TYPE_STYLE: Record<string, string> = {

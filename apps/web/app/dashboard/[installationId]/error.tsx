@@ -15,6 +15,19 @@ export default function Error({
   const t = useT();
   useEffect(() => {
     console.error(error);
+    if (typeof window !== "undefined") {
+      import("posthog-js")
+        .then(({ default: posthog }) => {
+          if (posthog.__loaded) {
+            posthog.capture("$exception", {
+              $exception_message: error.message,
+              $exception_type: error.name,
+              digest: error.digest,
+            });
+          }
+        })
+        .catch(() => {});
+    }
   }, [error]);
 
   return (
