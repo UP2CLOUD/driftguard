@@ -24,7 +24,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (account) {
         token.accessToken = account.access_token;
         token.id = profile?.id?.toString() ?? account.providerAccountId;
-        token.login = (profile as GitHubProfile)?.login ?? "";
+        token.login = (profile as unknown as GitHubProfile)?.login ?? "";
       }
       return token;
     },

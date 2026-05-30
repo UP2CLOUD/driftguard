@@ -9,7 +9,7 @@ import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
 
 async function fetchAnalysis(id: string) {
-  return beGet<unknown>(`/api/v1/scans/${id}`, { revalidate: 0, timeout: 4000 });
+  return beGet<any>(`/api/v1/scans/${id}`, { revalidate: 0, timeout: 4000 });
 }
 
 const SEV_STYLE: Record<string, string> = {
