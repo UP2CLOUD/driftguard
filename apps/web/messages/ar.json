@@ -209,8 +209,12 @@
     },
     "codeIntegration": {
       "title": "التثبيت في 30 ثانية.",
-      "subtitle": "تطبيق GitHub + إعداد المستودع. بدون SDK أو إعادة كتابة.",
-      "worksWith": "يعمل مع"
+      "subtitle": "GitHub App + إعداد المستودع. بدون SDK، بدون إعادة كتابة، بدون تغييرات في البنية التحتية. واجهة سطر أوامر اختيارية للفحص المحلي.",
+      "worksWith": "يعمل مع",
+      "eyebrow": "التكامل",
+      "copied": "✓ تم النسخ",
+      "copy": "▸ نسخ",
+      "fullDocs": "▸ التوثيق الكامل"
     },
     "cta": {
       "headline": "مستعد للنشر الآمن"
@@ -241,7 +245,32 @@
       "delta": "الفرق",
       "waste": "الهدر",
       "costImpact": "تأثير التكلفة",
-      "sectionAriaLabel": "كل مخرجات وكيل الذكاء الاصطناعي، مراجعة قبل الدمج."
+      "sectionAriaLabel": "كل مخرجات وكيل الذكاء الاصطناعي، مراجعة قبل الدمج.",
+      "eyebrow": "مراجعة PR",
+      "subtitle": "أربعة محركات تحليل تعمل بالتوازي — تكلفة الفارق (Infracost)، الأمان (Checkov)، الانجراف المباشر (STS)، ورسم خرائط الامتثال. تظهر النتائج في PR خلال ثانيتين.",
+      "tabPrAnalysis": "تحليل PR",
+      "tabDriftState": "حالة الانجراف",
+      "tabFinOps": "FinOps",
+      "statRiskScore": "درجة المخاطر",
+      "statFindings": "النتائج",
+      "statCostDelta": "فارق التكلفة",
+      "statFrameworks": "الأطر المتأثرة",
+      "statDrifted": "موارد منجرفة",
+      "statUntracked": "غير مُتتبَّع",
+      "statInSync": "متزامن",
+      "statLastScan": "آخر فحص",
+      "statPlanned": "مخطط",
+      "statActual": "فعلي",
+      "statDriftWaste": "هدر الانجراف",
+      "colCost": "التكلفة",
+      "colGate": "البوابة",
+      "actionBlocked": "محظور",
+      "actionWarned": "تحذير",
+      "actionAllowed": "مسموح",
+      "liveData": "بيانات مباشرة",
+      "footerPrAnalysis": "نُشرت المراجعة في 18 ث · المخاطر 82/100 · 2 عناصر تحكم فشلت",
+      "footerDriftState": "الحالة عبر STS AssumeRole · فترة الفحص 5 دقائق",
+      "footerFinOps": "Infracost + واجهة فوترة مباشرة · تُحدَّث كل ساعة"
     },
     "featureGrid": {
       "sectionTitle": "ست طبقات. مراجعة واحدة. صفر تكوين.",
@@ -311,7 +340,19 @@
     },
     "incidents": {
       "sectionTitle": "كل PR للوكيل. كل ملّي ثانية.",
-      "sectionSubtitle": "DriftGuard يعترض ويحلل ويقرر في أقل من ثانيتين."
+      "sectionSubtitle": "DriftGuard يعترض ويحلل ويقرر في أقل من ثانيتين.",
+      "eyebrow": "الحوكمة أثناء التشغيل",
+      "subtitle": "يعترض DriftGuard ويحلل ويتحكم خلال أقل من ثانيتين. قبل أن يكون زر الدمج متاحاً.",
+      "labelLive": "مباشر",
+      "labelDemo": "تجريبي",
+      "step01Title": "اعتراض Webhook",
+      "step01Body": "يُرسل GitHub أحداث PR إلى DriftGuard فور أن يدفع الوكيل. لا استطلاع.",
+      "step02Title": "تحليل متوازٍ",
+      "step02Body": "التكلفة (Infracost) والأمان (Checkov) والانجراف (STS) والامتثال تعمل بالتزامن — وليس تسلسلياً.",
+      "step03Title": "استدعاء الذاكرة",
+      "step03Body": "يطابق بحث جيب التمام عبر pgvector الفارق مع كل حادثة سابقة. إذا كسر هذا النمط الإنتاج من قبل، يظهر تلقائياً.",
+      "step04Title": "بوابة صارمة",
+      "step04Body": "يحجب GitHub Check Run زر الدمج. لا يستطيع الوكيل الموافقة على نفسه. مراجعة بشرية مطلوبة فوق عتبة المخاطر 70."
     },
     "liveTerminal": {
       "liveDemo": "مباشر · تجريبي"
@@ -408,7 +449,9 @@
       "sectionSubtitle": "كل حادثة تصبح embedding بـ 384 بُعداً.",
       "recalledLabel": "الحوادث المستردة",
       "ariaLabel": "وكلاؤك يتعلمون من الإنتاج. بشكل دائم.",
-      "query": "استعلام"
+      "query": "استعلام",
+      "eyebrow": "الذاكرة التشغيلية",
+      "subtitle": "كل حادثة — نشر محظور، حدث انجراف، انتهاك سياسة — تصبح متجهاً بـ 384 بُعداً. عندما يُقدِّم وكيل الذكاء الاصطناعي نمطاً مشابهاً بعد أسابيع، يعرض DriftGuard الحادثة الأصلية مع درجة تشابه قبل أن يتاح زر الدمج."
     },
     "navTransition": {
       "github": {

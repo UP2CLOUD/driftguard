@@ -139,9 +139,9 @@ export function IncidentTimeline({ installationId }: { installationId?: number }
     <section ref={ref} className="py-20 sm:py-28 border-t border-[color:var(--dg-border)]">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
-          eyebrow="Runtime governance"
+          eyebrow={t("landing.incidents.eyebrow")}
           title={t("landing.incidents.sectionTitle")}
-          subtitle="DriftGuard intercepts, analyses, and gates in under 2 seconds. Before the merge button is even available."
+          subtitle={t("landing.incidents.subtitle")}
         />
 
         <div className="mt-12 grid lg:grid-cols-[1fr_420px] gap-8 items-start">
@@ -161,7 +161,7 @@ export function IncidentTimeline({ installationId }: { installationId?: number }
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className={`h-1.5 w-1.5 rounded-full ${isLive ? "bg-allowed dg-pulse" : "bg-[color:var(--dg-fg-subtle)]"}`} />
                 <span className={`font-mono text-[10px] ${isLive ? "text-allowed" : "text-[color:var(--dg-fg-subtle)]"}`}>
-                  {isLive ? "live" : "demo"}
+                  {isLive ? t("landing.incidents.labelLive") : t("landing.incidents.labelDemo")}
                 </span>
               </div>
             </div>
@@ -216,10 +216,10 @@ export function IncidentTimeline({ installationId }: { installationId?: number }
           {/* Explanation sidebar */}
           <div className="space-y-4">
             {[
-              { step: "01", title: "Webhook intercept",  body: "GitHub sends PR events to DriftGuard the instant an agent pushes. No polling.", color: "var(--dg-electric)" },
-              { step: "02", title: "Parallel analysis",  body: "Cost (Infracost), security (Checkov), drift (STS), and compliance run concurrently — not sequentially.", color: "var(--dg-warned)" },
-              { step: "03", title: "Memory recall",      body: "pgvector cosine search matches the diff against every prior incident. If this pattern broke prod before, it shows up.", color: "var(--dg-purple)" },
-              { step: "04", title: "Hard gate",          body: "A GitHub Check Run blocks the merge button. The agent cannot self-approve. Human review required above risk threshold 70.", color: "var(--dg-blocked)" },
+              { step: "01", title: t("landing.incidents.step01Title"), body: t("landing.incidents.step01Body"), color: "var(--dg-electric)" },
+              { step: "02", title: t("landing.incidents.step02Title"), body: t("landing.incidents.step02Body"), color: "var(--dg-warned)" },
+              { step: "03", title: t("landing.incidents.step03Title"), body: t("landing.incidents.step03Body"), color: "var(--dg-purple)" },
+              { step: "04", title: t("landing.incidents.step04Title"), body: t("landing.incidents.step04Body"), color: "var(--dg-blocked)" },
             ].map((s) => (
               <div key={s.step} className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
                 <div className="flex items-start gap-3">

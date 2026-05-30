@@ -54,9 +54,9 @@ export function SemanticMemory() {
     <section id="memory" ref={ref} className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-16 sm:py-24">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
-          eyebrow="Operational memory"
+          eyebrow={t("landing.semanticMemory.eyebrow")}
           title={t("landing.semanticMemory.ariaLabel")}
-          subtitle="Every incident — blocked deploy, drift event, policy violation — becomes a 384-d vector. When an AI agent submits a similar pattern weeks later, DriftGuard surfaces the original incident with a similarity score before the merge button is available."
+          subtitle={t("landing.semanticMemory.subtitle")}
         />
 
         <div className="mt-16 grid gap-8 lg:grid-cols-2 lg:gap-12">

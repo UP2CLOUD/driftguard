@@ -78,29 +78,41 @@ export function DriftPreview() {
   const t = useT();
   const [tab, setTab] = useState<Tab>("PR Analysis");
 
+  const TAB_LABELS: Record<Tab, string> = {
+    "PR Analysis": t("landing.driftPreview.tabPrAnalysis"),
+    "Drift State": t("landing.driftPreview.tabDriftState"),
+    "FinOps":      t("landing.driftPreview.tabFinOps"),
+  };
+
+  const ACTION_LABEL: Record<string, string> = {
+    blocked: t("landing.driftPreview.actionBlocked"),
+    warned:  t("landing.driftPreview.actionWarned"),
+    allowed: t("landing.driftPreview.actionAllowed"),
+  };
+
   return (
     <section className="py-20 sm:py-28 border-t border-[color:var(--dg-border)]">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
-          eyebrow="PR review"
+          eyebrow={t("landing.driftPreview.eyebrow")}
           title={t("landing.driftPreview.sectionAriaLabel")}
-          subtitle="Four analysis engines run in parallel — cost delta (Infracost), security (Checkov), live drift (STS), and compliance mapping. Results appear in the PR within 2 seconds."
+          subtitle={t("landing.driftPreview.subtitle")}
         />
 
         <div className="mt-10">
           {/* Tab bar */}
           <div className="flex items-center gap-1 mb-px">
-            {TABS.map((t) => (
+            {TABS.map((tabKey) => (
               <button
-                key={t}
-                onClick={() => setTab(t)}
+                key={tabKey}
+                onClick={() => setTab(tabKey)}
                 className={`px-4 py-2 font-mono text-[11px] uppercase tracking-widest rounded-t border-x border-t transition-colors ${
-                  tab === t
+                  tab === tabKey
                     ? "border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] text-[color:var(--dg-fg)]"
                     : "border-transparent text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)]"
                 }`}
               >
-                {t}
+                {TAB_LABELS[tabKey]}
               </button>
             ))}
           </div>
@@ -111,26 +123,26 @@ export function DriftPreview() {
             <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-[color:var(--dg-border)] border-b border-[color:var(--dg-border)]">
               {tab === "PR Analysis" && (
                 <>
-                  <Stat label="Risk score" value="82" accent="text-blocked" />
-                  <Stat label="Findings" value="4" />
-                  <Stat label="Cost delta" value="+€482/mo" accent="text-warned" />
-                  <Stat label="Frameworks hit" value="3" />
+                  <Stat label={t("landing.driftPreview.statRiskScore")} value="82" accent="text-blocked" />
+                  <Stat label={t("landing.driftPreview.statFindings")} value="4" />
+                  <Stat label={t("landing.driftPreview.statCostDelta")} value="+€482/mo" accent="text-warned" />
+                  <Stat label={t("landing.driftPreview.statFrameworks")} value="3" />
                 </>
               )}
               {tab === "Drift State" && (
                 <>
-                  <Stat label="Drifted resources" value="3" accent="text-warned" />
-                  <Stat label="Untracked" value="1" accent="text-blocked" />
-                  <Stat label="In sync" value="47" accent="text-allowed" />
-                  <Stat label="Last scan" value="2 min ago" />
+                  <Stat label={t("landing.driftPreview.statDrifted")} value="3" accent="text-warned" />
+                  <Stat label={t("landing.driftPreview.statUntracked")} value="1" accent="text-blocked" />
+                  <Stat label={t("landing.driftPreview.statInSync")} value="47" accent="text-allowed" />
+                  <Stat label={t("landing.driftPreview.statLastScan")} value="2 min ago" />
                 </>
               )}
               {tab === "FinOps" && (
                 <>
-                  <Stat label="Planned" value="€365/mo" />
-                  <Stat label="Actual" value="€1,100/mo" accent="text-blocked" />
-                  <Stat label="Drift waste" value="+€735/mo" accent="text-warned" />
-                  <Stat label="Untracked" value="€210/mo" accent="text-blocked" />
+                  <Stat label={t("landing.driftPreview.statPlanned")} value="€365/mo" />
+                  <Stat label={t("landing.driftPreview.statActual")} value="€1,100/mo" accent="text-blocked" />
+                  <Stat label={t("landing.driftPreview.statDriftWaste")} value="+€735/mo" accent="text-warned" />
+                  <Stat label={t("landing.driftPreview.statUntracked")} value="€210/mo" accent="text-blocked" />
                 </>
               )}
             </div>
@@ -144,8 +156,8 @@ export function DriftPreview() {
                       <Th>{t("landing.driftPreview.colResource")}</Th>
                       <Th>{t("landing.driftPreview.colChange")}</Th>
                       <Th>{t("landing.driftPreview.colFinding")}</Th>
-                      <Th>Cost</Th>
-                      <Th align="right">Gate</Th>
+                      <Th>{t("landing.driftPreview.colCost")}</Th>
+                      <Th align="right">{t("landing.driftPreview.colGate")}</Th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[color:var(--dg-border)]">
@@ -184,7 +196,7 @@ export function DriftPreview() {
                         </td>
                         <td className="px-4 py-3.5 text-right">
                           <span className={`font-mono text-[11px] font-semibold ${ACTION_STYLE[row.action as keyof typeof ACTION_STYLE]}`}>
-                            {ACTION_ICON[row.action as keyof typeof ACTION_ICON]} {row.action}
+                            {ACTION_ICON[row.action as keyof typeof ACTION_ICON]} {ACTION_LABEL[row.action] ?? row.action}
                           </span>
                         </td>
                       </tr>
@@ -247,13 +259,13 @@ export function DriftPreview() {
             {/* Footer */}
             <div className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-4 py-2.5 flex items-center justify-between">
               <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-                {tab === "PR Analysis" && "Review posted in 18s · risk 82/100 · 2 controls failed"}
-                {tab === "Drift State" && "State fetched via STS AssumeRole · scan interval 5 min"}
-                {tab === "FinOps" && "Infracost + live billing API · updated hourly"}
+                {tab === "PR Analysis" && t("landing.driftPreview.footerPrAnalysis")}
+                {tab === "Drift State" && t("landing.driftPreview.footerDriftState")}
+                {tab === "FinOps" && t("landing.driftPreview.footerFinOps")}
               </span>
               <span className="flex items-center gap-1.5 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
                 <span className="h-1.5 w-1.5 rounded-full bg-allowed dg-pulse" />
-                live data
+                {t("landing.driftPreview.liveData")}
               </span>
             </div>
           </div>

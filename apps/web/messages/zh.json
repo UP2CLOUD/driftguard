@@ -209,8 +209,12 @@
     },
     "codeIntegration": {
       "title": "30 秒完成安装。",
-      "subtitle": "GitHub App + repo 配置。无需 SDK，无需重写，无需基础设施变更。",
-      "worksWith": "兼容"
+      "subtitle": "GitHub App + 仓库配置。无需 SDK，无需重写，无需更改基础设施。可选 CLI 用于本地预检。",
+      "worksWith": "兼容",
+      "eyebrow": "集成",
+      "copied": "✓ 已复制",
+      "copy": "▸ 复制",
+      "fullDocs": "▸ 完整文档"
     },
     "cta": {
       "headline": "准备好安全部署了吗"
@@ -241,7 +245,32 @@
       "delta": "差值",
       "waste": "浪费",
       "costImpact": "成本影响",
-      "sectionAriaLabel": "每个 AI 代理输出，在合并前审查。"
+      "sectionAriaLabel": "每个 AI 代理输出，在合并前审查。",
+      "eyebrow": "PR 审查",
+      "subtitle": "四个分析引擎并行运行——成本增量 (Infracost)、安全 (Checkov)、实时漂移 (STS) 和合规映射。结果在 2 秒内出现在 PR 中。",
+      "tabPrAnalysis": "PR 分析",
+      "tabDriftState": "漂移状态",
+      "tabFinOps": "FinOps",
+      "statRiskScore": "风险评分",
+      "statFindings": "发现数",
+      "statCostDelta": "成本变化",
+      "statFrameworks": "涉及框架",
+      "statDrifted": "漂移资源",
+      "statUntracked": "未跟踪",
+      "statInSync": "已同步",
+      "statLastScan": "上次扫描",
+      "statPlanned": "计划",
+      "statActual": "实际",
+      "statDriftWaste": "漂移浪费",
+      "colCost": "成本",
+      "colGate": "门控",
+      "actionBlocked": "已阻止",
+      "actionWarned": "已警告",
+      "actionAllowed": "已允许",
+      "liveData": "实时数据",
+      "footerPrAnalysis": "审查已在 18 秒内发布 · 风险 82/100 · 2 个控制失败",
+      "footerDriftState": "通过 STS AssumeRole 获取状态 · 扫描间隔 5 分钟",
+      "footerFinOps": "Infracost + 实时计费 API · 每小时更新"
     },
     "featureGrid": {
       "sectionTitle": "六层防护。一次审查。零配置开销。",
@@ -311,7 +340,19 @@
     },
     "incidents": {
       "sectionTitle": "每个代理 PR。每一毫秒。",
-      "sectionSubtitle": "DriftGuard 在 2 秒内完成拦截、分析和决策。在合并按钮可用之前。"
+      "sectionSubtitle": "DriftGuard 在 2 秒内完成拦截、分析和决策。在合并按钮可用之前。",
+      "eyebrow": "运行时治理",
+      "subtitle": "DriftGuard 在 2 秒内完成拦截、分析和门控。在合并按钮可用之前。",
+      "labelLive": "实时",
+      "labelDemo": "演示",
+      "step01Title": "Webhook 拦截",
+      "step01Body": "代理推送后，GitHub 立即将 PR 事件发送给 DriftGuard。无需轮询。",
+      "step02Title": "并行分析",
+      "step02Body": "成本 (Infracost)、安全 (Checkov)、漂移 (STS) 和合规并发运行，而非顺序执行。",
+      "step03Title": "记忆召回",
+      "step03Body": "pgvector 余弦搜索将差异与所有历史事件进行匹配。如果此模式曾导致生产故障，将自动显示。",
+      "step04Title": "强制门控",
+      "step04Body": "GitHub Check Run 阻止合并按钮。代理无法自我批准。超过风险阈值 70 时需要人工审查。"
     },
     "liveTerminal": {
       "liveDemo": "实时 · 演示"
@@ -408,7 +449,9 @@
       "sectionSubtitle": "每个事件 — 被阻断的部署、漂移事件、策略违规 — 都成为 384 维嵌入。下一个相似 PR 自动浮现原始事件。",
       "recalledLabel": "已召回事件",
       "ariaLabel": "你的代理从生产中学习。永久保留。",
-      "query": "查询"
+      "query": "查询",
+      "eyebrow": "操作记忆",
+      "subtitle": "每个事件——阻止的部署、漂移事件、策略违规——都会成为 384 维向量。当 AI 代理数周后提交类似模式时，DriftGuard 会在合并按钮可用前显示原始事件及其相似度分数。"
     },
     "navTransition": {
       "github": {
