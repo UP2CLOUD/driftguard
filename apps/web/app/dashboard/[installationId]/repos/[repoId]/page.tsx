@@ -5,6 +5,7 @@ import { requireOrg } from "@/lib/org-server";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
+import { beGet } from "@/lib/backend";
 
 
 export default async function RepoPage({
@@ -22,18 +23,7 @@ export default async function RepoPage({
   const { installationId, repoId } = await params;
   await requireOrg(installationId);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-  let analyses: any[] = [];
-
-  try {
-    const res = await fetch(`${apiUrl}/api/v1/analyses?repo_id=${repoId}&limit=20`, {
-      headers: { Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}` },
-      next: { revalidate: 30 },
-    });
-    if (res.ok) analyses = await res.json();
-  } catch {
-    // API not reachable
-  }
+  const analyses = (await beGet<unknown[]>(`/api/v1/analyses?repo_id=${repoId}&limit=20`, { revalidate: 30 })) ?? [];
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8">

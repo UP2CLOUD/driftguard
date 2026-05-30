@@ -9,9 +9,7 @@
  * keyed by the GitHub username stored in the session JWT.
  */
 import { auth } from "@/auth";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-const API_SECRET = process.env.SECRET_KEY ?? "dev-only-change-me";
+import { beGet } from "@/lib/backend";
 
 export interface Installation {
   id: number;
@@ -34,32 +32,16 @@ export async function checkInstallationAccess(installationId: string): Promise<{
   const token = session.user.accessToken;
   const login = session.user.login ?? "";
 
-  // Dev bypass
-  if (token === "mock_github_token") {
-    return {
-      authorized: true,
-      installations: [{ id: parseInt(installationId) || 999, account: { login: "dev-org" } }],
-      accessToken: token,
-    };
-  }
-
   // 1. Try our backend — returns installations for this GitHub user
-  try {
-    const res = await fetch(`${API_URL}/api/v1/orgs/by-user?login=${encodeURIComponent(login)}`, {
-      headers: { Authorization: `Bearer ${API_SECRET}` },
-      next: { revalidate: 60 },
-      signal: AbortSignal.timeout(3000),
-    });
-
-    if (res.ok) {
-      const data: Installation[] = await res.json();
-      const targetId = parseInt(installationId);
-      const authorized = !installationId || installationId === "dummy" ||
-        data.some((i) => i.id === targetId);
-      return { authorized, installations: data, accessToken: token };
-    }
-  } catch {
-    // Backend offline — fall through to GitHub identity check
+  const backendData = await beGet<Installation[]>(
+    `/api/v1/orgs/by-user?login=${encodeURIComponent(login)}`,
+    { revalidate: 60, timeout: 3000 },
+  );
+  if (backendData) {
+    const targetId = parseInt(installationId);
+    const authorized = !installationId || installationId === "dummy" ||
+      backendData.some((i) => i.id === targetId);
+    return { authorized, installations: backendData, accessToken: token };
   }
 
   // 2. Backend offline: verify the GitHub token is valid, then trust the

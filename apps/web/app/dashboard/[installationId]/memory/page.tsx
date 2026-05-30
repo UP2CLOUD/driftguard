@@ -4,23 +4,17 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
-const API  = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const HDRS = () => ({ Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}` });
+import { beGet } from "@/lib/backend";
 
 async function fetchMemory(id: string) {
-  try {
-    const [listRes, statsRes] = await Promise.all([
-      fetch(`${API()}/api/v1/memory?installation_id=${id}&limit=20`, {
-        headers: HDRS(), next: { revalidate: 30 }, signal: AbortSignal.timeout(3000),
-      }),
-      fetch(`${API()}/api/v1/memory/stats?installation_id=${id}`, {
-        headers: HDRS(), next: { revalidate: 30 }, signal: AbortSignal.timeout(3000),
-      }),
-    ]);
-    const entries = listRes.ok ? await listRes.json() : [];
-    const stats   = statsRes.ok ? await statsRes.json() : { total: 0, by_outcome: {}, by_severity: {} };
-    return { entries, stats };
-  } catch { return { entries: [], stats: { total: 0, by_outcome: {}, by_severity: {} } }; }
+  const [entries, stats] = await Promise.all([
+    beGet<unknown[]>(`/api/v1/memory?installation_id=${id}&limit=20`, { revalidate: 30, timeout: 3000 }),
+    beGet<object>(`/api/v1/memory/stats?installation_id=${id}`, { revalidate: 30, timeout: 3000 }),
+  ]);
+  return {
+    entries: entries ?? [],
+    stats:   stats   ?? { total: 0, by_outcome: {}, by_severity: {} },
+  };
 }
 
 const OUT_COLOR: Record<string, string> = {

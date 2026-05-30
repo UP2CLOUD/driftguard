@@ -8,35 +8,16 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 
 
-const API  = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const HDRS = () => ({
-  Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}`,
-});
+import { beGet } from "@/lib/backend";
 
 async function fetchOverview(installationId: string) {
-  try {
-    const r = await fetch(
-      `${API()}/api/v1/dashboard/overview?installation_id=${installationId}`,
-      { headers: HDRS(), next: { revalidate: 10 }, signal: AbortSignal.timeout(3000) }
-    );
-    return r.ok ? r.json() : null;
-  } catch { return null; }
+  return beGet(`/api/v1/dashboard/overview?installation_id=${installationId}`, { revalidate: 10, timeout: 3000 });
 }
 
 async function fetchAnalyses(installationId: string) {
-  try {
-    const r = await fetch(
-      `${API()}/api/v1/orgs/by-installation/${installationId}`,
-      { headers: HDRS(), next: { revalidate: 10 }, signal: AbortSignal.timeout(3000) }
-    );
-    if (!r.ok) return [];
-    const org = await r.json();
-    const r2 = await fetch(
-      `${API()}/api/v1/orgs/${org.id}/analyses?limit=30`,
-      { headers: HDRS(), next: { revalidate: 10 }, signal: AbortSignal.timeout(3000) }
-    );
-    return r2.ok ? r2.json() : [];
-  } catch { return []; }
+  const org = await beGet<{ id: string }>(`/api/v1/orgs/by-installation/${installationId}`, { revalidate: 10, timeout: 3000 });
+  if (!org) return [];
+  return (await beGet<unknown[]>(`/api/v1/orgs/${org.id}/analyses?limit=30`, { revalidate: 10, timeout: 3000 })) ?? [];
 }
 
 export default async function ReposPage({

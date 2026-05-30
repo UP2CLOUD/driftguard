@@ -9,26 +9,14 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { checkInstallationAccess } from "@/lib/auth-utils";
+import { beGet } from "@/lib/backend";
 
 async function fetchOpenIncidents(installationId: string): Promise<number> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-  try {
-    const res = await fetch(
-      `${apiUrl}/api/v1/incidents?installation_id=${installationId}&status=open&limit=1`,
-      {
-        headers: { Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}` },
-        next: { revalidate: 30 },
-        signal: AbortSignal.timeout(2000),
-      }
-    );
-    if (!res.ok) return 0;
-    const data = await res.json();
-    // API returns the list; re-fetch count via overview is more accurate
-    // but for the badge we just need to know if > 0
-    return Array.isArray(data) ? data.length : 0;
-  } catch {
-    return 0;
-  }
+  const data = await beGet<unknown[]>(
+    `/api/v1/incidents?installation_id=${installationId}&status=open&limit=1`,
+    { revalidate: 30, timeout: 2000 },
+  );
+  return Array.isArray(data) ? data.length : 0;
 }
 
 export default async function DashboardLayout({
@@ -58,6 +46,7 @@ export default async function DashboardLayout({
     httpOnly: true,
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 30,
+    secure: process.env.NODE_ENV === "production",
   });
 
   const installation = installations.find((i) => i.id === parseInt(installationId));

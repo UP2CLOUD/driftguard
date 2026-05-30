@@ -6,20 +6,10 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 
 
-const API  = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const HDRS = () => ({
-  Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}`,
-  "Content-Type": "application/json",
-});
+import { beGet } from "@/lib/backend";
 
 async function fetchAnalysis(id: string) {
-  try {
-    const r = await fetch(`${API()}/api/v1/scans/${id}`, {
-      headers: HDRS(), next: { revalidate: 0 }, signal: AbortSignal.timeout(4000),
-    });
-    if (!r.ok) return null;
-    return r.json();
-  } catch { return null; }
+  return beGet<unknown>(`/api/v1/scans/${id}`, { revalidate: 0, timeout: 4000 });
 }
 
 const SEV_STYLE: Record<string, string> = {

@@ -1,17 +1,14 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
+import { BACKEND_URL, authHeaders } from "@/lib/backend";
 
 export const dynamic = "force-dynamic";
 
 function warmupApi(installationId: string) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const secret = process.env.SECRET_KEY;
-  if (!apiUrl || !secret) return;
-
-  const headers = { Authorization: `Bearer ${secret}` };
+  if (!BACKEND_URL) return;
   const fire = (path: string) =>
-    fetch(`${apiUrl}${path}`, { headers, keepalive: true }).catch(() => {});
+    fetch(`${BACKEND_URL}${path}`, { headers: authHeaders(), keepalive: true }).catch(() => {});
 
   fire(`/api/v1/dashboard/overview?installation_id=${installationId}`);
   fire(`/api/v1/incidents?installation_id=${installationId}&limit=5`);

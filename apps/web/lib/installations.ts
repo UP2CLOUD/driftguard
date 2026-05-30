@@ -10,9 +10,7 @@
  * requires GitHub App user-to-server tokens, not OAuth App tokens.
  */
 import type { Session } from "next-auth";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-const API_SECRET = process.env.SECRET_KEY ?? "dev-only-change-me";
+import { beGet } from "@/lib/backend";
 
 export interface Installation {
   id: number;
@@ -26,24 +24,15 @@ export async function getInstallations(session: Session | null): Promise<Install
 
   // 1. Our backend
   if (login) {
-    try {
-      const res = await fetch(
-        `${API_URL}/api/v1/orgs/by-user?login=${encodeURIComponent(login)}`,
-        {
-          headers: { Authorization: `Bearer ${API_SECRET}` },
-          next: { revalidate: 30 },
-          signal: AbortSignal.timeout(3000),
-        }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        return (data as any[]).map((o) => ({
-          id: o.installation_id ?? o.id,
-          account: o.account ?? { login },
-        }));
-      }
-    } catch {
-      // Backend offline
+    const data = await beGet<Array<{ installation_id?: number; id?: number; account?: { login: string; avatar_url?: string } }>>(
+      `/api/v1/orgs/by-user?login=${encodeURIComponent(login)}`,
+      { revalidate: 30, timeout: 3000 },
+    );
+    if (data) {
+      return data.map((o) => ({
+        id: o.installation_id ?? o.id ?? 0,
+        account: o.account ?? { login },
+      }));
     }
   }
 

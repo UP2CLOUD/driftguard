@@ -4,18 +4,14 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 
-const API  = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const HDRS = () => ({ Authorization: `Bearer ${process.env.SECRET_KEY || "dev-only-change-me"}` });
+import { beGet } from "@/lib/backend";
 
 async function fetchIncidents(id: string, status?: string) {
-  try {
-    const q = status ? `&status=${status}` : "";
-    const res = await fetch(`${API()}/api/v1/incidents?installation_id=${id}&limit=50${q}`, {
-      headers: HDRS(), next: { revalidate: 15 }, signal: AbortSignal.timeout(3000),
-    });
-    if (!res.ok) return [];
-    return res.json();
-  } catch { return []; }
+  const q = status ? `&status=${status}` : "";
+  return (await beGet<unknown[]>(
+    `/api/v1/incidents?installation_id=${id}&limit=50${q}`,
+    { revalidate: 15, timeout: 3000 },
+  )) ?? [];
 }
 
 const SEV: Record<string, string> = {
