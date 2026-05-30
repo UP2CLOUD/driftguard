@@ -660,6 +660,22 @@
     "controls": "Controlos de segurança",
     "disclosure": "Divulgação responsável",
     "reportVuln": "Reportar uma vulnerabilidade",
+    "disclosureBody1": "Se descobrires uma vulnerabilidade de segurança no DriftGuard, reporta-a para security@driftguard.io. O nosso objectivo é responder em 24 horas e resolver problemas críticos em 72 horas.",
+    "disclosureBody2": "Por favor, não abras issues públicas no GitHub para vulnerabilidades de segurança. Confirmaremos o teu relatório, manter-te-emos informado do progresso e daremos crédito no nosso advisory de segurança, se desejares.",
+    "controlLabels": {
+      "encryptionRest": "Encriptação em repouso",
+      "encryptionTransit": "Encriptação em trânsito",
+      "auth": "Autenticação",
+      "secrets": "Segredos",
+      "dataResid": "Residência de dados",
+      "auditLog": "Log de auditoria",
+      "webhookVerif": "Verificação de webhook",
+      "awsCreds": "Credenciais AWS",
+      "depScan": "Scan de dependências",
+      "staticAnalysis": "Análise estática",
+      "pentest": "Testes de penetração",
+      "soc2": "SOC 2 Tipo II"
+    },
     "meta": {
       "title": "Segurança — DriftGuard",
       "description": "Práticas de segurança, divulgação responsável e reporte de vulnerabilidades."
@@ -679,6 +695,31 @@
     "evidencePack": "Pack de evidências",
     "evidencePackDesc": "Precisas de um export de evidências de conformidade para o teu auditor? Disponível para SOC 2, ISO 27001, DORA e NIS2.",
     "requestPack": "Solicitar pack de evidências",
+    "status_evidence_ready": "Evidência disponível",
+    "status_compliant": "Conforme",
+    "status_in_progress": "Em progresso",
+    "frameworks": {
+      "dora": {
+        "fullName": "Ato de Resiliência Operacional Digital da UE",
+        "desc": "O DriftGuard fornece um registo pronto para auditoria de cada alteração de infraestrutura revista, bloqueada ou aprovada. Descobertas e decisões de política têm timestamp, são assinadas e exportáveis como pacotes de evidências DORA."
+      },
+      "nis2": {
+        "fullName": "Diretiva de Segurança das Redes e da Informação 2",
+        "desc": "Cada análise de PR no DriftGuard sinaliza descobertas segundo as categorias de risco NIS2. As evidências de incidente — severidade, raio de impacto, tempo de remediação — são estruturadas para reporte NIS2."
+      },
+      "iso27001": {
+        "fullName": "Sistema de Gestão de Segurança da Informação",
+        "desc": "As descobertas do Checkov são mapeadas para os controlos do Anexo A da ISO 27001. As evidências de avaliação de segurança por PR satisfazem os requisitos A.8.29 sem ferramentas adicionais."
+      },
+      "gdpr": {
+        "fullName": "Regulamento Geral sobre a Proteção de Dados",
+        "desc": "O DriftGuard processa apenas metadados de repositório e saída de planos de infraestrutura — sem dados de utilizador, sem IIP. A residência de dados é exclusivamente na EU. DPA disponível a pedido."
+      },
+      "soc2": {
+        "fullName": "Controlo de Organização de Serviços 2",
+        "desc": "Auditoria SOC 2 Tipo II agendada para Q4 2026 com preparação assistida por Vanta. As evidências CC8 (gestão de mudanças) já são produzidas como efeito colateral de cada revisão de PR no DriftGuard."
+      }
+    },
     "meta": {
       "title": "Conformidade — DriftGuard",
       "description": "Controlos de conformidade DORA, NIS2, ISO 27001 e SOC 2 em cada revisão de PR."

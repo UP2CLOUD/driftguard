@@ -8,19 +8,19 @@ import { getUserPreferences } from "@/lib/preferences/server";
 
 
 
-const CONTROLS = [
-  { label: "Encryption at rest", value: "AES-256 (GCP Cloud Storage + Cloud SQL)" },
-  { label: "Encryption in transit", value: "TLS 1.3 minimum" },
-  { label: "Authentication", value: "GitHub OAuth 2.0 + JWT (RS256)" },
-  { label: "Secrets", value: "GCP Secret Manager — never in env or source" },
-  { label: "Data residency", value: "EU-WEST-1 + EU-CENTRAL-1 (Frankfurt, Eemshaven)" },
-  { label: "Audit log", value: "Append-only, cryptographically signed events" },
-  { label: "Webhook verification", value: "HMAC-SHA256 (GitHub X-Hub-Signature-256)" },
-  { label: "AWS credentials", value: "STS AssumeRole only — no long-lived keys stored" },
-  { label: "Dependency scanning", value: "Dependabot + Snyk on every PR" },
-  { label: "Static analysis", value: "Checkov (IaC) + Bandit (Python) + ESLint" },
-  { label: "Penetration testing", value: "Annual third-party pentest (2026 Q3 scheduled)" },
-  { label: "SOC 2 Type II", value: "In progress — target Q4 2026" },
+const CONTROLS: { key: string; value: string }[] = [
+  { key: "encryptionRest",    value: "AES-256 (GCP Cloud Storage + Cloud SQL)" },
+  { key: "encryptionTransit", value: "TLS 1.3 minimum" },
+  { key: "auth",              value: "GitHub OAuth 2.0 + JWT (RS256)" },
+  { key: "secrets",           value: "GCP Secret Manager — never in env or source" },
+  { key: "dataResid",         value: "EU-WEST-1 + EU-CENTRAL-1 (Frankfurt, Eemshaven)" },
+  { key: "auditLog",          value: "Append-only, cryptographically signed events" },
+  { key: "webhookVerif",      value: "HMAC-SHA256 (GitHub X-Hub-Signature-256)" },
+  { key: "awsCreds",          value: "STS AssumeRole only — no long-lived keys stored" },
+  { key: "depScan",           value: "Dependabot + Snyk on every PR" },
+  { key: "staticAnalysis",    value: "Checkov (IaC) + Bandit (Python) + ESLint" },
+  { key: "pentest",           value: "Annual third-party pentest (2026 Q3 scheduled)" },
+  { key: "soc2",              value: "In progress — target Q4 2026" },
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -51,8 +51,8 @@ export default async function Security() {
         <div className="dg-label mb-4">{t("security.controls")}</div>
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
           {CONTROLS.map((c) => (
-            <div key={c.label} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 border-b border-[color:var(--dg-border)] last:border-b-0 px-4 py-3 bg-[color:var(--dg-surface)] hover:bg-[color:var(--dg-surface-raised)] transition">
-              <span className="text-[12px] text-[color:var(--dg-fg-muted)]">{c.label}</span>
+            <div key={c.key} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 border-b border-[color:var(--dg-border)] last:border-b-0 px-4 py-3 bg-[color:var(--dg-surface)] hover:bg-[color:var(--dg-surface-raised)] transition">
+              <span className="text-[12px] text-[color:var(--dg-fg-muted)]">{t(`security.controlLabels.${c.key}` as any)}</span>
               <span className="font-mono text-[12px] text-[color:var(--dg-fg)]">{c.value}</span>
             </div>
           ))}
@@ -63,13 +63,10 @@ export default async function Security() {
         <div className="dg-label mb-4">{t("security.disclosure")}</div>
         <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-6">
           <p className="text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)] mb-4">
-            If you discover a security vulnerability in DriftGuard, please report it to{" "}
-            <a href="mailto:security@driftguard.io" className="text-[color:var(--dg-electric-bright)] hover:underline">security@driftguard.io</a>.
-            We aim to respond within 24 hours and resolve critical issues within 72 hours.
+            {t("security.disclosureBody1")}
           </p>
           <p className="text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
-            Please do not open public GitHub issues for security vulnerabilities.
-            We will acknowledge your report, keep you updated on our progress, and credit you in our security advisory if desired.
+            {t("security.disclosureBody2")}
           </p>
           <div className="mt-5 flex items-center gap-3">
             <a href="mailto:security@driftguard.io" className="dg-button dg-button-primary text-[12px]">{t("security.reportVuln")}</a>

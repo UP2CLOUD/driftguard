@@ -35,11 +35,11 @@ const QUOTES = [
   },
 ];
 
-const METRICS = [
-  { value: "14.7k+", label: "PR reviews / day" },
-  { value: "<20s", label: "P50 review latency" },
-  { value: "€2.1M", label: "drift cost surfaced" },
-  { value: "99.94%", label: "uptime SLA" },
+const METRICS: { value: string; key: "reviews7d" | "p50" | "driftCost" | "uptime" }[] = [
+  { value: "14.7k+", key: "reviews7d" },
+  { value: "<20s",   key: "p50" },
+  { value: "€2.1M",  key: "driftCost" },
+  { value: "99.94%", key: "uptime" },
 ];
 
 const TAG_STYLE = "rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]";
@@ -72,12 +72,12 @@ export default async function Customers() {
       {/* Metrics */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] mb-16">
         {METRICS.map((m) => (
-          <div key={m.label} className="bg-[color:var(--dg-canvas)] px-5 py-6 text-center">
+          <div key={m.key} className="bg-[color:var(--dg-canvas)] px-5 py-6 text-center">
             <div className="font-sans text-2xl sm:text-3xl font-bold text-[color:var(--dg-fg)] tabular-nums">
               {m.value}
             </div>
             <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-              {m.label}
+              {t(`customers.${m.key}` as any)}
             </div>
           </div>
         ))}
@@ -110,16 +110,16 @@ export default async function Customers() {
       <div className="mt-12 rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-8 text-center">
         <div className="dg-label mb-3">{t("customers.yourTeamNext")}</div>
         <h2 className="font-sans text-xl font-semibold tracking-tight text-[color:var(--dg-fg)] mb-2">
-          Start reviewing PRs in 30 seconds
+          {t("customers.ctaTitle")}
         </h2>
         <p className="text-[13px] text-[color:var(--dg-fg-muted)] mb-6 max-w-sm mx-auto">
-          No credit card. No infra changes. Works with any Terraform or OpenTofu repo on GitHub.
+          {t("customers.ctaBody")}
         </p>
         <a
           href="https://github.com/apps/driftguard-app/installations/new"
           className="dg-button dg-button-primary text-[13px]"
         >
-          Install GitHub App — free →
+          {t("customers.ctaButton")}
         </a>
       </div>
     </MarketingPageShell>
