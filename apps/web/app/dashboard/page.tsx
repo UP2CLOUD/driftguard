@@ -7,9 +7,16 @@ import { getGitHubAppInstallUrl } from "@/lib/github-app";
 import { getInstallations } from "@/lib/installations";
 import { DashboardFooter } from "@/components/DashboardFooter";
 import { getUserPreferences } from "@/lib/preferences/server";
+import { cookies } from "next/headers";
 import Link from "next/link";
 
-export default async function DashboardRoot() {
+const LAST_INSTALLATION_COOKIE = "dg_installation";
+
+export default async function DashboardRoot({
+  searchParams,
+}: {
+  searchParams: Promise<{ installation_id?: string; setup_action?: string }>;
+}) {
   const session = await auth();
   if (!session) redirect("/");
 
@@ -17,8 +24,24 @@ export default async function DashboardRoot() {
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
 
+  // GitHub posts installation_id after the user installs / re-selects repos
+  const sp = await searchParams;
+  if (sp.installation_id) {
+    redirect(`/dashboard/${sp.installation_id}`);
+  }
+
   const installations = await getInstallations(session);
   if (installations.length === 1) redirect(`/dashboard/${installations[0].id}`);
+
+  // API offline fallback: honour the last-known installation cookie so returning
+  // users don't land on the install page when the backend is temporarily down.
+  if (installations.length === 0) {
+    const jar = await cookies();
+    const cached = jar.get(LAST_INSTALLATION_COOKIE)?.value;
+    if (cached && /^\d+$/.test(cached)) {
+      redirect(`/dashboard/${cached}`);
+    }
+  }
 
   const installUrl = getGitHubAppInstallUrl();
 

@@ -209,8 +209,12 @@
     },
     "codeIntegration": {
       "title": "Instale em 30 segundos",
-      "subtitle": "GitHub App + configuração de repo. Sem SDK, sem reescritas, sem alterações de infra.",
-      "worksWith": "Funciona com"
+      "subtitle": "GitHub App + config no repositório. Sem SDK, sem reescritas, sem mudanças de infraestrutura. CLI opcional para verificação local.",
+      "worksWith": "Funciona com",
+      "eyebrow": "Integrar",
+      "copied": "✓ copiado",
+      "copy": "▸ copiar",
+      "fullDocs": "▸ documentação completa"
     },
     "cta": {
       "headline": "Prontos para fazer deploy com segurança"
@@ -241,7 +245,32 @@
       "delta": "Delta",
       "waste": "Desperdício",
       "costImpact": "Impacto de custo",
-      "sectionAriaLabel": "Cada output de agente IA, revisto antes do merge."
+      "sectionAriaLabel": "Cada output de agente IA, revisto antes do merge.",
+      "eyebrow": "Revisão de PR",
+      "subtitle": "Quatro motores de análise em paralelo — custo (Infracost), segurança (Checkov), drift em tempo real (STS) e mapeamento de conformidade. Resultados no PR em 2 segundos.",
+      "tabPrAnalysis": "Análise de PR",
+      "tabDriftState": "Estado de Drift",
+      "tabFinOps": "FinOps",
+      "statRiskScore": "Pontuação de risco",
+      "statFindings": "Achados",
+      "statCostDelta": "Delta de custo",
+      "statFrameworks": "Frameworks impactados",
+      "statDrifted": "Recursos desviados",
+      "statUntracked": "Não rastreados",
+      "statInSync": "Sincronizados",
+      "statLastScan": "Última varredura",
+      "statPlanned": "Planejado",
+      "statActual": "Real",
+      "statDriftWaste": "Desperdício por drift",
+      "colCost": "Custo",
+      "colGate": "Gate",
+      "actionBlocked": "bloqueado",
+      "actionWarned": "alertado",
+      "actionAllowed": "permitido",
+      "liveData": "dados ao vivo",
+      "footerPrAnalysis": "Revisão postada em 18s · risco 82/100 · 2 controles reprovados",
+      "footerDriftState": "Estado obtido via STS AssumeRole · intervalo de varredura 5 min",
+      "footerFinOps": "Infracost + API de faturamento · atualizado por hora"
     },
     "featureGrid": {
       "sectionTitle": "Seis camadas. Uma revisão. Zero overhead de configuração.",
@@ -311,13 +340,59 @@
     },
     "incidents": {
       "sectionTitle": "Cada PR de agente. Cada milissegundo.",
-      "sectionSubtitle": "DriftGuard intercepta, analisa e decide em menos de 2 segundos. Antes do botão de merge estar disponível."
+      "sectionSubtitle": "DriftGuard intercepta, analisa e decide em menos de 2 segundos. Antes do botão de merge estar disponível.",
+      "eyebrow": "Governança em tempo real",
+      "subtitle": "DriftGuard intercepta, analisa e bloqueia em menos de 2 segundos. Antes do botão de merge estar disponível.",
+      "labelLive": "ao vivo",
+      "labelDemo": "demo",
+      "step01Title": "Interceptação por webhook",
+      "step01Body": "GitHub envia eventos de PR ao DriftGuard no instante em que o agente faz o push. Sem polling.",
+      "step02Title": "Análise paralela",
+      "step02Body": "Custo (Infracost), segurança (Checkov), drift (STS) e conformidade rodam simultaneamente — não sequencialmente.",
+      "step03Title": "Recall de memória",
+      "step03Body": "Busca coseno com pgvector compara o diff contra todos os incidentes anteriores. Se esse padrão quebrou produção antes, ele aparece.",
+      "step04Title": "Gate rígido",
+      "step04Body": "Um GitHub Check Run bloqueia o botão de merge. O agente não pode se auto-aprovar. Revisão humana obrigatória acima do limite de risco 70."
     },
     "liveTerminal": {
       "liveDemo": "AO VIVO · DEMO"
     },
     "metrics": {
-      "connectPrompt": "Liga a tua instalação GitHub para ver métricas live do workspace."
+      "connectPrompt": "Liga a tua instalação GitHub para ver métricas live do workspace.",
+      "liveEyebrow": "Dados em tempo real do workspace",
+      "staticEyebrow": "Capacidades da plataforma",
+      "liveTitle": "O teu workspace DriftGuard",
+      "staticTitle": "Construído para infraestrutura de produção.",
+      "liveSubtitle": "Dados em tempo real dos teus repositórios ligados.",
+      "staticSubtitle": "Garantias mensuráveis em cada PR Terraform — cobertura, precisão e latência.",
+      "liveLabel1": "Análises de PR / 7d",
+      "liveLabel2": "Incidentes abertos",
+      "liveLabel3": "Entradas de memória",
+      "liveLabel4": "Risco médio",
+      "liveSub1": "em todos os repos",
+      "liveSub2": "em todos os workspaces",
+      "liveSub3": "embeddings indexados",
+      "liveSub4": "de 100",
+      "staticLabel1": "Regras Checkov",
+      "staticLabel2": "Controlos de conformidade",
+      "staticLabel3": "Precisão de memória",
+      "staticLabel4": "Latência P99",
+      "staticSub1": "verificações de segurança / PR",
+      "staticSub2": "DORA/NIS2/ISO27001/CIS",
+      "staticSub3": "precisão@k similarity",
+      "staticSub4": "segundos plano → comentário"
+    },
+    "trustBar": {
+      "platformEngineers": "Engenheiros de plataforma",
+      "devopsTeams": "Equipas DevOps",
+      "infraLeads": "Líderes de infraestrutura",
+      "sreTeams": "Equipas SRE",
+      "aiAgentOperators": "Operadores de agentes IA",
+      "cloudArchitects": "Arquitetos cloud",
+      "complianceEngineers": "Engenheiros de conformidade",
+      "finopsAnalysts": "Analistas FinOps",
+      "securityEngineers": "Engenheiros de segurança",
+      "staffEngineers": "Engenheiros sénior"
     },
     "pricing": {
       "sectionTitle": "Preços simples, por repo",
@@ -374,7 +449,9 @@
       "sectionSubtitle": "Cada incidente — deploy bloqueado, evento de drift, violação de política — torna-se um embedding 384-d. O próximo PR semelhante recupera o incidente original automaticamente.",
       "recalledLabel": "Incidentes recuperados",
       "ariaLabel": "Os teus agentes aprendem de produção. Permanentemente.",
-      "query": "Consulta"
+      "query": "Consulta",
+      "eyebrow": "Memória operacional",
+      "subtitle": "Cada incidente — deploy bloqueado, evento de drift, violação de política — vira um vetor de 384 dimensões. Quando um agente submete padrão semelhante semanas depois, DriftGuard exibe o incidente original com pontuação de similaridade antes do merge."
     },
     "navTransition": {
       "github": {

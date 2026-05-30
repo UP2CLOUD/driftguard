@@ -7,6 +7,7 @@ import { DashboardFooter } from "@/components/DashboardFooter";
 import { UpgradeIntent } from "@/components/UpgradeIntent";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { checkInstallationAccess } from "@/lib/auth-utils";
 
 async function fetchOpenIncidents(installationId: string): Promise<number> {
@@ -48,6 +49,16 @@ export default async function DashboardLayout({
 
   const { authorized, installations } = await checkInstallationAccess(installationId);
   if (!authorized) redirect("/");
+
+  // Remember this installation so the dashboard root can skip the install page
+  // when the API is temporarily unavailable (30-day session-length cookie).
+  const jar = await cookies();
+  jar.set("dg_installation", installationId, {
+    path: "/",
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 30,
+  });
 
   const installation = installations.find((i) => i.id === parseInt(installationId));
   const planLabel = undefined; // fetched per-page for accuracy

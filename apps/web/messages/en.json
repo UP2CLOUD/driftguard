@@ -209,8 +209,12 @@
     },
     "codeIntegration": {
       "title": "Install in 30 seconds.",
-      "subtitle": "GitHub App + repo config. No SDK, no rewrites, no infrastructure changes. Optional: add driftguard.yml for custom policies.",
-      "worksWith": "Works with"
+      "subtitle": "GitHub App + repo config. No SDK, no rewrites, no infrastructure changes. Optional CLI for local pre-flight.",
+      "worksWith": "Works with",
+      "eyebrow": "Integrate",
+      "copied": "✓ copied",
+      "copy": "▸ copy",
+      "fullDocs": "▸ full docs"
     },
     "cta": {
       "headline": "Ready to ship safer"
@@ -241,7 +245,32 @@
       "delta": "Delta",
       "waste": "Waste",
       "costImpact": "Cost impact",
-      "sectionAriaLabel": "Every AI agent output, reviewed before merge."
+      "sectionAriaLabel": "Every AI agent output, reviewed before merge.",
+      "eyebrow": "PR review",
+      "subtitle": "Four analysis engines run in parallel — cost delta (Infracost), security (Checkov), live drift (STS), and compliance mapping. Results appear in the PR within 2 seconds.",
+      "tabPrAnalysis": "PR Analysis",
+      "tabDriftState": "Drift State",
+      "tabFinOps": "FinOps",
+      "statRiskScore": "Risk score",
+      "statFindings": "Findings",
+      "statCostDelta": "Cost delta",
+      "statFrameworks": "Frameworks hit",
+      "statDrifted": "Drifted resources",
+      "statUntracked": "Untracked",
+      "statInSync": "In sync",
+      "statLastScan": "Last scan",
+      "statPlanned": "Planned",
+      "statActual": "Actual",
+      "statDriftWaste": "Drift waste",
+      "colCost": "Cost",
+      "colGate": "Gate",
+      "actionBlocked": "blocked",
+      "actionWarned": "warned",
+      "actionAllowed": "allowed",
+      "liveData": "live data",
+      "footerPrAnalysis": "Review posted in 18s · risk 82/100 · 2 controls failed",
+      "footerDriftState": "State fetched via STS AssumeRole · scan interval 5 min",
+      "footerFinOps": "Infracost + live billing API · updated hourly"
     },
     "featureGrid": {
       "sectionTitle": "Six layers. One review. Zero config overhead.",
@@ -311,13 +340,59 @@
     },
     "incidents": {
       "sectionTitle": "Every agent PR. Every millisecond.",
-      "sectionSubtitle": "DriftGuard intercepts, analyses, and gates in under 2 seconds. Before the merge button is available."
+      "sectionSubtitle": "DriftGuard intercepts, analyses, and gates in under 2 seconds. Before the merge button is available.",
+      "eyebrow": "Runtime governance",
+      "subtitle": "DriftGuard intercepts, analyses, and gates in under 2 seconds. Before the merge button is even available.",
+      "labelLive": "live",
+      "labelDemo": "demo",
+      "step01Title": "Webhook intercept",
+      "step01Body": "GitHub sends PR events to DriftGuard the instant an agent pushes. No polling.",
+      "step02Title": "Parallel analysis",
+      "step02Body": "Cost (Infracost), security (Checkov), drift (STS), and compliance run concurrently — not sequentially.",
+      "step03Title": "Memory recall",
+      "step03Body": "pgvector cosine search matches the diff against every prior incident. If this pattern broke prod before, it shows up.",
+      "step04Title": "Hard gate",
+      "step04Body": "A GitHub Check Run blocks the merge button. The agent cannot self-approve. Human review required above risk threshold 70."
     },
     "liveTerminal": {
       "liveDemo": "LIVE · DEMO"
     },
     "metrics": {
-      "connectPrompt": "Connect your GitHub installation to see live workspace metrics."
+      "connectPrompt": "Connect your GitHub installation to see live workspace metrics.",
+      "liveEyebrow": "Live workspace data",
+      "staticEyebrow": "Platform capabilities",
+      "liveTitle": "Your DriftGuard workspace",
+      "staticTitle": "Built for production infrastructure.",
+      "liveSubtitle": "Real-time aggregated data from your connected repositories.",
+      "staticSubtitle": "Measurable guarantees on every Terraform PR — coverage, accuracy, and latency.",
+      "liveLabel1": "PR analyses / 7d",
+      "liveLabel2": "Open incidents",
+      "liveLabel3": "Memory entries",
+      "liveLabel4": "Avg risk score",
+      "liveSub1": "across all repos",
+      "liveSub2": "across workspaces",
+      "liveSub3": "indexed embeddings",
+      "liveSub4": "out of 100",
+      "staticLabel1": "Checkov rules",
+      "staticLabel2": "Compliance controls",
+      "staticLabel3": "Memory accuracy",
+      "staticLabel4": "P99 latency",
+      "staticSub1": "security checks / PR",
+      "staticSub2": "DORA/NIS2/ISO27001/CIS",
+      "staticSub3": "precision@k similarity",
+      "staticSub4": "seconds plan → comment"
+    },
+    "trustBar": {
+      "platformEngineers": "Platform engineers",
+      "devopsTeams": "DevOps teams",
+      "infraLeads": "Infrastructure leads",
+      "sreTeams": "SRE teams",
+      "aiAgentOperators": "AI agent operators",
+      "cloudArchitects": "Cloud architects",
+      "complianceEngineers": "Compliance engineers",
+      "finopsAnalysts": "FinOps analysts",
+      "securityEngineers": "Security engineers",
+      "staffEngineers": "Staff engineers"
     },
     "pricing": {
       "sectionTitle": "Simple, per-repo pricing",
@@ -374,7 +449,9 @@
       "sectionSubtitle": "Every incident — blocked deploy, drift event, policy violation — becomes a 384-d embedding. The next similar PR surfaces the original incident automatically.",
       "recalledLabel": "Recalled incidents",
       "ariaLabel": "Your agents learn from production. Permanently.",
-      "query": "Query"
+      "query": "Query",
+      "eyebrow": "Operational memory",
+      "subtitle": "Every incident — blocked deploy, drift event, policy violation — becomes a 384-d vector. When an AI agent submits a similar pattern weeks later, DriftGuard surfaces the original incident with a similarity score before the merge button is available."
     },
     "navTransition": {
       "github": {

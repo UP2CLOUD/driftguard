@@ -96,9 +96,9 @@ export function CodeIntegration() {
     <section id="integrate" className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] py-16 sm:py-24">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <SectionHeader
-          eyebrow="Integrate"
+          eyebrow={t("landing.codeIntegration.eyebrow")}
           title={t("landing.codeIntegration.title")}
-          subtitle="GitHub App + repo config. No SDK, no rewrites, no infrastructure changes. Optional CLI for local pre-flight."
+          subtitle={t("landing.codeIntegration.subtitle")}
         />
 
         <div className="mt-12 rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] overflow-hidden">
@@ -126,7 +126,7 @@ export function CodeIntegration() {
               onClick={copy}
               className="mr-3 font-mono text-[10px] uppercase tracking-wider text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
             >
-              {copied ? "✓ copied" : "▸ copy"}
+              {copied ? t("landing.codeIntegration.copied") : t("landing.codeIntegration.copy")}
             </button>
           </div>
 
@@ -142,7 +142,7 @@ export function CodeIntegration() {
           {/* Bottom strip */}
           <div className="flex items-center justify-between border-t border-[color:var(--dg-border)] px-4 py-2 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
             <span>sdk.driftguard.io ▪ semver 0.4.2 ▪ {SAMPLES[lang].split("\n").length} lines</span>
-            <a href="/docs" className="text-[color:var(--dg-electric-bright)] hover:underline">▸ full docs</a>
+            <a href="/docs" className="text-[color:var(--dg-electric-bright)] hover:underline">{t("landing.codeIntegration.fullDocs")}</a>
           </div>
         </div>
 

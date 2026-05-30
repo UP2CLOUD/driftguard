@@ -209,8 +209,12 @@
     },
     "codeIntegration": {
       "title": "30 सेकंड में इंस्टॉल करें।",
-      "subtitle": "GitHub App + repo कॉन्फ़िग। कोई SDK नहीं, कोई पुनर्लेखन नहीं।",
-      "worksWith": "के साथ काम करता है"
+      "subtitle": "GitHub App + रेपो कॉन्फिग। कोई SDK नहीं, कोई पुनर्लेखन नहीं, कोई इन्फ्रास्ट्रक्चर बदलाव नहीं। स्थानीय पूर्व-जाँच के लिए वैकल्पिक CLI।",
+      "worksWith": "के साथ काम करता है",
+      "eyebrow": "एकीकरण",
+      "copied": "✓ कॉपी किया",
+      "copy": "▸ कॉपी करें",
+      "fullDocs": "▸ पूरे दस्तावेज़"
     },
     "cta": {
       "headline": "सुरक्षित deploy के लिए तैयार"
@@ -241,7 +245,32 @@
       "delta": "डेल्टा",
       "waste": "अपव्यय",
       "costImpact": "लागत प्रभाव",
-      "sectionAriaLabel": "हर AI एजेंट आउटपुट, merge से पहले समीक्षित।"
+      "sectionAriaLabel": "हर AI एजेंट आउटपुट, merge से पहले समीक्षित।",
+      "eyebrow": "PR समीक्षा",
+      "subtitle": "चार विश्लेषण इंजन समानांतर में चलते हैं — लागत डेल्टा (Infracost), सुरक्षा (Checkov), लाइव ड्रिफ्ट (STS), और अनुपालन मैपिंग। परिणाम 2 सेकंड में PR में दिखते हैं।",
+      "tabPrAnalysis": "PR विश्लेषण",
+      "tabDriftState": "ड्रिफ्ट स्थिति",
+      "tabFinOps": "FinOps",
+      "statRiskScore": "जोखिम स्कोर",
+      "statFindings": "खोजें",
+      "statCostDelta": "लागत डेल्टा",
+      "statFrameworks": "प्रभावित फ्रेमवर्क",
+      "statDrifted": "ड्रिफ्ट संसाधन",
+      "statUntracked": "अनट्रैक",
+      "statInSync": "समन्वित",
+      "statLastScan": "अंतिम स्कैन",
+      "statPlanned": "योजनाबद्ध",
+      "statActual": "वास्तविक",
+      "statDriftWaste": "ड्रिफ्ट अपव्यय",
+      "colCost": "लागत",
+      "colGate": "गेट",
+      "actionBlocked": "अवरुद्ध",
+      "actionWarned": "चेतावनी दी",
+      "actionAllowed": "अनुमति दी",
+      "liveData": "लाइव डेटा",
+      "footerPrAnalysis": "समीक्षा 18s में पोस्ट · जोखिम 82/100 · 2 नियंत्रण विफल",
+      "footerDriftState": "STS AssumeRole द्वारा स्थिति प्राप्त · स्कैन अंतराल 5 मिनट",
+      "footerFinOps": "Infracost + लाइव बिलिंग API · प्रति घंटे अपडेट"
     },
     "featureGrid": {
       "sectionTitle": "छह परतें। एक समीक्षा। शून्य कॉन्फ़िग ओवरहेड।",
@@ -311,13 +340,59 @@
     },
     "incidents": {
       "sectionTitle": "प्रत्येक एजेंट PR। प्रत्येक मिलीसेकंड।",
-      "sectionSubtitle": "DriftGuard 2 सेकंड से कम में इंटरसेप्ट, विश्लेषण और निर्णय करता है।"
+      "sectionSubtitle": "DriftGuard 2 सेकंड से कम में इंटरसेप्ट, विश्लेषण और निर्णय करता है।",
+      "eyebrow": "रनटाइम प्रशासन",
+      "subtitle": "DriftGuard 2 सेकंड से कम में अवरोध, विश्लेषण और गेट करता है। मर्ज बटन उपलब्ध होने से पहले।",
+      "labelLive": "लाइव",
+      "labelDemo": "डेमो",
+      "step01Title": "Webhook अवरोध",
+      "step01Body": "एजेंट के पुश करते ही GitHub PR इवेंट DriftGuard को भेजता है। कोई पोलिंग नहीं।",
+      "step02Title": "समानांतर विश्लेषण",
+      "step02Body": "लागत (Infracost), सुरक्षा (Checkov), ड्रिफ्ट (STS), और अनुपालन एक साथ चलते हैं — क्रमिक नहीं।",
+      "step03Title": "मेमोरी रिकॉल",
+      "step03Body": "pgvector कोसाइन सर्च diff को सभी पिछली घटनाओं से मिलाता है। अगर यह पैटर्न पहले उत्पादन में टूटा, तो यह दिखाई देता है।",
+      "step04Title": "कठोर गेट",
+      "step04Body": "GitHub Check Run मर्ज बटन को अवरुद्ध करता है। एजेंट स्व-अनुमोदन नहीं कर सकता। जोखिम सीमा 70 से अधिक होने पर मानव समीक्षा आवश्यक।"
     },
     "liveTerminal": {
       "liveDemo": "लाइव · डेमो"
     },
     "metrics": {
-      "connectPrompt": "लाइव वर्कस्पेस मेट्रिक्स देखने के लिए अपनी GitHub इंस्टॉलेशन कनेक्ट करें।"
+      "connectPrompt": "लाइव वर्कस्पेस मेट्रिक्स देखने के लिए अपनी GitHub इंस्टॉलेशन कनेक्ट करें।",
+      "liveEyebrow": "लाइव वर्कस्पेस डेटा",
+      "staticEyebrow": "प्लेटफ़ॉर्म क्षमताएं",
+      "liveTitle": "आपका DriftGuard वर्कस्पेस",
+      "staticTitle": "प्रोडक्शन इन्फ्रास्ट्रक्चर के लिए बनाया गया।",
+      "liveSubtitle": "आपके कनेक्टेड रिपॉज़िटरी से रियल-टाइम डेटा।",
+      "staticSubtitle": "प्रत्येक Terraform PR पर मापनीय गारंटी — कवरेज, सटीकता और लेटेंसी।",
+      "liveLabel1": "PR विश्लेषण / 7d",
+      "liveLabel2": "खुली घटनाएं",
+      "liveLabel3": "मेमोरी एंट्री",
+      "liveLabel4": "औसत जोखिम स्कोर",
+      "liveSub1": "सभी repos में",
+      "liveSub2": "सभी workspaces में",
+      "liveSub3": "इंडेक्स्ड एम्बेडिंग",
+      "liveSub4": "100 में से",
+      "staticLabel1": "Checkov नियम",
+      "staticLabel2": "अनुपालन नियंत्रण",
+      "staticLabel3": "मेमोरी सटीकता",
+      "staticLabel4": "P99 लेटेंसी",
+      "staticSub1": "सुरक्षा जांच / PR",
+      "staticSub2": "DORA/NIS2/ISO27001/CIS",
+      "staticSub3": "precision@k similarity",
+      "staticSub4": "सेकंड plan → comment"
+    },
+    "trustBar": {
+      "platformEngineers": "प्लेटफ़ॉर्म इंजीनियर",
+      "devopsTeams": "DevOps टीम",
+      "infraLeads": "इन्फ्रास्ट्रक्चर लीड",
+      "sreTeams": "SRE टीम",
+      "aiAgentOperators": "AI एजेंट ऑपरेटर",
+      "cloudArchitects": "क्लाउड आर्किटेक्ट",
+      "complianceEngineers": "अनुपालन इंजीनियर",
+      "finopsAnalysts": "FinOps विश्लेषक",
+      "securityEngineers": "सुरक्षा इंजीनियर",
+      "staffEngineers": "स्टाफ इंजीनियर"
     },
     "pricing": {
       "sectionTitle": "सरल, प्रति-repo मूल्य निर्धारण",
@@ -374,7 +449,9 @@
       "sectionSubtitle": "प्रत्येक घटना 384-d embedding बन जाती है। अगला समान PR मूल घटना को स्वचालित रूप से दिखाता है।",
       "recalledLabel": "याद किए गए incidents",
       "ariaLabel": "आपके एजेंट उत्पादन से सीखते हैं। स्थायी रूप से।",
-      "query": "क्वेरी"
+      "query": "क्वेरी",
+      "eyebrow": "संचालन मेमोरी",
+      "subtitle": "हर घटना — अवरुद्ध डिप्लॉय, ड्रिफ्ट इवेंट, नीति उल्लंघन — 384-आयामी वेक्टर बन जाती है। जब AI एजेंट हफ्तों बाद समान पैटर्न सबमिट करता है, DriftGuard मर्ज बटन उपलब्ध होने से पहले मूल घटना को समानता स्कोर के साथ दिखाता है।"
     },
     "navTransition": {
       "github": {

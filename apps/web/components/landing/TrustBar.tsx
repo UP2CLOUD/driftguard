@@ -1,20 +1,22 @@
 "use client";
 
+import { useT } from "@/components/TranslationProvider";
 import { useEffect, useRef, useState } from "react";
 
-const ROLES = [
-  "Platform engineers",  "DevOps teams",         "Infrastructure leads",
-  "SRE teams",           "AI agent operators",   "Cloud architects",
-  "Compliance engineers","FinOps analysts",       "Security engineers",
-  "Staff engineers",     "Platform engineers",   "DevOps teams",
-  "Infrastructure leads","SRE teams",             "AI agent operators",
-  "Cloud architects",    "Compliance engineers",  "FinOps analysts",
-  "Security engineers",  "Staff engineers",
-];
-
 export function TrustBar() {
+  const t = useT();
   const trackRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
+
+  const ROLES = [
+    t("landing.trustBar.platformEngineers"),  t("landing.trustBar.devopsTeams"),         t("landing.trustBar.infraLeads"),
+    t("landing.trustBar.sreTeams"),           t("landing.trustBar.aiAgentOperators"),    t("landing.trustBar.cloudArchitects"),
+    t("landing.trustBar.complianceEngineers"),t("landing.trustBar.finopsAnalysts"),       t("landing.trustBar.securityEngineers"),
+    t("landing.trustBar.staffEngineers"),     t("landing.trustBar.platformEngineers"),   t("landing.trustBar.devopsTeams"),
+    t("landing.trustBar.infraLeads"),         t("landing.trustBar.sreTeams"),             t("landing.trustBar.aiAgentOperators"),
+    t("landing.trustBar.cloudArchitects"),    t("landing.trustBar.complianceEngineers"),  t("landing.trustBar.finopsAnalysts"),
+    t("landing.trustBar.securityEngineers"),  t("landing.trustBar.staffEngineers"),
+  ];
 
   return (
     <section
