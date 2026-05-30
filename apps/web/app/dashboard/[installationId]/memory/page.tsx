@@ -8,8 +8,8 @@ import { beGet } from "@/lib/backend";
 
 async function fetchMemory(id: string) {
   const [entries, stats] = await Promise.all([
-    beGet<unknown[]>(`/api/v1/memory?installation_id=${id}&limit=20`, { revalidate: 30, timeout: 3000 }),
-    beGet<object>(`/api/v1/memory/stats?installation_id=${id}`, { revalidate: 30, timeout: 3000 }),
+    beGet<any[]>(`/api/v1/memory?installation_id=${id}&limit=20`, { revalidate: 30, timeout: 3000 }),
+    beGet<any>(`/api/v1/memory/stats?installation_id=${id}`, { revalidate: 30, timeout: 3000 }),
   ]);
   return {
     entries: entries ?? [],
