@@ -8,7 +8,7 @@ import { getUserPreferences } from "@/lib/preferences/server";
 
 
 
-const ROLES: { title: string; typeKey: "fullTime" | "partTime"; location: string; tags: readonly string[]; desc: string }[] = [
+const ROLES = [
   {
     title: "Senior Backend Engineer — Python / FastAPI",
     typeKey: "fullTime",
@@ -37,14 +37,14 @@ const ROLES: { title: string; typeKey: "fullTime" | "partTime"; location: string
     tags: ["LLMs", "RAG", "pgvector", "Prompt Engineering", "Evals"],
     desc: "Improve the semantic memory system: embedding quality, recall accuracy, eval harness. Work directly with the Claude API and Voyage embeddings.",
   },
-];
+] as const;
 
-const VALUES: { key: string; descKey: string }[] = [
+const VALUES = [
   { key: "remoteFirst", descKey: "remoteFirstDesc" },
   { key: "highOwn",     descKey: "highOwnDesc" },
   { key: "shipFast",    descKey: "shipFastDesc" },
   { key: "openCore",    descKey: "openCoreDesc" },
-];
+] as const;
 
 export async function generateMetadata(): Promise<Metadata> {
   const prefs  = await getUserPreferences();
