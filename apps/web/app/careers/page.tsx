@@ -8,42 +8,42 @@ import { getUserPreferences } from "@/lib/preferences/server";
 
 
 
-const ROLES = [
+const ROLES: { title: string; typeKey: "fullTime" | "partTime"; location: string; tags: readonly string[]; desc: string }[] = [
   {
     title: "Senior Backend Engineer — Python / FastAPI",
-    type: "Full-time",
+    typeKey: "fullTime",
     location: "Remote (EU)",
     tags: ["Python", "FastAPI", "Celery", "PostgreSQL", "AWS"],
     desc: "Own the analyzer pipeline — from GitHub webhooks to AI triage to PR comments. You'll work across the Terraform plan parser, Checkov integration, and Claude API orchestration.",
   },
   {
     title: "DevOps / Platform Engineer",
-    type: "Full-time",
+    typeKey: "fullTime",
     location: "Remote (EU)",
     tags: ["GCP", "Terraform", "Kubernetes", "Cloud Run", "Observability"],
     desc: "Own the infra stack: Cloud Run services, Terraform modules, CI/CD pipelines, and customer-facing IAM integration. Strong IaC background essential.",
   },
   {
     title: "Full-Stack Engineer — Next.js",
-    type: "Full-time",
+    typeKey: "fullTime",
     location: "Remote (EU)",
     tags: ["Next.js", "TypeScript", "React", "Tailwind"],
     desc: "Build the dashboard, findings table, analysis viewer, and onboarding flows. You'll own the full user experience from GitHub App install to first PR review.",
   },
   {
     title: "ML / AI Engineer",
-    type: "Part-time / Contract",
+    typeKey: "partTime",
     location: "Remote",
     tags: ["LLMs", "RAG", "pgvector", "Prompt Engineering", "Evals"],
     desc: "Improve the semantic memory system: embedding quality, recall accuracy, eval harness. Work directly with the Claude API and Voyage embeddings.",
   },
-] as const;
+];
 
-const VALUES = [
-  { v: "Remote-first", desc: "EU timezone preferred. No offices, no commutes." },
-  { v: "High ownership", desc: "Small team. You own your surface end-to-end." },
-  { v: "Ship fast", desc: "We iterate weekly. Strong opinions about scope." },
-  { v: "Open-core", desc: "Core analyzer is open source. You build in public." },
+const VALUES: { key: string; descKey: string }[] = [
+  { key: "remoteFirst", descKey: "remoteFirstDesc" },
+  { key: "highOwn",     descKey: "highOwnDesc" },
+  { key: "shipFast",    descKey: "shipFastDesc" },
+  { key: "openCore",    descKey: "openCoreDesc" },
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -73,10 +73,10 @@ export default async function Careers() {
       <div className="space-y-14">
         {/* Values */}
         <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] grid-cols-2 sm:grid-cols-4">
-          {VALUES.map(({ v, desc }) => (
-            <div key={v} className="bg-[color:var(--dg-canvas)] px-5 py-5">
-              <div className="dg-label mb-2">{v}</div>
-              <p className="text-[12px] text-[color:var(--dg-fg-muted)]">{desc}</p>
+          {VALUES.map(({ key, descKey }) => (
+            <div key={key} className="bg-[color:var(--dg-canvas)] px-5 py-5">
+              <div className="dg-label mb-2">{t(`careers.${key}` as any)}</div>
+              <p className="text-[12px] text-[color:var(--dg-fg-muted)]">{t(`careers.${descKey}` as any)}</p>
             </div>
           ))}
         </div>
@@ -97,7 +97,7 @@ export default async function Careers() {
                     </h2>
                     <div className="flex items-center gap-3 mt-1.5">
                       <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                        {role.type}
+                        {t(`careers.${role.typeKey}` as any)}
                       </span>
                       <span className="opacity-40">·</span>
                       <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
@@ -109,7 +109,7 @@ export default async function Careers() {
                     href={`mailto:jobs@driftguard.io?subject=${encodeURIComponent(role.title)}`}
                     className="dg-button dg-button-ghost text-[12px] shrink-0"
                   >
-                    Apply →
+                    {t("careers.apply")}
                   </a>
                 </div>
                 <div className="px-5 py-4">
@@ -135,11 +135,11 @@ export default async function Careers() {
           <div>
             <div className="dg-label mb-1">{t("careers.noRole")}</div>
             <p className="text-[12px] text-[color:var(--dg-fg-muted)]">
-              We hire on skills, not titles. Send your background and what you want to build.
+              {t("careers.noRoleDesc")}
             </p>
           </div>
           <a href="mailto:jobs@driftguard.io" className="dg-button dg-button-primary text-[12px] shrink-0">
-            Get in touch →
+            {t("careers.getInTouch")}
           </a>
         </div>
       </div>
