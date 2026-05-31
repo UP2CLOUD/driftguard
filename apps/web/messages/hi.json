@@ -123,6 +123,10 @@
     "plan": "योजना",
     "stripeCustomer": "Stripe ग्राहक",
     "stripeActive": "सक्रिय",
+    "active": "सक्रिय",
+    "apiOfflineWarning": "बैकएंड API ऑफलाइन — बिलिंग और AWS अनुभाग अनुपलब्ध।",
+    "uninstallDesc": "GitHub App अनइंस्टॉल करें। सभी विश्लेषण और मेमोरी 30 दिनों में हटा दी जाएगी।",
+    "uninstallButton": "अनइंस्टॉल करें →",
     "dangerZone": "खतरनाक क्षेत्र",
     "dangerZoneDesc": "अपरिवर्तनीय क्रियाएं। सावधानी से आगे बढ़ें।",
     "meta": {

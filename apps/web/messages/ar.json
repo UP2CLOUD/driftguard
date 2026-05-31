@@ -123,6 +123,10 @@
     "plan": "الخطة",
     "stripeCustomer": "عميل Stripe",
     "stripeActive": "نشط",
+    "active": "نشط",
+    "apiOfflineWarning": "الواجهة الخلفية غير متصلة — قسما الفوترة و AWS غير متاحين.",
+    "uninstallDesc": "إلغاء تثبيت تطبيق GitHub. ستُحذف جميع التحليلات والذاكرة خلال 30 يومًا.",
+    "uninstallButton": "إلغاء التثبيت →",
     "dangerZone": "منطقة الخطر",
     "dangerZoneDesc": "إجراءات لا رجعة فيها. تابع بحذر.",
     "meta": {

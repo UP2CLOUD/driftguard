@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import { I18nProvider } from "@/components/I18nProvider";
 import { PostHogProvider } from "@/components/PostHogProvider";
@@ -26,6 +26,12 @@ const geistMono = Geist_Mono({
 });
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://driftguard-blue.vercel.app";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#09090b",
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const preferences = await getUserPreferences();

@@ -45,9 +45,9 @@ export default async function Settings({
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-12 space-y-14">
       {/* Page header */}
       <div>
-        <div className="dg-label">Workspace ▸ {installationId}</div>
+        <div className="dg-label">{t("settings.workspaceTitle")} ▸ {installationId}</div>
         <h1 className="mt-2 font-sans text-2xl sm:text-3xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
-          Settings
+          {t("settings.title")}
         </h1>
       </div>
 
@@ -56,8 +56,8 @@ export default async function Settings({
         <div className="flex items-start gap-3 rounded-md border border-warned/30 bg-warned/5 px-4 py-3">
           <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-warned shrink-0" />
           <p className="font-mono text-[11px] text-warned">
-            Backend API offline — billing and AWS sections unavailable.
-            Install from{" "}
+            {t("settings.apiOfflineWarning")}
+            {" "}Install from{" "}
             <span className="opacity-70">{process.env.NEXT_PUBLIC_API_URL ?? "not set"}</span>
           </p>
         </div>
@@ -82,9 +82,9 @@ export default async function Settings({
       {org && (
         <Section title={t("settings.billingTitle")} description={t("settings.billingDesc")}>
           <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] sm:grid-cols-3 mb-4">
-            <PlanCard name="Free"       price="€0"  detail="50 PR analyses/mo · 1 repo"              current={org.plan === "free"} />
-            <PlanCard name="Team"       price="€29" detail="Unlimited PRs · memory · compliance"     current={org.plan === "team"} period="/repo/mo" highlighted />
-            <PlanCard name="Enterprise" price="—"   detail="Self-hosted · SSO · SLA · custom policy" current={org.plan === "enterprise"} />
+            <PlanCard name="Free"       price="€0"  detail="50 PR analyses/mo · 1 repo"              current={org.plan === "free"}       activeLabel={t("settings.active")} />
+            <PlanCard name="Team"       price="€29" detail="Unlimited PRs · memory · compliance"     current={org.plan === "team"}       activeLabel={t("settings.active")} period="/repo/mo" highlighted />
+            <PlanCard name="Enterprise" price="—"   detail="Self-hosted · SSO · SLA · custom policy" current={org.plan === "enterprise"} activeLabel={t("settings.active")} />
           </div>
           <BillingActions
             orgId={org.id}
@@ -115,7 +115,7 @@ export default async function Settings({
           <div>
             <div className="text-[13px] font-semibold text-[color:var(--dg-fg)]">{t("dashboard.removeDriftGuard")}</div>
             <p className="mt-1 text-[12px] text-[color:var(--dg-fg-muted)]">
-              Uninstall the GitHub App. All analyses and memory will be deleted within 30 days.
+              {t("settings.uninstallDesc")}
             </p>
           </div>
           <a
@@ -124,7 +124,7 @@ export default async function Settings({
             rel="noreferrer"
             className="shrink-0 rounded border border-blocked/40 bg-blocked/10 px-3 py-2 font-mono text-[11px] uppercase tracking-widest text-blocked hover:bg-blocked/20 transition"
           >
-            Uninstall →
+            {t("settings.uninstallButton")}
           </a>
         </div>
       </Section>
@@ -174,10 +174,10 @@ function Row({ label, value, mono }: { label: string; value: string; mono?: bool
 }
 
 function PlanCard({
-  name, price, period, detail, current, highlighted,
+  name, price, period, detail, current, highlighted, activeLabel,
 }: {
   name: string; price: string; period?: string; detail: string;
-  current: boolean; highlighted?: boolean;
+  current: boolean; highlighted?: boolean; activeLabel: string;
 }) {
   return (
     <div
@@ -190,7 +190,7 @@ function PlanCard({
         {current && (
           <span className="inline-flex items-center gap-1 rounded border border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
             <span className="h-1 w-1 rounded-full bg-[color:var(--dg-electric)]" />
-            Active
+            {activeLabel}
           </span>
         )}
       </div>
