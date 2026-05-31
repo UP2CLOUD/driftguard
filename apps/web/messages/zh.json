@@ -123,6 +123,10 @@
     "plan": "计划",
     "stripeCustomer": "Stripe 客户",
     "stripeActive": "活跃",
+    "active": "活跃",
+    "apiOfflineWarning": "后端 API 离线 — 账单和 AWS 部分不可用。",
+    "uninstallDesc": "卸载 GitHub App。所有分析和记忆将在 30 天内删除。",
+    "uninstallButton": "卸载 →",
     "dangerZone": "危险区域",
     "dangerZoneDesc": "不可逆操作，请谨慎操作。",
     "meta": {

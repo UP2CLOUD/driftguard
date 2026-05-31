@@ -123,6 +123,10 @@
     "plan": "Plan",
     "stripeCustomer": "Cliente Stripe",
     "stripeActive": "activo",
+    "active": "Activo",
+    "apiOfflineWarning": "API offline — secciones de facturación y AWS no disponibles.",
+    "uninstallDesc": "Desinstala el GitHub App. Todos los análisis y la memoria se eliminarán en 30 días.",
+    "uninstallButton": "Desinstalar →",
     "dangerZone": "Zona de peligro",
     "dangerZoneDesc": "Acciones irreversibles. Proceder con cuidado.",
     "meta": {
