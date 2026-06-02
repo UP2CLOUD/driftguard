@@ -74,7 +74,16 @@
     "message": "Message",
     "noFixSuggestion": "No fix suggestion available.",
     "errorTitle": "Error",
-    "errorDesc": "Something went wrong loading this page."
+    "errorDesc": "Something went wrong loading this page.",
+    "backToDashboard": "Back to dashboard",
+    "errorFallback": "An unexpected error occurred. Please try again.",
+    "analysisNotFound": "Analysis not found",
+    "analysisNotFoundDesc": "This analysis does not exist or has been deleted.",
+    "findingsType": "Type",
+    "findingsEmpty": "No findings. Infrastructure looks clean.",
+    "suggestedFix": "Suggested fix",
+    "findingSingular": "finding",
+    "findingPlural": "findings"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -110,7 +119,10 @@
     "readDocs": "Read the docs",
     "recentAnalyses": "Recent analyses",
     "statusActive": "active",
-    "statusOff": "off"
+    "statusOff": "off",
+    "analysesHeading": "Analyses",
+    "noAnalyses": "No analyses yet. Open a Terraform PR to trigger the first review.",
+    "riskHeader": "Risk"
   },
   "settings": {
     "title": "Settings",

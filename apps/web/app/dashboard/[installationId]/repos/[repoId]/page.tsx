@@ -31,24 +31,24 @@ export default async function RepoPage({
         href={`/dashboard/${installationId}`}
         className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition mb-6"
       >
-        ← Repositories
+        ← {t("repos.title")}
       </Link>
 
       <div className="dg-label mb-2">{t("dashboard.repository")}</div>
       <h1 className="font-sans text-2xl sm:text-3xl font-semibold tracking-tight text-[color:var(--dg-fg)] mb-8">
-        Analyses
+        {t("repos.analysesHeading")}
       </h1>
 
       {analyses.length === 0 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-10 text-center">
           <p className="text-[13px] text-[color:var(--dg-fg-muted)]">
-            No analyses yet. Open a Terraform PR to trigger the first review.
+            {t("repos.noAnalyses")}
           </p>
         </div>
       ) : (
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
           <div className="grid grid-cols-[auto_1fr_auto_auto] border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] gap-4">
-            <span>Risk</span>
+            <span>{t("repos.riskHeader")}</span>
             <span>PR</span>
             <span className="hidden md:inline">SHA</span>
             <span>{t("dashboard.status")}</span>

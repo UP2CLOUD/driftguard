@@ -74,7 +74,16 @@
     "message": "Mensaje",
     "noFixSuggestion": "Sugerencia de corrección no disponible.",
     "errorTitle": "Error",
-    "errorDesc": "Ocurrió un error al cargar esta página."
+    "errorDesc": "Ocurrió un error al cargar esta página.",
+    "backToDashboard": "Volver al panel",
+    "errorFallback": "Se produjo un error inesperado. Inténtalo de nuevo.",
+    "analysisNotFound": "Análisis no encontrado",
+    "analysisNotFoundDesc": "Este análisis no existe o ha sido eliminado.",
+    "findingsType": "Tipo",
+    "findingsEmpty": "Sin hallazgos. La infraestructura parece limpia.",
+    "suggestedFix": "Corrección sugerida",
+    "findingSingular": "hallazgo",
+    "findingPlural": "hallazgos"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -155,7 +164,10 @@
     "readDocs": "Leer la documentación",
     "recentAnalyses": "Análisis recientes",
     "statusActive": "activo",
-    "statusOff": "inactivo"
+    "statusOff": "inactivo",
+    "analysesHeading": "Análisis",
+    "noAnalyses": "Aún no hay análisis. Abre un PR de Terraform para la primera revisión.",
+    "riskHeader": "Riesgo"
   },
   "landing": {
     "ctaTitle": "Recupera el control de tu cloud.",

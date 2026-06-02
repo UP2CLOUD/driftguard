@@ -29,7 +29,7 @@ export function FindingsTable({ findings }: { findings: Finding[] }) {
       <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-10 text-center">
         <span className="text-2xl">✓</span>
         <p className="mt-3 text-[13px] text-[color:var(--dg-fg-muted)]">
-          No findings. Infrastructure looks clean.
+          {t("dashboard.findingsEmpty")}
         </p>
       </div>
     );
@@ -48,7 +48,7 @@ export function FindingsTable({ findings }: { findings: Finding[] }) {
         <span>{t("dashboard.severity")}</span>
         <span>{t("dashboard.resource")}</span>
         <span>{t("dashboard.message")}</span>
-        <span>Type</span>
+        <span>{t("dashboard.findingsType")}</span>
       </div>
 
       <div className="divide-y divide-[color:var(--dg-border)]">
@@ -93,13 +93,13 @@ export function FindingsTable({ findings }: { findings: Finding[] }) {
                     <div className="flex items-center justify-between mb-3">
                       <span className="dg-label flex items-center gap-2">
                         <span className="text-allowed">✓</span>
-                        Suggested fix
+                        {t("dashboard.suggestedFix")}
                       </span>
                       <button
                         onClick={() => copy(i, f.suggestion!)}
                         className="font-mono text-[10px] uppercase tracking-wider text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
                       >
-                        {copied === i ? "✓ copied" : "▸ copy"}
+                        {copied === i ? `✓ ${t("common.copied")}` : `▸ ${t("common.copy")}`}
                       </button>
                     </div>
                     <pre className="overflow-x-auto rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-4 font-mono text-[12px] leading-relaxed text-[color:var(--dg-fg)]">
@@ -117,7 +117,7 @@ export function FindingsTable({ findings }: { findings: Finding[] }) {
 
       {/* Summary footer */}
       <div className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 flex items-center justify-between font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-        <span>{findings.length} finding{findings.length !== 1 ? "s" : ""}</span>
+        <span>{findings.length} {findings.length !== 1 ? t("dashboard.findingPlural") : t("dashboard.findingSingular")}</span>
         <span className="flex items-center gap-3">
           {["critical","high","medium","low"].map(s => {
             const n = findings.filter(f => f.severity === s).length;

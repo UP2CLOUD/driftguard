@@ -74,7 +74,16 @@
     "message": "الرسالة",
     "noFixSuggestion": "لا يوجد اقتراح إصلاح.",
     "errorTitle": "خطأ",
-    "errorDesc": "حدث خطأ أثناء تحميل هذه الصفحة."
+    "errorDesc": "حدث خطأ أثناء تحميل هذه الصفحة.",
+    "backToDashboard": "العودة إلى لوحة التحكم",
+    "errorFallback": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+    "analysisNotFound": "التحليل غير موجود",
+    "analysisNotFoundDesc": "هذا التحليل غير موجود أو تم حذفه.",
+    "findingsType": "النوع",
+    "findingsEmpty": "لا توجد نتائج. البنية التحتية تبدو نظيفة.",
+    "suggestedFix": "الإصلاح المقترح",
+    "findingSingular": "نتيجة",
+    "findingPlural": "نتائج"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -155,7 +164,10 @@
     "readDocs": "اقرأ التوثيق",
     "recentAnalyses": "التحليلات الأخيرة",
     "statusActive": "نشط",
-    "statusOff": "معطل"
+    "statusOff": "معطل",
+    "analysesHeading": "التحليلات",
+    "noAnalyses": "لا توجد تحليلات حتى الآن. افتح طلب سحب Terraform لتشغيل المراجعة الأولى.",
+    "riskHeader": "المخاطر"
   },
   "landing": {
     "ctaTitle": "استعد السيطرة على بنيتك السحابية.",
