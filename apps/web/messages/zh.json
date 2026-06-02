@@ -74,7 +74,16 @@
     "message": "消息",
     "noFixSuggestion": "暂无修复建议。",
     "errorTitle": "错误",
-    "errorDesc": "加载此页面时出错。"
+    "errorDesc": "加载此页面时出错。",
+    "backToDashboard": "返回仪表板",
+    "errorFallback": "发生意外错误，请重试。",
+    "analysisNotFound": "分析未找到",
+    "analysisNotFoundDesc": "此分析不存在或已被删除。",
+    "findingsType": "类型",
+    "findingsEmpty": "无发现。基础设施看起来干净。",
+    "suggestedFix": "建议修复",
+    "findingSingular": "个发现",
+    "findingPlural": "个发现"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -155,7 +164,10 @@
     "readDocs": "阅读文档",
     "recentAnalyses": "最近分析",
     "statusActive": "活跃",
-    "statusOff": "停用"
+    "statusOff": "停用",
+    "analysesHeading": "分析",
+    "noAnalyses": "暂无分析。打开 Terraform PR 以触发首次审查。",
+    "riskHeader": "风险"
   },
   "landing": {
     "ctaTitle": "重新掌控您的云基础设施。",

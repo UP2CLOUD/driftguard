@@ -74,7 +74,16 @@
     "message": "Mensagem",
     "noFixSuggestion": "Sugestão de correcção não disponível.",
     "errorTitle": "Erro",
-    "errorDesc": "Ocorreu um erro ao carregar esta página."
+    "errorDesc": "Ocorreu um erro ao carregar esta página.",
+    "backToDashboard": "Voltar ao painel",
+    "errorFallback": "Ocorreu um erro inesperado. Tente novamente.",
+    "analysisNotFound": "Análise não encontrada",
+    "analysisNotFoundDesc": "Esta análise não existe ou foi eliminada.",
+    "findingsType": "Tipo",
+    "findingsEmpty": "Sem resultados. A infraestrutura parece limpa.",
+    "suggestedFix": "Correção sugerida",
+    "findingSingular": "resultado",
+    "findingPlural": "resultados"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -110,7 +119,10 @@
     "readDocs": "Ver documentação",
     "recentAnalyses": "Análises recentes",
     "statusActive": "ativo",
-    "statusOff": "inativo"
+    "statusOff": "inativo",
+    "analysesHeading": "Análises",
+    "noAnalyses": "Ainda sem análises. Abre um PR de Terraform para desencadear a primeira revisão.",
+    "riskHeader": "Risco"
   },
   "settings": {
     "title": "Configurações",

@@ -74,7 +74,16 @@
     "message": "संदेश",
     "noFixSuggestion": "सुधार सुझाव उपलब्ध नहीं।",
     "errorTitle": "त्रुटि",
-    "errorDesc": "इस पृष्ठ को लोड करते समय कुछ गलत हुआ।"
+    "errorDesc": "इस पृष्ठ को लोड करते समय कुछ गलत हुआ।",
+    "backToDashboard": "डैशबोर्ड पर वापस",
+    "errorFallback": "एक अप्रत्याशित त्रुटि हुई। कृपया पुनः प्रयास करें।",
+    "analysisNotFound": "विश्लेषण नहीं मिला",
+    "analysisNotFoundDesc": "यह विश्लेषण मौजूद नहीं है या हटा दिया गया है।",
+    "findingsType": "प्रकार",
+    "findingsEmpty": "कोई निष्कर्ष नहीं। बुनियादी ढांचा साफ दिखता है।",
+    "suggestedFix": "सुझाया गया सुधार",
+    "findingSingular": "निष्कर्ष",
+    "findingPlural": "निष्कर्ष"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -155,7 +164,10 @@
     "readDocs": "दस्तावेज़ पढ़ें",
     "recentAnalyses": "हाल के विश्लेषण",
     "statusActive": "सक्रिय",
-    "statusOff": "बंद"
+    "statusOff": "बंद",
+    "analysesHeading": "विश्लेषण",
+    "noAnalyses": "अभी तक कोई विश्लेषण नहीं। पहली समीक्षा के लिए एक Terraform PR खोलें।",
+    "riskHeader": "जोखिम"
   },
   "landing": {
     "ctaTitle": "अपने क्लाउड पर नियंत्रण वापस पाएं।",

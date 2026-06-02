@@ -35,17 +35,17 @@ export default function Error({
       <div className="dg-label text-blocked">{t("dashboard.errorTitle")}</div>
       <h2 className="font-sans text-xl font-semibold tracking-tight text-[color:var(--dg-fg)]">{t("dashboard.errorDesc")}</h2>
       <p className="text-[13px] text-[color:var(--dg-fg-muted)] max-w-sm">
-        {error.message || "An unexpected error occurred. Please try again."}
+        {error.message || t("dashboard.errorFallback")}
       </p>
       <div className="flex gap-3">
         <button
           onClick={reset}
           className="dg-button dg-button-primary text-[12px]"
         >
-          Try again
+          {t("common.retry")}
         </button>
         <Link href="/dashboard" className="dg-button dg-button-ghost text-[12px]">
-          Back to dashboard
+          {t("dashboard.backToDashboard")}
         </Link>
       </div>
     </div>
