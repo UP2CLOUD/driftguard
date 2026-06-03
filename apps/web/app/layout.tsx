@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { I18nProvider } from "@/components/I18nProvider";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import { AuthProvider } from "@/components/AuthProvider";
@@ -118,6 +119,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </PostHogProvider>
           </AuthProvider>
         </I18nProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
