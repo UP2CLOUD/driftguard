@@ -4,8 +4,8 @@ from driftguard.compliance import summarize_frameworks
 FOOTER = (
     "\n\n---\n"
     "<sub>Reviewed by **Driftguard** · "
-    "[docs](https://driftguard.dev/docs) · "
-    "[feedback](https://driftguard.dev/feedback)</sub>"
+    "[docs](https://driftguard-blue.vercel.app/docs) · "
+    "[feedback](https://driftguard-blue.vercel.app/feedback)</sub>"
 )
 
 _SEV_ICON = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🔵", "info": "⚪"}
