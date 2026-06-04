@@ -1,4 +1,5 @@
 import asyncio
+import os as _os
 from logging.config import fileConfig
 
 from alembic import context
@@ -9,7 +10,12 @@ from driftguard.core.config import settings
 from driftguard.db.models import Base
 
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.database_url)
+
+# Use DATABASE_URL env var if set (Render injects it); fall back to settings.
+_raw_url = _os.environ.get("DATABASE_URL") or _os.environ.get("database_url") or settings.database_url
+# Alembic needs synchronous driver — strip asyncpg
+_sync_url = _raw_url.replace("postgresql+asyncpg://", "postgresql://")
+config.set_main_option("sqlalchemy.url", _sync_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
