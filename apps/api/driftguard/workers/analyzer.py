@@ -72,7 +72,16 @@ async def enqueue_pr_analysis(payload: dict) -> None:
             head_sha=head_sha,
         )
     except Exception as exc:
+        import traceback
         log.error("analyze_pr_failed", repo=repo, pr=pr_number, error=str(exc), exc_info=True)
+        # Post error comment so it's visible without Render logs
+        try:
+            from driftguard.integrations.github import installation_token, post_pr_comment
+            token = await installation_token(installation_id)
+            await post_pr_comment(token, repo, pr_number,
+                f"⚠️ **DriftGuard analysis failed**\n```\n{traceback.format_exc()[-1500:]}\n```")
+        except Exception:
+            pass
 
 
 async def _load_repo_settings(repo_full_name: str) -> dict:
