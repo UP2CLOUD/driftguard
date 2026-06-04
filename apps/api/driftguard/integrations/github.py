@@ -12,7 +12,9 @@ GITHUB_API = "https://api.github.com"
 def _app_jwt() -> str:
     now = int(time.time())
     payload = {"iat": now - 60, "exp": now + 540, "iss": settings.github_app_id}
-    return jwt.encode(payload, settings.github_app_private_key, algorithm="RS256")
+    # Normalize literal \n sequences (Render/env stores PEM as single line)
+    pem = settings.github_app_private_key.replace("\\n", "\n")
+    return jwt.encode(payload, pem, algorithm="RS256")
 
 
 async def installation_token(installation_id: int) -> str:

@@ -64,12 +64,15 @@ async def enqueue_pr_analysis(payload: dict) -> None:
             log.warning("celery_unavailable_running_inline", repo=repo)
 
     # No worker deployed — run inline in background task
-    await analyze_pr(
-        installation_id=installation_id,
-        repo_full_name=repo,
-        pr_number=pr_number,
-        head_sha=head_sha,
-    )
+    try:
+        await analyze_pr(
+            installation_id=installation_id,
+            repo_full_name=repo,
+            pr_number=pr_number,
+            head_sha=head_sha,
+        )
+    except Exception as exc:
+        log.error("analyze_pr_failed", repo=repo, pr=pr_number, error=str(exc), exc_info=True)
 
 
 async def _load_repo_settings(repo_full_name: str) -> dict:
