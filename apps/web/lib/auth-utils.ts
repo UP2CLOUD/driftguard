@@ -33,15 +33,20 @@ export async function checkInstallationAccess(installationId: string): Promise<{
   const login = session.user.login ?? "";
 
   // 1. Try our backend — returns installations for this GitHub user
-  const backendData = await beGet<Installation[]>(
+  const backendData = await beGet<Array<{id?: number; installation_id?: number; account?: {login: string; avatar_url?: string}}>>(
     `/api/v1/orgs/by-user?login=${encodeURIComponent(login)}`,
     { revalidate: 60, timeout: 3000 },
   );
   if (backendData) {
     const targetId = parseInt(installationId);
+    // Backend returns installation_id (GitHub ID) + id (UUID) — check both
     const authorized = !installationId || installationId === "dummy" ||
-      backendData.some((i) => i.id === targetId);
-    return { authorized, installations: backendData, accessToken: token };
+      backendData.some((i) => (i.installation_id ?? i.id) === targetId);
+    const installations: Installation[] = backendData.map((o) => ({
+      id: o.installation_id ?? (o.id as unknown as number) ?? 0,
+      account: o.account ?? { login },
+    }));
+    return { authorized, installations, accessToken: token };
   }
 
   // 2. Backend offline: verify the GitHub token is valid, then trust the
