@@ -22,6 +22,7 @@ from driftguard.ai.findings import (
 )
 from driftguard.ai.formatter import format_comment
 from driftguard.ai.reviewer import review as ai_review
+from driftguard.core.config import settings
 from driftguard.core.db import SessionLocal
 from driftguard.core.logging import log
 from driftguard.core.workspace import workspace
@@ -44,28 +45,31 @@ async def enqueue_pr_analysis(payload: dict) -> None:
     installation_id = payload["installation"]["id"]
 
     log.info("analysis_queued", repo=repo, pr=pr_number, sha=head_sha)
-    try:
-        from driftguard.worker.app import celery_app
+    if settings.celery_enabled:
+        try:
+            from driftguard.worker.app import celery_app
 
-        celery_app.send_task(
-            "driftguard.worker.tasks.run_analysis",
-            kwargs={
-                "installation_id": installation_id,
-                "repo_full_name": repo,
-                "pr_number": pr_number,
-                "head_sha": head_sha,
-            },
-            queue="analysis",
-        )
-    except Exception:
-        # Celery not available (dev) — run inline
-        log.warning("celery_unavailable_running_inline", repo=repo)
-        await analyze_pr(
-            installation_id=installation_id,
-            repo_full_name=repo,
-            pr_number=pr_number,
-            head_sha=head_sha,
-        )
+            celery_app.send_task(
+                "driftguard.worker.tasks.run_analysis",
+                kwargs={
+                    "installation_id": installation_id,
+                    "repo_full_name": repo,
+                    "pr_number": pr_number,
+                    "head_sha": head_sha,
+                },
+                queue="analysis",
+            )
+            return
+        except Exception:
+            log.warning("celery_unavailable_running_inline", repo=repo)
+
+    # No worker deployed — run inline in background task
+    await analyze_pr(
+        installation_id=installation_id,
+        repo_full_name=repo,
+        pr_number=pr_number,
+        head_sha=head_sha,
+    )
 
 
 async def _load_repo_settings(repo_full_name: str) -> dict:

@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     # ── Redis / Upstash (Celery broker + cache) ────────────────
     redis_url: str = "redis://localhost:6379/0"
     celery_result_backend: str = ""  # defaults to redis_url
+    celery_enabled: bool = False  # set True only when a worker is deployed
 
     # ── Object storage (R2 / S3-compat) ───────────────────────
     s3_endpoint: str = ""  # e.g. https://<id>.r2.cloudflarestorage.com
