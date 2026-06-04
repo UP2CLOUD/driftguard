@@ -71,6 +71,28 @@ async def ready() -> dict:
     )
 
 
+@router.get("/debug/run-analyze")
+async def debug_run_analyze(
+    installation_id: int = 137862386,
+    repo: str = "UP2CLOUD/driftguard-test-iac",
+    pr: int = 1,
+    sha: str = "main",
+) -> dict:
+    """Run analyze_pr directly and return result or traceback."""
+    import traceback
+    try:
+        from driftguard.workers.analyzer import analyze_pr
+        result = await analyze_pr(
+            installation_id=installation_id,
+            repo_full_name=repo,
+            pr_number=pr,
+            head_sha=sha,
+        )
+        return {"status": "ok", "result": str(result)[:500]}
+    except Exception:
+        return {"status": "error", "traceback": traceback.format_exc()[-2000:]}
+
+
 @router.get("/debug/analyze-steps")
 async def debug_analyze_steps(
     installation_id: int = 1,
