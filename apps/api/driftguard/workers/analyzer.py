@@ -273,10 +273,18 @@ async def _persist_analysis(
                 )
 
             await session.commit()
-        log.info("analysis_persisted", analysis_id=analysis_id)
+        log.info("analysis_persisted", analysis_id=analysis_id, repo=repo_full_name)
         return analysis_id
     except Exception as exc:
-        log.error("analysis_persist_failed", error=str(exc))
+        import traceback
+
+        log.error(
+            "analysis_persist_failed",
+            error=str(exc),
+            traceback=traceback.format_exc()[-500:],
+            repo=repo_full_name,
+            pr=pr_number,
+        )
         return str(uuid.uuid4())
 
 
