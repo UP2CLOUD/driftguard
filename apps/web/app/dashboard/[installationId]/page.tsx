@@ -9,6 +9,7 @@ import { StatsStripSection } from "./_sections/StatsStrip";
 import { RecentAnalysesSection } from "./_sections/RecentAnalyses";
 import { IncidentsSection } from "./_sections/Incidents";
 import { EventsSection } from "./_sections/Events";
+import { ReadinessChecklistSection } from "./_sections/ReadinessChecklist";
 
 export default async function DashboardPage({
   params,
@@ -28,6 +29,10 @@ export default async function DashboardPage({
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-8">
         <Suspense fallback={<StatsStripFallback />}>
           <StatsStripSection installationId={installationId} t={t} />
+        </Suspense>
+
+        <Suspense fallback={null}>
+          <ReadinessChecklistSection installationId={installationId} t={t} />
         </Suspense>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_380px]">

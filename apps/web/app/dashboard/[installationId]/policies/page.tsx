@@ -49,9 +49,14 @@ export default async function PoliciesPage({ params }: { params: Promise<{ insta
       </div>
 
       {policies.length === 0 ? (
-        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-12 text-center">
-          <p className="text-[13px] text-[color:var(--dg-fg-muted)]">{t("policies.noTitle")}</p>
-          <p className="mt-2 text-[11px] text-[color:var(--dg-fg-subtle)]">{t("policies.noBody")}</p>
+        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
+          <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Policy engine ready</div>
+          <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
+            {t("policies.noTitle") ?? "No policies configured"}
+          </p>
+          <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-md mx-auto leading-relaxed">
+            Policies let you block, warn, or approve infrastructure changes based on severity, resource patterns, and compliance requirements. Rules apply to every PR review automatically.
+          </p>
         </div>
       ) : (
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">

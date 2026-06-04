@@ -36,20 +36,36 @@ export async function RecentAnalysesSection({
           <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{analyses7d} / 7d</span>
         </div>
         {recentAnalyses.length === 0 && !apiAvailable ? (
-          <div className="px-4 py-8 text-center">
-            <p className="text-[13px] text-[color:var(--dg-fg-muted)] mb-4">
-              {t("repos.noReposBody") ?? "Open a Terraform PR to trigger your first analysis."}
+          <div className="px-6 py-10 text-center">
+            <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
+              No PR analyses yet
             </p>
-            <a
-              href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-app"}/installations/new`}
-              className="dg-button dg-button-ghost text-[11px]"
-            >
-              {t("repos.addRepository") ?? "Add repository →"}
-            </a>
+            <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto mb-5 leading-relaxed">
+              DriftGuard reviews Terraform pull requests for security, cost, and reliability drift. Connect a repository to begin.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <a
+                href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-reviews"}/installations/new`}
+                className="rounded bg-[color:var(--dg-electric)] px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-white hover:brightness-110 transition"
+              >
+                Connect GitHub →
+              </a>
+              <a
+                href="/docs/install"
+                className="rounded border border-[color:var(--dg-border)] px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] transition"
+              >
+                Setup guide
+              </a>
+            </div>
           </div>
         ) : recentAnalyses.length === 0 ? (
-          <div className="px-4 py-6 text-center text-[13px] text-[color:var(--dg-fg-muted)]">
-            {t("dashboard.noAnalyses") ?? "No analyses yet."}
+          <div className="px-6 py-10 text-center">
+            <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
+              No PR analyses yet
+            </p>
+            <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto leading-relaxed">
+              Open a Terraform or OpenTofu pull request in a connected repository to trigger the first analysis.
+            </p>
           </div>
         ) : (
           <div className="divide-y divide-[color:var(--dg-border)]">

@@ -62,9 +62,14 @@ export default async function MemoryPage({ params }: { params: Promise<{ install
       )}
 
       {entries.length === 0 ? (
-        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-12 text-center">
-          <p className="text-[13px] text-[color:var(--dg-fg-muted)]">{t("memory.noTitle")}</p>
-          <p className="mt-2 text-[11px] text-[color:var(--dg-fg-subtle)]">{t("memory.noBody")}</p>
+        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
+          <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">Memory engine ready</div>
+          <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
+            {t("memory.noTitle") ?? "No memory decisions yet"}
+          </p>
+          <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-md mx-auto leading-relaxed">
+            DriftGuard remembers accepted risks, suppressed findings, and repeated patterns — building institutional knowledge across all repositories. Every PR review contributes.
+          </p>
         </div>
       ) : (
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">

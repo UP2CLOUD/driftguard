@@ -53,9 +53,14 @@ export default async function IncidentsPage({ params }: { params: Promise<{ inst
       </div>
 
       {all.length === 0 ? (
-        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-12 text-center">
-          <div className="text-[13px] text-[color:var(--dg-fg-muted)]">{t("incidents.noTitle")}</div>
-          <p className="mt-2 text-[11px] text-[color:var(--dg-fg-subtle)]">{t("incidents.noBody")}</p>
+        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
+          <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-allowed">● No active incidents</div>
+          <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
+            {t("incidents.noTitle") ?? "No incidents detected"}
+          </p>
+          <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto leading-relaxed">
+            DriftGuard automatically creates incidents when repeated drift patterns or critical findings are detected across pull requests.
+          </p>
         </div>
       ) : (
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">

@@ -424,7 +424,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         summary = ", ".join(f"{v} {k}" for k, v in sorted(sev_counts.items()))
         review_md = (
             f"## Summary\n{len(findings)} findings detected ({summary}).\n\n"
-            "_AI review unavailable — check ANTHROPIC_API_KEY balance._"
+            "_AI review unavailable._"
         )
     duration_ms = int((time.monotonic() - started) * 1000)
 
