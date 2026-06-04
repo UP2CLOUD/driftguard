@@ -58,19 +58,21 @@ async def get_orgs_by_user(login: str, db: AsyncSession = Depends(get_db)) -> li
     # account_login is stored in org.settings when the app is installed
     stmt = (
         select(Organization)
-        .where(Organization.enabled.is_(True))
         .order_by(Organization.github_installation_id)
         .limit(50)
     )
     result = await db.execute(stmt)
     all_orgs = result.scalars().all()
 
-    # Filter by account_login stored in settings
-    # Falls back to returning all orgs when login not yet stored (legacy installs)
+    # Filter by account_login stored in settings.
+    # Org-type installations (account_type=Organization) are returned to any
+    # authenticated user — the layout will verify actual access via GitHub token.
+    # User-type installations are returned only to the matching login.
     matching = [
         o
         for o in all_orgs
         if not (o.settings or {}).get("account_login")  # legacy: no login stored
+        or (o.settings or {}).get("account_type", "").lower() == "organization"
         or (o.settings or {}).get("account_login", "").lower() == login.lower()
     ]
 
