@@ -65,6 +65,7 @@ class ScanResultOut(BaseModel):
     duration_ms: int
     # Optional — set when linked to a DB analysis
     analysis_id: str | None = None
+    ai_summary: str | None = None
 
 
 class TriggerScanRequest(BaseModel):

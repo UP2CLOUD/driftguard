@@ -11,6 +11,7 @@ import asyncio
 import json
 import time
 import uuid
+from datetime import UTC, datetime
 from pathlib import Path
 
 from driftguard.ai.findings import (
@@ -199,10 +200,13 @@ async def _persist_analysis(
                     repo_id=repo_row.id,
                     github_pr_number=pr_number,
                     head_sha=head_sha,
+                    base_sha="0" * 40,
+                    status="open",
                 )
                 session.add(pr_row)
                 await session.flush()
 
+            now_dt = datetime.now(UTC)
             analysis = Analysis(
                 id=analysis_id,
                 pr_id=pr_row.id,
@@ -210,6 +214,8 @@ async def _persist_analysis(
                 risk_score=risk_score,
                 cost_delta_cents=None,
                 summary_md=review_md,
+                started_at=now_dt,
+                finished_at=now_dt,
             )
             session.add(analysis)
 
