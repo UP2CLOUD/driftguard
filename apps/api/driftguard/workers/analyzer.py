@@ -32,10 +32,50 @@ from driftguard.events.schemas import Severity  # noqa: F401
 from driftguard.integrations import checkov, infracost, terraform
 from driftguard.integrations.git import download_tarball, find_terraform_dirs
 from driftguard.integrations.github import installation_token, post_check_run, post_pr_comment, submit_pr_review
+from driftguard.services.memory_recall import format_recall_section, recall_similar, store_memory
+from driftguard.services.policy_engine import apply_policies
 from driftguard.services.scanner.engine import scan_directory_sync
 from driftguard.services.terraform.plan_parser import TerraformPlan, parse_plan
 from driftguard.services.terraform.risk_scorer import RiskResult
 from driftguard.services.terraform.risk_scorer import score as score_plan
+
+
+async def enqueue_pr_merged(payload: dict) -> None:
+    """On PR merge: update memory outcome to 'merged' (arch step 05)."""
+    repo = payload["repository"]["full_name"]
+    pr_number = payload["pull_request"]["number"]
+    installation_id = payload["installation"]["id"]
+
+    try:
+        from sqlalchemy import select
+
+        from driftguard.db.models import IncidentEmbedding, Organization
+
+        async with SessionLocal() as db:
+            org = (
+                await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
+            ).scalar_one_or_none()
+            if not org:
+                return
+            rows = (
+                (
+                    await db.execute(
+                        select(IncidentEmbedding).where(
+                            IncidentEmbedding.org_id == org.id,
+                            IncidentEmbedding.repo_full_name == repo,
+                            IncidentEmbedding.pr_number == pr_number,
+                        )
+                    )
+                )
+                .scalars()
+                .all()
+            )
+            for row in rows:
+                row.outcome = "merged"
+            await db.commit()
+            log.info("memory.outcome_updated", repo=repo, pr=pr_number, rows=len(rows))
+    except Exception as exc:
+        log.warning("memory_merge_update_failed", repo=repo, pr=pr_number, error=str(exc))
 
 
 async def enqueue_pr_analysis(payload: dict) -> None:
@@ -346,6 +386,33 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
     # static TF findings; K8s and GHA findings from static scan are always kept.
     findings = _merge_findings(static_findings, plan_findings)
 
+    # Policy enforcement (arch step 03) — apply org rules, add policy findings
+    policy_findings: list[Finding] = []
+    policy_verdict = "pass"
+    try:
+        async with SessionLocal() as _pol_db:
+            policy_findings, policy_verdict = await apply_policies(_pol_db, installation_id, findings)
+            await _pol_db.commit()
+        if policy_findings:
+            findings = findings + policy_findings
+            log.info("policy_applied", count=len(policy_findings), verdict=policy_verdict)
+    except Exception as exc:
+        log.warning("policy_apply_failed", error=str(exc))
+
+    # Semantic recall (arch step 02) — find similar past incidents
+    recall_section = ""
+    try:
+        async with SessionLocal() as _mem_db:
+            recalls = await recall_similar(
+                _mem_db,
+                installation_id=installation_id,
+                findings=findings,
+                exclude_repo=repo_full_name,
+            )
+        recall_section = format_recall_section(recalls)
+    except Exception as exc:
+        log.warning("memory_recall_failed", error=str(exc))
+
     risk_score = _compute_risk(findings)
     try:
         review_md = await ai_review(findings, pr_ctx)
@@ -371,6 +438,9 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
             "risk_score": risk_score,
         },
     )
+    # Inject recall section before footer
+    if recall_section:
+        body = body.replace("\n\n---\n", recall_section + "\n\n---\n", 1)
 
     await post_pr_comment(token, repo_full_name, pr_number, body)
 
@@ -435,11 +505,35 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         duration_ms=duration_ms,
     )
 
+    # Store memory (arch step 05 partial — immediate storage, outcome updated on merge)
+    try:
+        outcome = "blocked" if conclusion == "failure" else "warned" if conclusion == "neutral" else "approved"
+        from sqlalchemy import select
+
+        from driftguard.db.models import Organization as _Org
+
+        async with SessionLocal() as _mem_db:
+            _org = (
+                await _mem_db.execute(select(_Org).where(_Org.github_installation_id == installation_id))
+            ).scalar_one_or_none()
+            if _org:
+                await store_memory(
+                    _mem_db,
+                    org_id=_org.id,
+                    analysis_id=analysis_id,
+                    repo_full_name=repo_full_name,
+                    pr_number=pr_number,
+                    findings=[f for f in findings if f.type != "policy"],
+                    outcome=outcome,
+                    risk_score=risk_score,
+                )
+    except Exception as exc:
+        log.warning("memory_store_failed", error=str(exc))
+
     # Audit log — DORA/NIS2 evidence
     try:
         from sqlalchemy import select
 
-        from driftguard.core.db import SessionLocal
         from driftguard.db.models import Repository
         from driftguard.services.audit import record as _audit
 

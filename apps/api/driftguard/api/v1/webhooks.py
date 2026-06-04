@@ -13,7 +13,7 @@ from driftguard.services.onboarding import (
     remove_repositories,
     upsert_installation,
 )
-from driftguard.workers.analyzer import enqueue_pr_analysis
+from driftguard.workers.analyzer import enqueue_pr_analysis, enqueue_pr_merged
 
 router = APIRouter()
 
@@ -48,6 +48,11 @@ async def github_webhook(
 
     if x_github_event == "pull_request" and action in {"opened", "synchronize", "reopened"}:
         background.add_task(enqueue_pr_analysis, payload)
+        return {"received": True}
+
+    if x_github_event == "pull_request" and action == "closed":
+        if payload.get("pull_request", {}).get("merged"):
+            background.add_task(enqueue_pr_merged, payload)
         return {"received": True}
 
     if x_github_event == "installation":
