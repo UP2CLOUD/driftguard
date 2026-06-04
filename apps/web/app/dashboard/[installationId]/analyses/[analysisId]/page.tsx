@@ -95,18 +95,33 @@ export default async function AnalysisPage({
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8">
       {/* Back */}
-      <Link href={`/dashboard/${installationId}`}
-        className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition mb-8">
-        ← Overview
-      </Link>
+      <div className="flex items-center gap-4 mb-8">
+        <Link href={`/dashboard/${installationId}`}
+          className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">
+          ← Overview
+        </Link>
+        <span className="text-[color:var(--dg-border)]">·</span>
+        <Link href={`/dashboard/${installationId}/repos`}
+          className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">
+          Repos
+        </Link>
+      </div>
 
       {/* Header */}
       <div className="mb-8 flex flex-wrap items-start gap-4 justify-between">
         <div>
           <div className="dg-label mb-1">{t("dashboard.scanResult")}</div>
           <h1 className="font-sans text-2xl font-semibold text-[color:var(--dg-fg)]">
-            Analysis <span className="font-mono text-[color:var(--dg-fg-muted)] text-lg">{analysisId.slice(0,8)}</span>
+            {data.repo_full_name
+              ? <><span className="text-[color:var(--dg-fg-muted)]">{data.repo_full_name}</span>{data.pr_number ? <span className="font-mono text-lg text-[color:var(--dg-fg-subtle)]"> #{data.pr_number}</span> : null}</>
+              : <>Analysis <span className="font-mono text-[color:var(--dg-fg-muted)] text-lg">{analysisId.slice(0,8)}</span></>
+            }
           </h1>
+          {data.head_sha && (
+            <p className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] mt-1">
+              sha <code>{data.head_sha.slice(0,7)}</code>
+            </p>
+          )}
         </div>
         {/* Risk badge */}
         <div className="flex items-center gap-3">
