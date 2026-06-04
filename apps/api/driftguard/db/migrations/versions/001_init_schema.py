@@ -1,6 +1,6 @@
 """init schema
 
-Revision ID: 001_init_schema
+Revision ID: 001
 Revises:
 Create Date: 2025-05-17 22:00:00.000000
 
@@ -9,7 +9,7 @@ Create Date: 2025-05-17 22:00:00.000000
 import sqlalchemy as sa
 from alembic import op
 
-revision = "001_init_schema"
+revision = "001"
 down_revision = None
 branch_labels = None
 depends_on = None

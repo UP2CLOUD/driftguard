@@ -73,19 +73,6 @@ def upgrade() -> None:
     op.create_index("ix_tf_resources_type", "terraform_resources", ["type"])
     op.create_index("ix_tf_resources_snap_at", "terraform_resources", ["snapshotted_at"])
 
-    # ── Backfill org members from existing orgs (installer = owner) ───────────
-    op.execute("""
-        INSERT INTO org_members (id, org_id, github_login, role, joined_at)
-        SELECT
-            gen_random_uuid()::text,
-            id,
-            COALESCE(settings->>'account_login', 'unknown'),
-            'org:owner',
-            created_at
-        FROM organizations
-        WHERE settings->>'account_login' IS NOT NULL
-        ON CONFLICT DO NOTHING
-    """)
 
 
 def downgrade() -> None:
