@@ -39,3 +39,22 @@ def identify(distinct_id: str, properties: dict) -> None:
             ph.identify(distinct_id, properties)
     except Exception as _exc:  # noqa: BLE001
         log.debug("analytics.identify.failed", error=str(_exc))
+
+
+def init_sentry() -> None:
+    if not settings.sentry_dsn:
+        return
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.fastapi import FastApiIntegration
+        from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
+
+        sentry_sdk.init(
+            dsn=settings.sentry_dsn,
+            environment=settings.environment,
+            integrations=[FastApiIntegration(), SqlalchemyIntegration()],
+            traces_sample_rate=0.1,
+        )
+        log.info("sentry.initialized")
+    except Exception as exc:
+        log.warning("sentry.init.failed", error=str(exc))
