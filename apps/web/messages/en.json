@@ -91,6 +91,14 @@
     "loading": "...",
     "success": "✓ In"
   },
+  "common": {
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "language": "Language",
+    "docs": "Docs",
+    "signOut": "Sign out",
+    "loading": "Loading"
+  },
   "footer": {
     "privacy": "Privacy",
     "terms": "Terms",

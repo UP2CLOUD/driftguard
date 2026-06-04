@@ -5,14 +5,15 @@ type T = (key: string) => string | null | undefined;
 export async function EventsSection({
   installationId,
   t,
+  demoOverview,
 }: {
   installationId: string;
   t: T;
+  demoOverview?: any;
 }) {
-  const [events, overview] = await Promise.all([
-    getEvents(installationId),
-    getOverview(installationId),
-  ]);
+  const [events, overview] = demoOverview
+    ? [demoOverview.recent_events, demoOverview]
+    : await Promise.all([getEvents(installationId), getOverview(installationId)]);
   const apiAvailable = !!overview;
 
   return (

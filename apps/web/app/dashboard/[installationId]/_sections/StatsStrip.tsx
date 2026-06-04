@@ -5,11 +5,13 @@ type T = (key: string) => string | null | undefined;
 export async function StatsStripSection({
   installationId,
   t,
+  demoOverview,
 }: {
   installationId: string;
   t: T;
+  demoOverview?: any;
 }) {
-  const overview = await getOverview(installationId);
+  const overview = demoOverview ?? await getOverview(installationId);
 
   const repos = overview?.repos ?? 0;
   const analyses7d = overview?.analyses_7d ?? 0;

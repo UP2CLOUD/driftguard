@@ -7,14 +7,16 @@ type T = (key: string) => string | null | undefined;
 export async function RecentAnalysesSection({
   installationId,
   t,
+  demoOverview,
 }: {
   installationId: string;
   t: T;
+  demoOverview?: any;
 }) {
-  const overview = await getOverview(installationId);
+  const overview = demoOverview ?? await getOverview(installationId);
   const apiAvailable = !!overview;
   const analyses7d = overview?.analyses_7d ?? 0;
-  const recentAnalyses = overview?.recent_analyses ?? [];
+  const recentAnalyses = demoOverview?.recent_analyses ?? overview?.recent_analyses ?? [];
 
   let ghRepos: Array<{ full_name: string; html_url: string; default_branch: string }> = [];
   if (!apiAvailable) {

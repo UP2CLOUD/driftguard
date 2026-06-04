@@ -1,9 +1,12 @@
 import { Suspense } from "react";
+import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
+import { DemoToggle } from "@/components/DemoToggle";
+import { DEMO_OVERVIEW } from "@/lib/demo-data";
 
 import { StatsStripSection } from "./_sections/StatsStrip";
 import { RecentAnalysesSection } from "./_sections/RecentAnalyses";
@@ -24,21 +27,30 @@ export default async function DashboardPage({
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
 
+  const cookieStore = await cookies();
+  const demoMode = cookieStore.get("dg_demo")?.value === "1";
+  const demoOverview = demoMode ? DEMO_OVERVIEW : undefined;
+
   return (
     <div className="bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-8">
+        {/* Demo mode toggle — shown when no real data */}
+        <DemoToggle active={demoMode} />
+
         <Suspense fallback={<StatsStripFallback />}>
-          <StatsStripSection installationId={installationId} t={t} />
+          <StatsStripSection installationId={installationId} t={t} demoOverview={demoOverview} />
         </Suspense>
 
-        <Suspense fallback={null}>
-          <ReadinessChecklistSection installationId={installationId} t={t} />
-        </Suspense>
+        {!demoMode && (
+          <Suspense fallback={null}>
+            <ReadinessChecklistSection installationId={installationId} t={t} />
+          </Suspense>
+        )}
 
         <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
           <div className="space-y-6">
             <Suspense fallback={<PanelFallback label={t("repos.recentAnalyses") ?? "Recent analyses"} rows={5} />}>
-              <RecentAnalysesSection installationId={installationId} t={t} />
+              <RecentAnalysesSection installationId={installationId} t={t} demoOverview={demoOverview} />
             </Suspense>
             <Suspense fallback={null}>
               <IncidentsSection installationId={installationId} t={t} />
@@ -46,7 +58,7 @@ export default async function DashboardPage({
           </div>
 
           <Suspense fallback={<PanelFallback label={t("dashboard.eventFeed") ?? "Event feed"} rows={8} />}>
-            <EventsSection installationId={installationId} t={t} />
+            <EventsSection installationId={installationId} t={t} demoOverview={demoOverview} />
           </Suspense>
         </div>
       </div>

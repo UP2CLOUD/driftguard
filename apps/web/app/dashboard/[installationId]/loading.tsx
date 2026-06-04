@@ -1,28 +1,15 @@
 export default function Loading() {
   return (
-    <main className="min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
-      <nav className="sticky top-0 z-40 border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]/90 backdrop-blur-md px-4 sm:px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="text-[color:var(--dg-electric)]">
-            <path d="M2 3 L10 7 L18 3 L18 13 L10 17 L2 13 Z" stroke="currentColor" strokeWidth="1.4" />
-          </svg>
-          <span className="font-sans text-[14px] font-semibold tracking-tight">driftguard</span>
+    <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-8">
+      <StatsStripSkeleton />
+      <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+        <div className="space-y-6">
+          <PanelSkeleton rows={5} />
+          <PanelSkeleton rows={3} />
         </div>
-        <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-          loading
-        </span>
-      </nav>
-
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-8">
-        <StatsStripSkeleton />
-        <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-          <div className="space-y-6">
-            <PanelSkeleton label="Recent analyses" rows={5} />
-          </div>
-          <PanelSkeleton label="Event feed" rows={8} />
-        </div>
+        <PanelSkeleton rows={8} />
       </div>
-    </main>
+    </div>
   );
 }
 
@@ -39,13 +26,11 @@ function StatsStripSkeleton() {
   );
 }
 
-function PanelSkeleton({ label, rows }: { label: string; rows: number }) {
+function PanelSkeleton({ rows }: { rows: number }) {
   return (
     <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
-      <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-          {label}
-        </span>
+      <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
+        <div className="h-2 w-24 bg-[color:var(--dg-border)] rounded animate-pulse" />
       </div>
       <div className="divide-y divide-[color:var(--dg-border)]">
         {Array.from({ length: rows }).map((_, i) => (

@@ -1,4 +1,12 @@
 {
+  "common": {
+    "privacy": "Privacidade",
+    "terms": "Termos",
+    "language": "Idioma",
+    "docs": "Docs",
+    "signOut": "Sair",
+    "loading": "A carregar"
+  },
   "nav": {
     "features": "Recursos",
     "pricing": "Preços",

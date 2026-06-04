@@ -1,0 +1,25 @@
+export const DEMO_OVERVIEW = {
+  org_id: "demo",
+  plan: "team",
+  repos: 3,
+  analyses_7d: 18,
+  avg_risk_7d: 62,
+  open_incidents: 4,
+  critical_incidents: 2,
+  memory_entries: 9,
+  severity_breakdown: { critical: 2, high: 5, medium: 8, low: 3 },
+  recent_events: [
+    { id: "e1", event_type: "pr.opened", severity: "info", source: "github", message: "PR #23 opened in platform/terraform-networking", created_at: new Date(Date.now() - 5 * 60000).toISOString() },
+    { id: "e2", event_type: "policy.blocked", severity: "critical", source: "driftguard", message: "Wildcard IAM policy blocked in data/warehouse-infra PR #11", created_at: new Date(Date.now() - 18 * 60000).toISOString() },
+    { id: "e3", event_type: "analysis.complete", severity: "warn", source: "driftguard", message: "PR #23 review complete — risk 74/100, 3 critical findings", created_at: new Date(Date.now() - 25 * 60000).toISOString() },
+    { id: "e4", event_type: "incident.created", severity: "high", source: "driftguard", message: "Recurring public S3 bucket pattern detected", created_at: new Date(Date.now() - 2 * 3600000).toISOString() },
+    { id: "e5", event_type: "memory.stored", severity: "info", source: "driftguard", message: "Risk acceptance stored for security/iam-baseline", created_at: new Date(Date.now() - 4 * 3600000).toISOString() },
+  ],
+  recent_analyses: [
+    { id: "demo-a1", status: "completed", risk_score: 74, pr_number: 23, head_sha: "a1b2c3d", repo_full_name: "platform/terraform-networking", created_at: new Date(Date.now() - 25 * 60000).toISOString() },
+    { id: "demo-a2", status: "completed", risk_score: 91, pr_number: 11, head_sha: "e4f5g6h", repo_full_name: "data/warehouse-infra", created_at: new Date(Date.now() - 2 * 3600000).toISOString() },
+    { id: "demo-a3", status: "completed", risk_score: 28, pr_number: 7, head_sha: "i7j8k9l", repo_full_name: "security/iam-baseline", created_at: new Date(Date.now() - 6 * 3600000).toISOString() },
+    { id: "demo-a4", status: "completed", risk_score: 55, pr_number: 19, head_sha: "m1n2o3p", repo_full_name: "platform/terraform-networking", created_at: new Date(Date.now() - 24 * 3600000).toISOString() },
+    { id: "demo-a5", status: "completed", risk_score: 12, pr_number: 6, head_sha: "q4r5s6t", repo_full_name: "security/iam-baseline", created_at: new Date(Date.now() - 36 * 3600000).toISOString() },
+  ],
+};
