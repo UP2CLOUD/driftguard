@@ -422,6 +422,20 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         log.warning("memory_recall_failed", error=str(exc))
 
     risk_score = _compute_risk(findings)
+
+    # Persist early — before AI review (which is slow) so we don't lose data if process is killed
+    analysis_id = await _persist_analysis(
+        installation_id=installation_id,
+        repo_full_name=repo_full_name,
+        pr_number=pr_number,
+        head_sha=head_sha,
+        findings=findings,
+        review_md="",  # updated below once AI review completes
+        risk_score=risk_score,
+        duration_ms=0,
+    )
+    log.info("analysis_early_persisted", analysis_id=analysis_id)
+
     try:
         review_md = await ai_review(findings, pr_ctx)
     except Exception as exc:
@@ -498,17 +512,22 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
     except Exception as exc:  # noqa: BLE001 — review is non-critical
         log.warning("submit_review_failed", error=str(exc))
 
-    # Persist to DB
-    analysis_id = await _persist_analysis(
-        installation_id=installation_id,
-        repo_full_name=repo_full_name,
-        pr_number=pr_number,
-        head_sha=head_sha,
-        findings=findings,
-        review_md=review_md,
-        risk_score=risk_score,
-        duration_ms=duration_ms,
-    )
+    # Update analysis record with final review_md + duration (persisted early above)
+    try:
+        from sqlalchemy import select
+
+        from driftguard.db.models import Analysis as _Analysis
+
+        async with SessionLocal() as _upd_db:
+            _analysis_row = (
+                await _upd_db.execute(select(_Analysis).where(_Analysis.id == analysis_id))
+            ).scalar_one_or_none()
+            if _analysis_row:
+                _analysis_row.summary_md = review_md
+                _analysis_row.finished_at = datetime.now(UTC)
+                await _upd_db.commit()
+    except Exception as exc:
+        log.warning("analysis_update_failed", error=str(exc))
 
     # Store memory (arch step 05 partial — immediate storage, outcome updated on merge)
     try:
