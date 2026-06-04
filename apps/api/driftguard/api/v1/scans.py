@@ -181,7 +181,11 @@ async def trigger_scan(
                 repo_full_name=body.repo_full_name,
                 ref=body.ref,
             )
-            return {"status": "queued", "task_id": task.id, "message": f"Scan queued for {body.repo_full_name}@{body.ref}"}
+            return {
+                "status": "queued",
+                "task_id": task.id,
+                "message": f"Scan queued for {body.repo_full_name}@{body.ref}",
+            }
         except Exception as exc:
             log.warning("scan.trigger.failed", extra={"error": str(exc)})
             raise HTTPException(500, "Failed to queue scan") from exc

@@ -115,6 +115,7 @@ async def debug_analyze_steps(
     try:
         import tempfile
         from pathlib import Path
+
         from driftguard.integrations.git import download_tarball
         with tempfile.TemporaryDirectory() as tmp:
             root = await download_tarball(token, repo, sha, Path(tmp))
@@ -132,11 +133,15 @@ async def debug_analyze_steps(
         return {"steps": steps, "failed_at": "scan"}
 
     try:
-        from driftguard.integrations.github import post_pr_comment
-        from driftguard.ai.formatter import format_comment
         from driftguard.ai.findings import from_static_scan
+        from driftguard.ai.formatter import format_comment
+        from driftguard.integrations.github import post_pr_comment
         findings = from_static_scan(result)
-        body = format_comment(findings=findings, ai_review_md="_debug_", summary_meta={"sha": sha, "duration_ms": 0, "has_real_aws": False, "risk_score": 0})
+        body = format_comment(
+            findings=findings,
+            ai_review_md="_debug_",
+            summary_meta={"sha": sha, "duration_ms": 0, "has_real_aws": False, "risk_score": 0},
+        )
         await post_pr_comment(token, repo, pr, body)
         steps["post_pr_comment"] = "OK"
     except Exception:

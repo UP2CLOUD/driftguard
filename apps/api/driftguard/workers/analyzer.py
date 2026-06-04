@@ -80,7 +80,7 @@ async def enqueue_pr_analysis(payload: dict) -> None:
             token = await installation_token(installation_id)
             await post_pr_comment(token, repo, pr_number,
                 f"⚠️ **DriftGuard analysis failed**\n```\n{traceback.format_exc()[-1500:]}\n```")
-        except Exception:
+        except Exception:  # noqa: S110
             pass
 
 
@@ -346,7 +346,10 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         for f in findings:
             sev_counts[f.severity] = sev_counts.get(f.severity, 0) + 1
         summary = ", ".join(f"{v} {k}" for k, v in sorted(sev_counts.items()))
-        review_md = f"## Summary\n{len(findings)} findings detected ({summary}).\n\n_AI review unavailable — check ANTHROPIC_API_KEY balance._"
+        review_md = (
+            f"## Summary\n{len(findings)} findings detected ({summary}).\n\n"
+            "_AI review unavailable — check ANTHROPIC_API_KEY balance._"
+        )
     duration_ms = int((time.monotonic() - started) * 1000)
 
     body = format_comment(
