@@ -5,9 +5,9 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import { DashboardNav } from "@/components/DashboardNav";
 import { DashboardFooter } from "@/components/DashboardFooter";
 import { UpgradeIntent } from "@/components/UpgradeIntent";
+import { SetInstallationCookie } from "@/components/SetInstallationCookie";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 import { checkInstallationAccess } from "@/lib/auth-utils";
 import { beGet } from "@/lib/backend";
 
@@ -38,17 +38,6 @@ export default async function DashboardLayout({
   const { authorized, installations } = await checkInstallationAccess(installationId);
   if (!authorized) redirect("/");
 
-  // Remember this installation so the dashboard root can skip the install page
-  // when the API is temporarily unavailable (30-day session-length cookie).
-  const jar = await cookies();
-  jar.set("dg_installation", installationId, {
-    path: "/",
-    httpOnly: true,
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 30,
-    secure: process.env.NODE_ENV === "production",
-  });
-
   const installation = installations.find((i) => i.id === parseInt(installationId));
   const planLabel = undefined; // fetched per-page for accuracy
 
@@ -70,6 +59,7 @@ export default async function DashboardLayout({
           settings:  t("nav.settings")  ?? "Settings",
         }}
       />
+      <SetInstallationCookie installationId={installationId} />
       <main className="flex-1">
         <Suspense fallback={null}>
           <UpgradeIntent installationId={installationId} />
