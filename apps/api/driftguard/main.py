@@ -17,21 +17,6 @@ async def lifespan(app: FastAPI):
 
     init_sentry()
 
-    # Run DB migrations on startup (applies any pending Alembic revisions)
-    try:
-        import asyncio
-        import pathlib
-
-        from alembic import command
-        from alembic.config import Config
-
-        alembic_cfg = Config(str(pathlib.Path(__file__).parent.parent / "alembic.ini"))
-        await asyncio.to_thread(command.upgrade, alembic_cfg, "head")
-    except Exception as _mig_exc:
-        from driftguard.core.logging import log
-
-        log.warning("migration_failed", error=str(_mig_exc))
-
     if settings.environment == "dev":
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
