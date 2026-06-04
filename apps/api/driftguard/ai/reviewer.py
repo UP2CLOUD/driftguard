@@ -69,6 +69,27 @@ Produce markdown with sections:
 """
 
 
+def _static_fallback(findings: list[Finding]) -> str:
+    """Deterministic summary when all LLMs unavailable."""
+    sev_counts: dict[str, int] = {}
+    for f in findings:
+        sev_counts[f.severity] = sev_counts.get(f.severity, 0) + 1
+    summary = ", ".join(f"{v} {k}" for k, v in sorted(sev_counts.items()))
+    lines = [
+        f"## Summary\n{len(findings)} findings detected ({summary}).\n",
+        "## Security",
+    ]
+    _sev_order = ["critical", "high", "medium", "low", "info"]
+    sorted_findings = sorted(findings, key=lambda x: _sev_order.index(x.severity) if x.severity in _sev_order else 99)
+    for f in sorted_findings[:8]:
+        fix_note = f"\n  > Fix: {f.suggestion}" if f.suggestion else ""
+        lines.append(f"- **{f.severity.upper()}** `{f.resource}` — {f.message}{fix_note}")
+    lines += ["", "## Suggested actions"]
+    for f in findings[:5]:
+        lines.append(f"- [ ] {f.suggestion or f.message}")
+    return "\n".join(lines)
+
+
 async def review(findings: list[Finding], pr_context: dict) -> str:
     if not findings:
         return (
@@ -76,11 +97,41 @@ async def review(findings: list[Finding], pr_context: dict) -> str:
             "## Cost impact\nNone.\n\n## Security\nNone.\n\n"
             "## Compliance notes\nNone.\n\n## Suggested actions\nNone."
         )
-    msg = await client().messages.create(
-        model=settings.anthropic_model,
-        max_tokens=2000,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": _user_prompt(findings, pr_context)}],
-    )
-    parts = [b.text for b in msg.content if getattr(b, "type", None) == "text"]
-    return "\n".join(parts)
+
+    prompt = _user_prompt(findings, pr_context)
+
+    # 1. Anthropic
+    if settings.anthropic_api_key:
+        try:
+            msg = await client().messages.create(
+                model=settings.anthropic_model,
+                max_tokens=2000,
+                system=SYSTEM_PROMPT,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            parts = [b.text for b in msg.content if getattr(b, "type", None) == "text"]
+            return "\n".join(parts)
+        except Exception as exc:
+            import logging
+
+            logging.getLogger(__name__).warning("anthropic_review_failed: %s", exc)
+
+    # 2. Gemini fallback
+    if settings.gemini_api_key:
+        try:
+            import google.generativeai as genai  # type: ignore
+
+            genai.configure(api_key=settings.gemini_api_key)
+            model = genai.GenerativeModel(
+                model_name="gemini-1.5-flash",
+                system_instruction=SYSTEM_PROMPT,
+            )
+            resp = await model.generate_content_async(prompt)
+            return resp.text or _static_fallback(findings)
+        except Exception as exc:
+            import logging
+
+            logging.getLogger(__name__).warning("gemini_review_failed: %s", exc)
+
+    # 3. Static deterministic fallback
+    return _static_fallback(findings)

@@ -49,6 +49,39 @@ def tarball_url(repo_full_name: str, ref: str) -> str:
     return f"{GITHUB_API}/repos/{repo_full_name}/tarball/{ref}"
 
 
+async def request_pr_review(token: str, repo_full_name: str, pr_number: int) -> None:
+    """Request a review from the DriftGuard bot — appears in the Reviewers sidebar."""
+    async with httpx.AsyncClient(timeout=10) as client:
+        r = await client.post(
+            f"{GITHUB_API}/repos/{repo_full_name}/pulls/{pr_number}/requested_reviewers",
+            headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"},
+            json={"reviewers": [], "team_reviewers": []},
+        )
+        # 422 = already requested or can't self-review — both are fine
+        if r.status_code not in (200, 201, 422):
+            log.warning("request_review_failed", repo=repo_full_name, status=r.status_code)
+
+
+async def submit_pr_review(
+    token: str,
+    repo_full_name: str,
+    pr_number: int,
+    commit_id: str,
+    *,
+    event: str,  # APPROVE | REQUEST_CHANGES | COMMENT
+    body: str,
+) -> None:
+    """Submit a formal GitHub PR review (appears in Reviews section, not just comments)."""
+    async with httpx.AsyncClient(timeout=10) as client:
+        r = await client.post(
+            f"{GITHUB_API}/repos/{repo_full_name}/pulls/{pr_number}/reviews",
+            headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"},
+            json={"commit_id": commit_id, "event": event, "body": body},
+        )
+        if r.status_code not in (200, 201):
+            log.warning("submit_review_failed", repo=repo_full_name, status=r.status_code, body=r.text[:200])
+
+
 async def post_check_run(
     token: str,
     repo_full_name: str,

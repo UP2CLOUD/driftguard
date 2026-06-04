@@ -101,6 +101,14 @@ def _policy_section(findings: list[Finding]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _verdict(risk_score: int, crit_high: int) -> str:
+    if crit_high >= 3 or risk_score >= 70:
+        return "🔴 **Needs attention** — critical/high findings require review before merge"
+    if crit_high >= 1 or risk_score >= 40:
+        return "🟠 **Review recommended** — high-severity findings detected"
+    return "🟢 **Looks good** — no critical findings"
+
+
 def format_comment(*, findings: list[Finding], ai_review_md: str, summary_meta: dict) -> str:
     cost_cents = aggregate_cost_cents(findings)
     cost_str = f"${cost_cents / 100:+.2f}/mo" if cost_cents else "no change"
@@ -111,7 +119,6 @@ def format_comment(*, findings: list[Finding], ai_review_md: str, summary_meta: 
         counts[f.type] = counts.get(f.type, 0) + 1
         sev_counts[f.severity] = sev_counts.get(f.severity, 0) + 1
 
-    # Split security findings by technology domain
     sec = [f for f in findings if f.type == "security"]
     k8s_sec = [f for f in sec if _domain(f) == "kubernetes"]
     gha_sec = [f for f in sec if _domain(f) == "github_actions"]
@@ -121,28 +128,50 @@ def format_comment(*, findings: list[Finding], ai_review_md: str, summary_meta: 
     compliance_line = ""
     if framework_hits:
         ordered = ["DORA", "NIS2", "ISO27001", "GDPR", "CIS"]
-        badges = [f"{fw}: {framework_hits[fw]}" for fw in ordered if fw in framework_hits]
+        badges = [f"`{fw}:{framework_hits[fw]}`" for fw in ordered if fw in framework_hits]
         if badges:
-            compliance_line = f"**Compliance hits:** {' · '.join(badges)}\n"
+            compliance_line = f"\n**Compliance:** {' '.join(badges)}"
 
-    # Domain breakdown suffix for the security count
     domain_parts = []
     if tf_sec:
-        domain_parts.append(f"TF: {len(tf_sec)}")
+        domain_parts.append(f"TF:{len(tf_sec)}")
     if k8s_sec:
-        domain_parts.append(f"K8s: {len(k8s_sec)}")
+        domain_parts.append(f"K8s:{len(k8s_sec)}")
     if gha_sec:
-        domain_parts.append(f"GHA: {len(gha_sec)}")
-    sec_detail = " (" + ", ".join(domain_parts) + ")" if domain_parts else ""
+        domain_parts.append(f"GHA:{len(gha_sec)}")
+    sec_detail = " (" + " · ".join(domain_parts) + ")" if domain_parts else ""
 
     crit_high = sev_counts["critical"] + sev_counts["high"]
+    risk_score = summary_meta.get("risk_score", 0) or 0
+
+    # Severity breakdown pills
+    sev_parts = []
+    for sev, icon in [("critical", "🔴"), ("high", "🟠"), ("medium", "🟡"), ("low", "🔵")]:
+        if sev_counts[sev]:
+            sev_parts.append(f"{icon} {sev_counts[sev]} {sev}")
+    sev_line = " · ".join(sev_parts) if sev_parts else "✅ no findings"
+
+    # Critical/high callout (above the fold, visible without expanding)
+    callout = ""
+    critical_findings = [f for f in findings if f.severity in ("critical", "high")]
+    if critical_findings:
+        callout = "\n\n**Top issues:**\n"
+        for f in critical_findings[:5]:
+            icon = _icon(f.severity)
+            rule = f" `{f.rule_id}`" if f.rule_id else ""
+            callout += f"> {icon} **{f.severity.upper()}**{rule} — `{_esc(f.resource, 50)}` — {_esc(f.message, 100)}\n"
+            if f.suggestion:
+                callout += f">    💡 {_esc(f.suggestion, 100)}\n"
+        if len(critical_findings) > 5:
+            callout += f"> _+{len(critical_findings) - 5} more critical/high below_\n"
+
     header = (
-        f"### 🛡️ Driftguard review\n\n"
-        f"**Cost impact:** {cost_str} · "
-        f"**Security:** {counts['security']}{sec_detail} · "
-        f"**Changes:** {counts['change']} · "
-        f"**Critical/High:** {crit_high}\n"
-        f"{compliance_line}"
+        f"### 🛡️ DriftGuard Analysis\n\n"
+        f"{_verdict(risk_score, crit_high)}\n\n"
+        f"| Risk score | Findings | Cost impact | Changes |\n"
+        f"|:---:|:---:|:---:|:---:|\n"
+        f"| **{risk_score}/100** | {len(findings)}{sec_detail} | {cost_str} | {counts['change']} |"
+        f"\n\n{sev_line}{compliance_line}{callout}"
     )
 
     findings_block = (
@@ -154,12 +183,20 @@ def format_comment(*, findings: list[Finding], ai_review_md: str, summary_meta: 
         + _policy_section(findings)
     )
 
+    ai_block = ""
+    if ai_review_md and "unavailable" not in ai_review_md and ai_review_md.strip() != "_debug_":
+        ai_block = f"\n<details><summary>🤖 AI review</summary>\n\n{ai_review_md.strip()}\n\n</details>\n"
+    elif ai_review_md and "unavailable" in ai_review_md:
+        ai_block = ""  # suppress "unavailable" message — static callout above is enough
+
     meta_block = ""
     if summary_meta:
-        aws_note = " · live AWS drift" if summary_meta.get("has_real_aws") else ""
+        sha = summary_meta.get("sha", "")[:7]
+        aws_note = " · ☁️ live AWS drift" if summary_meta.get("has_real_aws") else ""
         meta_block = (
-            f"\n<sub>analyzed in {summary_meta.get('duration_ms', 0)}ms · "
-            f"sha `{summary_meta.get('sha', '')[:7]}`{aws_note}</sub>\n"
+            f"\n<sub>analyzed in {summary_meta.get('duration_ms', 0)}ms"
+            f"{' · risk ' + str(risk_score) + '/100' if risk_score else ''}"
+            f" · sha `{sha}`{aws_note}</sub>\n"
         )
 
-    return header + "\n" + ai_review_md.strip() + "\n" + findings_block + meta_block + FOOTER
+    return header + "\n" + ai_block + findings_block + meta_block + FOOTER

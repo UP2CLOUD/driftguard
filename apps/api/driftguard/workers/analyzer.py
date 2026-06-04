@@ -31,7 +31,7 @@ from driftguard.events.publisher import publish as publish_event  # noqa: F401
 from driftguard.events.schemas import Severity  # noqa: F401
 from driftguard.integrations import checkov, infracost, terraform
 from driftguard.integrations.git import download_tarball, find_terraform_dirs
-from driftguard.integrations.github import installation_token, post_check_run, post_pr_comment
+from driftguard.integrations.github import installation_token, post_check_run, post_pr_comment, submit_pr_review
 from driftguard.services.scanner.engine import scan_directory_sync
 from driftguard.services.terraform.plan_parser import TerraformPlan, parse_plan
 from driftguard.services.terraform.risk_scorer import RiskResult
@@ -375,15 +375,16 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
     await post_pr_comment(token, repo_full_name, pr_number, body)
 
     # GitHub Check Run — gates merge button when branch protection requires it
-    if risk_score >= 70:
+    crit_high_count = sum(1 for f in findings if f.severity in ("critical", "high"))
+    if risk_score >= 70 or crit_high_count >= 3:
         conclusion = "failure"
-        title = f"Blocked — risk {risk_score}/100"
-    elif risk_score >= 40:
+        title = f"Blocked — {crit_high_count} critical/high findings · risk {risk_score}/100"
+    elif risk_score >= 40 or crit_high_count >= 1:
         conclusion = "neutral"
-        title = f"Warnings — risk {risk_score}/100"
+        title = f"Warnings — {crit_high_count} high-severity findings · risk {risk_score}/100"
     else:
         conclusion = "success"
-        title = f"Approved — risk {risk_score}/100"
+        title = f"Approved — risk {risk_score}/100 · no critical findings"
 
     try:
         await post_check_run(
@@ -392,10 +393,35 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
             head_sha,
             conclusion=conclusion,
             title=title,
-            summary=f"{len(findings)} findings across cost, drift, security. See PR comment for details.",
+            summary=f"{len(findings)} findings. {crit_high_count} critical/high. Risk score: {risk_score}/100.",
         )
     except Exception as exc:  # noqa: BLE001 — check run is non-critical
         log.warning("check_run_post_failed", error=str(exc))
+
+    # Formal PR review — REQUEST_CHANGES blocks merge (like Gemini Code Assist)
+    try:
+        if conclusion == "failure":
+            review_event = "REQUEST_CHANGES"
+            review_body = (
+                f"🔴 **DriftGuard: {crit_high_count} critical/high findings require attention before merge.**"
+                " See comment above for details."
+            )
+        elif conclusion == "neutral":
+            review_event = "COMMENT"
+            review_body = f"🟠 **DriftGuard: {crit_high_count} high-severity findings detected.** Review recommended."
+        else:
+            review_event = "APPROVE"
+            review_body = f"🟢 **DriftGuard: No critical findings.** Risk score {risk_score}/100. Safe to merge."
+        await submit_pr_review(
+            token,
+            repo_full_name,
+            pr_number,
+            head_sha,
+            event=review_event,
+            body=review_body,
+        )
+    except Exception as exc:  # noqa: BLE001 — review is non-critical
+        log.warning("submit_review_failed", error=str(exc))
 
     # Persist to DB
     analysis_id = await _persist_analysis(
