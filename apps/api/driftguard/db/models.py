@@ -54,7 +54,6 @@ class Analysis(Base):
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     plan_storage_key: Mapped[str | None] = mapped_column(String(255))
-    contact_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     cost_delta_cents: Mapped[int | None] = mapped_column(Integer)
     risk_score: Mapped[int | None] = mapped_column(Integer)
     summary_md: Mapped[str | None] = mapped_column(Text)
