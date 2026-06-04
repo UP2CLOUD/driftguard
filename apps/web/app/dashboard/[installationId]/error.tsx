@@ -1,7 +1,5 @@
 "use client";
 
-import { useT } from "@/components/I18nProvider";
-
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -12,7 +10,6 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const t = useT();
   useEffect(() => {
     console.error(error);
     if (typeof window !== "undefined") {
@@ -32,20 +29,20 @@ export default function Error({
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-4 text-center">
-      <div className="dg-label text-blocked">{t("dashboard.errorTitle")}</div>
-      <h2 className="font-sans text-xl font-semibold tracking-tight text-[color:var(--dg-fg)]">{t("dashboard.errorDesc")}</h2>
+      <div className="dg-label text-blocked">Something went wrong</div>
+      <h2 className="font-sans text-xl font-semibold tracking-tight text-[color:var(--dg-fg)]">Dashboard error</h2>
       <p className="text-[13px] text-[color:var(--dg-fg-muted)] max-w-sm">
-        {error.message || t("dashboard.errorFallback")}
+        {error.message || "An unexpected error occurred. Please try again."}
       </p>
       <div className="flex gap-3">
         <button
           onClick={reset}
           className="dg-button dg-button-primary text-[12px]"
         >
-          {t("common.retry")}
+          Retry
         </button>
         <Link href="/dashboard" className="dg-button dg-button-ghost text-[12px]">
-          {t("dashboard.backToDashboard")}
+          Back to dashboard
         </Link>
       </div>
     </div>
