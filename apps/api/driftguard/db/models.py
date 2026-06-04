@@ -19,6 +19,7 @@ class Organization(Base):
     github_installation_id: Mapped[int] = mapped_column(Integer, unique=True, index=True)
     plan: Mapped[str] = mapped_column(String(32), default="free")
     stripe_customer_id: Mapped[str | None] = mapped_column(String(64))
+    settings: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 

@@ -326,7 +326,15 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
     findings = _merge_findings(static_findings, plan_findings)
 
     risk_score = _compute_risk(findings)
-    review_md = await ai_review(findings, pr_ctx)
+    try:
+        review_md = await ai_review(findings, pr_ctx)
+    except Exception as exc:
+        log.warning("ai_review_failed", error=str(exc))
+        sev_counts = {}
+        for f in findings:
+            sev_counts[f.severity] = sev_counts.get(f.severity, 0) + 1
+        summary = ", ".join(f"{v} {k}" for k, v in sorted(sev_counts.items()))
+        review_md = f"## Summary\n{len(findings)} findings detected ({summary}).\n\n_AI review unavailable — check ANTHROPIC_API_KEY balance._"
     duration_ms = int((time.monotonic() - started) * 1000)
 
     body = format_comment(
