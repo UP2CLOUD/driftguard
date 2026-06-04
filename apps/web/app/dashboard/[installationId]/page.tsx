@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getMessages } from "@/i18n/get-locale";
@@ -10,7 +9,6 @@ import { StatsStripSection } from "./_sections/StatsStrip";
 import { RecentAnalysesSection } from "./_sections/RecentAnalyses";
 import { IncidentsSection } from "./_sections/Incidents";
 import { EventsSection } from "./_sections/Events";
-import { NavStatusSection } from "./_sections/NavStatus";
 
 export default async function DashboardPage({
   params,
@@ -26,19 +24,7 @@ export default async function DashboardPage({
   const t = createTranslator(messages);
 
   return (
-    <main className="min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
-      <nav className="sticky top-0 z-40 border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]/90 backdrop-blur-md px-4 sm:px-6 py-3 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="text-[color:var(--dg-electric)]">
-            <path d="M2 3 L10 7 L18 3 L18 13 L10 17 L2 13 Z" stroke="currentColor" strokeWidth="1.4" />
-          </svg>
-          <span className="font-sans text-[14px] font-semibold tracking-tight">driftguard</span>
-        </Link>
-        <Suspense fallback={<NavStatusFallback />}>
-          <NavStatusSection installationId={installationId} t={t} />
-        </Suspense>
-      </nav>
-
+    <div className="bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-8">
         <Suspense fallback={<StatsStripFallback />}>
           <StatsStripSection installationId={installationId} t={t} />
@@ -59,14 +45,6 @@ export default async function DashboardPage({
           </Suspense>
         </div>
       </div>
-    </main>
-  );
-}
-
-function NavStatusFallback() {
-  return (
-    <div className="flex items-center gap-3">
-      <span className="h-3 w-16 rounded bg-[color:var(--dg-border)] animate-pulse" />
     </div>
   );
 }

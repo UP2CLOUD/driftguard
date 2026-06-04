@@ -3,8 +3,6 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const API = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
 export function UploadScan({ installationId }: { installationId: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file,   setFile]   = useState<File|null>(null);
@@ -21,7 +19,7 @@ export function UploadScan({ installationId }: { installationId: string }) {
     fd.append("file", file);
     fd.append("installation_id", installationId);
     try {
-      const res = await fetch(`${API()}/api/v1/scans/upload`, {
+      const res = await fetch("/api/scan/upload", {
         method: "POST",
         body: fd,
       });

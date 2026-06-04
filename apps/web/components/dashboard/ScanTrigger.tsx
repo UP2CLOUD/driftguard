@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const API = () => process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
 export function ScanTrigger({ installationId }: { installationId: string }) {
   const [repo, setRepo] = useState("");
   const [ref, setRef]   = useState("main");
@@ -17,7 +15,7 @@ export function ScanTrigger({ installationId }: { installationId: string }) {
     setStatus("loading");
     setMsg("");
     try {
-      const res = await fetch(`${API()}/api/v1/scans/trigger`, {
+      const res = await fetch("/api/scan/trigger", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
