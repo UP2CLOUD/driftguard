@@ -3,23 +3,56 @@ import { redirect } from "next/navigation";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
-
 import { beGet } from "@/lib/backend";
 
 async function fetchPolicies(id: string) {
-  return (await beGet<unknown[]>(
-    `/api/v1/policies?installation_id=${id}`,
-    { revalidate: 30, timeout: 3000 },
-  )) ?? [];
+  return (
+    (await beGet<unknown[]>(`/api/v1/policies?installation_id=${id}`, {
+      revalidate: 30,
+      timeout: 3000,
+    })) ?? []
+  );
 }
 
 const TYPE_STYLE: Record<string, string> = {
   block: "text-blocked border-blocked/30 bg-blocked/5",
-  warn:  "text-warned border-warned/30 bg-warned/5",
-  alert: "text-[color:var(--dg-electric-bright)] border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/5",
+  warn: "text-warned border-warned/30 bg-warned/5",
+  alert:
+    "text-[color:var(--dg-electric-bright)] border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/5",
 };
 
-export default async function PoliciesPage({ params }: { params: Promise<{ installationId: string }> }) {
+const EXAMPLE_POLICIES = [
+  {
+    name: "Block critical security findings",
+    rule_type: "block",
+    description: "Blocks merge when any critical-severity finding is detected.",
+    conditions: { severity: "critical" },
+  },
+  {
+    name: "Warn on public exposure",
+    rule_type: "warn",
+    description: "Warns when resources matching public exposure patterns are changed.",
+    conditions: { resource_pattern: "aws_s3_bucket_public_access_block|aws_security_group" },
+  },
+  {
+    name: "Require encryption for storage",
+    rule_type: "block",
+    description: "Blocks unencrypted S3 buckets or RDS instances.",
+    conditions: { rule_id_prefix: "S3-ENCRYPTION", severity: "high" },
+  },
+  {
+    name: "Alert on IAM wildcard permissions",
+    rule_type: "alert",
+    description: "Alerts team when IAM policies with wildcard actions are detected.",
+    conditions: { message_contains: "wildcard", rule_id_prefix: "IAM" },
+  },
+];
+
+export default async function PoliciesPage({
+  params,
+}: {
+  params: Promise<{ installationId: string }>;
+}) {
   const session = await auth();
   if (!session) redirect("/");
   const { installationId } = await params;
@@ -31,68 +64,204 @@ export default async function PoliciesPage({ params }: { params: Promise<{ insta
   const policies = await fetchPolicies(installationId);
   const active = policies.filter((p: any) => p.enabled).length;
 
+  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "https://your-api.onrender.com";
+
   return (
-    <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8">
-      <div className="mb-8 flex items-end justify-between flex-wrap gap-4">
+    <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-8">
+      {/* Header */}
+      <div className="flex items-end justify-between flex-wrap gap-4">
         <div>
-          <div className="dg-label mb-2">{t("policies.eyebrow")}</div>
+          <div className="dg-label mb-2">{t("policies.eyebrow") ?? "Policy engine"}</div>
           <h1 className="font-sans text-2xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
-            {t("policies.title")}
+            {t("policies.title") ?? "Policies"}
           </h1>
-          <p className="mt-1 text-[13px] text-[color:var(--dg-fg-muted)]">
-            {t("policies.subtitle").replace("{active}", String(active)).replace("{total}", String(policies.length))}
-          </p>
-        </div>
-        <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-          {t("policies.apiHint")}
+          {policies.length > 0 && (
+            <p className="mt-1 text-[13px] text-[color:var(--dg-fg-muted)]">
+              {active} active · {policies.length} total
+            </p>
+          )}
         </div>
       </div>
 
-      {policies.length === 0 ? (
-        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
-          <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Policy engine ready</div>
-          <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
-            {t("policies.noTitle") ?? "No policies configured"}
-          </p>
-          <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-md mx-auto leading-relaxed">
-            Policies let you block, warn, or approve infrastructure changes based on severity, resource patterns, and compliance requirements. Rules apply to every PR review automatically.
-          </p>
-        </div>
-      ) : (
-        <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
-          {policies.map((p: any) => (
-            <div key={p.id} className="flex items-start gap-4 px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition">
-              <div className="mt-0.5 shrink-0">
-                <span className={`h-1.5 w-1.5 rounded-full inline-block ${p.enabled ? "bg-allowed" : "bg-[color:var(--dg-fg-subtle)]"}`} />
+      <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
+        {/* Left: active policies or empty state */}
+        <div className="space-y-6">
+          {policies.length === 0 ? (
+            <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-12 text-center">
+              <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                Policy engine ready
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${TYPE_STYLE[p.rule_type] ?? ""}`}>
-                    {t(`policies.${p.rule_type}` as any) ?? p.rule_type}
-                  </span>
-                  <span className="text-[13px] font-medium text-[color:var(--dg-fg)]">{p.name}</span>
-                  {!p.enabled && (
-                    <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">
-                      {t("policies.disabled")}
-                    </span>
-                  )}
-                </div>
-                {p.description && (
-                  <p className="text-[12px] text-[color:var(--dg-fg-muted)]">{p.description}</p>
-                )}
-                <div className="mt-1.5 flex items-center gap-4 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-                  {p.conditions && <span className="truncate">if {JSON.stringify(p.conditions)}</span>}
-                  {p.match_count > 0 && (
-                    <span className="text-warned shrink-0">
-                      {t("policies.matches").replace("{n}", String(p.match_count))}
-                    </span>
-                  )}
-                </div>
-              </div>
+              <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
+                No policies configured
+              </p>
+              <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-md mx-auto leading-relaxed mb-6">
+                Policies enforce rules on every PR review — blocking merges, warning reviewers, or
+                auto-approving safe changes based on severity, resource patterns, and rule IDs.
+              </p>
+              <a
+                href="/docs/policies"
+                className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+              >
+                Read policies documentation →
+              </a>
             </div>
-          ))}
+          ) : (
+            <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
+              {policies.map((p: any) => (
+                <div
+                  key={p.id}
+                  className="flex items-start gap-4 px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition"
+                >
+                  <div className="mt-1 shrink-0">
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full inline-block ${p.enabled ? "bg-allowed" : "bg-[color:var(--dg-fg-subtle)]"}`}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <span
+                        className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${TYPE_STYLE[p.rule_type] ?? ""}`}
+                      >
+                        {p.rule_type}
+                      </span>
+                      <span className="font-sans text-[13px] font-medium text-[color:var(--dg-fg)]">
+                        {p.name}
+                      </span>
+                      {!p.enabled && (
+                        <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">
+                          disabled
+                        </span>
+                      )}
+                    </div>
+                    {p.description && (
+                      <p className="text-[12px] text-[color:var(--dg-fg-muted)] mb-1.5">
+                        {p.description}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-4 flex-wrap font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+                      {p.conditions && (
+                        <span className="truncate max-w-xs">
+                          if{" "}
+                          {Object.entries(p.conditions as Record<string, string>)
+                            .map(([k, v]) => `${k}=${v}`)
+                            .join(" · ")}
+                        </span>
+                      )}
+                      {p.match_count > 0 && (
+                        <span className="text-warned shrink-0">↺ {p.match_count} matches</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* API usage section */}
+          <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
+            <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                Create policy via API
+              </span>
+            </div>
+            <div className="p-4">
+              <p className="text-[12px] text-[color:var(--dg-fg-muted)] mb-3">
+                Policies are created via REST API. Use your installation&apos;s secret key.
+              </p>
+              <pre className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-4 py-3 font-mono text-[10px] text-[color:var(--dg-electric-bright)] overflow-x-auto whitespace-pre-wrap">
+{`POST ${apiBase}/api/v1/policies?installation_id=${installationId}
+Authorization: Bearer YOUR_SECRET_KEY
+Content-Type: application/json
+
+{
+  "name": "Block critical findings",
+  "rule_type": "block",
+  "severity": "critical",
+  "conditions": {
+    "severity": "critical"
+  }
+}`}
+              </pre>
+            </div>
+          </div>
         </div>
-      )}
+
+        {/* Right: example rules + conditions reference */}
+        <div className="space-y-6">
+          {/* Example policies */}
+          <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
+            <div className="border-b border-[color:var(--dg-border)] px-4 py-3">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                Example rules
+              </span>
+            </div>
+            <div className="divide-y divide-[color:var(--dg-border)]">
+              {EXAMPLE_POLICIES.map((ex) => (
+                <div key={ex.name} className="px-4 py-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span
+                      className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest shrink-0 ${TYPE_STYLE[ex.rule_type]}`}
+                    >
+                      {ex.rule_type}
+                    </span>
+                    <span className="font-sans text-[12px] font-medium text-[color:var(--dg-fg)] truncate">
+                      {ex.name}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[color:var(--dg-fg-subtle)] leading-relaxed">
+                    {ex.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Conditions syntax reference */}
+          <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
+            <div className="border-b border-[color:var(--dg-border)] px-4 py-3">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                Conditions reference
+              </span>
+            </div>
+            <div className="px-4 py-4 space-y-3">
+              {[
+                {
+                  key: "severity",
+                  desc: "Minimum severity to trigger",
+                  example: '"critical" | "high" | "medium" | "low"',
+                },
+                {
+                  key: "resource_pattern",
+                  desc: "Regex matched against resource address",
+                  example: '"aws_s3_bucket|aws_iam"',
+                },
+                {
+                  key: "message_contains",
+                  desc: "Substring matched in finding message",
+                  example: '"wildcard" | "public"',
+                },
+                {
+                  key: "rule_id_prefix",
+                  desc: "Prefix matched against rule ID",
+                  example: '"IAM-" | "S3-"',
+                },
+              ].map((c) => (
+                <div key={c.key}>
+                  <code className="font-mono text-[10px] text-[color:var(--dg-electric-bright)]">
+                    {c.key}
+                  </code>
+                  <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
+                    {c.desc}
+                  </p>
+                  <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] opacity-60">
+                    e.g. {c.example}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
