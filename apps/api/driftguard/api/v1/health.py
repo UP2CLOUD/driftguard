@@ -71,6 +71,59 @@ async def ready() -> dict:
     )
 
 
+@router.get("/debug/analyze-steps")
+async def debug_analyze_steps(
+    installation_id: int = 1,
+    repo: str = "UP2CLOUD/driftguard-test-iac",
+    pr: int = 1,
+    sha: str = "main",
+) -> dict:
+    """Debug endpoint — runs each step of analyze_pr and reports where it fails."""
+    import traceback
+    steps: dict[str, str] = {}
+
+    try:
+        from driftguard.integrations.github import installation_token
+        token = await installation_token(installation_id)
+        steps["installation_token"] = f"OK ({token[:10]}...)"
+    except Exception:
+        steps["installation_token"] = traceback.format_exc()[-500:]
+        return {"steps": steps, "failed_at": "installation_token"}
+
+    try:
+        import tempfile
+        from pathlib import Path
+        from driftguard.integrations.git import download_tarball
+        with tempfile.TemporaryDirectory() as tmp:
+            root = await download_tarball(token, repo, sha, Path(tmp))
+            steps["download_tarball"] = f"OK (root={root})"
+    except Exception:
+        steps["download_tarball"] = traceback.format_exc()[-500:]
+        return {"steps": steps, "failed_at": "download_tarball"}
+
+    try:
+        from driftguard.services.scanner.engine import scan_directory
+        result = await scan_directory(root)
+        steps["scan"] = f"OK ({len(result.findings)} findings)"
+    except Exception:
+        steps["scan"] = traceback.format_exc()[-500:]
+        return {"steps": steps, "failed_at": "scan"}
+
+    try:
+        from driftguard.integrations.github import post_pr_comment
+        from driftguard.ai.formatter import format_comment
+        from driftguard.ai.findings import from_static_scan
+        findings = from_static_scan(result)
+        body = format_comment(findings=findings, ai_review_md="_debug_", summary_meta={"sha": sha, "duration_ms": 0, "has_real_aws": False, "risk_score": 0})
+        await post_pr_comment(token, repo, pr, body)
+        steps["post_pr_comment"] = "OK"
+    except Exception:
+        steps["post_pr_comment"] = traceback.format_exc()[-500:]
+        return {"steps": steps, "failed_at": "post_pr_comment"}
+
+    return {"steps": steps, "failed_at": None}
+
+
 @router.get("/metrics")
 async def metrics() -> dict:
     """Lightweight metrics for Grafana polling (no Prometheus dependency)."""
