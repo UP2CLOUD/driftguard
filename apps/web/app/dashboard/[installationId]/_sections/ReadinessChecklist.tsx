@@ -13,12 +13,13 @@ export async function ReadinessChecklistSection({
   const overview = await getOverview(installationId);
 
   const repos = overview?.repos ?? 0;
-  const analyses = overview?.analyses_7d ?? 0;
+  // Use recent_analyses (any time) not just 7d window for onboarding check
+  const analyses = (overview?.analyses_7d ?? 0) + ((overview?.recent_analyses ?? []).length);
   const incidents = overview?.open_incidents ?? 0;
   const memory = overview?.memory_entries ?? 0;
 
-  // Only show when user hasn't completed onboarding
-  if (repos > 0 && analyses > 0) return null;
+  const allDone = repos > 0 && analyses > 0 && memory > 0;
+  if (allDone) return null;
 
   const slug = process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-reviews";
   const installUrl = `https://github.com/apps/${slug}/installations/new`;

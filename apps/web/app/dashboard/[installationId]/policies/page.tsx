@@ -4,6 +4,7 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { beGet } from "@/lib/backend";
+import { PolicyCreateForm } from "@/components/PolicyCreateForm";
 
 async function fetchPolicies(id: string) {
   return (
@@ -84,8 +85,9 @@ export default async function PoliciesPage({
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
-        {/* Left: active policies or empty state */}
+        {/* Left: create form + active policies or empty state */}
         <div className="space-y-6">
+          <PolicyCreateForm installationId={installationId} />
           {policies.length === 0 ? (
             <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-12 text-center">
               <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
