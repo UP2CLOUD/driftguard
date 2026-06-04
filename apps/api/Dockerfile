@@ -48,7 +48,8 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 
 WORKDIR /app
 COPY --from=builder /app /app
-RUN chown -R appuser:appuser /app
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh && chown -R appuser:appuser /app
 
 USER appuser
 
@@ -56,5 +57,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
     CMD curl -fs http://localhost:8000/api/v1/health || exit 1
 
 EXPOSE 8000
-CMD ["uvicorn", "driftguard.main:app", "--host", "0.0.0.0", "--port", "8000", \
-     "--timeout-keep-alive", "75"]
+CMD ["/app/start.sh"]
