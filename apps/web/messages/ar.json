@@ -138,6 +138,16 @@
     "uninstallButton": "إلغاء التثبيت →",
     "dangerZone": "منطقة الخطر",
     "dangerZoneDesc": "إجراءات لا رجعة فيها. تابع بحذر.",
+    "githubIntegration": "تكامل GitHub",
+    "githubIntegrationDesc": "حالة تثبيت تطبيق GitHub وإعداد Webhook.",
+    "connected": "متصل",
+    "notConnected": "غير متصل",
+    "githubApp": "تطبيق GitHub",
+    "githubInstallationRow": "معرّف التثبيت",
+    "webhookUrl": "رابط Webhook",
+    "webhookEvents": "أحداث Webhook",
+    "manageInstallation": "إدارة التثبيت",
+    "githubSettingsLink": "إعدادات GitHub →",
     "meta": {
       "title": "الإعدادات — DriftGuard",
       "description": "إدارة إعدادات مؤسسة DriftGuard والتكاملات والسياسات."
@@ -167,7 +177,13 @@
     "statusOff": "معطل",
     "analysesHeading": "التحليلات",
     "noAnalyses": "لا توجد تحليلات حتى الآن. افتح طلب سحب Terraform لتشغيل المراجعة الأولى.",
-    "riskHeader": "المخاطر"
+    "riskHeader": "المخاطر",
+    "totalAnalyses": "إجمالي التحليلات",
+    "highRiskPrs": "طلبات سحب عالية المخاطر",
+    "manualScan": "فحص يدوي",
+    "noAnalysesTrigger": "افتح طلب سحب Terraform في هذا المستودع لبدء أول تحليل.",
+    "defaultBranch": "الفرع الافتراضي:",
+    "connected": "متصل"
   },
   "landing": {
     "ctaTitle": "استعد السيطرة على بنيتك السحابية.",

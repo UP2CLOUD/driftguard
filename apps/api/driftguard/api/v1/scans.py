@@ -66,6 +66,11 @@ class ScanResultOut(BaseModel):
     # Optional — set when linked to a DB analysis
     analysis_id: str | None = None
     ai_summary: str | None = None
+    # Context fields populated when retrieving a stored analysis
+    repo_full_name: str | None = None
+    pr_number: int | None = None
+    head_sha: str | None = None
+    created_at: str | None = None
 
 
 class TriggerScanRequest(BaseModel):
@@ -291,6 +296,10 @@ async def get_scan(
     if not analysis:
         raise HTTPException(404, "Scan not found")
 
+    # Fetch PR + repo context for display in the UI
+    pr = await db.get(PullRequest, analysis.pr_id) if analysis.pr_id else None
+    repo = await db.get(Repository, pr.repo_id) if pr else None
+
     findings_rows = (
         (await db.execute(select(FindingModel).where(FindingModel.analysis_id == analysis_id))).scalars().all()
     )
@@ -299,7 +308,7 @@ async def get_scan(
         ScanFindingOut(
             rule_id=f.rule_id or "UNKNOWN",
             severity=f.severity,
-            category="general",
+            category=f.type or "general",
             title=f.message[:80],
             message=f.message,
             file=f.resource_address,
@@ -327,6 +336,11 @@ async def get_scan(
         errors=[],
         duration_ms=0,
         analysis_id=analysis_id,
+        ai_summary=analysis.summary_md,
+        repo_full_name=repo.full_name if repo else None,
+        pr_number=pr.github_pr_number if pr else None,
+        head_sha=pr.head_sha if pr else None,
+        created_at=analysis.started_at.isoformat() if analysis.started_at else None,
     )
 
 

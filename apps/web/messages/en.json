@@ -130,7 +130,13 @@
     "statusOff": "off",
     "analysesHeading": "Analyses",
     "noAnalyses": "No analyses yet. Open a Terraform PR to trigger the first review.",
-    "riskHeader": "Risk"
+    "riskHeader": "Risk",
+    "totalAnalyses": "Total analyses",
+    "highRiskPrs": "High risk PRs",
+    "manualScan": "Manual scan",
+    "noAnalysesTrigger": "Open a Terraform pull request in this repository to trigger the first analysis.",
+    "defaultBranch": "default branch:",
+    "connected": "Connected"
   },
   "settings": {
     "title": "Settings",
@@ -164,6 +170,16 @@
     "uninstallButton": "Uninstall →",
     "dangerZone": "Danger zone",
     "dangerZoneDesc": "Irreversible actions. Proceed with care.",
+    "githubIntegration": "GitHub Integration",
+    "githubIntegrationDesc": "GitHub App installation status and webhook configuration.",
+    "connected": "Connected",
+    "notConnected": "Not connected",
+    "githubApp": "GitHub App",
+    "githubInstallationRow": "Installation ID",
+    "webhookUrl": "Webhook URL",
+    "webhookEvents": "Webhook events",
+    "manageInstallation": "Manage installation",
+    "githubSettingsLink": "GitHub Settings →",
     "meta": {
       "title": "Settings — DriftGuard",
       "description": "Manage your DriftGuard organisation settings, integrations, and policies."

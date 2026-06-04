@@ -138,6 +138,16 @@
     "uninstallButton": "卸载 →",
     "dangerZone": "危险区域",
     "dangerZoneDesc": "不可逆操作，请谨慎操作。",
+    "githubIntegration": "GitHub 集成",
+    "githubIntegrationDesc": "GitHub App 安装状态和 Webhook 配置。",
+    "connected": "已连接",
+    "notConnected": "未连接",
+    "githubApp": "GitHub App",
+    "githubInstallationRow": "安装 ID",
+    "webhookUrl": "Webhook 地址",
+    "webhookEvents": "Webhook 事件",
+    "manageInstallation": "管理安装",
+    "githubSettingsLink": "GitHub 设置 →",
     "meta": {
       "title": "设置 — DriftGuard",
       "description": "管理您的 DriftGuard 组织设置、集成和策略。"
@@ -167,7 +177,13 @@
     "statusOff": "停用",
     "analysesHeading": "分析",
     "noAnalyses": "暂无分析。打开 Terraform PR 以触发首次审查。",
-    "riskHeader": "风险"
+    "riskHeader": "风险",
+    "totalAnalyses": "总分析数",
+    "highRiskPrs": "高风险 PR",
+    "manualScan": "手动扫描",
+    "noAnalysesTrigger": "在此仓库中打开 Terraform pull request 以触发首次分析。",
+    "defaultBranch": "默认分支：",
+    "connected": "已连接"
   },
   "landing": {
     "ctaTitle": "重新掌控您的云基础设施。",

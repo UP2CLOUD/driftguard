@@ -138,6 +138,16 @@
     "uninstallButton": "अनइंस्टॉल करें →",
     "dangerZone": "खतरनाक क्षेत्र",
     "dangerZoneDesc": "अपरिवर्तनीय क्रियाएं। सावधानी से आगे बढ़ें।",
+    "githubIntegration": "GitHub एकीकरण",
+    "githubIntegrationDesc": "GitHub App स्थापना की स्थिति और Webhook कॉन्फ़िगरेशन।",
+    "connected": "जुड़ा हुआ",
+    "notConnected": "जुड़ा नहीं",
+    "githubApp": "GitHub App",
+    "githubInstallationRow": "स्थापना ID",
+    "webhookUrl": "Webhook URL",
+    "webhookEvents": "Webhook ईवेंट",
+    "manageInstallation": "स्थापना प्रबंधित करें",
+    "githubSettingsLink": "GitHub सेटिंग्स →",
     "meta": {
       "title": "सेटिंग्स — DriftGuard",
       "description": "अपनी DriftGuard संगठन सेटिंग्स प्रबंधित करें।"
@@ -167,7 +177,13 @@
     "statusOff": "बंद",
     "analysesHeading": "विश्लेषण",
     "noAnalyses": "अभी तक कोई विश्लेषण नहीं। पहली समीक्षा के लिए एक Terraform PR खोलें।",
-    "riskHeader": "जोखिम"
+    "riskHeader": "जोखिम",
+    "totalAnalyses": "कुल विश्लेषण",
+    "highRiskPrs": "उच्च जोखिम PR",
+    "manualScan": "मैनुअल स्कैन",
+    "noAnalysesTrigger": "पहला विश्लेषण शुरू करने के लिए इस रिपॉज़िटरी में एक Terraform pull request खोलें।",
+    "defaultBranch": "डिफ़ॉल्ट शाखा:",
+    "connected": "जुड़ा हुआ"
   },
   "landing": {
     "ctaTitle": "अपने क्लाउड पर नियंत्रण वापस पाएं।",
