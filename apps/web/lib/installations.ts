@@ -29,10 +29,15 @@ export async function getInstallations(session: Session | null): Promise<Install
       { revalidate: 30, timeout: 3000 },
     );
     if (data) {
-      return data.map((o) => ({
-        id: o.installation_id ?? o.id ?? 0,
-        account: o.account ?? { login },
-      }));
+      return data
+        .filter((o) => {
+          const l = o.account?.login ?? "";
+          return !!l && !/^installation-\d+$/.test(l);
+        })
+        .map((o) => ({
+          id: o.installation_id ?? o.id ?? 0,
+          account: o.account ?? { login },
+        }));
     }
   }
 
