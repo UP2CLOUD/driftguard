@@ -39,6 +39,7 @@ async def overview(
         return await _build_overview(org, installation_id, db)
     except Exception as exc:
         from driftguard.core.logging import log
+
         log.error("overview_failed", installation_id=installation_id, error=str(exc))
         return _empty_overview()
 

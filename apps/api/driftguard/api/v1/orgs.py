@@ -56,11 +56,7 @@ async def get_orgs_by_user(login: str, db: AsyncSession = Depends(get_db)) -> li
 
     # Query orgs where account_login matches the GitHub user
     # account_login is stored in org.settings when the app is installed
-    stmt = (
-        select(Organization)
-        .order_by(Organization.github_installation_id)
-        .limit(50)
-    )
+    stmt = select(Organization).order_by(Organization.github_installation_id).limit(50)
     result = await db.execute(stmt)
     all_orgs = result.scalars().all()
 

@@ -74,7 +74,6 @@ def upgrade() -> None:
     op.create_index("ix_tf_resources_snap_at", "terraform_resources", ["snapshotted_at"])
 
 
-
 def downgrade() -> None:
     op.drop_table("terraform_resources")
     op.drop_table("org_members")

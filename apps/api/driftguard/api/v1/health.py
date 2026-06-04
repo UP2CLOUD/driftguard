@@ -80,8 +80,10 @@ async def debug_run_analyze(
 ) -> dict:
     """Run analyze_pr directly and return result or traceback."""
     import traceback
+
     try:
         from driftguard.workers.analyzer import analyze_pr
+
         result = await analyze_pr(
             installation_id=installation_id,
             repo_full_name=repo,
@@ -102,10 +104,12 @@ async def debug_analyze_steps(
 ) -> dict:
     """Debug endpoint — runs each step of analyze_pr and reports where it fails."""
     import traceback
+
     steps: dict[str, str] = {}
 
     try:
         from driftguard.integrations.github import installation_token
+
         token = await installation_token(installation_id)
         steps["installation_token"] = f"OK ({token[:10]}...)"
     except Exception:
@@ -117,6 +121,7 @@ async def debug_analyze_steps(
         from pathlib import Path
 
         from driftguard.integrations.git import download_tarball
+
         with tempfile.TemporaryDirectory() as tmp:
             root = await download_tarball(token, repo, sha, Path(tmp))
             steps["download_tarball"] = f"OK (root={root})"
@@ -126,6 +131,7 @@ async def debug_analyze_steps(
 
     try:
         from driftguard.services.scanner.engine import scan_directory
+
         result = await scan_directory(root)
         steps["scan"] = f"OK ({len(result.findings)} findings)"
     except Exception:
@@ -136,6 +142,7 @@ async def debug_analyze_steps(
         from driftguard.ai.findings import from_static_scan
         from driftguard.ai.formatter import format_comment
         from driftguard.integrations.github import post_pr_comment
+
         findings = from_static_scan(result)
         body = format_comment(
             findings=findings,
