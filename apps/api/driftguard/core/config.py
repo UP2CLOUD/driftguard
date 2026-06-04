@@ -1,3 +1,4 @@
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -12,6 +13,13 @@ class Settings(BaseSettings):
     github_app_id: str = ""
     github_app_private_key: str = ""
     github_webhook_secret: str = ""
+
+    @model_validator(mode="after")
+    def _normalize_pem(self) -> "Settings":
+        # Render/env stores PEM with literal \n — convert to real newlines
+        if "\\n" in self.github_app_private_key:
+            self.github_app_private_key = self.github_app_private_key.replace("\\n", "\n")
+        return self
 
     # ── LLM router ─────────────────────────────────────────────
     anthropic_api_key: str = ""
