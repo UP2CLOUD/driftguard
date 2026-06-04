@@ -151,7 +151,9 @@ async def list_org_analyses(
             "risk_score": a.risk_score,
             "pr_number": p.github_pr_number,
             "head_sha": p.head_sha,
-            "repo": r.full_name,
+            "repo_full_name": r.full_name,
+            "started_at": a.started_at.isoformat() if a.started_at else None,
+            "created_at": a.started_at.isoformat() if a.started_at else None,
         }
         for a, p, r in result.all()
     ]

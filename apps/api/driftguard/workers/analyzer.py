@@ -422,10 +422,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         for f in findings:
             sev_counts[f.severity] = sev_counts.get(f.severity, 0) + 1
         summary = ", ".join(f"{v} {k}" for k, v in sorted(sev_counts.items()))
-        review_md = (
-            f"## Summary\n{len(findings)} findings detected ({summary}).\n\n"
-            "_AI review unavailable._"
-        )
+        review_md = f"## Summary\n{len(findings)} findings detected ({summary}).\n\n_AI review unavailable._"
     duration_ms = int((time.monotonic() - started) * 1000)
 
     body = format_comment(
@@ -534,7 +531,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
     try:
         from sqlalchemy import select
 
-        from driftguard.db.models import Repository
+        from driftguard.db.models import Repository, RuntimeEvent
         from driftguard.services.audit import record as _audit
 
         async with SessionLocal() as _db:
@@ -544,6 +541,30 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
             _org_id = _repo.org_id if _repo else None
             if not _org_id:
                 raise ValueError(f"org not found for {repo_full_name}")
+
+            # Emit RuntimeEvent so the dashboard event feed shows activity
+            _sev = "critical" if risk_score >= 70 else "warn" if risk_score >= 40 else "info"
+            _msg = f"PR #{pr_number} reviewed — risk {risk_score}/100, {len(findings)} findings" + (
+                f", {crit_high_count} critical/high" if crit_high_count else ""
+            )
+            _db.add(
+                RuntimeEvent(
+                    org_id=_org_id,
+                    repo_id=_repo.id if _repo else None,
+                    analysis_id=analysis_id,
+                    event_type="analysis.completed",
+                    severity=_sev,
+                    source="driftguard",
+                    message=_msg,
+                    metadata_={
+                        "repo": repo_full_name,
+                        "pr_number": pr_number,
+                        "risk_score": risk_score,
+                        "findings": len(findings),
+                    },
+                )
+            )
+
             await _audit(
                 _db,
                 org_id=_org_id,
