@@ -21,7 +21,7 @@ def test_format_comment_with_findings():
         ai_review_md="## Summary\nLooks risky.",
         summary_meta={"duration_ms": 1200, "sha": "abc1234567890"},
     )
-    assert "Driftguard review" in body
+    assert "DriftGuard Analysis" in body
     assert "+120.00" in body
     assert "aws_s3.y" in body
     assert "abc1234" in body
@@ -72,9 +72,9 @@ def test_format_comment_k8s_and_gha_sections():
     assert "Kubernetes security" in body
     assert "GitHub Actions security" in body
     assert "Terraform/IaC security" in body
-    assert "K8s: 1" in body
-    assert "GHA: 1" in body
-    assert "TF: 1" in body
+    assert "K8s:1" in body
+    assert "GHA:1" in body
+    assert "TF:1" in body
     assert "K8S002" in body
     assert "GHA003" in body
     assert "Pin action to a full commit SHA" in body
@@ -90,7 +90,7 @@ def test_format_comment_domain_counts_in_header():
         ai_review_md="Fix pod security.",
         summary_meta={"duration_ms": 100, "sha": "0000000"},
     )
-    assert "K8s: 2" in body
+    assert "K8s:2" in body
     assert "Kubernetes security" in body
     assert "GitHub Actions security" not in body
     assert "Terraform/IaC security" not in body
@@ -126,7 +126,7 @@ def test_format_comment_plan_changes_section():
     )
     assert "Plan changes" in body
     assert "aws_instance.web" in body
-    assert "**Changes:** 2" in body
+    assert "| 2 |" in body  # changes count in risk table
 
 
 def test_esc_slices_before_escaping():
