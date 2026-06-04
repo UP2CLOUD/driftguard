@@ -65,13 +65,13 @@ async def get_analysis(
         "repo_full_name": repo.full_name if repo else None,
         "pr_number": pr.github_pr_number if pr else None,
         "head_sha": pr.head_sha if pr else None,
-        "started_at": a.created_at.isoformat() if getattr(a, "created_at", None) else None,
-        "finished_at": a.updated_at.isoformat() if getattr(a, "updated_at", None) else None,
+        "started_at": a.started_at.isoformat() if a.started_at else None,
+        "finished_at": a.finished_at.isoformat() if a.finished_at else None,
         "findings": [
             {
                 "type": f.type,
                 "severity": f.severity,
-                "resource": f.resource,
+                "resource": f.resource_address,
                 "message": f.message,
                 "suggestion": f.suggestion,
             }
