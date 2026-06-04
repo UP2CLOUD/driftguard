@@ -6,6 +6,7 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
+import { formatDate } from "@/lib/format-date";
 
 function riskColor(score: number | null) {
   if (score == null) return "text-[color:var(--dg-fg-subtle)]";
@@ -137,7 +138,7 @@ export default async function RepoPage({
                   </p>
                   <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
                     {a.head_sha ? `${a.head_sha.slice(0, 7)} · ` : ""}
-                    {a.created_at ? new Date(a.created_at).toLocaleDateString() : ""}
+                    {formatDate(a.created_at, prefs.locale)}
                   </p>
                 </div>
 

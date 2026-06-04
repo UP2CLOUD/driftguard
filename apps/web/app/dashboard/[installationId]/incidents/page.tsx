@@ -4,6 +4,7 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { beGet } from "@/lib/backend";
+import { formatDate } from "@/lib/format-date";
 
 async function fetchIncidents(id: string, status?: string) {
   const q = status ? `&status=${status}` : "";
@@ -181,7 +182,7 @@ export default async function IncidentsPage({
                   )}
                   {inc.last_seen_at && (
                     <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-                      {new Date(inc.last_seen_at).toLocaleDateString()}
+                      {formatDate(inc.last_seen_at, preferences.locale)}
                     </span>
                   )}
                 </div>

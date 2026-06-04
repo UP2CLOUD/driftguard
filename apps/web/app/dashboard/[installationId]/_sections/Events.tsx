@@ -1,14 +1,17 @@
 import { getEvents, getOverview } from "./api";
+import { formatTime } from "@/lib/format-date";
 
 type T = (key: string) => string | null | undefined;
 
 export async function EventsSection({
   installationId,
   t,
+  locale,
   demoOverview,
 }: {
   installationId: string;
   t: T;
+  locale: string;
   demoOverview?: any;
 }) {
   const [events, overview] = demoOverview
@@ -52,7 +55,7 @@ export async function EventsSection({
                 <p className={`text-[11px] truncate ${txtCls}`}>{e.message}</p>
                 {e.created_at && (
                   <p className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)] mt-0.5">
-                    {new Date(e.created_at).toLocaleTimeString()}
+                    {formatTime(e.created_at, locale)}
                   </p>
                 )}
               </div>

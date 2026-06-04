@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
-
 import { beGet } from "@/lib/backend";
+import { formatDate } from "@/lib/format-date";
 
 async function fetchMemory(id: string) {
   const [entries, stats] = await Promise.all([
@@ -128,7 +128,7 @@ export default async function MemoryPage({
                 <div className="flex items-center gap-3">
                   {e.created_at && (
                     <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">
-                      {new Date(e.created_at).toLocaleDateString()}
+                      {formatDate(e.created_at, preferences.locale)}
                     </span>
                   )}
                   {e.analysis_id && (
