@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     anthropic_model: str = "claude-sonnet-4-6"
     openai_api_key: str = ""  # fallback
     openai_model: str = "gpt-4o-mini"
+    gemini_api_key: str = ""  # fallback when Anthropic unavailable
     llm_fallback_enabled: bool = True
 
     # ── Infracost ──────────────────────────────────────────────

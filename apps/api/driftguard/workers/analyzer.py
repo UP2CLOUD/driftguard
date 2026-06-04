@@ -217,7 +217,7 @@ async def _persist_analysis(
                         analysis_id=analysis_id,
                         type=f.type,
                         severity=f.severity,
-                        resource=f.resource,
+                        resource_address=f.resource,
                         message=f.message,
                         suggestion=f.suggestion,
                     )

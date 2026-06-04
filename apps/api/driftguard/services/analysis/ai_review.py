@@ -160,5 +160,28 @@ async def run_ai_review(
             output_tokens=response.usage.output_tokens,
         )
     except Exception as exc:
-        log.warning("ai_review.failed", extra={"error": str(exc)})
-        return _static_fallback(result)
+        log.warning("ai_review.anthropic_failed", extra={"error": str(exc)})
+
+    # Gemini fallback
+    gemini_key = getattr(settings, "gemini_api_key", None)
+    if gemini_key:
+        try:
+            import google.generativeai as genai  # type: ignore
+
+            genai.configure(api_key=gemini_key)
+            model = genai.GenerativeModel(
+                model_name="gemini-1.5-flash",
+                system_instruction=_SYSTEM,
+            )
+            response = await model.generate_content_async(prompt)
+            narrative = response.text or ""
+            return AIReview(
+                narrative=narrative,
+                model="gemini-1.5-flash",
+                input_tokens=0,
+                output_tokens=0,
+            )
+        except Exception as exc2:
+            log.warning("ai_review.gemini_failed", extra={"error": str(exc2)})
+
+    return _static_fallback(result)
