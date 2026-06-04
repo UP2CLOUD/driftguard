@@ -125,7 +125,12 @@ async def scan_upload(
         result: ScanResult = await scan_directory(root)
 
     # Phase 5: AI review layer (grounded on scanner output, optional)
-    ai_review = await run_ai_review(result, context={"repo": file.filename, "ref": "upload"})
+    try:
+        ai_review = await run_ai_review(result, context={"repo": file.filename, "ref": "upload"})
+    except Exception:
+        class _FallbackReview:
+            narrative = "_AI review unavailable._"
+        ai_review = _FallbackReview()
 
     duration_ms = int((time.monotonic() - started) * 1000)
 
