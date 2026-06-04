@@ -35,6 +35,15 @@ async def overview(
     if not org:
         return _empty_overview()
 
+    try:
+        return await _build_overview(org, installation_id, db)
+    except Exception as exc:
+        from driftguard.core.logging import log
+        log.error("overview_failed", installation_id=installation_id, error=str(exc))
+        return _empty_overview()
+
+
+async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
     now = datetime.now(UTC)
     window_7d = now - timedelta(days=7)
     window_30d = now - timedelta(days=30)
