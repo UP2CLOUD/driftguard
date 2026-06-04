@@ -7,78 +7,167 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
 
+function riskColor(score: number | null) {
+  if (score == null) return "text-[color:var(--dg-fg-subtle)]";
+  if (score >= 70) return "text-blocked";
+  if (score >= 40) return "text-warned";
+  return "text-allowed";
+}
+
+function riskBg(score: number | null) {
+  if (score == null) return "bg-[color:var(--dg-border)]/20";
+  if (score >= 70) return "bg-blocked/10";
+  if (score >= 40) return "bg-warned/10";
+  return "bg-allowed/10";
+}
 
 export default async function RepoPage({
   params,
 }: {
   params: Promise<{ installationId: string; repoId: string }>;
 }) {
-  const _prefs = await getUserPreferences();
-  const _msgs  = await getMessages(_prefs.locale);
-  const t      = createTranslator(_msgs);
-
   const session = await auth();
   if (!session) redirect("/");
 
   const { installationId, repoId } = await params;
-  await requireOrg(installationId);
+  const prefs = await getUserPreferences();
+  const msgs = await getMessages(prefs.locale);
+  const t = createTranslator(msgs);
 
-  const analyses = (await beGet<unknown[]>(`/api/v1/analyses?repo_id=${repoId}&limit=20`, { revalidate: 30 })) ?? [];
+  const org = await requireOrg(installationId);
+  const [repo, analyses] = await Promise.all([
+    beGet<any>(`/api/v1/orgs/${org.id}/repos`).then(
+      (repos: any[]) => repos?.find((r: any) => r.id === repoId) ?? null
+    ).catch(() => null),
+    (beGet<unknown[]>(`/api/v1/analyses?repo_id=${repoId}&limit=30`, { revalidate: 30 }) ?? Promise.resolve([])),
+  ]);
+
+  const analysesList: any[] = Array.isArray(analyses) ? analyses : [];
+  const critHigh = analysesList.filter((a) => (a.risk_score ?? 0) >= 70).length;
+  const avgRisk = analysesList.length
+    ? Math.round(analysesList.reduce((s, a) => s + (a.risk_score ?? 0), 0) / analysesList.length)
+    : null;
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8">
-      <Link
-        href={`/dashboard/${installationId}`}
-        className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition mb-6"
-      >
-        ← {t("repos.title")}
-      </Link>
+    <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-8">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+        <Link href={`/dashboard/${installationId}`} className="hover:text-[color:var(--dg-fg)] transition">
+          Overview
+        </Link>
+        <span className="opacity-40">·</span>
+        <Link href={`/dashboard/${installationId}/repos`} className="hover:text-[color:var(--dg-fg)] transition">
+          {t("repos.title") ?? "Repos"}
+        </Link>
+        <span className="opacity-40">·</span>
+        <span className="text-[color:var(--dg-fg)]">{repo?.full_name ?? repoId}</span>
+      </div>
 
-      <div className="dg-label mb-2">{t("dashboard.repository")}</div>
-      <h1 className="font-sans text-2xl sm:text-3xl font-semibold tracking-tight text-[color:var(--dg-fg)] mb-8">
-        {t("repos.analysesHeading")}
-      </h1>
-
-      {analyses.length === 0 ? (
-        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-10 text-center">
-          <p className="text-[13px] text-[color:var(--dg-fg-muted)]">
-            {t("repos.noAnalyses")}
-          </p>
+      {/* Header */}
+      <div className="flex items-end justify-between flex-wrap gap-4">
+        <div>
+          <div className="dg-label mb-2">{t("dashboard.repository") ?? "Repository"}</div>
+          <h1 className="font-mono text-xl font-semibold text-[color:var(--dg-fg)]">
+            {repo?.full_name ?? repoId}
+          </h1>
+          {repo?.default_branch && (
+            <p className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] mt-1">
+              default branch: {repo.default_branch}
+            </p>
+          )}
         </div>
-      ) : (
-        <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
-          <div className="grid grid-cols-[auto_1fr_auto_auto] border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] gap-4">
-            <span>{t("repos.riskHeader")}</span>
-            <span>PR</span>
-            <span className="hidden md:inline">SHA</span>
-            <span>{t("dashboard.status")}</span>
-          </div>
-          {analyses.map((a: any) => (
-            <Link
-              key={a.id}
-              href={`/dashboard/${installationId}/analyses/${a.id}`}
-              className="group grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 border-b border-[color:var(--dg-border)] last:border-b-0 px-4 py-3 bg-[color:var(--dg-surface)] hover:bg-[color:var(--dg-surface-raised)] transition"
-            >
-              <span className={`h-2 w-2 rounded-full shrink-0 ${
-                (a.risk_score ?? 0) > 70 ? "bg-blocked" :
-                (a.risk_score ?? 0) > 40 ? "bg-warned" : "bg-allowed"
-              }`} />
-              <span className="font-mono text-[12px] text-[color:var(--dg-fg)] group-hover:text-[color:var(--dg-electric-bright)] transition">
-                PR #{a.pr_number ?? "—"}
-              </span>
-              <span className="hidden md:inline font-mono text-[11px] text-[color:var(--dg-fg-subtle)] tabular-nums">
-                {(a.head_sha ?? "").slice(0, 7) || "—"}
-              </span>
-              <span className={`font-mono text-[10px] uppercase tracking-widest ${
-                a.status === "completed" ? "text-allowed" :
-                a.status === "failed" ? "text-blocked" : "text-warned"
-              }`}>
-                {a.status}
-              </span>
-            </Link>
+        <div className="flex items-center gap-2">
+          <span className="flex items-center gap-1.5 font-mono text-[10px] text-allowed">
+            <span className="h-1.5 w-1.5 rounded-full bg-allowed" />
+            Connected
+          </span>
+        </div>
+      </div>
+
+      {/* Stats strip */}
+      {analysesList.length > 0 && (
+        <div className="grid grid-cols-3 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)]">
+          {[
+            { label: "Total analyses", value: analysesList.length },
+            { label: "Avg risk", value: avgRisk != null ? `${avgRisk}/100` : "—" },
+            { label: "High risk PRs", value: critHigh },
+          ].map(({ label, value }) => (
+            <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
+              <div className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">
+                {label}
+              </div>
+              <div className="font-mono text-xl font-bold text-[color:var(--dg-fg)]">{value}</div>
+            </div>
           ))}
         </div>
       )}
+
+      {/* Analyses list */}
+      <section>
+        <h2 className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-3">
+          {t("repos.recentAnalyses") ?? "Recent analyses"}
+        </h2>
+
+        {analysesList.length === 0 ? (
+          <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-12 text-center">
+            <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
+              {t("repos.noAnalyses") ?? "No analyses yet"}
+            </p>
+            <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto leading-relaxed">
+              Open a Terraform pull request in this repository to trigger the first analysis.
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
+            {analysesList.map((a: any) => (
+              <Link
+                key={a.id}
+                href={`/dashboard/${installationId}/analyses/${a.id}`}
+                className="flex items-center gap-4 px-4 py-3.5 hover:bg-[color:var(--dg-surface-raised)] transition group"
+              >
+                <div
+                  className={`w-10 h-10 rounded font-mono text-[13px] font-bold flex items-center justify-center shrink-0 ${riskBg(a.risk_score ?? null)} ${riskColor(a.risk_score ?? null)}`}
+                >
+                  {a.risk_score ?? "—"}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <p className="font-mono text-[12px] text-[color:var(--dg-fg)]">
+                    {a.pr_number ? `PR #${a.pr_number}` : "Manual scan"}
+                  </p>
+                  <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
+                    {a.head_sha ? `${a.head_sha.slice(0, 7)} · ` : ""}
+                    {a.created_at ? new Date(a.created_at).toLocaleDateString() : ""}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 shrink-0">
+                  <span
+                    className={`font-mono text-[9px] uppercase tracking-widest px-2 py-0.5 rounded border ${
+                      a.status === "completed"
+                        ? "text-allowed border-allowed/30 bg-allowed/5"
+                        : a.status === "failed"
+                          ? "text-blocked border-blocked/30 bg-blocked/5"
+                          : "text-warned border-warned/30 bg-warned/5"
+                    }`}
+                  >
+                    {a.status}
+                  </span>
+                  <svg
+                    className="h-3 w-3 text-[color:var(--dg-fg-subtle)] opacity-0 group-hover:opacity-100 transition"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
