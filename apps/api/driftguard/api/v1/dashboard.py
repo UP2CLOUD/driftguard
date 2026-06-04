@@ -51,7 +51,7 @@ async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
 
     # ── Repos ────────────────────────────────────────────────────────────────
     repo_count = (
-        await db.execute(select(func.count()).where(Repository.org_id == org.id, Repository.enabled.is_(True)))
+        await db.execute(select(func.count()).where(Repository.org_id == org.id))
     ).scalar_one()
 
     # ── Analyses (7d) ────────────────────────────────────────────────────────
@@ -171,7 +171,7 @@ async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
                 "pr_number": p.github_pr_number,
                 "head_sha": p.head_sha,
                 "repo_full_name": r.full_name,
-                "created_at": a.created_at.isoformat() if a.created_at else None,
+                "created_at": a.started_at.isoformat() if a.started_at else None,
             }
             for a, p, r in recent_analyses_rows
         ],

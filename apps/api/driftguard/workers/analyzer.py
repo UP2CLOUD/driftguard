@@ -405,13 +405,20 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
 
     # Audit log — DORA/NIS2 evidence
     try:
+        from sqlalchemy import select
+
         from driftguard.core.db import SessionLocal
+        from driftguard.db.models import Repository
         from driftguard.services.audit import record as _audit
 
         async with SessionLocal() as _db:
+            _repo = (await _db.execute(select(Repository).where(Repository.full_name == repo_full_name))).scalar_one_or_none()
+            _org_id = _repo.org_id if _repo else None
+            if not _org_id:
+                raise ValueError(f"org not found for {repo_full_name}")
             await _audit(
                 _db,
-                org_id=repo_full_name.split("/")[0],
+                org_id=_org_id,
                 action="analysis.completed" if risk_score < 70 else "policy.blocked",
                 actor="driftguard-bot",
                 target=f"{repo_full_name}#PR-{pr_number}",
