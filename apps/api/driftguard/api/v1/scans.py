@@ -161,27 +161,109 @@ async def trigger_scan(
 ) -> dict:
     """
     Enqueue a background scan of a GitHub repo.
-    Returns immediately; poll /api/v1/analyses for results.
+    When celery_enabled=True: returns immediately with task_id.
+    When celery_enabled=False: runs in-process and returns results.
     """
+    from driftguard.core.config import settings
+
     org = (
         await db.execute(select(Organization).where(Organization.github_installation_id == body.installation_id))
     ).scalar_one_or_none()
     if not org:
         raise HTTPException(404, "Installation not found")
 
-    # Enqueue Celery task
-    try:
-        from driftguard.worker.tasks import run_manual_scan
+    if settings.celery_enabled:
+        try:
+            from driftguard.worker.tasks import run_manual_scan
 
-        task = run_manual_scan.delay(
+            task = run_manual_scan.delay(
+                installation_id=body.installation_id,
+                repo_full_name=body.repo_full_name,
+                ref=body.ref,
+            )
+            return {"status": "queued", "task_id": task.id, "message": f"Scan queued for {body.repo_full_name}@{body.ref}"}
+        except Exception as exc:
+            log.warning("scan.trigger.failed", extra={"error": str(exc)})
+            raise HTTPException(500, "Failed to queue scan") from exc
+
+    # In-process scan (no Celery/Redis required)
+    try:
+        result = await _run_scan_inprocess(
+            db=db,
+            org_id=org.id,
             installation_id=body.installation_id,
             repo_full_name=body.repo_full_name,
             ref=body.ref,
         )
-        return {"status": "queued", "task_id": task.id, "message": f"Scan queued for {body.repo_full_name}@{body.ref}"}
+        return result
+    except HTTPException:
+        raise
     except Exception as exc:
-        log.warning("scan.trigger.failed", extra={"error": str(exc)})
-        raise HTTPException(500, "Failed to queue scan") from exc
+        log.warning("scan.trigger.inprocess.failed", extra={"error": str(exc)})
+        raise HTTPException(500, f"Scan failed: {exc}") from exc
+
+
+async def _run_scan_inprocess(
+    *,
+    db: AsyncSession,
+    org_id: str,
+    installation_id: int,
+    repo_full_name: str,
+    ref: str,
+) -> dict:
+    import io
+    import tarfile
+    import tempfile
+    from pathlib import Path
+
+    import httpx
+
+    from driftguard.services.scanner.engine import scan_directory
+
+    try:
+        from driftguard.integrations.github import installation_token, tarball_url
+
+        token = await installation_token(installation_id)
+        url = tarball_url(repo_full_name, ref)
+    except Exception:
+        url = f"https://api.github.com/repos/{repo_full_name}/tarball/{ref}"
+        token = None
+
+    headers = {"Accept": "application/vnd.github+json"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+
+    async with httpx.AsyncClient(timeout=60, follow_redirects=True) as client:
+        resp = await client.get(url, headers=headers)
+        if resp.status_code == 404:
+            raise HTTPException(404, f"Repository {repo_full_name}@{ref} not found or not accessible")
+        resp.raise_for_status()
+        archive = resp.content
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as tf:
+            safe = [m for m in tf.getmembers() if not m.name.startswith("/") and ".." not in m.name]
+            tf.extractall(root, members=safe)  # noqa: S202
+        subdirs = [d for d in root.iterdir() if d.is_dir()]
+        scan_root = subdirs[0] if len(subdirs) == 1 else root
+        result = await scan_directory(scan_root)
+
+    analysis_id = await _persist_scan(
+        db=db,
+        org_id=org_id,
+        result=result,
+        source=f"{repo_full_name}@{ref}",
+        ref=ref,
+    )
+    return {
+        "status": "completed",
+        "task_id": analysis_id,
+        "analysis_id": analysis_id,
+        "risk_score": result.risk_score,
+        "findings": len(result.findings),
+        "message": f"Scan completed for {repo_full_name}@{ref}",
+    }
 
 
 @router.get(
