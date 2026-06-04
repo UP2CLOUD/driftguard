@@ -283,7 +283,11 @@ async def get_scan(
     db: AsyncSession = Depends(get_db),
 ) -> ScanResultOut:
     """Retrieve a completed scan result."""
-    analysis = (await db.execute(select(Analysis).where(Analysis.id == analysis_id))).scalar_one_or_none()
+    try:
+        analysis = (await db.execute(select(Analysis).where(Analysis.id == analysis_id))).scalar_one_or_none()
+    except Exception as exc:
+        # Column mismatch (pending migration) — return 503 so frontend shows retry
+        raise HTTPException(503, f"Database schema migration pending: {exc!s:.120}") from exc
     if not analysis:
         raise HTTPException(404, "Scan not found")
 

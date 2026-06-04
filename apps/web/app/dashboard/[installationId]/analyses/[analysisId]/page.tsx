@@ -76,13 +76,30 @@ export default async function AnalysisPage({
   if (!data) {
     return (
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-20 text-center">
-        <p className="font-mono text-[13px] text-[color:var(--dg-fg-muted)]">
-          Analysis not found or API offline.
+        <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+          Analysis unavailable
+        </div>
+        <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-1">
+          This analysis could not be loaded
         </p>
-        <Link href={`/dashboard/${installationId}`}
-          className="mt-4 inline-block font-mono text-[11px] text-[color:var(--dg-electric)] hover:underline">
-          ← Dashboard
-        </Link>
+        <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto mb-5">
+          The backend API may be temporarily unavailable or this analysis was not persisted correctly.
+        </p>
+        <div className="flex items-center justify-center gap-3">
+          <Link
+            href={`/dashboard/${installationId}`}
+            className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+          >
+            ← Dashboard
+          </Link>
+          <span className="text-[color:var(--dg-border)]">·</span>
+          <Link
+            href={`/dashboard/${installationId}/repos`}
+            className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
+          >
+            View repos
+          </Link>
+        </div>
       </div>
     );
   }
