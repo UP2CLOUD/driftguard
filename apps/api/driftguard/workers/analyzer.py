@@ -412,7 +412,9 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         from driftguard.services.audit import record as _audit
 
         async with SessionLocal() as _db:
-            _repo = (await _db.execute(select(Repository).where(Repository.full_name == repo_full_name))).scalar_one_or_none()
+            _repo = (
+                await _db.execute(select(Repository).where(Repository.full_name == repo_full_name))
+            ).scalar_one_or_none()
             _org_id = _repo.org_id if _repo else None
             if not _org_id:
                 raise ValueError(f"org not found for {repo_full_name}")

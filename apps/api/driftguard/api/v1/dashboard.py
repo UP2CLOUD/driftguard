@@ -50,9 +50,7 @@ async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
     window_30d = now - timedelta(days=30)
 
     # ── Repos ────────────────────────────────────────────────────────────────
-    repo_count = (
-        await db.execute(select(func.count()).where(Repository.org_id == org.id))
-    ).scalar_one()
+    repo_count = (await db.execute(select(func.count()).where(Repository.org_id == org.id))).scalar_one()
 
     # ── Analyses (7d) ────────────────────────────────────────────────────────
     analyses_7d = (
