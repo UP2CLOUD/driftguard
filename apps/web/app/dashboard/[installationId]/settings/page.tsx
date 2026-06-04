@@ -63,6 +63,38 @@ export default async function Settings({
         </div>
       )}
 
+      {/* ── GitHub Integration ──────────────────────────────────── */}
+      <Section title="GitHub Integration" description="GitHub App installation status and webhook configuration.">
+        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
+          <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] px-4 py-3">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Status</span>
+            <span className={`flex items-center gap-1.5 font-mono text-[10px] ${org ? "text-allowed" : "text-warned"}`}>
+              <span className={`h-1.5 w-1.5 rounded-full ${org ? "bg-allowed" : "bg-warned"}`} />
+              {org ? "Connected" : "Not connected"}
+            </span>
+          </div>
+          <Row label="GitHub App" value={process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-reviews"} mono />
+          <Row label="Installation ID" value={installationId} mono />
+          <Row
+            label="Webhook URL"
+            value={`${process.env.NEXT_PUBLIC_API_URL ?? "https://your-api.onrender.com"}/api/v1/webhooks/github`}
+            mono
+          />
+          <Row label="Webhook events" value="pull_request · installation · installation_repositories" mono />
+          <div className="px-4 py-3 flex items-center justify-between">
+            <span className="text-[12px] text-[color:var(--dg-fg-muted)]">Manage installation</span>
+            <a
+              href={`https://github.com/organizations/settings/installations/${installationId}`}
+              target="_blank"
+              rel="noreferrer"
+              className="font-mono text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+            >
+              GitHub Settings →
+            </a>
+          </div>
+        </div>
+      </Section>
+
       {/* ── Preferences ─────────────────────────────────────────── */}
       <Section title={t("settings.preferences")} description={t("settings.preferencesDesc")}>
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
