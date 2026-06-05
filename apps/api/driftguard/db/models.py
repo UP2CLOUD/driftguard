@@ -57,6 +57,7 @@ class Analysis(Base):
     cost_delta_cents: Mapped[int | None] = mapped_column(Integer)
     risk_score: Mapped[int | None] = mapped_column(Integer)
     summary_md: Mapped[str | None] = mapped_column(Text)
+    contact_email: Mapped[str | None] = mapped_column(String(255))
 
 
 class Finding(Base):
@@ -69,6 +70,11 @@ class Finding(Base):
     message: Mapped[str] = mapped_column(Text)
     suggestion: Mapped[str | None] = mapped_column(Text)
     rule_id: Mapped[str | None] = mapped_column(String(64))
+    category: Mapped[str | None] = mapped_column(String(64))
+    title: Mapped[str | None] = mapped_column(String(512))
+    file: Mapped[str | None] = mapped_column(String(512))
+    line: Mapped[int | None] = mapped_column(Integer)
+    controls: Mapped[list | None] = mapped_column(JSON, nullable=True)
 
 
 class AuditLog(Base):

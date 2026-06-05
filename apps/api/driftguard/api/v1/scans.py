@@ -308,14 +308,14 @@ async def get_scan(
         ScanFindingOut(
             rule_id=f.rule_id or "UNKNOWN",
             severity=f.severity,
-            category=f.type or "general",
-            title=f.message[:80],
+            category=f.category or f.type or "general",
+            title=f.title or f.message[:80],
             message=f.message,
-            file=f.resource_address,
-            line=None,
+            file=f.file or f.resource_address,
+            line=f.line,
             resource=f.resource_address,
             suggestion=f.suggestion,
-            controls=[],
+            controls=f.controls or [],
         )
         for f in findings_rows
     ]
@@ -410,6 +410,11 @@ async def _persist_scan(
             message=finding.message,
             suggestion=finding.suggestion,
             rule_id=finding.rule_id,
+            category=str(finding.category.value),
+            title=finding.title,
+            file=finding.file,
+            line=finding.line,
+            controls=list(finding.controls) if finding.controls else None,
         )
         db.add(db_finding)
 

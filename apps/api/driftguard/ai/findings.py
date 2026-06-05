@@ -17,6 +17,8 @@ class Finding:
     extra: dict = field(default_factory=dict)
     file: str | None = None
     line: int | None = None
+    category: str | None = None
+    title: str | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -151,6 +153,8 @@ def from_static_scan(scan_findings: list) -> "list[Finding]":
                 controls=controls,
                 file=sf.file,
                 line=sf.line,
+                category=str(sf.category),
+                title=sf.title,
             )
         )
     return findings

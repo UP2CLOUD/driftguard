@@ -67,17 +67,31 @@ async def _get_analysis(analysis_id: str, db: AsyncSession) -> dict:
 
     findings_rows = (await db.execute(select(Finding).where(Finding.analysis_id == analysis_id))).scalars().all()
 
+    critical = sum(1 for f in findings_rows if f.severity == "critical")
+    high = sum(1 for f in findings_rows if f.severity == "high")
+    duration_ms = (
+        int((a.finished_at - a.started_at).total_seconds() * 1000)
+        if a.finished_at and a.started_at
+        else None
+    )
+
     return {
         "id": a.id,
         "status": a.status,
         "cost_delta_cents": a.cost_delta_cents,
         "risk_score": a.risk_score,
         "summary_md": a.summary_md,
+        "ai_summary": a.summary_md,
         "repo_full_name": repo.full_name if repo else None,
         "pr_number": pr.github_pr_number if pr else None,
         "head_sha": pr.head_sha if pr else None,
         "started_at": a.started_at.isoformat() if a.started_at else None,
         "finished_at": a.finished_at.isoformat() if a.finished_at else None,
+        "files_scanned": 0,
+        "critical": critical,
+        "high": high,
+        "duration_ms": duration_ms,
+        "errors": [],
         "findings": [
             {
                 "type": f.type,
@@ -85,6 +99,12 @@ async def _get_analysis(analysis_id: str, db: AsyncSession) -> dict:
                 "resource": f.resource_address,
                 "message": f.message,
                 "suggestion": f.suggestion,
+                "rule_id": f.rule_id,
+                "category": f.category or f.type,
+                "title": f.title,
+                "file": f.file,
+                "line": f.line,
+                "controls": f.controls or [],
             }
             for f in findings_rows
         ],
