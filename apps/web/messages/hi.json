@@ -83,7 +83,20 @@
     "findingsEmpty": "कोई निष्कर्ष नहीं। बुनियादी ढांचा साफ दिखता है।",
     "suggestedFix": "सुझाया गया सुधार",
     "findingSingular": "निष्कर्ष",
-    "findingPlural": "निष्कर्ष"
+    "findingPlural": "निष्कर्ष",
+    "analysisUnavailable": "विश्लेषण अनुपलब्ध",
+    "analysisLoadFailed": "यह विश्लेषण लोड नहीं हो सका",
+    "analysisLoadFailedDesc": "बैकएंड API अस्थायी रूप से अनुपलब्ध हो सकता है या यह विश्लेषण सही तरीके से सहेजा नहीं गया।",
+    "viewRepos": "रिपॉज़िटरी देखें",
+    "filesScanned": "स्कैन की गई फ़ाइलें",
+    "totalFindings": "कुल खोजें",
+    "criticalHigh": "गंभीर + उच्च",
+    "duration": "अवधि",
+    "aiReview": "AI समीक्षा",
+    "aiReviewDesc": "स्कैनर आउटपुट पर आधारित",
+    "scannerWarnings": "स्कैनर चेतावनियाँ",
+    "noEventsTitle": "अभी तक कोई इवेंट नहीं",
+    "noEventsDesc": "इवेंट तब दिखाई देते हैं जब DriftGuard PR प्रोसेस करता है, ड्रिफ्ट का पता लगाता है, या नीतियाँ लागू करता है।"
   },
   "waitlist": {
     "placeholder": "you@company.com",

@@ -83,7 +83,20 @@
     "findingsEmpty": "لا توجد نتائج. البنية التحتية تبدو نظيفة.",
     "suggestedFix": "الإصلاح المقترح",
     "findingSingular": "نتيجة",
-    "findingPlural": "نتائج"
+    "findingPlural": "نتائج",
+    "analysisUnavailable": "التحليل غير متاح",
+    "analysisLoadFailed": "تعذّر تحميل هذا التحليل",
+    "analysisLoadFailedDesc": "قد تكون واجهة API غير متاحة مؤقتاً أو لم يتم حفظ هذا التحليل بشكل صحيح.",
+    "viewRepos": "عرض المستودعات",
+    "filesScanned": "الملفات المفحوصة",
+    "totalFindings": "إجمالي النتائج",
+    "criticalHigh": "حرج + عالٍ",
+    "duration": "المدة",
+    "aiReview": "مراجعة الذكاء الاصطناعي",
+    "aiReviewDesc": "مستند إلى مخرجات الماسح",
+    "scannerWarnings": "تحذيرات الماسح",
+    "noEventsTitle": "لا توجد أحداث بعد",
+    "noEventsDesc": "تظهر الأحداث عندما تعالج DriftGuard طلبات السحب أو تكتشف الانحراف أو تطبّق السياسات."
   },
   "waitlist": {
     "placeholder": "you@company.com",

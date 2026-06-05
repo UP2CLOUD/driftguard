@@ -83,7 +83,20 @@
     "findingsEmpty": "No findings. Infrastructure looks clean.",
     "suggestedFix": "Suggested fix",
     "findingSingular": "finding",
-    "findingPlural": "findings"
+    "findingPlural": "findings",
+    "analysisUnavailable": "Analysis unavailable",
+    "analysisLoadFailed": "This analysis could not be loaded",
+    "analysisLoadFailedDesc": "The backend API may be temporarily unavailable or this analysis was not persisted correctly.",
+    "viewRepos": "View repos",
+    "filesScanned": "Files scanned",
+    "totalFindings": "Total findings",
+    "criticalHigh": "Critical + High",
+    "duration": "Duration",
+    "aiReview": "AI review",
+    "aiReviewDesc": "grounded on scanner output",
+    "scannerWarnings": "Scanner warnings",
+    "noEventsTitle": "No events yet",
+    "noEventsDesc": "Events appear when DriftGuard processes PRs, detects drift, or applies policies."
   },
   "waitlist": {
     "placeholder": "you@company.com",

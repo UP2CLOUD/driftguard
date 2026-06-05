@@ -83,7 +83,20 @@
     "findingsEmpty": "无发现。基础设施看起来干净。",
     "suggestedFix": "建议修复",
     "findingSingular": "个发现",
-    "findingPlural": "个发现"
+    "findingPlural": "个发现",
+    "analysisUnavailable": "分析不可用",
+    "analysisLoadFailed": "无法加载此分析",
+    "analysisLoadFailedDesc": "后端 API 可能暂时不可用，或此分析未正确保存。",
+    "viewRepos": "查看仓库",
+    "filesScanned": "已扫描文件",
+    "totalFindings": "总发现数",
+    "criticalHigh": "严重 + 高危",
+    "duration": "持续时间",
+    "aiReview": "AI 审查",
+    "aiReviewDesc": "基于扫描器输出",
+    "scannerWarnings": "扫描器警告",
+    "noEventsTitle": "暂无事件",
+    "noEventsDesc": "当 DriftGuard 处理 PR、检测到漂移或应用策略时，事件将出现在这里。"
   },
   "waitlist": {
     "placeholder": "you@company.com",

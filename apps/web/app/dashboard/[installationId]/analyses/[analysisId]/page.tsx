@@ -4,8 +4,6 @@ import Link from "next/link";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
-
-
 import { beGet } from "@/lib/backend";
 
 async function fetchAnalysis(id: string) {
@@ -63,9 +61,9 @@ export default async function AnalysisPage({
 }: {
   params: Promise<{ installationId: string; analysisId: string }>;
 }) {
-  const _prefs = await getUserPreferences();
-  const _msgs  = await getMessages(_prefs.locale);
-  const t      = createTranslator(_msgs);
+  const prefs = await getUserPreferences();
+  const msgs  = await getMessages(prefs.locale);
+  const t     = createTranslator(msgs);
 
   const session = await auth();
   if (!session) redirect("/");
@@ -77,27 +75,27 @@ export default async function AnalysisPage({
     return (
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-20 text-center">
         <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-          Analysis unavailable
+          {t("dashboard.analysisUnavailable")}
         </div>
         <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-1">
-          This analysis could not be loaded
+          {t("dashboard.analysisLoadFailed")}
         </p>
         <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto mb-5">
-          The backend API may be temporarily unavailable or this analysis was not persisted correctly.
+          {t("dashboard.analysisLoadFailedDesc")}
         </p>
         <div className="flex items-center justify-center gap-3">
           <Link
             href={`/dashboard/${installationId}`}
             className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
           >
-            ← Dashboard
+            ← {t("dashboard.title")}
           </Link>
           <span className="text-[color:var(--dg-border)]">·</span>
           <Link
             href={`/dashboard/${installationId}/repos`}
             className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
           >
-            View repos
+            {t("dashboard.viewRepos")}
           </Link>
         </div>
       </div>
@@ -115,12 +113,12 @@ export default async function AnalysisPage({
       <div className="flex items-center gap-4 mb-8">
         <Link href={`/dashboard/${installationId}`}
           className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">
-          ← Overview
+          ← {t("nav.overview")}
         </Link>
         <span className="text-[color:var(--dg-border)]">·</span>
         <Link href={`/dashboard/${installationId}/repos`}
           className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">
-          Repos
+          {t("nav.repos")}
         </Link>
       </div>
 
@@ -163,10 +161,10 @@ export default async function AnalysisPage({
       {/* Stats bar */}
       <div className="mb-8 grid grid-cols-2 sm:grid-cols-4 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)]">
         {[
-          { label: "Files scanned", val: data.files_scanned },
-          { label: "Total findings", val: findings.length },
-          { label: "Critical + High", val: (data.critical ?? 0) + (data.high ?? 0) },
-          { label: "Duration", val: data.duration_ms ? `${(data.duration_ms/1000).toFixed(1)}s` : "—" },
+          { label: t("dashboard.filesScanned"),  val: data.files_scanned },
+          { label: t("dashboard.totalFindings"), val: findings.length },
+          { label: t("dashboard.criticalHigh"),  val: (data.critical ?? 0) + (data.high ?? 0) },
+          { label: t("dashboard.duration"),      val: data.duration_ms ? `${(data.duration_ms/1000).toFixed(1)}s` : "—" },
         ].map(({ label, val }) => (
           <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
             <div className="dg-label mb-1">{label}</div>
@@ -192,9 +190,9 @@ export default async function AnalysisPage({
         <div className="mb-6 rounded-md border border-[color:var(--dg-electric)]/20 bg-[color:var(--dg-electric)]/5 p-5">
           <div className="flex items-center gap-2 mb-3">
             <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
-              ⬡ AI review
+              ⬡ {t("dashboard.aiReview")}
             </span>
-            <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">grounded on scanner output</span>
+            <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">{t("dashboard.aiReviewDesc")}</span>
           </div>
           <div className="prose prose-invert prose-sm max-w-none
             [&_h2]:font-sans [&_h2]:text-[13px] [&_h2]:font-semibold [&_h2]:text-[color:var(--dg-fg)] [&_h2]:mt-4 [&_h2]:mb-2
@@ -284,7 +282,7 @@ export default async function AnalysisPage({
       {data.errors?.length > 0 && (
         <div className="mt-6 rounded-md border border-warned/30 bg-warned/5 p-4">
           <div className="font-mono text-[10px] uppercase tracking-widest text-warned mb-2">
-            Scanner warnings
+            {t("dashboard.scannerWarnings")}
           </div>
           {data.errors.map((e: string, i: number) => (
             <p key={i} className="font-mono text-[11px] text-warned">{e}</p>

@@ -91,7 +91,20 @@
     "findingsEmpty": "Sem resultados. A infraestrutura parece limpa.",
     "suggestedFix": "Correção sugerida",
     "findingSingular": "resultado",
-    "findingPlural": "resultados"
+    "findingPlural": "resultados",
+    "analysisUnavailable": "Análise indisponível",
+    "analysisLoadFailed": "Esta análise não pôde ser carregada",
+    "analysisLoadFailedDesc": "A API pode estar temporariamente indisponível ou esta análise não foi persistida corretamente.",
+    "viewRepos": "Ver repositórios",
+    "filesScanned": "Ficheiros analisados",
+    "totalFindings": "Total de resultados",
+    "criticalHigh": "Crítico + Alto",
+    "duration": "Duração",
+    "aiReview": "Revisão IA",
+    "aiReviewDesc": "baseado na saída do scanner",
+    "scannerWarnings": "Avisos do scanner",
+    "noEventsTitle": "Sem eventos ainda",
+    "noEventsDesc": "Os eventos aparecem quando o DriftGuard processa PRs, detecta drift ou aplica políticas."
   },
   "waitlist": {
     "placeholder": "you@company.com",
