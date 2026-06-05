@@ -80,9 +80,9 @@ jobs:
         ports: ["6379:6379"]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
-    - uses: astral-sh/setup-uv@v3
+    - uses: astral-sh/setup-uv@8d55fbecc275b1c35dbe060458839f8d30439ccf # v3
       with:
         version: latest
 
@@ -116,21 +116,21 @@ jobs:
       image:  ${{ steps.meta.outputs.tags }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
     - name: Authenticate to GCP
-      uses: google-github-actions/auth@v2
+      uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed # v2
       with:
         workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
         service_account: ${{ vars.GCP_DEPLOYER_SA }}
 
     - run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
 
-    - uses: docker/setup-buildx-action@v3
+    - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
     - name: Docker metadata
       id: meta
-      uses: docker/metadata-action@v5
+      uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5
       with:
         images: ${{ env.REGISTRY }}/${{ env.PROJECT }}/api/driftguard-api
         tags: |
@@ -139,7 +139,7 @@ jobs:
 
     - name: Build and push
       id: push
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5
       with:
         context: apps/api
         push: true
@@ -153,7 +153,7 @@ jobs:
           GIT_SHA=${{ github.sha }}
 
     - name: Generate SBOM
-      uses: anchore/sbom-action@v0
+      uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0
       with:
         image: ${{ env.REGISTRY }}/${{ env.PROJECT }}/api/driftguard-api@${{ steps.push.outputs.digest }}
         format: spdx-json
@@ -161,7 +161,7 @@ jobs:
 
     - name: Scan for CVEs
       id: scan
-      uses: anchore/scan-action@v3
+      uses: anchore/scan-action@3343887d815d7b07465f6fdcd395bd66508d486a # v3
       with:
         image: ${{ env.REGISTRY }}/${{ env.PROJECT }}/api/driftguard-api@${{ steps.push.outputs.digest }}
         fail-build: ${{ inputs.environment == 'prod' }}
@@ -170,12 +170,12 @@ jobs:
 
     - name: Upload SARIF
       if: always()
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@b0c4fd77f6c559021d78430ec4d0d169ae74a4eb # v3
       with:
         sarif_file: ${{ steps.scan.outputs.sarif }}
 
     - name: Sign image (Cosign keyless)
-      uses: sigstore/cosign-installer@v3
+      uses: sigstore/cosign-installer@f713795cb21599bc4e5c4b58cbad1da852d7eeb9 # v3
 
     - run: |
         cosign sign --yes \
@@ -195,7 +195,7 @@ jobs:
 
     steps:
     - name: Checkout gitops repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       with:
         repository: UP2CLOUD/driftguard-gitops
         token: ${{ secrets.GITOPS_PAT }}

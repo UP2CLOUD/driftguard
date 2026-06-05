@@ -47,6 +47,8 @@ spec:
       # Download model weights to shared volume (cache-aside pattern)
       - name: model-loader
         image: europe-west1-docker.pkg.dev/driftguard-prod/ai/model-loader@sha256:DIGEST
+        securityContext:
+          allowPrivilegeEscalation: false
         resources:
           requests: { cpu: 200m, memory: 512Mi }
           limits: { cpu: 1, memory: 2Gi }
