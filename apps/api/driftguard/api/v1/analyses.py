@@ -48,6 +48,16 @@ async def get_analysis(
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> dict:
+    import traceback
+    try:
+        return await _get_analysis(analysis_id, db)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(500, detail=traceback.format_exc()[-2000:]) from exc
+
+
+async def _get_analysis(analysis_id: str, db: AsyncSession) -> dict:
     a = await db.get(Analysis, analysis_id)
     if not a:
         raise HTTPException(404)
@@ -66,13 +76,13 @@ async def get_analysis(
         "repo_full_name": repo.full_name if repo else None,
         "pr_number": pr.github_pr_number if pr else None,
         "head_sha": pr.head_sha if pr else None,
-        "started_at": a.created_at.isoformat() if getattr(a, "created_at", None) else None,
-        "finished_at": a.updated_at.isoformat() if getattr(a, "updated_at", None) else None,
+        "started_at": a.started_at.isoformat() if a.started_at else None,
+        "finished_at": a.finished_at.isoformat() if a.finished_at else None,
         "findings": [
             {
                 "type": f.type,
                 "severity": f.severity,
-                "resource": f.resource,
+                "resource": f.resource_address,
                 "message": f.message,
                 "suggestion": f.suggestion,
             }

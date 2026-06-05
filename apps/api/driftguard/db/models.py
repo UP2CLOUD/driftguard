@@ -65,7 +65,7 @@ class Finding(Base):
     analysis_id: Mapped[str] = mapped_column(ForeignKey("analyses.id"), index=True)
     type: Mapped[str] = mapped_column(String(32))
     severity: Mapped[str] = mapped_column(String(16))
-    resource_address: Mapped[str] = mapped_column(String(255))
+    resource_address: Mapped[str] = mapped_column("resource", String(255))
     message: Mapped[str] = mapped_column(Text)
     suggestion: Mapped[str | None] = mapped_column(Text)
     rule_id: Mapped[str | None] = mapped_column(String(64))
