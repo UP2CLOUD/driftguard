@@ -15,6 +15,8 @@ class Finding:
     rule_id: str | None = None
     controls: tuple[str, ...] = ()
     extra: dict = field(default_factory=dict)
+    file: str | None = None
+    line: int | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -147,6 +149,8 @@ def from_static_scan(scan_findings: list) -> "list[Finding]":
                 suggestion=sf.suggestion,
                 rule_id=sf.rule_id,
                 controls=controls,
+                file=sf.file,
+                line=sf.line,
             )
         )
     return findings

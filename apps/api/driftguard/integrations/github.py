@@ -70,14 +70,25 @@ async def submit_pr_review(
     *,
     event: str,  # APPROVE | REQUEST_CHANGES | COMMENT
     body: str,
+    inline_comments: list[dict] | None = None,
 ) -> None:
     """Submit a formal GitHub PR review (appears in Reviews section, not just comments)."""
+    payload: dict = {"commit_id": commit_id, "event": event, "body": body}
+    if inline_comments:
+        payload["comments"] = inline_comments
     async with httpx.AsyncClient(timeout=10) as client:
         r = await client.post(
             f"{GITHUB_API}/repos/{repo_full_name}/pulls/{pr_number}/reviews",
             headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"},
-            json={"commit_id": commit_id, "event": event, "body": body},
+            json=payload,
         )
+        if r.status_code == 422 and "comments" in payload:
+            payload.pop("comments")
+            r = await client.post(
+                f"{GITHUB_API}/repos/{repo_full_name}/pulls/{pr_number}/reviews",
+                headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"},
+                json=payload,
+            )
         if r.status_code not in (200, 201):
             log.warning("submit_review_failed", repo=repo_full_name, status=r.status_code, body=r.text[:200])
 

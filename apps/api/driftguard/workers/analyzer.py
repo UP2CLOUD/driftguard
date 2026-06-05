@@ -501,6 +501,21 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         else:
             review_event = "APPROVE"
             review_body = f"🟢 **DriftGuard: No critical findings.** Risk score {risk_score}/100. Safe to merge."
+        SEV_ICON = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🔵", "info": "⚪"}
+        inline_comments = []
+        for f in findings:
+            if f.file and f.line:
+                sev_icon = SEV_ICON.get(f.severity, "⚪")
+                rule = f" `{f.rule_id}`" if f.rule_id else ""
+                comment_body = f"{sev_icon} **{f.severity.upper()}**{rule} — {f.message}"
+                if f.suggestion:
+                    comment_body += f"\n\n> 💡 {f.suggestion}"
+                inline_comments.append({
+                    "path": f.file,
+                    "line": f.line,
+                    "side": "RIGHT",
+                    "body": comment_body,
+                })
         await submit_pr_review(
             token,
             repo_full_name,
@@ -508,6 +523,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
             head_sha,
             event=review_event,
             body=review_body,
+            inline_comments=inline_comments or None,
         )
     except Exception as exc:  # noqa: BLE001 — review is non-critical
         log.warning("submit_review_failed", error=str(exc))
