@@ -7,6 +7,7 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
+import { formatDate } from "@/lib/format-date";
 
 async function fetchOrgData(installationId: string) {
   const org = await beGet<{ id: string; plan: string }>(
@@ -153,7 +154,7 @@ export default async function ReposPage({
               const last = lastAnalysisByRepo[repo.full_name];
               const riskScore = last?.risk_score ?? null;
               const lastDate = last?.created_at
-                ? new Date(last.created_at).toLocaleDateString()
+                ? formatDate(last.created_at, prefs.locale)
                 : null;
 
               return (
@@ -279,7 +280,7 @@ export default async function ReposPage({
                   <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
                     {a.pr_number ? `PR #${a.pr_number}` : "manual"}
                     {a.head_sha ? ` · ${a.head_sha.slice(0, 7)}` : ""}
-                    {a.created_at ? ` · ${new Date(a.created_at).toLocaleDateString()}` : ""}
+                    {a.created_at ? ` · ${formatDate(a.created_at, prefs.locale)}` : ""}
                   </p>
                 </div>
 

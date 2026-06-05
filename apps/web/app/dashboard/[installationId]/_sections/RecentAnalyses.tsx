@@ -1,16 +1,19 @@
 import Link from "next/link";
 import { getOverview } from "./api";
 import { fetchInstallationRepos } from "@/lib/github-installation";
+import { formatDateTime } from "@/lib/format-date";
 
 type T = (key: string) => string | null | undefined;
 
 export async function RecentAnalysesSection({
   installationId,
   t,
+  locale,
   demoOverview,
 }: {
   installationId: string;
   t: T;
+  locale: string;
   demoOverview?: any;
 }) {
   const overview = demoOverview ?? await getOverview(installationId);
@@ -87,7 +90,7 @@ export async function RecentAnalysesSection({
                     </span>
                   </div>
                   <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-                    {a.created_at ? new Date(a.created_at).toLocaleString() : ""}
+                    {formatDateTime(a.created_at, locale)}
                   </div>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">

@@ -83,7 +83,20 @@
     "findingsEmpty": "无发现。基础设施看起来干净。",
     "suggestedFix": "建议修复",
     "findingSingular": "个发现",
-    "findingPlural": "个发现"
+    "findingPlural": "个发现",
+    "analysisUnavailable": "分析不可用",
+    "analysisLoadFailed": "无法加载此分析",
+    "analysisLoadFailedDesc": "后端 API 可能暂时不可用，或此分析未正确保存。",
+    "viewRepos": "查看仓库",
+    "filesScanned": "已扫描文件",
+    "totalFindings": "总发现数",
+    "criticalHigh": "严重 + 高危",
+    "duration": "持续时间",
+    "aiReview": "AI 审查",
+    "aiReviewDesc": "基于扫描器输出",
+    "scannerWarnings": "扫描器警告",
+    "noEventsTitle": "暂无事件",
+    "noEventsDesc": "当 DriftGuard 处理 PR、检测到漂移或应用策略时，事件将出现在这里。"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -138,6 +151,16 @@
     "uninstallButton": "卸载 →",
     "dangerZone": "危险区域",
     "dangerZoneDesc": "不可逆操作，请谨慎操作。",
+    "githubIntegration": "GitHub 集成",
+    "githubIntegrationDesc": "GitHub App 安装状态和 Webhook 配置。",
+    "connected": "已连接",
+    "notConnected": "未连接",
+    "githubApp": "GitHub App",
+    "githubInstallationRow": "安装 ID",
+    "webhookUrl": "Webhook 地址",
+    "webhookEvents": "Webhook 事件",
+    "manageInstallation": "管理安装",
+    "githubSettingsLink": "GitHub 设置 →",
     "meta": {
       "title": "设置 — DriftGuard",
       "description": "管理您的 DriftGuard 组织设置、集成和策略。"
@@ -167,7 +190,13 @@
     "statusOff": "停用",
     "analysesHeading": "分析",
     "noAnalyses": "暂无分析。打开 Terraform PR 以触发首次审查。",
-    "riskHeader": "风险"
+    "riskHeader": "风险",
+    "totalAnalyses": "总分析数",
+    "highRiskPrs": "高风险 PR",
+    "manualScan": "手动扫描",
+    "noAnalysesTrigger": "在此仓库中打开 Terraform pull request 以触发首次分析。",
+    "defaultBranch": "默认分支：",
+    "connected": "已连接"
   },
   "landing": {
     "ctaTitle": "重新掌控您的云基础设施。",

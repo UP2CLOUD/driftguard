@@ -1,4 +1,5 @@
 import { getIncidents, getOverview } from "./api";
+import { formatDateTime } from "@/lib/format-date";
 
 type T = (key: string) => string | null | undefined;
 
@@ -19,9 +20,11 @@ const STATUS_DOT: Record<string, string> = {
 export async function IncidentsSection({
   installationId,
   t,
+  locale,
 }: {
   installationId: string;
   t: T;
+  locale: string;
 }) {
   const [incidents, overview] = await Promise.all([
     getIncidents(installationId),
@@ -60,7 +63,7 @@ export async function IncidentsSection({
                   <span className="text-warned">↺ {inc.recurrence_count}×</span>
                 )}
                 {inc.last_seen_at && (
-                  <span>{new Date(inc.last_seen_at).toLocaleString()}</span>
+                  <span>{formatDateTime(inc.last_seen_at, locale)}</span>
                 )}
               </div>
             </div>

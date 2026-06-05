@@ -50,15 +50,15 @@ export default async function DashboardPage({
         <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
           <div className="space-y-6">
             <Suspense fallback={<PanelFallback label={t("repos.recentAnalyses") ?? "Recent analyses"} rows={5} />}>
-              <RecentAnalysesSection installationId={installationId} t={t} demoOverview={demoOverview} />
+              <RecentAnalysesSection installationId={installationId} t={t} locale={preferences.locale} demoOverview={demoOverview} />
             </Suspense>
             <Suspense fallback={null}>
-              <IncidentsSection installationId={installationId} t={t} />
+              <IncidentsSection installationId={installationId} t={t} locale={preferences.locale} />
             </Suspense>
           </div>
 
           <Suspense fallback={<PanelFallback label={t("dashboard.eventFeed") ?? "Event feed"} rows={8} />}>
-            <EventsSection installationId={installationId} t={t} demoOverview={demoOverview} />
+            <EventsSection installationId={installationId} t={t} locale={preferences.locale} demoOverview={demoOverview} />
           </Suspense>
         </div>
       </div>

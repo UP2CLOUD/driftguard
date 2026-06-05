@@ -83,7 +83,20 @@
     "findingsEmpty": "Sin hallazgos. La infraestructura parece limpia.",
     "suggestedFix": "Corrección sugerida",
     "findingSingular": "hallazgo",
-    "findingPlural": "hallazgos"
+    "findingPlural": "hallazgos",
+    "analysisUnavailable": "Análisis no disponible",
+    "analysisLoadFailed": "Este análisis no pudo cargarse",
+    "analysisLoadFailedDesc": "La API puede estar temporalmente no disponible o este análisis no se persistió correctamente.",
+    "viewRepos": "Ver repositorios",
+    "filesScanned": "Archivos analizados",
+    "totalFindings": "Total de hallazgos",
+    "criticalHigh": "Crítico + Alto",
+    "duration": "Duración",
+    "aiReview": "Revisión IA",
+    "aiReviewDesc": "basado en la salida del escáner",
+    "scannerWarnings": "Advertencias del escáner",
+    "noEventsTitle": "Sin eventos aún",
+    "noEventsDesc": "Los eventos aparecen cuando DriftGuard procesa PRs, detecta drift o aplica políticas."
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -138,6 +151,16 @@
     "uninstallButton": "Desinstalar →",
     "dangerZone": "Zona de peligro",
     "dangerZoneDesc": "Acciones irreversibles. Proceder con cuidado.",
+    "githubIntegration": "Integración GitHub",
+    "githubIntegrationDesc": "Estado de la instalación del GitHub App y configuración de webhooks.",
+    "connected": "Conectado",
+    "notConnected": "No conectado",
+    "githubApp": "GitHub App",
+    "githubInstallationRow": "ID de instalación",
+    "webhookUrl": "URL del Webhook",
+    "webhookEvents": "Eventos de Webhook",
+    "manageInstallation": "Gestionar instalación",
+    "githubSettingsLink": "Configuración GitHub →",
     "meta": {
       "title": "Configuración — DriftGuard",
       "description": "Gestiona la configuración de tu organización, integraciones y políticas."
@@ -167,7 +190,13 @@
     "statusOff": "inactivo",
     "analysesHeading": "Análisis",
     "noAnalyses": "Aún no hay análisis. Abre un PR de Terraform para la primera revisión.",
-    "riskHeader": "Riesgo"
+    "riskHeader": "Riesgo",
+    "totalAnalyses": "Total de análisis",
+    "highRiskPrs": "PRs de alto riesgo",
+    "manualScan": "Escaneo manual",
+    "noAnalysesTrigger": "Abre un pull request de Terraform en este repositorio para activar el primer análisis.",
+    "defaultBranch": "rama predeterminada:",
+    "connected": "Conectado"
   },
   "landing": {
     "ctaTitle": "Recupera el control de tu cloud.",

@@ -6,6 +6,7 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
+import { formatDate } from "@/lib/format-date";
 
 function riskColor(score: number | null) {
   if (score == null) return "text-[color:var(--dg-fg-subtle)]";
@@ -53,7 +54,7 @@ export default async function RepoPage({
       {/* Breadcrumb */}
       <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
         <Link href={`/dashboard/${installationId}`} className="hover:text-[color:var(--dg-fg)] transition">
-          Overview
+          {t("nav.overview")}
         </Link>
         <span className="opacity-40">·</span>
         <Link href={`/dashboard/${installationId}/repos`} className="hover:text-[color:var(--dg-fg)] transition">
@@ -72,14 +73,14 @@ export default async function RepoPage({
           </h1>
           {repo?.default_branch && (
             <p className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] mt-1">
-              default branch: {repo.default_branch}
+              {t("repos.defaultBranch")} {repo.default_branch}
             </p>
           )}
         </div>
         <div className="flex items-center gap-2">
           <span className="flex items-center gap-1.5 font-mono text-[10px] text-allowed">
             <span className="h-1.5 w-1.5 rounded-full bg-allowed" />
-            Connected
+            {t("repos.connected")}
           </span>
         </div>
       </div>
@@ -88,9 +89,9 @@ export default async function RepoPage({
       {analysesList.length > 0 && (
         <div className="grid grid-cols-3 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)]">
           {[
-            { label: "Total analyses", value: analysesList.length },
-            { label: "Avg risk", value: avgRisk != null ? `${avgRisk}/100` : "—" },
-            { label: "High risk PRs", value: critHigh },
+            { label: t("repos.totalAnalyses"), value: analysesList.length },
+            { label: t("dashboard.avgRisk"), value: avgRisk != null ? `${avgRisk}/100` : "—" },
+            { label: t("repos.highRiskPrs"), value: critHigh },
           ].map(({ label, value }) => (
             <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
               <div className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">
@@ -114,7 +115,7 @@ export default async function RepoPage({
               {t("repos.noAnalyses") ?? "No analyses yet"}
             </p>
             <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto leading-relaxed">
-              Open a Terraform pull request in this repository to trigger the first analysis.
+              {t("repos.noAnalysesTrigger")}
             </p>
           </div>
         ) : (
@@ -133,11 +134,11 @@ export default async function RepoPage({
 
                 <div className="flex-1 min-w-0">
                   <p className="font-mono text-[12px] text-[color:var(--dg-fg)]">
-                    {a.pr_number ? `PR #${a.pr_number}` : "Manual scan"}
+                    {a.pr_number ? `PR #${a.pr_number}` : t("repos.manualScan")}
                   </p>
                   <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
                     {a.head_sha ? `${a.head_sha.slice(0, 7)} · ` : ""}
-                    {a.created_at ? new Date(a.created_at).toLocaleDateString() : ""}
+                    {formatDate(a.created_at, prefs.locale)}
                   </p>
                 </div>
 

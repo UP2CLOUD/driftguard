@@ -91,7 +91,20 @@
     "findingsEmpty": "Sem resultados. A infraestrutura parece limpa.",
     "suggestedFix": "Correção sugerida",
     "findingSingular": "resultado",
-    "findingPlural": "resultados"
+    "findingPlural": "resultados",
+    "analysisUnavailable": "Análise indisponível",
+    "analysisLoadFailed": "Esta análise não pôde ser carregada",
+    "analysisLoadFailedDesc": "A API pode estar temporariamente indisponível ou esta análise não foi persistida corretamente.",
+    "viewRepos": "Ver repositórios",
+    "filesScanned": "Ficheiros analisados",
+    "totalFindings": "Total de resultados",
+    "criticalHigh": "Crítico + Alto",
+    "duration": "Duração",
+    "aiReview": "Revisão IA",
+    "aiReviewDesc": "baseado na saída do scanner",
+    "scannerWarnings": "Avisos do scanner",
+    "noEventsTitle": "Sem eventos ainda",
+    "noEventsDesc": "Os eventos aparecem quando o DriftGuard processa PRs, detecta drift ou aplica políticas."
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -130,7 +143,13 @@
     "statusOff": "inativo",
     "analysesHeading": "Análises",
     "noAnalyses": "Ainda sem análises. Abre um PR de Terraform para desencadear a primeira revisão.",
-    "riskHeader": "Risco"
+    "riskHeader": "Risco",
+    "totalAnalyses": "Total de análises",
+    "highRiskPrs": "PRs de alto risco",
+    "manualScan": "Análise manual",
+    "noAnalysesTrigger": "Abre um pull request de Terraform neste repositório para desencadear a primeira análise.",
+    "defaultBranch": "branch padrão:",
+    "connected": "Conectado"
   },
   "settings": {
     "title": "Configurações",
@@ -164,6 +183,16 @@
     "uninstallButton": "Desinstalar →",
     "dangerZone": "Zona de perigo",
     "dangerZoneDesc": "Acções irreversíveis. Procede com cuidado.",
+    "githubIntegration": "Integração GitHub",
+    "githubIntegrationDesc": "Estado da instalação do GitHub App e configuração de webhooks.",
+    "connected": "Conectado",
+    "notConnected": "Não conectado",
+    "githubApp": "GitHub App",
+    "githubInstallationRow": "ID de instalação",
+    "webhookUrl": "URL do Webhook",
+    "webhookEvents": "Eventos de Webhook",
+    "manageInstallation": "Gerir instalação",
+    "githubSettingsLink": "Configurações GitHub →",
     "meta": {
       "title": "Definições — DriftGuard",
       "description": "Gere as definições da tua organização DriftGuard, integrações e políticas."

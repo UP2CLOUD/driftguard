@@ -83,7 +83,20 @@
     "findingsEmpty": "No findings. Infrastructure looks clean.",
     "suggestedFix": "Suggested fix",
     "findingSingular": "finding",
-    "findingPlural": "findings"
+    "findingPlural": "findings",
+    "analysisUnavailable": "Analysis unavailable",
+    "analysisLoadFailed": "This analysis could not be loaded",
+    "analysisLoadFailedDesc": "The backend API may be temporarily unavailable or this analysis was not persisted correctly.",
+    "viewRepos": "View repos",
+    "filesScanned": "Files scanned",
+    "totalFindings": "Total findings",
+    "criticalHigh": "Critical + High",
+    "duration": "Duration",
+    "aiReview": "AI review",
+    "aiReviewDesc": "grounded on scanner output",
+    "scannerWarnings": "Scanner warnings",
+    "noEventsTitle": "No events yet",
+    "noEventsDesc": "Events appear when DriftGuard processes PRs, detects drift, or applies policies."
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -130,7 +143,13 @@
     "statusOff": "off",
     "analysesHeading": "Analyses",
     "noAnalyses": "No analyses yet. Open a Terraform PR to trigger the first review.",
-    "riskHeader": "Risk"
+    "riskHeader": "Risk",
+    "totalAnalyses": "Total analyses",
+    "highRiskPrs": "High risk PRs",
+    "manualScan": "Manual scan",
+    "noAnalysesTrigger": "Open a Terraform pull request in this repository to trigger the first analysis.",
+    "defaultBranch": "default branch:",
+    "connected": "Connected"
   },
   "settings": {
     "title": "Settings",
@@ -164,6 +183,16 @@
     "uninstallButton": "Uninstall →",
     "dangerZone": "Danger zone",
     "dangerZoneDesc": "Irreversible actions. Proceed with care.",
+    "githubIntegration": "GitHub Integration",
+    "githubIntegrationDesc": "GitHub App installation status and webhook configuration.",
+    "connected": "Connected",
+    "notConnected": "Not connected",
+    "githubApp": "GitHub App",
+    "githubInstallationRow": "Installation ID",
+    "webhookUrl": "Webhook URL",
+    "webhookEvents": "Webhook events",
+    "manageInstallation": "Manage installation",
+    "githubSettingsLink": "GitHub Settings →",
     "meta": {
       "title": "Settings — DriftGuard",
       "description": "Manage your DriftGuard organisation settings, integrations, and policies."
