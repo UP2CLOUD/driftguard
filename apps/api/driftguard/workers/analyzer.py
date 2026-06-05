@@ -501,11 +501,11 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         else:
             review_event = "APPROVE"
             review_body = f"🟢 **DriftGuard: No critical findings.** Risk score {risk_score}/100. Safe to merge."
-        SEV_ICON = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🔵", "info": "⚪"}
+        sev_icons = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🔵", "info": "⚪"}
         inline_comments = []
         for f in findings:
             if f.file and f.line:
-                sev_icon = SEV_ICON.get(f.severity, "⚪")
+                sev_icon = sev_icons.get(f.severity, "⚪")
                 rule = f" `{f.rule_id}`" if f.rule_id else ""
                 comment_body = f"{sev_icon} **{f.severity.upper()}**{rule} — {f.message}"
                 if f.suggestion:
