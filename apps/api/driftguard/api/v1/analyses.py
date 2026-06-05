@@ -48,16 +48,6 @@ async def get_analysis(
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> dict:
-    import traceback
-    try:
-        return await _get_analysis(analysis_id, db)
-    except HTTPException:
-        raise
-    except Exception as exc:
-        raise HTTPException(500, detail=traceback.format_exc()[-2000:]) from exc
-
-
-async def _get_analysis(analysis_id: str, db: AsyncSession) -> dict:
     a = await db.get(Analysis, analysis_id)
     if not a:
         raise HTTPException(404)
