@@ -21,6 +21,7 @@ export function DashboardNav({
   const pathname = usePathname();
   const base = `/dashboard/${installationId}`;
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -28,10 +29,14 @@ export function DashboardNav({
         e.preventDefault();
         setPaletteOpen((v) => !v);
       }
+      if (e.key === "Escape") setMenuOpen(false);
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   const navItems = [
     { label: l("overview", "Overview"),   href: base },
@@ -64,7 +69,8 @@ export function DashboardNav({
               </span>
             </Link>
 
-            <div className="flex items-center gap-0.5">
+            {/* Desktop nav items */}
+            <div className="hidden sm:flex items-center gap-0.5">
               {navItems.map((item) => {
                 const isActive =
                   item.href === base
@@ -74,7 +80,7 @@ export function DashboardNav({
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`relative flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 font-mono text-[10px] sm:text-[11px] uppercase tracking-wider transition rounded ${
+                    className={`relative flex items-center gap-1.5 px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-wider transition rounded ${
                       isActive
                         ? "text-[color:var(--dg-fg)]"
                         : "text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)]"
@@ -116,17 +122,85 @@ export function DashboardNav({
             >
               <span>⌘K</span>
             </button>
-            <form action={signOutToHome}>
+            <form action={signOutToHome} className="hidden sm:block">
               <button type="submit" className="dg-button dg-button-ghost text-[11px] py-1.5 gap-1.5">
                 <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round"
                     d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
                 </svg>
-                <span className="hidden sm:inline">{l("signOut", "Sign out")}</span>
+                <span>{l("signOut", "Sign out")}</span>
               </button>
             </form>
+
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              className="sm:hidden flex flex-col items-center justify-center gap-[5px] w-8 h-8 rounded border border-[color:var(--dg-border)] hover:border-[color:var(--dg-electric)]/40 transition"
+              aria-label="Toggle menu"
+              aria-expanded={menuOpen}
+            >
+              <span className={`block w-4 h-px bg-[color:var(--dg-fg-muted)] transition-all origin-center ${menuOpen ? "rotate-45 translate-y-[6px]" : ""}`} />
+              <span className={`block w-4 h-px bg-[color:var(--dg-fg-muted)] transition-all ${menuOpen ? "opacity-0 scale-x-0" : ""}`} />
+              <span className={`block w-4 h-px bg-[color:var(--dg-fg-muted)] transition-all origin-center ${menuOpen ? "-rotate-45 -translate-y-[6px]" : ""}`} />
+            </button>
           </div>
         </div>
+
+        {/* Mobile drawer */}
+        {menuOpen && (
+          <div className="sm:hidden border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-4 py-3">
+            <div className="space-y-0.5 mb-4">
+              {navItems.map((item) => {
+                const isActive =
+                  item.href === base
+                    ? pathname === base
+                    : pathname.startsWith(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center justify-between px-3 py-2.5 rounded font-mono text-[12px] uppercase tracking-wider transition ${
+                      isActive
+                        ? "bg-[color:var(--dg-surface-raised)] text-[color:var(--dg-fg)]"
+                        : "text-[color:var(--dg-fg-muted)] hover:bg-[color:var(--dg-surface)] hover:text-[color:var(--dg-fg)]"
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    <div className="flex items-center gap-2">
+                      {item.badge ? (
+                        <span className="rounded bg-blocked/20 px-1.5 py-0.5 font-mono text-[9px] text-blocked">
+                          {item.badge}
+                        </span>
+                      ) : null}
+                      {isActive && (
+                        <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--dg-electric)]" />
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Mobile bottom actions */}
+            <div className="flex items-center justify-between pt-3 border-t border-[color:var(--dg-border)]">
+              <Link
+                href="/docs"
+                className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
+              >
+                {l("docs", "Docs")}
+              </Link>
+              <form action={signOutToHome}>
+                <button type="submit" className="flex items-center gap-1.5 font-mono text-[11px] text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] transition">
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round"
+                      d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                  </svg>
+                  {l("signOut", "Sign out")}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
       </nav>
     </>
   );

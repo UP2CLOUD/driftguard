@@ -5,6 +5,7 @@ import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { beGet } from "@/lib/backend";
 import { PolicyCreateForm } from "@/components/PolicyCreateForm";
+import { PolicyCard } from "@/components/PolicyCard";
 
 async function fetchPolicies(id: string) {
   return (
@@ -18,8 +19,7 @@ async function fetchPolicies(id: string) {
 const TYPE_STYLE: Record<string, string> = {
   block: "text-blocked border-blocked/30 bg-blocked/5",
   warn: "text-warned border-warned/30 bg-warned/5",
-  alert:
-    "text-[color:var(--dg-electric-bright)] border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/5",
+  alert: "text-[color:var(--dg-electric-bright)] border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/5",
 };
 
 const EXAMPLE_POLICIES = [
@@ -110,51 +110,7 @@ export default async function PoliciesPage({
           ) : (
             <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
               {policies.map((p: any) => (
-                <div
-                  key={p.id}
-                  className="flex items-start gap-4 px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition"
-                >
-                  <div className="mt-1 shrink-0">
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full inline-block ${p.enabled ? "bg-allowed" : "bg-[color:var(--dg-fg-subtle)]"}`}
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <span
-                        className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${TYPE_STYLE[p.rule_type] ?? ""}`}
-                      >
-                        {p.rule_type}
-                      </span>
-                      <span className="font-sans text-[13px] font-medium text-[color:var(--dg-fg)]">
-                        {p.name}
-                      </span>
-                      {!p.enabled && (
-                        <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">
-                          disabled
-                        </span>
-                      )}
-                    </div>
-                    {p.description && (
-                      <p className="text-[12px] text-[color:var(--dg-fg-muted)] mb-1.5">
-                        {p.description}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-4 flex-wrap font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-                      {p.conditions && (
-                        <span className="truncate max-w-xs">
-                          if{" "}
-                          {Object.entries(p.conditions as Record<string, string>)
-                            .map(([k, v]) => `${k}=${v}`)
-                            .join(" · ")}
-                        </span>
-                      )}
-                      {p.match_count > 0 && (
-                        <span className="text-warned shrink-0">↺ {p.match_count} matches</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <PolicyCard key={p.id} policy={p} installationId={installationId} />
               ))}
             </div>
           )}

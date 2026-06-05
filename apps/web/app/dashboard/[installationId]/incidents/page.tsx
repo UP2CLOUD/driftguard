@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
@@ -137,8 +138,9 @@ export default async function IncidentsPage({
       ) : (
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
           {filtered.map((inc: any) => (
-            <div
+            <Link
               key={inc.id}
+              href={`/dashboard/${installationId}/incidents/${inc.id}`}
               className="flex items-start gap-4 px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition"
             >
               {/* Status dot */}
@@ -197,7 +199,7 @@ export default async function IncidentsPage({
                   </div>
                 )}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

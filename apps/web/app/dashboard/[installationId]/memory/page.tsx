@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
@@ -92,7 +93,11 @@ export default async function MemoryPage({
       ) : (
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
           {entries.map((e: any) => (
-            <div key={e.id} className="flex items-start gap-4 px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition">
+            <Link
+              key={e.id}
+              href={e.analysis_id ? `/dashboard/${installationId}/analyses/${e.analysis_id}` : "#"}
+              className="flex items-start gap-4 px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition"
+            >
               <div className="flex-1 min-w-0">
                 {/* Top row: repo + outcome badge */}
                 <div className="flex items-center gap-2 flex-wrap mb-1.5">
@@ -132,16 +137,13 @@ export default async function MemoryPage({
                     </span>
                   )}
                   {e.analysis_id && (
-                    <a
-                      href={`/dashboard/${installationId}/analyses/${e.analysis_id}`}
-                      className="font-mono text-[9px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
-                    >
+                    <span className="font-mono text-[9px] text-[color:var(--dg-electric)]">
                       View analysis →
-                    </a>
+                    </span>
                   )}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
