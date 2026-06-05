@@ -52,8 +52,8 @@ async def get_analysis(
         return await _get_analysis(analysis_id, db)
     except HTTPException:
         raise
-    except Exception:
-        raise HTTPException(500, detail=traceback.format_exc()[-2000:])
+    except Exception as exc:
+        raise HTTPException(500, detail=traceback.format_exc()[-2000:]) from exc
 
 
 async def _get_analysis(analysis_id: str, db: AsyncSession) -> dict:
