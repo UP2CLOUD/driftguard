@@ -2,11 +2,5 @@
   "framework": "nextjs",
   "buildCommand": "pnpm build",
   "installCommand": "pnpm install",
-  "outputDirectory": ".next",
-  "crons": [
-    {
-      "path": "/api/health",
-      "schedule": "*/14 * * * *"
-    }
-  ]
+  "outputDirectory": ".next"
 }
