@@ -578,6 +578,66 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
     except Exception as exc:
         log.warning("memory_store_failed", error=str(exc))
 
+    # Auto-create/update DriftIncidents for critical/high findings
+    try:
+        import hashlib
+
+        from sqlalchemy import and_, select
+
+        from driftguard.db.models import DriftIncident
+        from driftguard.db.models import Organization as _OrgInc
+        from driftguard.db.models import Repository as _RepoInc
+
+        async with SessionLocal() as _inc_db:
+            _org_inc = (
+                await _inc_db.execute(select(_OrgInc).where(_OrgInc.github_installation_id == installation_id))
+            ).scalar_one_or_none()
+            if _org_inc:
+                _repo_inc = (
+                    await _inc_db.execute(select(_RepoInc).where(_RepoInc.full_name == repo_full_name))
+                ).scalar_one_or_none()
+                _repo_inc_id = _repo_inc.id if _repo_inc else None
+
+                now = datetime.now(UTC)
+                for _f in findings:
+                    if _f.severity not in ("critical", "high"):
+                        continue
+                    _raw = f"security_finding:{repo_full_name}:{' '.join(_f.message.lower().split())[:200]}"
+                    _fp = hashlib.sha256(_raw.encode()).hexdigest()[:16]
+                    _existing = (
+                        await _inc_db.execute(
+                            select(DriftIncident).where(
+                                and_(
+                                    DriftIncident.org_id == _org_inc.id,
+                                    DriftIncident.fingerprint == _fp,
+                                    DriftIncident.status != "resolved",
+                                )
+                            )
+                        )
+                    ).scalar_one_or_none()
+                    if _existing:
+                        _existing.recurrence_count += 1
+                        _existing.last_seen_at = now
+                    else:
+                        _title = _f.message[:80] if len(_f.message) > 80 else _f.message
+                        _inc_db.add(
+                            DriftIncident(
+                                org_id=_org_inc.id,
+                                repo_id=_repo_inc_id,
+                                title=_title,
+                                description=_f.message,
+                                severity=_f.severity,
+                                status="open",
+                                suggested_fix=_f.suggestion,
+                                fingerprint=_fp,
+                                first_seen_at=now,
+                                last_seen_at=now,
+                            )
+                        )
+                await _inc_db.commit()
+    except Exception as _exc:  # noqa: BLE001
+        log.warning("incident_upsert_failed", error=str(_exc))
+
     # Audit log — DORA/NIS2 evidence
     try:
         from sqlalchemy import select
