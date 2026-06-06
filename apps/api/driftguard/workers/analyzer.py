@@ -516,12 +516,14 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
                 comment_body = f"{sev_icon} **{f.severity.upper()}**{rule} — {f.message}"
                 if f.suggestion:
                     comment_body += f"\n\n> 💡 {f.suggestion}"
-                inline_comments.append({
-                    "path": f.file,
-                    "line": f.line,
-                    "side": "RIGHT",
-                    "body": comment_body,
-                })
+                inline_comments.append(
+                    {
+                        "path": f.file,
+                        "line": f.line,
+                        "side": "RIGHT",
+                        "body": comment_body,
+                    }
+                )
         await submit_pr_review(
             token,
             repo_full_name,

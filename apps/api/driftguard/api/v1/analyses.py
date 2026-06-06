@@ -59,11 +59,7 @@ async def get_analysis(
 
     critical = sum(1 for f in findings_rows if f.severity == "critical")
     high = sum(1 for f in findings_rows if f.severity == "high")
-    duration_ms = (
-        int((a.finished_at - a.started_at).total_seconds() * 1000)
-        if a.finished_at and a.started_at
-        else None
-    )
+    duration_ms = int((a.finished_at - a.started_at).total_seconds() * 1000) if a.finished_at and a.started_at else None
 
     return {
         "id": a.id,
