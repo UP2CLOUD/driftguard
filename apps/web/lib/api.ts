@@ -33,6 +33,12 @@ export type Finding = {
   resource: string;
   message: string;
   suggestion: string | null;
+  rule_id?: string | null;
+  category?: string | null;
+  title?: string | null;
+  file?: string | null;
+  line?: number | null;
+  controls?: string[];
 };
 
 export type Analysis = {
@@ -41,12 +47,18 @@ export type Analysis = {
   cost_delta_cents: number | null;
   risk_score: number | null;
   summary_md: string | null;
+  ai_summary?: string | null;
   findings: Finding[];
   repo_full_name?: string | null;
   pr_number?: number | null;
   head_sha?: string | null;
   started_at?: string | null;
   finished_at?: string | null;
+  files_scanned?: number;
+  critical?: number;
+  high?: number;
+  duration_ms?: number | null;
+  errors?: string[];
 };
 
 export class ApiError extends Error {

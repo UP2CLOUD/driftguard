@@ -531,7 +531,16 @@
     "open": "开放",
     "investigating": "调查中",
     "resolved": "已解决",
-    "suppressed": "已抑制"
+    "suppressed": "已抑制",
+    "updateStatus": "更新状态",
+    "rootCause": "根本原因",
+    "rootCausePlaceholder": "描述根本原因…",
+    "suggestedFixLabel": "建议修复",
+    "suggestedFixPlaceholder": "描述修复方法…",
+    "saving": "保存中…",
+    "saveChanges": "保存更改",
+    "saved": "已保存",
+    "suppressLabel": "抑制"
   },
   "policies": {
     "title": "策略规则",
@@ -544,7 +553,17 @@
     "block": "阻断",
     "warn": "警告",
     "alert": "告警",
-    "matches": "{n} 匹配"
+    "matches": "{n} 匹配",
+    "editTitle": "编辑策略",
+    "namePlaceholder": "策略名称",
+    "descriptionPlaceholder": "描述（可选）",
+    "conditions": "条件",
+    "saving": "保存中…",
+    "saveChanges": "保存更改",
+    "disable": "禁用",
+    "enable": "启用",
+    "edit": "编辑",
+    "confirm": "确认"
   },
   "memory": {
     "title": "运行记忆",

@@ -107,10 +107,24 @@
   "common": {
     "privacy": "Privacy",
     "terms": "Terms",
+    "legal": "Legal",
     "language": "Language",
-    "docs": "Docs",
-    "signOut": "Sign out",
-    "loading": "Loading"
+    "close": "Close",
+    "loading": "Loading",
+    "error": "Error",
+    "retry": "Try again",
+    "noData": "No data",
+    "comingSoon": "Coming soon",
+    "learnMore": "Learn more",
+    "viewAll": "View all",
+    "back": "Back",
+    "next": "Next",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "openInNew": "Open in new tab"
   },
   "footer": {
     "privacy": "Privacy",
@@ -539,7 +553,16 @@
     "open": "open",
     "investigating": "investigating",
     "resolved": "resolved",
-    "suppressed": "suppressed"
+    "suppressed": "suppressed",
+    "updateStatus": "Update status",
+    "rootCause": "Root cause",
+    "rootCausePlaceholder": "Describe the root cause…",
+    "suggestedFixLabel": "Suggested fix",
+    "suggestedFixPlaceholder": "Describe the fix…",
+    "saving": "Saving…",
+    "saveChanges": "Save changes",
+    "saved": "Saved",
+    "suppressLabel": "Suppress"
   },
   "policies": {
     "title": "Policy rules",
@@ -552,7 +575,17 @@
     "block": "block",
     "warn": "warn",
     "alert": "alert",
-    "matches": "{n} matches"
+    "matches": "{n} matches",
+    "editTitle": "Edit policy",
+    "namePlaceholder": "Policy name",
+    "descriptionPlaceholder": "Description (optional)",
+    "conditions": "Conditions",
+    "saving": "Saving…",
+    "saveChanges": "Save changes",
+    "disable": "Disable",
+    "enable": "Enable",
+    "edit": "Edit",
+    "confirm": "Confirm"
   },
   "memory": {
     "title": "Operational memory",
@@ -922,28 +955,6 @@
     "readDocs": "Read the docs →",
     "otuCompatible": "OpenTofu compatible",
     "noCodeChange": "No code changes"
-  },
-  "common": {
-    "privacy": "Privacy",
-    "terms": "Terms",
-    "legal": "Legal",
-    "language": "Language",
-    "close": "Close",
-    "loading": "Loading",
-    "error": "Error",
-    "retry": "Try again",
-    "noData": "No data",
-    "comingSoon": "Coming soon",
-    "learnMore": "Learn more",
-    "viewAll": "View all",
-    "back": "Back",
-    "next": "Next",
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "copy": "Copy",
-    "copied": "Copied!",
-    "openInNew": "Open in new tab"
   },
   "findings": {
     "critical": "Critical",

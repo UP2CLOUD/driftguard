@@ -43,11 +43,13 @@ async def list_memory(
     return [
         {
             "id": r.id,
+            "analysis_id": r.analysis_id,
             "repo_full_name": r.repo_full_name,
             "pr_number": r.pr_number,
             "intent_text": r.intent_text[:200] if r.intent_text else None,
             "severity": r.severity,
             "outcome": r.outcome,
+            "blast_radius": r.blast_radius,
             "created_at": r.created_at.isoformat() if r.created_at else None,
         }
         for r in rows

@@ -269,6 +269,12 @@ async def _persist_analysis(
                         resource_address=f.resource,
                         message=f.message,
                         suggestion=f.suggestion,
+                        rule_id=f.rule_id,
+                        file=f.file,
+                        line=f.line,
+                        controls=list(f.controls) if f.controls else None,
+                        category=getattr(f, "category", None),
+                        title=getattr(f, "title", None),
                     )
                 )
 

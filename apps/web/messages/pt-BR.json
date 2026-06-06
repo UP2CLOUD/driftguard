@@ -2,10 +2,24 @@
   "common": {
     "privacy": "Privacidade",
     "terms": "Termos",
+    "legal": "Legal",
     "language": "Idioma",
-    "docs": "Docs",
-    "signOut": "Sair",
-    "loading": "A carregar"
+    "close": "Fechar",
+    "loading": "A carregar",
+    "error": "Erro",
+    "retry": "Tentar novamente",
+    "noData": "Sem dados",
+    "comingSoon": "Em breve",
+    "learnMore": "Saber mais",
+    "viewAll": "Ver tudo",
+    "back": "Voltar",
+    "next": "Seguinte",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "openInNew": "Abrir em nova aba"
   },
   "nav": {
     "features": "Recursos",
@@ -539,7 +553,16 @@
     "open": "aberto",
     "investigating": "investigando",
     "resolved": "resolvido",
-    "suppressed": "suprimido"
+    "suppressed": "suprimido",
+    "updateStatus": "Atualizar estado",
+    "rootCause": "Causa raiz",
+    "rootCausePlaceholder": "Descreva a causa raiz…",
+    "suggestedFixLabel": "Correção sugerida",
+    "suggestedFixPlaceholder": "Descreva a correção…",
+    "saving": "A guardar…",
+    "saveChanges": "Guardar alterações",
+    "saved": "Guardado",
+    "suppressLabel": "Suprimir"
   },
   "policies": {
     "title": "Regras de política",
@@ -552,7 +575,17 @@
     "block": "bloquear",
     "warn": "avisar",
     "alert": "alertar",
-    "matches": "{n} correspondências"
+    "matches": "{n} correspondências",
+    "editTitle": "Editar política",
+    "namePlaceholder": "Nome da política",
+    "descriptionPlaceholder": "Descrição (opcional)",
+    "conditions": "Condições",
+    "saving": "A guardar…",
+    "saveChanges": "Guardar alterações",
+    "disable": "Desativar",
+    "enable": "Ativar",
+    "edit": "Editar",
+    "confirm": "Confirmar"
   },
   "memory": {
     "title": "Memória operacional",
@@ -922,28 +955,6 @@
     "readDocs": "Ler a documentação →",
     "otuCompatible": "Compatível com OpenTofu",
     "noCodeChange": "Sem alterações de código"
-  },
-  "common": {
-    "privacy": "Privacidade",
-    "terms": "Termos",
-    "legal": "Legal",
-    "language": "Idioma",
-    "close": "Fechar",
-    "loading": "A carregar",
-    "error": "Erro",
-    "retry": "Tentar novamente",
-    "noData": "Sem dados",
-    "comingSoon": "Em breve",
-    "learnMore": "Saber mais",
-    "viewAll": "Ver tudo",
-    "back": "Voltar",
-    "next": "Seguinte",
-    "save": "Guardar",
-    "cancel": "Cancelar",
-    "delete": "Eliminar",
-    "copy": "Copiar",
-    "copied": "Copiado!",
-    "openInNew": "Abrir em nova aba"
   },
   "findings": {
     "critical": "Crítico",

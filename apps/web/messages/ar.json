@@ -531,7 +531,16 @@
     "open": "مفتوح",
     "investigating": "قيد التحقيق",
     "resolved": "محلول",
-    "suppressed": "مكتوم"
+    "suppressed": "مكتوم",
+    "updateStatus": "تحديث الحالة",
+    "rootCause": "السبب الجذري",
+    "rootCausePlaceholder": "صف السبب الجذري…",
+    "suggestedFixLabel": "الإصلاح المقترح",
+    "suggestedFixPlaceholder": "صف الإصلاح…",
+    "saving": "جاري الحفظ…",
+    "saveChanges": "حفظ التغييرات",
+    "saved": "تم الحفظ",
+    "suppressLabel": "تجاهل"
   },
   "policies": {
     "title": "قواعد السياسة",
@@ -544,7 +553,17 @@
     "block": "حظر",
     "warn": "تحذير",
     "alert": "تنبيه",
-    "matches": "{n} تطابقات"
+    "matches": "{n} تطابقات",
+    "editTitle": "تعديل السياسة",
+    "namePlaceholder": "اسم السياسة",
+    "descriptionPlaceholder": "الوصف (اختياري)",
+    "conditions": "الشروط",
+    "saving": "جاري الحفظ…",
+    "saveChanges": "حفظ التغييرات",
+    "disable": "تعطيل",
+    "enable": "تفعيل",
+    "edit": "تعديل",
+    "confirm": "تأكيد"
   },
   "memory": {
     "title": "الذاكرة التشغيلية",
