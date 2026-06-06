@@ -531,7 +531,16 @@
     "open": "abierto",
     "investigating": "investigando",
     "resolved": "resuelto",
-    "suppressed": "suprimido"
+    "suppressed": "suprimido",
+    "updateStatus": "Actualizar estado",
+    "rootCause": "Causa raíz",
+    "rootCausePlaceholder": "Describe la causa raíz…",
+    "suggestedFixLabel": "Corrección sugerida",
+    "suggestedFixPlaceholder": "Describe la corrección…",
+    "saving": "Guardando…",
+    "saveChanges": "Guardar cambios",
+    "saved": "Guardado",
+    "suppressLabel": "Suprimir"
   },
   "policies": {
     "title": "Reglas de política",
@@ -544,7 +553,17 @@
     "block": "bloquear",
     "warn": "advertir",
     "alert": "alertar",
-    "matches": "{n} coincidencias"
+    "matches": "{n} coincidencias",
+    "editTitle": "Editar política",
+    "namePlaceholder": "Nombre de la política",
+    "descriptionPlaceholder": "Descripción (opcional)",
+    "conditions": "Condiciones",
+    "saving": "Guardando…",
+    "saveChanges": "Guardar cambios",
+    "disable": "Deshabilitar",
+    "enable": "Habilitar",
+    "edit": "Editar",
+    "confirm": "Confirmar"
   },
   "memory": {
     "title": "Memoria operacional",

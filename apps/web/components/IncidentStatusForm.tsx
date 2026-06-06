@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-const STATUSES = [
-  { value: "open",          label: "Open",          cls: "border-blocked/30 bg-blocked/5 text-blocked" },
-  { value: "investigating", label: "Investigating",  cls: "border-warned/30 bg-warned/5 text-warned" },
-  { value: "resolved",      label: "Resolved",       cls: "border-allowed/30 bg-allowed/5 text-allowed" },
-  { value: "suppressed",    label: "Suppress",       cls: "border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] text-[color:var(--dg-fg-subtle)]" },
-];
+import { useT } from "@/components/I18nProvider";
 
 export function IncidentStatusForm({
   incidentId,
@@ -21,6 +15,13 @@ export function IncidentStatusForm({
   currentRootCause: string;
   currentSuggestedFix: string;
 }) {
+  const t = useT();
+  const STATUSES = [
+    { value: "open",          label: t("incidents.open"),          cls: "border-blocked/30 bg-blocked/5 text-blocked" },
+    { value: "investigating", label: t("incidents.investigating"),  cls: "border-warned/30 bg-warned/5 text-warned" },
+    { value: "resolved",      label: t("incidents.resolved"),       cls: "border-allowed/30 bg-allowed/5 text-allowed" },
+    { value: "suppressed",    label: t("incidents.suppressLabel"),  cls: "border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] text-[color:var(--dg-fg-subtle)]" },
+  ];
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState(currentStatus);
@@ -64,7 +65,7 @@ export function IncidentStatusForm({
         onClick={() => setOpen(true)}
         className="rounded border border-[color:var(--dg-border)] px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
       >
-        Update status
+        {t("incidents.updateStatus")}
       </button>
     );
   }
@@ -73,20 +74,20 @@ export function IncidentStatusForm({
     <div className="rounded-md border border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-surface)] overflow-hidden">
       <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] px-4 py-3">
         <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
-          Update status
+          {t("incidents.updateStatus")}
         </span>
         <button
           onClick={() => setOpen(false)}
           className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
         >
-          Cancel
+          {t("common.cancel")}
         </button>
       </div>
       <div className="p-4 space-y-4">
         {/* Status selector */}
         <div>
           <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-2">
-            Status
+            {t("incidents.status")}
           </label>
           <div className="flex flex-wrap gap-2">
             {STATUSES.map((s) => (
@@ -108,12 +109,12 @@ export function IncidentStatusForm({
         {/* Root cause */}
         <div>
           <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
-            Root cause
+            {t("incidents.rootCause")}
           </label>
           <textarea
             value={rootCause}
             onChange={(e) => setRootCause(e.target.value)}
-            placeholder="Describe the root cause…"
+            placeholder={t("incidents.rootCausePlaceholder")}
             rows={3}
             className="w-full rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] focus:border-[color:var(--dg-electric)] focus:outline-none transition resize-none"
           />
@@ -122,26 +123,26 @@ export function IncidentStatusForm({
         {/* Suggested fix */}
         <div>
           <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
-            Suggested fix
+            {t("incidents.suggestedFixLabel")}
           </label>
           <textarea
             value={suggestedFix}
             onChange={(e) => setSuggestedFix(e.target.value)}
-            placeholder="Describe the fix…"
+            placeholder={t("incidents.suggestedFixPlaceholder")}
             rows={2}
             className="w-full rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] focus:border-[color:var(--dg-electric)] focus:outline-none transition resize-none"
           />
         </div>
 
         {error && <p className="font-mono text-[11px] text-blocked">✗ {error}</p>}
-        {saved && <p className="font-mono text-[11px] text-allowed">✓ Saved</p>}
+        {saved && <p className="font-mono text-[11px] text-allowed">✓ {t("incidents.saved")}</p>}
 
         <button
           onClick={save}
           disabled={loading}
           className="w-full rounded bg-[color:var(--dg-electric)] py-2 font-mono text-[11px] uppercase tracking-widest text-white hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition"
         >
-          {loading ? "Saving…" : "Save changes"}
+          {loading ? t("incidents.saving") : t("incidents.saveChanges")}
         </button>
       </div>
     </div>

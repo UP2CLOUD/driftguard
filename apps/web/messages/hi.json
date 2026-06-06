@@ -531,7 +531,16 @@
     "open": "खुला",
     "investigating": "जांच में",
     "resolved": "हल किया गया",
-    "suppressed": "दबाया गया"
+    "suppressed": "दबाया गया",
+    "updateStatus": "स्थिति अपडेट करें",
+    "rootCause": "मूल कारण",
+    "rootCausePlaceholder": "मूल कारण बताएं…",
+    "suggestedFixLabel": "सुझाई गई सुधार",
+    "suggestedFixPlaceholder": "सुधार का वर्णन करें…",
+    "saving": "सहेज रहे हैं…",
+    "saveChanges": "परिवर्तन सहेजें",
+    "saved": "सहेजा गया",
+    "suppressLabel": "दबाएं"
   },
   "policies": {
     "title": "नीति नियम",
@@ -544,7 +553,17 @@
     "block": "ब्लॉक",
     "warn": "चेतावनी",
     "alert": "अलर्ट",
-    "matches": "{n} मिलान"
+    "matches": "{n} मिलान",
+    "editTitle": "नीति संपादित करें",
+    "namePlaceholder": "नीति का नाम",
+    "descriptionPlaceholder": "विवरण (वैकल्पिक)",
+    "conditions": "शर्तें",
+    "saving": "सहेज रहे हैं…",
+    "saveChanges": "परिवर्तन सहेजें",
+    "disable": "अक्षम करें",
+    "enable": "सक्षम करें",
+    "edit": "संपादित करें",
+    "confirm": "पुष्टि करें"
   },
   "memory": {
     "title": "परिचालन स्मृति",

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useT } from "@/components/I18nProvider";
 
 const TYPE_STYLE: Record<string, string> = {
   block: "text-blocked border-blocked/30 bg-blocked/5",
@@ -13,6 +14,7 @@ const RULE_TYPES = ["block", "warn", "alert"];
 const SEVERITIES = ["critical", "high", "medium", "low"];
 
 export function PolicyCard({ policy, installationId }: { policy: any; installationId: string }) {
+  const t = useT();
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -102,14 +104,14 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
     return (
       <div className="px-4 py-4 bg-[color:var(--dg-surface-raised)]">
         <div className="flex items-center justify-between mb-4">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">Edit policy</span>
-          <button onClick={() => setEditing(false)} className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">Cancel</button>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">{t("policies.editTitle")}</span>
+          <button onClick={() => setEditing(false)} className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">{t("common.cancel")}</button>
         </div>
         <div className="space-y-3">
           <input
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-            placeholder="Policy name"
+            placeholder={t("policies.namePlaceholder")}
             className="w-full rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] focus:border-[color:var(--dg-electric)] focus:outline-none"
           />
           <div className="grid grid-cols-2 gap-3">
@@ -131,12 +133,12 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
           <input
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            placeholder="Description (optional)"
+            placeholder={t("policies.descriptionPlaceholder")}
             className="w-full rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] focus:border-[color:var(--dg-electric)] focus:outline-none"
           />
           {/* Conditions */}
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1.5">Conditions</p>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1.5">{t("policies.conditions")}</p>
             {Object.entries(form.conditions).map(([k, v]) => (
               <div key={k} className="flex items-center gap-2 mb-1.5">
                 <code className="flex-1 font-mono text-[11px] text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-canvas)] border border-[color:var(--dg-border)] rounded px-2 py-1">
@@ -160,7 +162,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
             disabled={loading === "save"}
             className="w-full rounded bg-[color:var(--dg-electric)] py-2 font-mono text-[11px] uppercase tracking-widest text-white hover:brightness-110 disabled:opacity-40 transition"
           >
-            {loading === "save" ? "Saving…" : "Save changes"}
+            {loading === "save" ? t("policies.saving") : t("policies.saveChanges")}
           </button>
         </div>
       </div>
@@ -206,10 +208,10 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
         <button
           onClick={toggleEnabled}
           disabled={loading === "toggle"}
-          title={policy.enabled ? "Disable" : "Enable"}
+          title={policy.enabled ? t("policies.disable") : t("policies.enable")}
           className="rounded border border-[color:var(--dg-border)] px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 disabled:opacity-40 transition"
         >
-          {loading === "toggle" ? "…" : policy.enabled ? "Disable" : "Enable"}
+          {loading === "toggle" ? "…" : policy.enabled ? t("policies.disable") : t("policies.enable")}
         </button>
 
         {/* Edit */}
@@ -217,7 +219,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
           onClick={() => setEditing(true)}
           className="rounded border border-[color:var(--dg-border)] px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
         >
-          Edit
+          {t("policies.edit")}
         </button>
 
         {/* Delete */}
@@ -228,7 +230,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
               disabled={loading === "delete"}
               className="rounded border border-blocked/30 bg-blocked/5 px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-blocked hover:bg-blocked/10 disabled:opacity-40 transition"
             >
-              {loading === "delete" ? "…" : "Confirm"}
+              {loading === "delete" ? "…" : t("policies.confirm")}
             </button>
             <button
               onClick={() => setConfirmDelete(false)}
