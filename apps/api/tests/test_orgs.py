@@ -40,7 +40,7 @@ def _cleanup():
 def test_list_incidents_no_org_returns_empty():
     _override(_no_org_session())
     try:
-        r = TestClient(app).get("/api/v1/incidents?installation_id=9999")
+        r = TestClient(app).get("/api/v1/incidents?installation_id=9999", headers=AUTH)
         assert r.status_code == 200
         assert r.json() == []
     finally:
@@ -50,7 +50,7 @@ def test_list_incidents_no_org_returns_empty():
 def test_get_incident_not_found():
     _override(_no_org_session())
     try:
-        r = TestClient(app).get("/api/v1/incidents/nonexistent-id")
+        r = TestClient(app).get("/api/v1/incidents/nonexistent-id", headers=AUTH)
         assert r.status_code == 404
     finally:
         _cleanup()
@@ -62,6 +62,7 @@ def test_patch_incident_not_found():
         r = TestClient(app).patch(
             "/api/v1/incidents/nonexistent-id",
             json={"status": "resolved"},
+            headers=AUTH,
         )
         assert r.status_code == 404
     finally:
@@ -71,7 +72,7 @@ def test_patch_incident_not_found():
 def test_list_events_no_org_returns_empty():
     _override(_no_org_session())
     try:
-        r = TestClient(app).get("/api/v1/events?installation_id=9999")
+        r = TestClient(app).get("/api/v1/events?installation_id=9999", headers=AUTH)
         assert r.status_code == 200
         assert r.json() == []
     finally:
@@ -103,6 +104,7 @@ def test_patch_incident_invalid_status():
         r = TestClient(app).patch(
             "/api/v1/incidents/test-id",
             json={"status": "invalid_status"},
+            headers=AUTH,
         )
         assert r.status_code == 422
     finally:

@@ -7,6 +7,8 @@ from fastapi.testclient import TestClient
 from driftguard.core.db import get_db
 from driftguard.main import app
 
+AUTH = {"Authorization": "Bearer dev-only-change-me"}
+
 
 def _empty_session():
     mock = AsyncMock()
@@ -40,7 +42,7 @@ class TestDashboardOverview:
     def test_unknown_installation_returns_empty(self):
         _override(_empty_session())
         try:
-            r = TestClient(app).get("/api/v1/dashboard/overview?installation_id=9999")
+            r = TestClient(app).get("/api/v1/dashboard/overview?installation_id=9999", headers=AUTH)
             assert r.status_code == 200
             body = r.json()
             assert body["repos"] == 0
@@ -53,13 +55,13 @@ class TestDashboardOverview:
             _cleanup()
 
     def test_missing_installation_id_returns_422(self):
-        r = TestClient(app).get("/api/v1/dashboard/overview")
+        r = TestClient(app).get("/api/v1/dashboard/overview", headers=AUTH)
         assert r.status_code == 422
 
     def test_empty_severity_breakdown(self):
         _override(_empty_session())
         try:
-            r = TestClient(app).get("/api/v1/dashboard/overview?installation_id=1")
+            r = TestClient(app).get("/api/v1/dashboard/overview?installation_id=1", headers=AUTH)
             assert r.status_code == 200
             assert r.json()["severity_breakdown"] == {}
         finally:

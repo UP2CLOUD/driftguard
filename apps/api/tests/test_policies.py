@@ -11,6 +11,8 @@ from driftguard.core.db import get_db
 from driftguard.db.models import Organization, PolicyRule
 from driftguard.main import app
 
+AUTH = {"Authorization": "Bearer dev-only-change-me"}
+
 
 def _org():
     return Organization(
@@ -71,7 +73,7 @@ class TestListPolicies:
     def test_no_org_returns_empty(self):
         _override(_mock_session(org=None))
         try:
-            r = TestClient(app).get("/api/v1/policies?installation_id=9999")
+            r = TestClient(app).get("/api/v1/policies?installation_id=9999", headers=AUTH)
             assert r.status_code == 200
             assert r.json() == []
         finally:
@@ -80,7 +82,7 @@ class TestListPolicies:
     def test_returns_policy_list(self):
         _override(_mock_session(org=_org(), rules=[_rule()]))
         try:
-            r = TestClient(app).get("/api/v1/policies?installation_id=999")
+            r = TestClient(app).get("/api/v1/policies?installation_id=999", headers=AUTH)
             assert r.status_code == 200
             body = r.json()
             assert len(body) == 1
@@ -106,6 +108,7 @@ class TestCreatePolicy:
             r = TestClient(app).post(
                 "/api/v1/policies?installation_id=999",
                 json={"name": "Test rule", "rule_type": "warn", "severity": "high"},
+                headers=AUTH,
             )
             assert r.status_code == 201
         finally:
@@ -119,13 +122,14 @@ class TestCreatePolicy:
             r = TestClient(app).post(
                 "/api/v1/policies?installation_id=999",
                 json={"name": "Bad rule", "rule_type": "invalid"},
+                headers=AUTH,
             )
             assert r.status_code == 422
         finally:
             _cleanup()
 
     def test_missing_installation_returns_422(self):
-        r = TestClient(app).post("/api/v1/policies", json={"name": "X"})
+        r = TestClient(app).post("/api/v1/policies", json={"name": "X"}, headers=AUTH)
         assert r.status_code == 422
 
 
@@ -137,6 +141,7 @@ class TestPatchPolicy:
             r = TestClient(app).patch(
                 "/api/v1/policies/rule-1",
                 json={"enabled": False},
+                headers=AUTH,
             )
             assert r.status_code == 200
             assert rule.enabled is False
@@ -149,6 +154,7 @@ class TestPatchPolicy:
             r = TestClient(app).patch(
                 "/api/v1/policies/nonexistent",
                 json={"enabled": False},
+                headers=AUTH,
             )
             assert r.status_code == 404
         finally:
@@ -159,7 +165,7 @@ class TestDeletePolicy:
     def test_delete_existing(self):
         _override(_mock_session(get_return=_rule()))
         try:
-            r = TestClient(app).delete("/api/v1/policies/rule-1")
+            r = TestClient(app).delete("/api/v1/policies/rule-1", headers=AUTH)
             assert r.status_code == 204
         finally:
             _cleanup()
@@ -167,15 +173,13 @@ class TestDeletePolicy:
     def test_delete_missing(self):
         _override(_mock_session(get_return=None))
         try:
-            r = TestClient(app).delete("/api/v1/policies/nope")
+            r = TestClient(app).delete("/api/v1/policies/nope", headers=AUTH)
             assert r.status_code == 404
         finally:
             _cleanup()
 
 
 # ── Memory endpoints ──────────────────────────────────────────────────────────
-
-AUTH = {"Authorization": "Bearer dev-only-change-me"}
 
 
 class TestMemoryList:
