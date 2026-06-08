@@ -34,6 +34,7 @@ async def overview(
 
         if not org:
             from driftguard.api.v1.orgs import _bootstrap_installation
+
             org = await _bootstrap_installation(db, installation_id)
 
         if not org:
