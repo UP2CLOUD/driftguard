@@ -158,6 +158,25 @@ async def debug_analyze_steps(
     return {"steps": steps, "failed_at": None}
 
 
+@router.get("/debug/run-migrations")
+async def debug_run_migrations() -> dict:
+    """Manually trigger alembic upgrade head and return result or error."""
+    import subprocess
+    import sys
+
+    result = subprocess.run(
+        [sys.executable, "-m", "alembic", "upgrade", "head"],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    return {
+        "returncode": result.returncode,
+        "stdout": result.stdout[-2000:],
+        "stderr": result.stderr[-2000:],
+    }
+
+
 @router.get("/debug/schema")
 async def debug_schema() -> dict:
     """Check if migration 010 columns exist and report alembic version."""
