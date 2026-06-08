@@ -91,10 +91,10 @@ export async function StatsStripSection({
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)]">
         {cells.map(({ label, value, color, hint }) => (
           <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
-            <div className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">{label}</div>
+            <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">{label}</div>
             <div className={`font-mono text-xl font-bold tabular-nums ${color || "text-[color:var(--dg-fg)]"}`}>{value}</div>
             {hint && (
-              <div className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)] mt-0.5 truncate">{hint}</div>
+              <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5 truncate">{hint}</div>
             )}
           </div>
         ))}

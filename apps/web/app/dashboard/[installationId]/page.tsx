@@ -33,8 +33,7 @@ export default async function DashboardPage({
 
   return (
     <div className="bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-8">
-        {/* Demo mode toggle — shown when no real data */}
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 sm:py-12">
         <DemoToggle active={demoMode} />
 
         <Suspense fallback={<StatsStripFallback />}>
@@ -42,13 +41,15 @@ export default async function DashboardPage({
         </Suspense>
 
         {!demoMode && (
-          <Suspense fallback={null}>
-            <ReadinessChecklistSection installationId={installationId} t={t} />
-          </Suspense>
+          <div className="mt-5">
+            <Suspense fallback={null}>
+              <ReadinessChecklistSection installationId={installationId} t={t} />
+            </Suspense>
+          </div>
         )}
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-          <div className="space-y-6">
+        <div className="mt-10 sm:mt-12 grid gap-8 lg:grid-cols-[1fr_380px]">
+          <div className="space-y-5 min-w-0">
             <Suspense fallback={<PanelFallback label={t("repos.recentAnalyses") ?? "Recent analyses"} rows={5} />}>
               <RecentAnalysesSection installationId={installationId} t={t} locale={preferences.locale} demoOverview={demoOverview} />
             </Suspense>
@@ -57,9 +58,11 @@ export default async function DashboardPage({
             </Suspense>
           </div>
 
-          <Suspense fallback={<PanelFallback label={t("dashboard.eventFeed") ?? "Event feed"} rows={8} />}>
-            <EventsSection installationId={installationId} t={t} locale={preferences.locale} demoOverview={demoOverview} />
-          </Suspense>
+          <div className="lg:sticky lg:top-6 lg:self-start">
+            <Suspense fallback={<PanelFallback label={t("dashboard.eventFeed") ?? "Event feed"} rows={8} />}>
+              <EventsSection installationId={installationId} t={t} locale={preferences.locale} demoOverview={demoOverview} />
+            </Suspense>
+          </div>
         </div>
       </div>
     </div>
