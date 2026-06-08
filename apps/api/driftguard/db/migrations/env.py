@@ -13,9 +13,9 @@ config = context.config
 
 # Use DATABASE_URL env var if set (Render injects it); fall back to settings.
 _raw_url = _os.environ.get("DATABASE_URL") or _os.environ.get("database_url") or settings.database_url
-# Alembic needs synchronous driver — strip asyncpg
-_sync_url = _raw_url.replace("postgresql+asyncpg://", "postgresql://")
-config.set_main_option("sqlalchemy.url", _sync_url)
+# Keep asyncpg driver — env.py uses async_engine_from_config; psycopg2 not installed
+_async_url = _raw_url.replace("postgresql://", "postgresql+asyncpg://", 1) if "asyncpg" not in _raw_url else _raw_url
+config.set_main_option("sqlalchemy.url", _async_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
