@@ -111,7 +111,7 @@ export default async function IncidentsPage({
               {tab.label}
               {tab.count > 0 && (
                 <span
-                  className={`rounded px-1 font-mono text-[9px] ${
+                  className={`rounded px-1 font-mono text-[10px] ${
                     isActive
                       ? "bg-[color:var(--dg-surface-raised)] text-[color:var(--dg-fg)]"
                       : "bg-[color:var(--dg-surface)] text-[color:var(--dg-fg-subtle)]"
@@ -154,7 +154,7 @@ export default async function IncidentsPage({
                 {/* Title row */}
                 <div className="flex items-center gap-2 flex-wrap mb-1.5">
                   <span
-                    className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest shrink-0 ${SEV[inc.severity] ?? ""}`}
+                    className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest shrink-0 ${SEV[inc.severity] ?? ""}`}
                   >
                     {inc.severity}
                   </span>
@@ -173,7 +173,7 @@ export default async function IncidentsPage({
                 {/* Meta row */}
                 <div className="flex items-center gap-3 flex-wrap">
                   <span
-                    className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${STATUS_BADGE[inc.status] ?? ""}`}
+                    className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest ${STATUS_BADGE[inc.status] ?? ""}`}
                   >
                     {inc.status}
                   </span>
@@ -192,7 +192,7 @@ export default async function IncidentsPage({
                 {/* Suggested fix */}
                 {inc.suggested_fix && (
                   <div className="mt-3 rounded border border-allowed/20 bg-allowed/5 px-3 py-2">
-                    <span className="font-mono text-[9px] uppercase tracking-widest text-allowed mr-2">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-allowed mr-2">
                       Suggested fix:
                     </span>
                     <span className="font-mono text-[11px] text-allowed">{inc.suggested_fix}</span>

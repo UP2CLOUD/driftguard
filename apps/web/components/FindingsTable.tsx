@@ -64,7 +64,7 @@ export function FindingsTable({ findings }: { findings: Finding[] }) {
               {/* Severity */}
               <div className="flex items-center gap-2">
                 <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${SEV_DOT[f.severity] ?? "bg-[color:var(--dg-fg-subtle)]"}`} />
-                <span className={`inline-flex items-center rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${SEV_STYLE[f.severity] ?? ""}`}>
+                <span className={`inline-flex items-center rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest ${SEV_STYLE[f.severity] ?? ""}`}>
                   {f.severity}
                 </span>
               </div>

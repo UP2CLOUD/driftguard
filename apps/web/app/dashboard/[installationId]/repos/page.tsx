@@ -183,11 +183,11 @@ export default async function ReposPage({
           <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
             {/* Header */}
             <div className="hidden sm:grid grid-cols-[1fr_80px_100px_100px_90px] gap-4 bg-[color:var(--dg-surface)] px-4 py-2">
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Repository</span>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Risk</span>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Last analyzed</span>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Status</span>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Active</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Repository</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Risk</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Last analyzed</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Status</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Active</span>
             </div>
 
             {repos.map((repo: any) => {
@@ -336,7 +336,7 @@ export default async function ReposPage({
 
                 <div className="flex items-center gap-3 shrink-0">
                   <span
-                    className={`font-mono text-[9px] uppercase tracking-widest px-2 py-0.5 rounded border ${
+                    className={`font-mono text-[10px] uppercase tracking-widest px-2 py-0.5 rounded border ${
                       a.status === "completed"
                         ? "text-allowed border-allowed/30 bg-allowed/5"
                         : a.status === "failed"

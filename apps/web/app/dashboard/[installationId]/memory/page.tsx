@@ -106,17 +106,17 @@ export default async function MemoryPage({
                     {e.pr_number ? <span className="text-[color:var(--dg-fg-muted)">#{e.pr_number}</span> : null}
                   </code>
                   {e.outcome && (
-                    <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${OUT_BADGE[e.outcome] ?? "border-[color:var(--dg-border)] text-[color:var(--dg-fg-subtle)]"}`}>
+                    <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest ${OUT_BADGE[e.outcome] ?? "border-[color:var(--dg-border)] text-[color:var(--dg-fg-subtle)]"}`}>
                       {e.outcome}
                     </span>
                   )}
                   {e.severity && (
-                    <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)] uppercase tracking-widest">
+                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] uppercase tracking-widest">
                       {e.severity}
                     </span>
                   )}
                   {e.blast_radius && (
-                    <span className={`font-mono text-[9px] uppercase tracking-widest ${BLAST_COLOR[e.blast_radius] ?? ""}`}>
+                    <span className={`font-mono text-[10px] uppercase tracking-widest ${BLAST_COLOR[e.blast_radius] ?? ""}`}>
                       blast:{e.blast_radius}
                     </span>
                   )}
@@ -132,12 +132,12 @@ export default async function MemoryPage({
                 {/* Footer: date + analysis link */}
                 <div className="flex items-center gap-3">
                   {e.created_at && (
-                    <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">
+                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
                       {formatDate(e.created_at, preferences.locale)}
                     </span>
                   )}
                   {e.analysis_id && (
-                    <span className="font-mono text-[9px] text-[color:var(--dg-electric)]">
+                    <span className="font-mono text-[10px] text-[color:var(--dg-electric)]">
                       View analysis →
                     </span>
                   )}

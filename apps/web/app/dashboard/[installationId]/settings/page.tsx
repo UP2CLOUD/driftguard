@@ -308,7 +308,7 @@ function PlanCard({
       <div className="flex items-center justify-between gap-2">
         <div className="dg-label">{name}</div>
         {current && (
-          <span className="inline-flex items-center gap-1 rounded border border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
+          <span className="inline-flex items-center gap-1 rounded border border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/10 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
             <span className="h-1 w-1 rounded-full bg-[color:var(--dg-electric)]" />
             {activeLabel}
           </span>

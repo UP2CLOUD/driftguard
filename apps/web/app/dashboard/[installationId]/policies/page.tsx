@@ -158,7 +158,7 @@ Content-Type: application/json
                 <div key={ex.name} className="px-4 py-3">
                   <div className="flex items-center gap-2 mb-1">
                     <span
-                      className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest shrink-0 ${TYPE_STYLE[ex.rule_type]}`}
+                      className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest shrink-0 ${TYPE_STYLE[ex.rule_type]}`}
                     >
                       {ex.rule_type}
                     </span>

@@ -59,7 +59,7 @@ export function RepoToggle({
         {loading ? "…" : enabled ? "Disable" : "Enable"}
       </button>
       {error && (
-        <p className="font-mono text-[9px] text-warned text-right max-w-[160px] leading-tight">{error}</p>
+        <p className="font-mono text-[10px] text-warned text-right max-w-[160px] leading-tight">{error}</p>
       )}
     </div>
   );
