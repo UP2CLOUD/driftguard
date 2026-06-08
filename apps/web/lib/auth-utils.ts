@@ -37,7 +37,7 @@ export async function checkInstallationAccess(installationId: string): Promise<{
     `/api/v1/orgs/by-user?login=${encodeURIComponent(login)}`,
     { revalidate: 60, timeout: 3000 },
   );
-  if (backendData) {
+  if (backendData && backendData.length > 0) {
     const targetId = parseInt(installationId);
     // Backend returns installation_id (GitHub ID) + id (UUID) — check both
     const authorized = !installationId || installationId === "dummy" ||
