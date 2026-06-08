@@ -7,7 +7,7 @@
     "prebuild": "node scripts/validate-i18n.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "next lint --max-warnings -1",
     "format": "prettier --write .",
     "validate-i18n": "node scripts/validate-i18n.mjs"
   },
