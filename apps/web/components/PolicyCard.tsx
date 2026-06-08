@@ -142,6 +142,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
             {Object.entries(form.conditions).map(([k, v]) => (
               <div key={k} className="flex items-center gap-2 mb-1.5">
                 <code className="flex-1 font-mono text-[11px] text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-canvas)] border border-[color:var(--dg-border)] rounded px-2 py-1">
+                  {/* eslint-disable-next-line react/jsx-no-literals */}
                   {k} = {v}
                 </code>
                 <button type="button" onClick={() => removeCondition(k)} className="font-mono text-[10px] text-blocked">×</button>
@@ -156,7 +157,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
                 className="rounded border border-[color:var(--dg-border)] px-3 font-mono text-[11px] text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] transition">+</button>
             </div>
           </div>
-          {error && <p className="font-mono text-[11px] text-blocked">✗ {error}</p>}
+          {error && <p role="alert" className="font-mono text-[11px] text-blocked">✗ {error}</p>}
           <button
             onClick={saveEdit}
             disabled={loading === "save"}
@@ -173,7 +174,11 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
     <div className="flex items-start gap-4 px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition group">
       {/* Enabled dot */}
       <div className="mt-1 shrink-0">
-        <span className={`h-1.5 w-1.5 rounded-full inline-block ${policy.enabled ? "bg-allowed" : "bg-[color:var(--dg-fg-subtle)]"}`} />
+        <span
+          role="img"
+          aria-label={policy.enabled ? "Enabled" : "Disabled"}
+          className={`h-1.5 w-1.5 rounded-full inline-block ${policy.enabled ? "bg-allowed" : "bg-[color:var(--dg-fg-subtle)]"}`}
+        />
       </div>
 
       <div className="flex-1 min-w-0">
@@ -183,7 +188,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
           </span>
           <span className="font-sans text-[13px] font-medium text-[color:var(--dg-fg)]">{policy.name}</span>
           {!policy.enabled && (
-            <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">disabled</span>
+            <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">{t("policies.disabled")}</span>
           )}
         </div>
         {policy.description && (
@@ -192,18 +197,19 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
         <div className="flex items-center gap-4 flex-wrap font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
           {policy.conditions && (
             <span className="truncate max-w-xs">
+              {/* eslint-disable-next-line react/jsx-no-literals */}
               if {Object.entries(policy.conditions as Record<string, string>).map(([k, v]) => `${k}=${v}`).join(" · ")}
             </span>
           )}
           {policy.match_count > 0 && (
-            <span className="text-warned shrink-0">↺ {policy.match_count} matches</span>
+            <span className="text-warned shrink-0">↺ {t("policies.matches", { n: policy.match_count })}</span>
           )}
         </div>
-        {error && <p className="font-mono text-[11px] text-blocked mt-1">✗ {error}</p>}
+        {error && <p role="alert" className="font-mono text-[11px] text-blocked mt-1">✗ {error}</p>}
       </div>
 
       {/* Actions */}
-      <div className="shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+      <div className="shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition">
         {/* Toggle enable/disable */}
         <button
           onClick={toggleEnabled}
@@ -244,7 +250,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
             onClick={() => setConfirmDelete(true)}
             className="rounded border border-[color:var(--dg-border)] px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-muted)] hover:text-blocked hover:border-blocked/30 transition"
           >
-            Delete
+            {t("common.delete")}
           </button>
         )}
       </div>

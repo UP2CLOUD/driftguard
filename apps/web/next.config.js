@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
+// Dev-only allowance so impeccable live mode can load.
+const __impeccableLiveDev =
+  process.env.NODE_ENV === "development" ? " http://localhost:8400" : "";
+
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
@@ -29,11 +33,11 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com https://eu.i.posthog.com",
+              `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com https://eu.i.posthog.com${__impeccableLiveDev}`,
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https: blob:",
-              "connect-src 'self' https://eu.i.posthog.com https://api.resend.com https://*.stripe.com wss:",
+              `connect-src 'self' https://eu.i.posthog.com https://api.resend.com https://*.stripe.com wss:${__impeccableLiveDev}`,
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",

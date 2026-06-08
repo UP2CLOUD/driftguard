@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useT } from "@/components/I18nProvider";
 
 const RULE_TYPES = [
   { value: "block", label: "Block", desc: "Prevents merge when matched" },
@@ -37,6 +38,7 @@ const PRESETS = [
 
 export function PolicyCreateForm({ installationId }: { installationId: string }) {
   const router = useRouter();
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -116,7 +118,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
         onClick={() => setOpen(true)}
         className="rounded bg-[color:var(--dg-electric)] px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-white hover:brightness-110 transition"
       >
-        + Add policy
+        {t("policies.addPolicy")}
       </button>
     );
   }
@@ -125,19 +127,19 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
     <div className="rounded-md border border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-surface)] overflow-hidden">
       <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] px-4 py-3">
         <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
-          New policy
+          {t("policies.newPolicy")}
         </span>
         <button
           onClick={() => setOpen(false)}
           className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
         >
-          Cancel
+          {t("common.cancel")}
         </button>
       </div>
 
       {/* Presets */}
       <div className="px-4 pt-4">
-        <p className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-2">Quick presets</p>
+        <p className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-2">{t("policies.quickPresets")}</p>
         <div className="flex flex-wrap gap-2 mb-4">
           {PRESETS.map((p) => (
             <button
@@ -145,6 +147,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
               onClick={() => applyPreset(p)}
               className="rounded border border-[color:var(--dg-border)] px-2.5 py-1 font-mono text-[10px] text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
             >
+              {/* eslint-disable-next-line react/jsx-no-literals */}
               {p.name}
             </button>
           ))}
@@ -155,7 +158,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
         {/* Name */}
         <div>
           <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
-            Name *
+            {t("policies.nameLabel")}
           </label>
           <input
             value={form.name}
@@ -169,7 +172,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
-              Action
+              {t("policies.actionLabel")}
             </label>
             <select
               value={form.rule_type}
@@ -177,13 +180,13 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
               className="w-full rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] focus:border-[color:var(--dg-electric)] focus:outline-none transition"
             >
               {RULE_TYPES.map((r) => (
-                <option key={r.value} value={r.value}>{r.label} — {r.desc}</option>
+                <option key={r.value} value={r.value}>{/* eslint-disable-next-line react/jsx-no-literals */}{r.label} — {r.desc}</option>
               ))}
             </select>
           </div>
           <div>
             <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
-              Severity
+              {t("policies.severityLabel")}
             </label>
             <select
               value={form.severity}
@@ -198,7 +201,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
         {/* Description */}
         <div>
           <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
-            Description
+            {t("policies.descriptionLabel")}
           </label>
           <input
             value={form.description}
@@ -211,11 +214,12 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
         {/* Conditions */}
         <div>
           <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
-            Conditions
+            {t("policies.conditions")}
           </label>
           {Object.entries(form.conditions).map(([k, v]) => (
             <div key={k} className="flex items-center gap-2 mb-1.5">
               <code className="flex-1 font-mono text-[11px] text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-canvas)] border border-[color:var(--dg-border)] rounded px-2 py-1">
+                {/* eslint-disable-next-line react/jsx-no-literals */}
                 {k} = {v}
               </code>
               <button
@@ -251,6 +255,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
         </div>
 
         {error && (
+          {/* eslint-disable-next-line react/jsx-no-literals */}
           <p className="font-mono text-[11px] text-blocked">✗ {error}</p>
         )}
 
@@ -259,7 +264,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
           disabled={loading}
           className="w-full rounded bg-[color:var(--dg-electric)] py-2 font-mono text-[11px] uppercase tracking-widest text-white hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition"
         >
-          {loading ? "Creating…" : "Create policy"}
+          {loading ? t("policies.creating") : t("policies.createPolicy")}
         </button>
       </form>
     </div>
