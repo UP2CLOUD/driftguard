@@ -1,6 +1,6 @@
 {
   "extends": "next/core-web-vitals",
   "rules": {
-    "react/jsx-no-literals": ["warn", { "noStrings": true, "ignoreProps": true, "noAttributeStrings": false }]
+    "react/jsx-no-literals": "off"
   }
 }
