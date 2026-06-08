@@ -21,59 +21,61 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-const SECTIONS = [
-  {
-    label: "Get started",
-    items: [
-      { t: "Install the GitHub App",  h: "/docs/install",      desc: "30s install on any GitHub org" },
-      { t: "Your first PR review",    h: "/docs/first-review", desc: "Open a Terraform PR, get a review" },
-      { t: "Configure policies",      h: "/docs/policies",     desc: "OPA/Rego policy bundles per repo" },
-    ],
-  },
-  {
-    label: "Core concepts",
-    items: [
-      { t: "Semantic memory",   h: "/docs/memory",   desc: "How DriftGuard remembers failures" },
-      { t: "Drift detection",   h: "/docs/drift",    desc: "State diff between plan and live" },
-      { t: "Cost analysis",     h: "/docs/cost",     desc: "Infracost integration & thresholds" },
-      { t: "Security scanning", h: "/docs/security", desc: "Checkov + AI triage" },
-    ],
-  },
-  {
-    label: "Compliance",
-    items: [
-      { t: "DORA evidence",      h: "/docs/dora",      desc: "EU Digital Operational Resilience Act" },
-      { t: "NIS2",               h: "/docs/nis2",      desc: "Network and Information Systems directive" },
-      { t: "ISO 27001 controls", h: "/docs/iso-27001", desc: "Annex A control mapping" },
-      { t: "Audit log",          h: "/docs/audit",     desc: "Signed, append-only event stream" },
-    ],
-  },
-  {
-    label: "Integrations",
-    items: [
-      { t: "AWS",          h: "/docs/aws",   desc: "STS AssumeRole + S3 state backend" },
-      { t: "GCP",          h: "/docs/gcp",   desc: "Workload Identity Federation" },
-      { t: "Azure",        h: "/docs/azure", desc: "Federated workload identity" },
-      { t: "Slack alerts", h: "/docs/slack", desc: "Channel routing per severity" },
-    ],
-  },
-  {
-    label: "Deploy",
-    items: [
-      { t: "Self-hosted",           h: "/docs/self-host", desc: "Helm chart + container images" },
-      { t: "Cloud Run",             h: "/docs/cloud-run", desc: "Reference GCP deployment" },
-      { t: "Environment variables", h: "/docs/env",       desc: "Full reference" },
-    ],
-  },
-  {
-    label: "API",
-    items: [
-      { t: "REST reference", h: "/docs/api",         desc: "All endpoints, authentication, examples" },
-      { t: "Webhooks",       h: "/docs/webhooks",    desc: "Outbound events for incident integration" },
-      { t: "Rate limits",    h: "/docs/rate-limits", desc: "Per-org and per-API-key quotas" },
-    ],
-  },
-];
+function getSections(t: (key: string) => string) {
+  return [
+    {
+      label: t("docs.getStarted"),
+      items: [
+        { title: t("docs.item_install_title"),      h: "/docs/install",      desc: t("docs.item_install_desc") },
+        { title: t("docs.item_firstReview_title"),  h: "/docs/first-review", desc: t("docs.item_firstReview_desc") },
+        { title: t("docs.item_policies_title"),     h: "/docs/policies",     desc: t("docs.item_policies_desc") },
+      ],
+    },
+    {
+      label: t("docs.coreConc"),
+      items: [
+        { title: t("docs.memory.label"),       h: "/docs/memory",   desc: t("docs.item_memory_desc") },
+        { title: t("docs.drift.label"),        h: "/docs/drift",    desc: t("docs.item_drift_desc") },
+        { title: t("docs.cost.label"),         h: "/docs/cost",     desc: t("docs.item_cost_desc") },
+        { title: t("docs.item_security_title"),h: "/docs/security", desc: t("docs.item_security_desc") },
+      ],
+    },
+    {
+      label: t("docs.compliance"),
+      items: [
+        { title: t("docs.item_dora_title"),  h: "/docs/dora",      desc: t("docs.item_dora_desc") },
+        { title: t("docs.item_nis2_title"),  h: "/docs/nis2",      desc: t("docs.item_nis2_desc") },
+        { title: t("docs.item_iso_title"),   h: "/docs/iso-27001", desc: t("docs.item_iso_desc") },
+        { title: t("docs.item_audit_title"), h: "/docs/audit",     desc: t("docs.item_audit_desc") },
+      ],
+    },
+    {
+      label: t("docs.integrations"),
+      items: [
+        { title: t("docs.item_aws_title"),   h: "/docs/aws",   desc: t("docs.item_aws_desc") },
+        { title: t("docs.item_gcp_title"),   h: "/docs/gcp",   desc: t("docs.item_gcp_desc") },
+        { title: t("docs.item_azure_title"), h: "/docs/azure", desc: t("docs.item_azure_desc") },
+        { title: t("docs.item_slack_title"), h: "/docs/slack", desc: t("docs.item_slack_desc") },
+      ],
+    },
+    {
+      label: t("docs.sectionDeploy"),
+      items: [
+        { title: t("docs.item_selfHost_title"), h: "/docs/self-host", desc: t("docs.item_selfHost_desc") },
+        { title: t("docs.item_cloudRun_title"), h: "/docs/cloud-run", desc: t("docs.item_cloudRun_desc") },
+        { title: t("docs.item_env_title"),      h: "/docs/env",       desc: t("docs.item_env_desc") },
+      ],
+    },
+    {
+      label: t("docs.sectionApi"),
+      items: [
+        { title: t("docs.item_rest_title"),        h: "/docs/api",         desc: t("docs.item_rest_desc") },
+        { title: t("docs.item_webhooks_title"),    h: "/docs/webhooks",    desc: t("docs.item_webhooks_desc") },
+        { title: t("docs.item_rateLimits_title"),  h: "/docs/rate-limits", desc: t("docs.item_rateLimits_desc") },
+      ],
+    },
+  ];
+}
 
 const QUICKSTART = `# 1. Install the GitHub App on your org
 $ open https://github.com/apps/driftguard-app/installations/new
@@ -91,15 +93,16 @@ export default async function DocsPage() {
   const prefs = await getUserPreferences();
   const msgs  = await getMessages(prefs.locale);
   const t     = createTranslator(msgs);
+  const sections = getSections(t);
   return (
     <MarketingPageShell>
       <div className="max-w-3xl">
         <div className="dg-label">{t("docs.documentation")}</div>
         <h1 className="mt-3 font-sans text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
-          Build, deploy, and operate DriftGuard.
+          {t("docs.h1")}
         </h1>
         <p className="mt-4 text-[15px] text-[color:var(--dg-fg-muted)]">
-          Everything you need to wire DriftGuard into your Terraform pipeline and AI agent workflows.
+          {t("docs.pageSubtitle")}
         </p>
       </div>
 
@@ -119,7 +122,7 @@ export default async function DocsPage() {
       </div>
 
       <div className="mt-16 grid gap-10 md:grid-cols-2 lg:grid-cols-3">
-        {SECTIONS.map((s) => (
+        {sections.map((s) => (
           <div key={s.label}>
             <div className="dg-label flex items-center gap-2 mb-4">
               <span className="h-px w-4 bg-[color:var(--dg-electric)]" />
@@ -127,13 +130,13 @@ export default async function DocsPage() {
             </div>
             <ul className="space-y-1">
               {s.items.map((i) => (
-                <li key={i.t}>
+                <li key={i.h}>
                   <Link
                     href={i.h}
                     className="group block rounded border border-transparent hover:border-[color:var(--dg-border)] hover:bg-[color:var(--dg-surface)] px-3 py-2.5 -mx-3 transition"
                   >
                     <div className="text-[13.5px] font-medium text-[color:var(--dg-fg)] group-hover:text-[color:var(--dg-electric-bright)] transition flex items-center gap-2">
-                      {i.t}
+                      {i.title}
                       <span className="opacity-0 group-hover:opacity-100 transition text-[color:var(--dg-fg-subtle)]">→</span>
                     </div>
                     <div className="mt-0.5 text-[11px] text-[color:var(--dg-fg-muted)]">{i.desc}</div>
@@ -149,7 +152,7 @@ export default async function DocsPage() {
         <div>
           <div className="dg-label">{t("docs.needHelp")}</div>
           <p className="mt-2 text-[14px] text-[color:var(--dg-fg-muted)] max-w-md">
-            We&apos;re a small team. Email us — we reply in &lt; 24h on weekdays.
+            {t("docs.helpText")}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
