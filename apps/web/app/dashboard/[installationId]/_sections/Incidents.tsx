@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getIncidents, getOverview } from "./api";
 import { formatDateTime } from "@/lib/format-date";
 
@@ -40,15 +41,24 @@ export async function IncidentsSection({
         <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
           {t("dashboard.driftIncidents") ?? "Drift incidents"}
         </span>
-        <span className="font-mono text-[10px] rounded border border-blocked/30 bg-blocked/10 text-blocked px-1.5 py-0.5">
-          {openInc} open
-        </span>
+        {openInc > 0 && (
+          <span className="font-mono text-[10px] rounded border border-blocked/30 bg-blocked/10 text-blocked px-1.5 py-0.5">
+            {openInc} open
+          </span>
+        )}
       </div>
       <div className="divide-y divide-[color:var(--dg-border)]">
         {incidents.map((inc: any) => (
-          <div key={inc.id} className="flex items-start gap-3 px-4 py-3 hover:bg-[color:var(--dg-surface-raised)] transition">
+          <Link
+            key={inc.id}
+            href={`/dashboard/${installationId}/incidents/${inc.id}`}
+            className="flex items-start gap-3 px-4 py-3 hover:bg-[color:var(--dg-surface-raised)] transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--dg-electric)] focus-visible:ring-inset"
+          >
             <div className="mt-1.5 shrink-0">
-              <span className={`inline-block h-2 w-2 rounded-full ${STATUS_DOT[inc.status] ?? "bg-[color:var(--dg-fg-subtle)]"}`} />
+              <span
+                className={`inline-block h-2 w-2 rounded-full ${STATUS_DOT[inc.status] ?? "bg-[color:var(--dg-fg-subtle)]"}`}
+                aria-label={`Status: ${inc.status}`}
+              />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5 flex-wrap">
@@ -67,7 +77,7 @@ export async function IncidentsSection({
                 )}
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
