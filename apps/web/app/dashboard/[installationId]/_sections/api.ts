@@ -11,6 +11,11 @@ export const getOverview = cache(
     _fetch(`/api/v1/dashboard/overview?installation_id=${installationId}`, 20)
 );
 
+export const getPlan = cache(
+  (installationId: string) =>
+    _fetch(`/api/v1/billing/plan?installation_id=${installationId}`, 60)
+);
+
 export const getIncidents = cache(
   (installationId: string) =>
     _fetch(`/api/v1/incidents?installation_id=${installationId}&limit=5`, 20)

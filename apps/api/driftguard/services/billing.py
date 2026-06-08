@@ -101,6 +101,18 @@ def verify_webhook(payload: bytes, signature: str) -> dict:
     return _stripe().Webhook.construct_event(payload, signature, settings.stripe_webhook_secret)
 
 
+_STRIPE_STATUS_TO_SUBSCRIPTION: dict[str, str] = {
+    "active": "premium_active",
+    "trialing": "premium_active",
+    "past_due": "premium_past_due",
+    "incomplete": "premium_incomplete",
+    "incomplete_expired": "free",
+    "unpaid": "premium_past_due",
+    "canceled": "premium_canceled",
+    "paused": "premium_past_due",
+}
+
+
 async def apply_subscription_event(db: AsyncSession, event: dict) -> None:
     event_type = event["type"]
     data = event["data"]["object"]
@@ -126,14 +138,23 @@ async def apply_subscription_event(db: AsyncSession, event: dict) -> None:
 
     if event_type == "customer.subscription.deleted":
         org.plan = "free"
+        org.subscription_status = "free"
     else:
         status = data.get("status", "")
+        org.subscription_status = _STRIPE_STATUS_TO_SUBSCRIPTION.get(status, "free")
         if status not in {"active", "trialing"}:
             org.plan = "free"
         else:
             items = data.get("items", {}).get("data", [])
             price_id = items[0]["price"]["id"] if items else ""
             org.plan = plan_for_price(price_id)
+            org.subscription_status = "premium_active"
 
     await db.commit()
-    log.info("plan_updated", org_id=org.id, plan=org.plan, event_type=event_type)
+    log.info(
+        "plan_updated",
+        org_id=org.id,
+        plan=org.plan,
+        subscription_status=org.subscription_status,
+        event_type=event_type,
+    )

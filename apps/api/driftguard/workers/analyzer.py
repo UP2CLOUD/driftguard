@@ -86,6 +86,63 @@ async def enqueue_pr_analysis(payload: dict) -> None:
     installation_id = payload["installation"]["id"]
 
     log.info("analysis_queued", repo=repo, pr=pr_number, sha=head_sha)
+
+    # ── Quota & idempotency gate ────────────────────────────────────────────────
+    try:
+        from sqlalchemy import select
+
+        from driftguard.db.models import Organization, Repository
+        from driftguard.services.quota import is_premium, try_consume_pr_quota, try_record_scan_run
+
+        async with SessionLocal() as db:
+            org = (
+                await db.execute(
+                    select(Organization).where(Organization.github_installation_id == installation_id)
+                )
+            ).scalar_one_or_none()
+
+            if org is None:
+                log.warning("analysis_no_org", installation_id=installation_id, repo=repo)
+                return
+
+            repo_row = (
+                await db.execute(select(Repository).where(Repository.full_name == repo))
+            ).scalar_one_or_none()
+
+            if repo_row is not None and not repo_row.enabled:
+                log.info("analysis_repo_disabled", repo=repo, org_id=org.id)
+                return
+
+            repo_id = repo_row.id if repo_row else "unknown"
+
+            # Idempotency: skip identical (org, repo, pr, sha) already processed.
+            is_new = await try_record_scan_run(db, org.id, repo_id, pr_number, head_sha)
+            if not is_new:
+                log.info("analysis_duplicate_skipped", repo=repo, pr=pr_number, sha=head_sha[:8])
+                return
+
+            # Monthly PR quota (premium orgs only).
+            if is_premium(org) and not await try_consume_pr_quota(db, org):
+                log.info("analysis_quota_exceeded", org_id=org.id, repo=repo, pr=pr_number)
+                await db.commit()
+                try:
+                    token = await installation_token(installation_id)
+                    await post_pr_comment(
+                        token,
+                        repo,
+                        pr_number,
+                        "**DriftGuard:** Monthly PR review limit reached. "
+                        f"Visit {settings.public_base_url}/dashboard to manage your plan.",
+                    )
+                except Exception:
+                    pass
+                return
+
+            await db.commit()
+    except Exception as exc:
+        log.warning("quota_gate_failed", repo=repo, pr=pr_number, error=str(exc))
+        # Fail open — don't block analysis on quota check errors.
+
     if settings.celery_enabled:
         try:
             from driftguard.worker.app import celery_app
@@ -507,23 +564,28 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         else:
             review_event = "APPROVE"
             review_body = f"🟢 **DriftGuard: No critical findings.** Risk score {risk_score}/100. Safe to merge."
-        sev_icons = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🔵", "info": "⚪"}
-        inline_comments = []
-        for f in findings:
-            if f.file and f.line:
-                sev_icon = sev_icons.get(f.severity, "⚪")
-                rule = f" `{f.rule_id}`" if f.rule_id else ""
-                comment_body = f"{sev_icon} **{f.severity.upper()}**{rule} — {f.message}"
-                if f.suggestion:
-                    comment_body += f"\n\n> 💡 {f.suggestion}"
-                inline_comments.append(
-                    {
-                        "path": f.file,
-                        "line": f.line,
-                        "side": "RIGHT",
-                        "body": comment_body,
-                    }
-                )
+        from driftguard.integrations.github import fetch_pr_files
+        from driftguard.services.inline_review import (
+            build_inline_review,
+            inline_comments_payload,
+            parse_pr_files,
+        )
+
+        inline_payload: list[dict] = []
+        try:
+            pr_files = await fetch_pr_files(token, repo_full_name, pr_number)
+            diff_files = parse_pr_files(pr_files)
+            inline_result = build_inline_review(findings, diff_files)
+            inline_payload = inline_comments_payload(inline_result)
+            log.info(
+                "inline_review_built",
+                inline=len(inline_payload),
+                unmapped=len(inline_result.unmapped_findings),
+                skipped=len(inline_result.skipped_findings),
+            )
+        except Exception as exc:  # noqa: BLE001 — inline review is non-critical
+            log.warning("inline_review_build_failed", error=str(exc))
+
         await submit_pr_review(
             token,
             repo_full_name,
@@ -531,7 +593,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
             head_sha,
             event=review_event,
             body=review_body,
-            inline_comments=inline_comments or None,
+            inline_comments=inline_payload or None,
         )
     except Exception as exc:  # noqa: BLE001 — review is non-critical
         log.warning("submit_review_failed", error=str(exc))

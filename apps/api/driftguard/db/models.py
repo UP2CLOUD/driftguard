@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import uuid4
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -18,6 +18,8 @@ class Organization(Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
     github_installation_id: Mapped[int] = mapped_column(Integer, unique=True, index=True)
     plan: Mapped[str] = mapped_column(String(32), default="free")
+    # free | premium_active | premium_past_due | premium_canceled | premium_incomplete
+    subscription_status: Mapped[str] = mapped_column(String(32), default="free")
     stripe_customer_id: Mapped[str | None] = mapped_column(String(64))
     settings: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -267,3 +269,34 @@ class TerraformResource(Base):
     risk_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
     snapshotted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
+
+
+# ── Quota & billing enforcement ───────────────────────────────────────────────
+
+
+class MonthlyUsage(Base):
+    """Per-org monthly PR analysis counter. One row per (org, YYYY-MM)."""
+
+    __tablename__ = "monthly_usage"
+    __table_args__ = (UniqueConstraint("org_id", "month", name="uq_monthly_usage_org_month"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
+    month: Mapped[str] = mapped_column(String(7))  # YYYY-MM UTC
+    pr_count: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class ScanRun(Base):
+    """Idempotency log — one row per unique (org, repo, pr_number, head_sha)."""
+
+    __tablename__ = "scan_runs"
+    __table_args__ = (
+        UniqueConstraint("org_id", "repo_id", "pr_number", "head_sha", name="uq_scan_run"),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
+    repo_id: Mapped[str] = mapped_column(String(36), index=True)
+    pr_number: Mapped[int] = mapped_column(Integer)
+    head_sha: Mapped[str] = mapped_column(String(40))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

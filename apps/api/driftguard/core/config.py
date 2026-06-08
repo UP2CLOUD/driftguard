@@ -62,6 +62,10 @@ class Settings(BaseSettings):
     # ── AWS (STS cross-account) ────────────────────────────────
     aws_region: str = "eu-west-1"
 
+    # ── Plan limits ────────────────────────────────────────────────────────────
+    free_repository_limit: int = 3
+    premium_monthly_pr_limit: int = 50
+
     # ── App ────────────────────────────────────────────────────
     public_base_url: str = "http://localhost:3000"
     slack_webhook_url: str = ""
