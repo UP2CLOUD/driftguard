@@ -585,7 +585,16 @@
     "disable": "Desativar",
     "enable": "Ativar",
     "edit": "Editar",
-    "confirm": "Confirmar"
+    "confirm": "Confirmar",
+    "addPolicy": "+ Add policy",
+    "newPolicy": "New policy",
+    "quickPresets": "Quick presets",
+    "nameLabel": "Name *",
+    "actionLabel": "Action",
+    "severityLabel": "Severity",
+    "descriptionLabel": "Description",
+    "creating": "Creating…",
+    "createPolicy": "Create policy"
   },
   "memory": {
     "title": "Memória operacional",

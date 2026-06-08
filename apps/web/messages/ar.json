@@ -563,7 +563,16 @@
     "disable": "تعطيل",
     "enable": "تفعيل",
     "edit": "تعديل",
-    "confirm": "تأكيد"
+    "confirm": "تأكيد",
+    "addPolicy": "+ Add policy",
+    "newPolicy": "New policy",
+    "quickPresets": "Quick presets",
+    "nameLabel": "Name *",
+    "actionLabel": "Action",
+    "severityLabel": "Severity",
+    "descriptionLabel": "Description",
+    "creating": "Creating…",
+    "createPolicy": "Create policy"
   },
   "memory": {
     "title": "الذاكرة التشغيلية",

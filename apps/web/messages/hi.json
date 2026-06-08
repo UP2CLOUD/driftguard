@@ -563,7 +563,16 @@
     "disable": "अक्षम करें",
     "enable": "सक्षम करें",
     "edit": "संपादित करें",
-    "confirm": "पुष्टि करें"
+    "confirm": "पुष्टि करें",
+    "addPolicy": "+ Add policy",
+    "newPolicy": "New policy",
+    "quickPresets": "Quick presets",
+    "nameLabel": "Name *",
+    "actionLabel": "Action",
+    "severityLabel": "Severity",
+    "descriptionLabel": "Description",
+    "creating": "Creating…",
+    "createPolicy": "Create policy"
   },
   "memory": {
     "title": "परिचालन स्मृति",
