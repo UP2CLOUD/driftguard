@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from driftguard.core.config import settings
-from driftguard.db.models import Base, MonthlyUsage, Organization, Repository, ScanRun
+from driftguard.db.models import Base, MonthlyUsage, Organization, Repository
 from driftguard.services.quota import (
     assert_can_enable_repo,
     get_active_repo_count,
@@ -167,7 +167,6 @@ async def test_premium_org_50th_pr_allowed(db, monkeypatch):
     db.add(org)
     await db.flush()
 
-    import re
     from datetime import UTC, datetime
     month = datetime.now(UTC).strftime("%Y-%m")
     usage = MonthlyUsage(org_id=org.id, month=month, pr_count=49)

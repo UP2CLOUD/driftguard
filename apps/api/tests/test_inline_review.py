@@ -1,17 +1,13 @@
 """Tests for services/inline_review.py — inline PR comment mapping."""
 
-import pytest
-
 from driftguard.ai.findings import Finding
 from driftguard.services.inline_review import (
     MAX_INLINE_COMMENTS,
     DiffFile,
-    InlineReviewResult,
     build_inline_review,
     inline_comments_payload,
     parse_pr_files,
 )
-
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 

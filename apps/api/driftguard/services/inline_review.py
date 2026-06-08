@@ -124,7 +124,7 @@ def _comment_body(f: Finding) -> str:
 
 
 def _dedup_key(path: str, line: int, f: Finding) -> str:
-    rule = f.rule_id or hashlib.md5(f.message[:100].encode()).hexdigest()[:8]
+    rule = f.rule_id or hashlib.md5(f.message[:100].encode(), usedforsecurity=False).hexdigest()[:8]
     return f"{path}:{line}:{rule}"
 
 

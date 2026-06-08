@@ -134,8 +134,8 @@ async def enqueue_pr_analysis(payload: dict) -> None:
                         "**DriftGuard:** Monthly PR review limit reached. "
                         f"Visit {settings.public_base_url}/dashboard to manage your plan.",
                     )
-                except Exception:
-                    pass
+                except Exception as _quota_comment_exc:  # noqa: BLE001
+                    log.warning("quota_comment_failed", repo=repo, error=str(_quota_comment_exc))
                 return
 
             await db.commit()
@@ -175,8 +175,6 @@ async def enqueue_pr_analysis(payload: dict) -> None:
         log.error("analyze_pr_failed", repo=repo, pr=pr_number, error=str(exc), exc_info=True)
         # Post error comment so it's visible without Render logs
         try:
-            from driftguard.integrations.github import installation_token, post_pr_comment
-
             token = await installation_token(installation_id)
             await post_pr_comment(
                 token, repo, pr_number, f"⚠️ **DriftGuard analysis failed**\n```\n{traceback.format_exc()[-1500:]}\n```"
