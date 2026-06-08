@@ -128,13 +128,12 @@ export default async function AnalysisPage({
           <div className="dg-label mb-1">{t("dashboard.scanResult")}</div>
           <h1 className="font-sans text-2xl font-semibold text-[color:var(--dg-fg)]">
             {data.repo_full_name
-              ? <><span className="text-[color:var(--dg-fg-muted)]">{data.repo_full_name}</span>{data.pr_number ? <span className="font-mono text-lg text-[color:var(--dg-fg-subtle)]"> {/* eslint-disable-next-line react/jsx-no-literals */}#{data.pr_number}</span> : null}</>
+              ? <><span className="text-[color:var(--dg-fg-muted)]">{data.repo_full_name}</span>{data.pr_number ? <span className="font-mono text-lg text-[color:var(--dg-fg-subtle)]">#{data.pr_number}</span> : null}</>
               : <>{t("dashboard.scanResult")} <span className="font-mono text-[color:var(--dg-fg-muted)] text-lg">{analysisId.slice(0,8)}</span></>
             }
           </h1>
           {data.head_sha && (
             <p className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] mt-1">
-              {/* eslint-disable-next-line react/jsx-no-literals */}
               sha <code>{data.head_sha.slice(0,7)}</code>
             </p>
           )}
@@ -244,7 +243,6 @@ export default async function AnalysisPage({
               {/* File + line */}
               {f.file && (
                 <p className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] mb-2">
-                  {/* eslint-disable-next-line react/jsx-no-literals */}
                   📄 {f.file}{f.line ? `:${f.line}` : ""}
                   {f.resource && f.resource !== f.file && (
                     <span className="ml-2 text-[color:var(--dg-fg-muted)]">· {f.resource}</span>

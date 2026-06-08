@@ -155,13 +155,11 @@ export function NavigationTransition() {
         {/* Title */}
         <div className="space-y-1">
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-[color:var(--dg-fg-subtle)]">
-            {/* eslint-disable-next-line react/jsx-no-literals */}
             driftguard · runtime
           </p>
           <p className="font-sans text-[15px] font-medium text-[color:var(--dg-fg)]">
             {copy.title}
             <span className="dg-nav-transition__dots" aria-hidden>
-              {/* eslint-disable react/jsx-no-literals */}
               <span>.</span>
               <span>.</span>
               <span>.</span>

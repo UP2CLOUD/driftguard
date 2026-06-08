@@ -17,7 +17,6 @@ export function NotFoundPage({ hasSession }: { hasSession: boolean }) {
             <path d="M2 3 L10 7 L18 3 L18 13 L10 17 L2 13 Z" stroke="currentColor" strokeWidth="1.4" />
             <path d="M10 7 L10 17" stroke="currentColor" strokeWidth="1.4" opacity="0.4" />
           </svg>
-          {/* eslint-disable-next-line react/jsx-no-literals */}
           <span className="font-sans text-[15px] font-semibold tracking-tight">driftguard</span>
         </Link>
         {hasSession && (
@@ -54,7 +53,6 @@ export function NotFoundPage({ hasSession }: { hasSession: boolean }) {
 
         {/* Terminal decoration */}
         <div className="mt-16 rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-4 font-mono text-[12px] text-left max-w-xs w-full">
-          {/* eslint-disable react/jsx-no-literals */}
           <div className="text-[color:var(--dg-fg-subtle)] mb-2">$ driftguard recall --intent missing-page</div>
           <div className="text-[color:var(--dg-fg-muted)]">
             <span className="text-blocked">✗</span> No incidents found for this path.

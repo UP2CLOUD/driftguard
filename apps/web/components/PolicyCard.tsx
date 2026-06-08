@@ -142,7 +142,6 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
             {Object.entries(form.conditions).map(([k, v]) => (
               <div key={k} className="flex items-center gap-2 mb-1.5">
                 <code className="flex-1 font-mono text-[11px] text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-canvas)] border border-[color:var(--dg-border)] rounded px-2 py-1">
-                  {/* eslint-disable-next-line react/jsx-no-literals */}
                   {k} = {v}
                 </code>
                 <button type="button" onClick={() => removeCondition(k)} className="font-mono text-[10px] text-blocked">×</button>
@@ -197,7 +196,6 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
         <div className="flex items-center gap-4 flex-wrap font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
           {policy.conditions && (
             <span className="truncate max-w-xs">
-              {/* eslint-disable-next-line react/jsx-no-literals */}
               if {Object.entries(policy.conditions as Record<string, string>).map(([k, v]) => `${k}=${v}`).join(" · ")}
             </span>
           )}

@@ -67,19 +67,16 @@ export function Architecture() {
 
                     <rect x="246" y="112" width="168" height="50" rx="3"
                       fill="var(--dg-canvas)" stroke="var(--dg-border-strong)" />
-                    {/* eslint-disable-next-line react/jsx-no-literals */}
                     <text x="330" y="135" fontFamily="monospace" fontSize="11" fill="var(--dg-fg)" textAnchor="middle">memory.recall</text>
                     <text x="330" y="148" fontFamily="monospace" fontSize="9" fill="var(--dg-fg-subtle)" textAnchor="middle">{t("landing.architecture.memoryRecallSub")}</text>
 
                     <rect x="246" y="170" width="168" height="50" rx="3"
                       fill="var(--dg-canvas)" stroke="var(--dg-border-strong)" />
-                    {/* eslint-disable-next-line react/jsx-no-literals */}
                     <text x="330" y="193" fontFamily="monospace" fontSize="11" fill="var(--dg-fg)" textAnchor="middle">policy.engine</text>
                     <text x="330" y="206" fontFamily="monospace" fontSize="9" fill="var(--dg-fg-subtle)" textAnchor="middle">{t("landing.architecture.opaLabel")}</text>
 
                     <rect x="246" y="228" width="168" height="50" rx="3"
                       fill="var(--dg-canvas)" stroke="var(--dg-border-strong)" />
-                    {/* eslint-disable-next-line react/jsx-no-literals */}
                     <text x="330" y="251" fontFamily="monospace" fontSize="11" fill="var(--dg-fg)" textAnchor="middle">audit.log</text>
                     <text x="330" y="264" fontFamily="monospace" fontSize="9" fill="var(--dg-fg-subtle)" textAnchor="middle">{t("landing.architecture.auditSub")}</text>
                   </g>

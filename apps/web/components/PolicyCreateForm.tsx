@@ -147,7 +147,6 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
               onClick={() => applyPreset(p)}
               className="rounded border border-[color:var(--dg-border)] px-2.5 py-1 font-mono text-[10px] text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
             >
-              {/* eslint-disable-next-line react/jsx-no-literals */}
               {p.name}
             </button>
           ))}
@@ -180,7 +179,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
               className="w-full rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] focus:border-[color:var(--dg-electric)] focus:outline-none transition"
             >
               {RULE_TYPES.map((r) => (
-                <option key={r.value} value={r.value}>{/* eslint-disable-next-line react/jsx-no-literals */}{r.label} — {r.desc}</option>
+                <option key={r.value} value={r.value}>{r.label} — {r.desc}</option>
               ))}
             </select>
           </div>
@@ -219,7 +218,6 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
           {Object.entries(form.conditions).map(([k, v]) => (
             <div key={k} className="flex items-center gap-2 mb-1.5">
               <code className="flex-1 font-mono text-[11px] text-[color:var(--dg-electric-bright)] bg-[color:var(--dg-canvas)] border border-[color:var(--dg-border)] rounded px-2 py-1">
-                {/* eslint-disable-next-line react/jsx-no-literals */}
                 {k} = {v}
               </code>
               <button
@@ -255,7 +253,6 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
         </div>
 
         {error && (
-          {/* eslint-disable-next-line react/jsx-no-literals */}
           <p className="font-mono text-[11px] text-blocked">✗ {error}</p>
         )}
 
