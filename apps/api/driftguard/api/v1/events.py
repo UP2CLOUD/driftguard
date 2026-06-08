@@ -20,9 +20,12 @@ async def list_events(
     limit: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
 ) -> list[dict]:
-    org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    ).scalar_one_or_none()
+    try:
+        org = (
+            await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
+        ).scalar_one_or_none()
+    except Exception:
+        return []
     if not org:
         return []
 
