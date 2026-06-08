@@ -158,6 +158,27 @@ async def debug_analyze_steps(
     return {"steps": steps, "failed_at": None}
 
 
+@router.get("/debug/schema")
+async def debug_schema() -> dict:
+    """Check if migration 010 columns exist and report alembic version."""
+    from sqlalchemy import text
+    from driftguard.core.db import engine
+
+    async with engine.connect() as conn:
+        alembic_ver = (await conn.execute(text("SELECT version_num FROM alembic_version"))).scalar()
+        col_exists = (await conn.execute(text(
+            "SELECT COUNT(*) FROM information_schema.columns "
+            "WHERE table_name='organizations' AND column_name='subscription_status'"
+        ))).scalar()
+        org_count = (await conn.execute(text("SELECT COUNT(*) FROM organizations"))).scalar()
+
+    return {
+        "alembic_version": alembic_ver,
+        "subscription_status_col_exists": bool(col_exists),
+        "org_count": org_count,
+    }
+
+
 @router.get("/metrics")
 async def metrics() -> dict:
     """Lightweight metrics for Grafana polling (no Prometheus dependency)."""
