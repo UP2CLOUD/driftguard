@@ -29,9 +29,7 @@ def upgrade() -> None:
             CONSTRAINT uq_monthly_usage_org_month UNIQUE (org_id, month)
         )
     """)
-    op.execute(
-        "CREATE INDEX IF NOT EXISTS ix_monthly_usage_org ON monthly_usage (org_id)"
-    )
+    op.execute("CREATE INDEX IF NOT EXISTS ix_monthly_usage_org ON monthly_usage (org_id)")
 
     op.execute("""
         CREATE TABLE IF NOT EXISTS scan_runs (
@@ -44,9 +42,7 @@ def upgrade() -> None:
             CONSTRAINT uq_scan_run UNIQUE (org_id, repo_id, pr_number, head_sha)
         )
     """)
-    op.execute(
-        "CREATE INDEX IF NOT EXISTS ix_scan_runs_org ON scan_runs (org_id)"
-    )
+    op.execute("CREATE INDEX IF NOT EXISTS ix_scan_runs_org ON scan_runs (org_id)")
 
 
 def downgrade() -> None:
