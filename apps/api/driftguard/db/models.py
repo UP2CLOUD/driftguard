@@ -290,9 +290,7 @@ class ScanRun(Base):
     """Idempotency log — one row per unique (org, repo, pr_number, head_sha)."""
 
     __tablename__ = "scan_runs"
-    __table_args__ = (
-        UniqueConstraint("org_id", "repo_id", "pr_number", "head_sha", name="uq_scan_run"),
-    )
+    __table_args__ = (UniqueConstraint("org_id", "repo_id", "pr_number", "head_sha", name="uq_scan_run"),)
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
     org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), index=True)

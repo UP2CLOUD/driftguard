@@ -137,7 +137,8 @@ async def apply_subscription_event(db: AsyncSession, event: dict) -> None:
         return
 
     was_premium = org.plan in {"pro", "team", "enterprise"} or org.subscription_status in {
-        "premium_active", "premium_past_due"
+        "premium_active",
+        "premium_past_due",
     }
 
     if event_type == "customer.subscription.deleted":
@@ -158,6 +159,7 @@ async def apply_subscription_event(db: AsyncSession, event: dict) -> None:
     disabled_count = 0
     if was_premium and org.plan == "free":
         from driftguard.services.quota import auto_disable_excess_repos
+
         disabled_count = await auto_disable_excess_repos(db, org.id)
 
     await db.commit()

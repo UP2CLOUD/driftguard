@@ -174,10 +174,7 @@ def test_different_rule_same_location_not_deduplicated():
 
 def test_inline_comments_capped_at_max():
     """21 valid findings → 20 inline + 1 skipped."""
-    findings = [
-        make_finding(file="main.tf", line=i, rule_id=f"TF{i:03d}", severity="high")
-        for i in range(1, 22)
-    ]
+    findings = [make_finding(file="main.tf", line=i, rule_id=f"TF{i:03d}", severity="high") for i in range(1, 22)]
     diff_files = {"main.tf": make_diff_file("main.tf", list(range(1, 22)))}
     result = build_inline_review(findings, diff_files)
     assert len(result.inline_comments) == MAX_INLINE_COMMENTS
@@ -186,14 +183,8 @@ def test_inline_comments_capped_at_max():
 
 def test_severity_priority_fills_cap():
     """When capped, critical findings take precedence over medium."""
-    critical = [
-        make_finding(file="main.tf", line=i, rule_id=f"CRIT{i}", severity="critical")
-        for i in range(1, 6)
-    ]
-    medium = [
-        make_finding(file="main.tf", line=i + 100, rule_id=f"MED{i}", severity="medium")
-        for i in range(1, 20)
-    ]
+    critical = [make_finding(file="main.tf", line=i, rule_id=f"CRIT{i}", severity="critical") for i in range(1, 6)]
+    medium = [make_finding(file="main.tf", line=i + 100, rule_id=f"MED{i}", severity="medium") for i in range(1, 20)]
     added = list(range(1, 6)) + list(range(101, 120))
     diff_files = {"main.tf": make_diff_file("main.tf", added)}
     result = build_inline_review(critical + medium, diff_files, max_comments=5)
@@ -236,8 +227,9 @@ def test_critical_in_lock_file_still_inline():
 
 def test_payload_structure():
     """inline_comments_payload returns dicts with path/line/side/body keys."""
-    f = make_finding(file="main.tf", line=5, rule_id="TF001", severity="high",
-                     title="IAM wildcard", suggestion="Use specific ARNs")
+    f = make_finding(
+        file="main.tf", line=5, rule_id="TF001", severity="high", title="IAM wildcard", suggestion="Use specific ARNs"
+    )
     diff_files = {"main.tf": make_diff_file("main.tf", [5])}
     result = build_inline_review([f], diff_files)
     payload = inline_comments_payload(result)

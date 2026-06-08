@@ -96,18 +96,14 @@ async def enqueue_pr_analysis(payload: dict) -> None:
 
         async with SessionLocal() as db:
             org = (
-                await db.execute(
-                    select(Organization).where(Organization.github_installation_id == installation_id)
-                )
+                await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
             ).scalar_one_or_none()
 
             if org is None:
                 log.warning("analysis_no_org", installation_id=installation_id, repo=repo)
                 return
 
-            repo_row = (
-                await db.execute(select(Repository).where(Repository.full_name == repo))
-            ).scalar_one_or_none()
+            repo_row = (await db.execute(select(Repository).where(Repository.full_name == repo))).scalar_one_or_none()
 
             if repo_row is not None and not repo_row.enabled:
                 log.info("analysis_repo_disabled", repo=repo, org_id=org.id)

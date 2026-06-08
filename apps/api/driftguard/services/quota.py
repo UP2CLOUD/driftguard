@@ -33,7 +33,9 @@ def is_premium(org: Organization) -> bool:
 
 async def get_active_repo_count(db: AsyncSession, org_id: str) -> int:
     result = await db.execute(
-        select(func.count()).select_from(Repository).where(
+        select(func.count())
+        .select_from(Repository)
+        .where(
             Repository.org_id == org_id,
             Repository.enabled.is_(True),
         )
@@ -66,9 +68,7 @@ async def try_consume_pr_quota(db: AsyncSession, org: Organization) -> bool:
 
     # Lock the row to prevent concurrent over-limit writes.
     result = await db.execute(
-        select(MonthlyUsage)
-        .where(MonthlyUsage.org_id == org.id, MonthlyUsage.month == month)
-        .with_for_update()
+        select(MonthlyUsage).where(MonthlyUsage.org_id == org.id, MonthlyUsage.month == month).with_for_update()
     )
     usage = result.scalar_one_or_none()
     if usage is None:
@@ -91,9 +91,7 @@ async def try_consume_pr_quota(db: AsyncSession, org: Organization) -> bool:
     return True
 
 
-async def try_record_scan_run(
-    db: AsyncSession, org_id: str, repo_id: str, pr_number: int, head_sha: str
-) -> bool:
+async def try_record_scan_run(db: AsyncSession, org_id: str, repo_id: str, pr_number: int, head_sha: str) -> bool:
     """Insert a ScanRun row. Returns True if new, False if already seen (duplicate)."""
     existing = await db.execute(
         select(ScanRun).where(
@@ -125,9 +123,7 @@ async def assert_can_enable_repo(db: AsyncSession, org: Organization) -> None:
     count = await get_active_repo_count(db, org.id)
     limit = settings.free_repository_limit
     if count >= limit:
-        raise ValueError(
-            f"Free plan allows {limit} active repositories. Disable one or upgrade to add more."
-        )
+        raise ValueError(f"Free plan allows {limit} active repositories. Disable one or upgrade to add more.")
 
 
 async def auto_disable_excess_repos(db: AsyncSession, org_id: str) -> int:

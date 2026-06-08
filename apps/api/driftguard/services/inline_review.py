@@ -115,12 +115,7 @@ def _comment_body(f: Finding) -> str:
         explanation = f"`{f.resource}`: {explanation}"
     fix = f.suggestion or "Review and apply secure defaults or least-privilege access."
     rule_note = f"\n\n<sub>Rule: `{f.rule_id}`</sub>" if f.rule_id else ""
-    return (
-        f"**DriftGuard finding:** {title}\n\n"
-        f"{explanation}\n\n"
-        f"**Suggested fix:** {fix}"
-        f"{rule_note}"
-    )
+    return f"**DriftGuard finding:** {title}\n\n{explanation}\n\n**Suggested fix:** {fix}{rule_note}"
 
 
 def _dedup_key(path: str, line: int, f: Finding) -> str:
@@ -179,13 +174,15 @@ def build_inline_review(
             continue
         seen.add(dk)
 
-        inline.append(InlineComment(
-            path=f.file,
-            line=target_line,
-            side="RIGHT",
-            body=_comment_body(f),
-            severity=f.severity,
-        ))
+        inline.append(
+            InlineComment(
+                path=f.file,
+                line=target_line,
+                side="RIGHT",
+                body=_comment_body(f),
+                severity=f.severity,
+            )
+        )
 
     return InlineReviewResult(
         inline_comments=inline,
@@ -196,7 +193,4 @@ def build_inline_review(
 
 def inline_comments_payload(result: InlineReviewResult) -> list[dict]:
     """Convert InlineReviewResult to GitHub API comments list."""
-    return [
-        {"path": c.path, "line": c.line, "side": c.side, "body": c.body}
-        for c in result.inline_comments
-    ]
+    return [{"path": c.path, "line": c.line, "side": c.side, "body": c.body} for c in result.inline_comments]

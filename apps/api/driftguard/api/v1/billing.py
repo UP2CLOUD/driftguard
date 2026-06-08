@@ -27,16 +27,16 @@ async def get_plan(
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> dict:
-    result = await db.execute(
-        select(Organization).where(Organization.github_installation_id == installation_id)
-    )
+    result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
     org = result.scalar_one_or_none()
     if org is None:
         raise HTTPException(404, "Organization not found")
 
     active_repos = (
         await db.execute(
-            select(func.count()).select_from(Repository).where(
+            select(func.count())
+            .select_from(Repository)
+            .where(
                 Repository.org_id == org.id,
                 Repository.enabled.is_(True),
             )

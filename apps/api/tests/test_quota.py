@@ -28,6 +28,7 @@ async def db():
 
 def make_org(*, plan: str = "free", subscription_status: str = "free") -> Organization:
     from uuid import uuid4
+
     return Organization(
         id=str(uuid4()),
         github_installation_id=int(uuid4().int % 10**9),
@@ -38,6 +39,7 @@ def make_org(*, plan: str = "free", subscription_status: str = "free") -> Organi
 
 def make_repo(*, org_id: str, enabled: bool = True) -> Repository:
     from uuid import uuid4
+
     return Repository(
         id=str(uuid4()),
         org_id=org_id,
@@ -168,6 +170,7 @@ async def test_premium_org_50th_pr_allowed(db, monkeypatch):
     await db.flush()
 
     from datetime import UTC, datetime
+
     month = datetime.now(UTC).strftime("%Y-%m")
     usage = MonthlyUsage(org_id=org.id, month=month, pr_count=49)
     db.add(usage)
@@ -188,6 +191,7 @@ async def test_premium_org_51st_pr_blocked(db, monkeypatch):
     await db.flush()
 
     from datetime import UTC, datetime
+
     month = datetime.now(UTC).strftime("%Y-%m")
     usage = MonthlyUsage(org_id=org.id, month=month, pr_count=50)
     db.add(usage)
