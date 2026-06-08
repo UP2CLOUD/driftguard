@@ -128,3 +128,25 @@ async def assert_can_enable_repo(db: AsyncSession, org: Organization) -> None:
         raise ValueError(
             f"Free plan allows {limit} active repositories. Disable one or upgrade to add more."
         )
+
+
+async def auto_disable_excess_repos(db: AsyncSession, org_id: str) -> int:
+    """Disable repos beyond FREE_REPOSITORY_LIMIT after a downgrade.
+
+    Keeps the oldest N repos (by created_at) enabled; disables the rest.
+    Returns the number of repos disabled.
+    """
+    limit = settings.free_repository_limit
+    result = await db.execute(
+        select(Repository)
+        .where(Repository.org_id == org_id, Repository.enabled.is_(True))
+        .order_by(Repository.created_at)
+    )
+    repos = result.scalars().all()
+    if len(repos) <= limit:
+        return 0
+    excess = repos[limit:]
+    for repo in excess:
+        repo.enabled = False
+    log.info("repos_auto_disabled_downgrade", org_id=org_id, count=len(excess))
+    return len(excess)

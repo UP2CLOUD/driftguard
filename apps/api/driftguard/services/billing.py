@@ -136,6 +136,10 @@ async def apply_subscription_event(db: AsyncSession, event: dict) -> None:
         log.warning("stripe_event_no_org", customer_id=customer_id, event_type=event_type)
         return
 
+    was_premium = org.plan in {"pro", "team", "enterprise"} or org.subscription_status in {
+        "premium_active", "premium_past_due"
+    }
+
     if event_type == "customer.subscription.deleted":
         org.plan = "free"
         org.subscription_status = "free"
@@ -150,6 +154,12 @@ async def apply_subscription_event(db: AsyncSession, event: dict) -> None:
             org.plan = plan_for_price(price_id)
             org.subscription_status = "premium_active"
 
+    # Auto-disable excess repos when downgrading to free.
+    disabled_count = 0
+    if was_premium and org.plan == "free":
+        from driftguard.services.quota import auto_disable_excess_repos
+        disabled_count = await auto_disable_excess_repos(db, org.id)
+
     await db.commit()
     log.info(
         "plan_updated",
@@ -157,4 +167,5 @@ async def apply_subscription_event(db: AsyncSession, event: dict) -> None:
         plan=org.plan,
         subscription_status=org.subscription_status,
         event_type=event_type,
+        repos_disabled=disabled_count,
     )
