@@ -6,6 +6,7 @@ import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { beGet } from "@/lib/backend";
 import { formatDate } from "@/lib/format-date";
+import { MemorySearch } from "./MemorySearch";
 
 async function fetchMemory(id: string) {
   const [entries, stats] = await Promise.all([
@@ -64,6 +65,20 @@ export default async function MemoryPage({
           {t("memory.subtitle").replace("{total}", String(stats.total))}
         </p>
       </div>
+
+      <MemorySearch
+        installationId={installationId}
+        labels={{
+          placeholder: t("memory.searchPlaceholder") ?? "e.g. unencrypted RDS storage in production",
+          search: t("memory.searchButton") ?? "Recall",
+          searching: t("memory.searching") ?? "Searching…",
+          noResults: t("memory.noResults") ?? "No similar incidents in memory for this query.",
+          tooShort: t("memory.tooShort") ?? "Type at least 3 characters.",
+          error: t("memory.searchError") ?? "Search failed — the API or embedding service may be unavailable.",
+          similarity: t("memory.similarity") ?? "match",
+          hint: t("memory.searchHint") ?? "semantic search over past incidents — the same recall the AI reviewer uses on every PR",
+        }}
+      />
 
       {stats.total > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] mb-6">

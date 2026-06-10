@@ -583,7 +583,15 @@
     "noBody": "La memoria se construye mientras DriftGuard revisa PRs y registra embeddings.",
     "blocked": "bloqueado",
     "approved": "aprobado",
-    "warned": "advertido"
+    "warned": "advertido",
+    "searchPlaceholder": "p. ej. almacenamiento RDS sin cifrar en producción",
+    "searchButton": "Recuperar",
+    "searching": "Buscando…",
+    "noResults": "No hay incidentes similares en memoria para esta consulta.",
+    "tooShort": "Escribe al menos 3 caracteres.",
+    "searchError": "La búsqueda falló — la API o el servicio de embeddings puede no estar disponible.",
+    "similarity": "similitud",
+    "searchHint": "búsqueda semántica sobre incidentes pasados — el mismo recall que el revisor de IA usa en cada PR"
   },
   "docs": {
     "eyebrow": "Documentación",
