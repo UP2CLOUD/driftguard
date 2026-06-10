@@ -1039,5 +1039,29 @@
     "outage": "انقطاع كبير",
     "allOperational": "جميع الأنظمة تعمل",
     "partialOutage": "انقطاع جزئي"
+  },
+  "tokens": {
+    "title": "رموز API",
+    "subtitle": "تُصادق الرموز خطوط CI والبرامج النصية مع DriftGuard REST API. يُعرض السر مرة واحدة فقط عند الإنشاء.",
+    "settingsDesc": "وصول برمجي إلى REST API",
+    "settingsHint": "أنشئ وألغِ الرموز لخطوط CI والبرامج النصية.",
+    "manage": "إدارة الرموز",
+    "nameLabel": "اسم الرمز",
+    "namePlaceholder": "ci-pipeline",
+    "roleLabel": "الدور",
+    "create": "إنشاء رمز",
+    "creating": "جارٍ الإنشاء…",
+    "copyHint": "انسخ هذا الرمز الآن — لن يُعرض مرة أخرى.",
+    "copy": "نسخ",
+    "copied": "تم النسخ",
+    "empty": "لا توجد رموز بعد. أنشئ واحدًا لاستدعاء REST API.",
+    "revoke": "إلغاء",
+    "revokedBadge": "ملغى",
+    "lastUsed": "آخر استخدام",
+    "never": "أبدًا",
+    "createdLabel": "أُنشئ",
+    "loadError": "تعذر تحميل الرموز — قد تكون API غير متاحة.",
+    "confirmRevoke": "إلغاء هذا الرمز؟ ستتوقف البرامج النصية التي تستخدمه فورًا.",
+    "usageTitle": "الاستخدام"
   }
 }

@@ -1039,5 +1039,29 @@
     "outage": "Fallo grave",
     "allOperational": "Todos los sistemas operativos",
     "partialOutage": "Fallo parcial"
+  },
+  "tokens": {
+    "title": "Tokens de API",
+    "subtitle": "Los tokens autentican pipelines de CI y scripts contra la REST API de DriftGuard. El secreto se muestra una sola vez al crearlo.",
+    "settingsDesc": "Acceso programático a la REST API",
+    "settingsHint": "Crea y revoca tokens para pipelines de CI y scripts.",
+    "manage": "Gestionar tokens",
+    "nameLabel": "Nombre del token",
+    "namePlaceholder": "ci-pipeline",
+    "roleLabel": "Rol",
+    "create": "Crear token",
+    "creating": "Creando…",
+    "copyHint": "Copia este token ahora — no se mostrará de nuevo.",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "empty": "Aún no hay tokens. Crea uno para llamar a la REST API.",
+    "revoke": "Revocar",
+    "revokedBadge": "revocado",
+    "lastUsed": "último uso",
+    "never": "nunca",
+    "createdLabel": "creado",
+    "loadError": "No se pudieron cargar los tokens — la API puede no estar disponible.",
+    "confirmRevoke": "¿Revocar este token? Los scripts que lo usan dejarán de funcionar de inmediato.",
+    "usageTitle": "Uso"
   }
 }

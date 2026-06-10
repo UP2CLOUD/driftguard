@@ -1,5 +1,6 @@
 import { type Locale } from "@/i18n/config";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { BillingActions } from "@/components/BillingActions";
 import { UserPreferencesSettings } from "@/components/UserPreferencesSettings";
 import { AwsIntegrationForm } from "@/components/AwsIntegrationForm";
@@ -117,6 +118,21 @@ export default async function Settings({
       <Section title={t("settings.preferences")} description={t("settings.preferencesDesc")}>
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
           <UserPreferencesSettings initialPreferences={preferences} />
+        </div>
+      </Section>
+
+      {/* ── API tokens ──────────────────────────────────────────── */}
+      <Section title={t("tokens.title")} description={t("tokens.settingsDesc")}>
+        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5 flex items-center justify-between gap-4">
+          <p className="text-[13px] text-[color:var(--dg-fg-muted)]">
+            {t("tokens.settingsHint")}
+          </p>
+          <Link
+            href={`/dashboard/${installationId}/settings/tokens`}
+            className="dg-button dg-button-ghost text-[12px] shrink-0"
+          >
+            {t("tokens.manage")} →
+          </Link>
         </div>
       </Section>
 

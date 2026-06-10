@@ -1039,5 +1039,29 @@
     "outage": "Major outage",
     "allOperational": "All systems operational",
     "partialOutage": "Partial outage"
+  },
+  "tokens": {
+    "title": "API tokens",
+    "subtitle": "Tokens authenticate CI pipelines and scripts against the DriftGuard REST API. The secret is shown once at creation.",
+    "settingsDesc": "Programmatic access to the REST API",
+    "settingsHint": "Create and revoke tokens for CI pipelines and scripts.",
+    "manage": "Manage tokens",
+    "nameLabel": "Token name",
+    "namePlaceholder": "ci-pipeline",
+    "roleLabel": "Role",
+    "create": "Create token",
+    "creating": "Creating…",
+    "copyHint": "Copy this token now — it will not be shown again.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "empty": "No tokens yet. Create one to call the REST API.",
+    "revoke": "Revoke",
+    "revokedBadge": "revoked",
+    "lastUsed": "last used",
+    "never": "never",
+    "createdLabel": "created",
+    "loadError": "Could not load tokens — the API may be unreachable.",
+    "confirmRevoke": "Revoke this token? Scripts using it will stop working immediately.",
+    "usageTitle": "Usage"
   }
 }

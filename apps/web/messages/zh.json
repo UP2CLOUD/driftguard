@@ -1039,5 +1039,29 @@
     "outage": "严重故障",
     "allOperational": "所有系统正常运行",
     "partialOutage": "部分故障"
+  },
+  "tokens": {
+    "title": "API 令牌",
+    "subtitle": "令牌用于 CI 流水线和脚本对 DriftGuard REST API 的认证。密钥仅在创建时显示一次。",
+    "settingsDesc": "REST API 的程序化访问",
+    "settingsHint": "为 CI 流水线和脚本创建和吊销令牌。",
+    "manage": "管理令牌",
+    "nameLabel": "令牌名称",
+    "namePlaceholder": "ci-pipeline",
+    "roleLabel": "角色",
+    "create": "创建令牌",
+    "creating": "创建中…",
+    "copyHint": "请立即复制此令牌 — 之后将不再显示。",
+    "copy": "复制",
+    "copied": "已复制",
+    "empty": "还没有令牌。创建一个以调用 REST API。",
+    "revoke": "吊销",
+    "revokedBadge": "已吊销",
+    "lastUsed": "最近使用",
+    "never": "从未",
+    "createdLabel": "创建于",
+    "loadError": "无法加载令牌 — API 可能不可达。",
+    "confirmRevoke": "吊销此令牌？使用它的脚本将立即停止工作。",
+    "usageTitle": "用法"
   }
 }
