@@ -91,7 +91,11 @@ export default async function Settings({
           <Row label={t("settings.githubInstallationRow")} value={installationId} mono />
           <Row
             label={t("settings.webhookUrl")}
-            value={`${process.env.NEXT_PUBLIC_API_URL ?? "https://your-api.onrender.com"}/api/v1/webhooks/github`}
+            value={
+              process.env.NEXT_PUBLIC_API_URL
+                ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1/webhooks/github`
+                : "— set NEXT_PUBLIC_API_URL —"
+            }
             mono
           />
           <Row label={t("settings.webhookEvents")} value="pull_request · installation · installation_repositories" mono />

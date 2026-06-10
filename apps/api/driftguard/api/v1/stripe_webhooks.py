@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.core.db import get_db
@@ -23,6 +24,35 @@ async def stripe_webhook(
         log.warning("stripe_webhook_invalid", error=str(exc))
         raise HTTPException(401, "invalid signature") from None
 
-    log.info("stripe_event", event_type=event["type"])
-    await apply_subscription_event(db, event)
+    event_id = event["id"]
+    event_type = event["type"]
+
+    # Idempotency: Stripe retries deliveries; INSERT-first claims the event
+    # atomically so concurrent duplicates can't double-process.
+    claimed = await db.execute(
+        text(
+            "INSERT INTO processed_stripe_events (event_id, event_type) "
+            "VALUES (:id, :type) ON CONFLICT (event_id) DO NOTHING "
+            "RETURNING event_id"
+        ),
+        {"id": event_id, "type": event_type},
+    )
+    if claimed.scalar_one_or_none() is None:
+        log.info("stripe_event_duplicate", event_id=event_id, event_type=event_type)
+        return {"received": True, "duplicate": True}
+
+    log.info("stripe_event", event_id=event_id, event_type=event_type)
+    try:
+        await apply_subscription_event(db, event)
+    except Exception:
+        # Undo uncommitted state, then defensively release a claim that may
+        # already have been committed, so Stripe's retry can reprocess.
+        await db.rollback()
+        await db.execute(
+            text("DELETE FROM processed_stripe_events WHERE event_id = :id"),
+            {"id": event_id},
+        )
+        await db.commit()
+        raise
+    await db.commit()
     return {"received": True}

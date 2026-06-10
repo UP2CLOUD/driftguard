@@ -4,11 +4,27 @@ from __future__ import annotations
 
 import time
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Header, HTTPException
+
+from driftguard.core.config import settings
 
 router = APIRouter()
 
 _started_at = time.time()
+
+
+def require_debug_access(x_debug_token: str | None = Header(None)) -> None:
+    """Gate debug endpoints.
+
+    Outside prod: always allowed.
+    In prod: only if DEBUG_ENDPOINT_TOKEN is configured AND the request matches it.
+    Closed by default — a missing/empty token in prod means 404 (don't reveal existence).
+    """
+    if settings.environment != "prod":
+        return
+    expected = settings.debug_endpoint_token
+    if not expected or x_debug_token != expected:
+        raise HTTPException(status_code=404, detail="Not Found")
 
 
 @router.get("/health")
@@ -71,7 +87,7 @@ async def ready() -> dict:
     )
 
 
-@router.get("/debug/run-analyze")
+@router.get("/debug/run-analyze", dependencies=[Depends(require_debug_access)])
 async def debug_run_analyze(
     installation_id: int = 137862386,
     repo: str = "UP2CLOUD/driftguard-test-iac",
@@ -95,7 +111,7 @@ async def debug_run_analyze(
         return {"status": "error", "traceback": traceback.format_exc()[-2000:]}
 
 
-@router.get("/debug/analyze-steps")
+@router.get("/debug/analyze-steps", dependencies=[Depends(require_debug_access)])
 async def debug_analyze_steps(
     installation_id: int = 1,
     repo: str = "UP2CLOUD/driftguard-test-iac",
@@ -158,7 +174,7 @@ async def debug_analyze_steps(
     return {"steps": steps, "failed_at": None}
 
 
-@router.get("/debug/run-migrations")
+@router.get("/debug/run-migrations", dependencies=[Depends(require_debug_access)])
 async def debug_run_migrations() -> dict:
     """Manually trigger alembic upgrade head and return result or error."""
     import subprocess
@@ -177,7 +193,7 @@ async def debug_run_migrations() -> dict:
     }
 
 
-@router.get("/debug/schema")
+@router.get("/debug/schema", dependencies=[Depends(require_debug_access)])
 async def debug_schema() -> dict:
     """Check if migration 010 columns exist and report alembic version."""
     from sqlalchemy import text

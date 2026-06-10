@@ -65,7 +65,7 @@ export default async function PoliciesPage({
   const policies = await fetchPolicies(installationId);
   const active = policies.filter((p: any) => p.enabled).length;
 
-  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "https://your-api.onrender.com";
+  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-8">

@@ -20,6 +20,7 @@ def require_stripe_configured() -> None:
 def _stripe() -> "stripe":
     require_stripe_configured()
     stripe.api_key = settings.stripe_api_key
+    stripe.api_version = "2026-05-27"
     return stripe
 
 

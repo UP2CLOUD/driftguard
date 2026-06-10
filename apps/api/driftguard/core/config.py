@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     environment: str = "prod"
     database_url: str = "postgresql+asyncpg://driftguard:driftguard@localhost:5432/driftguard"
     secret_key: str = "dev-only-change-me"
+    debug_endpoint_token: str = ""  # prod-only: unlocks /debug/* with matching X-Debug-Token
 
     # ── GitHub App ─────────────────────────────────────────────
     github_app_id: str = ""
@@ -19,6 +20,15 @@ class Settings(BaseSettings):
         # Render/env stores PEM with literal \n — convert to real newlines
         if "\\n" in self.github_app_private_key:
             self.github_app_private_key = self.github_app_private_key.replace("\\n", "\n")
+        return self
+
+    @model_validator(mode="after")
+    def _fail_fast_insecure_prod(self) -> "Settings":
+        if self.environment == "prod" and self.secret_key == "dev-only-change-me":
+            raise ValueError(
+                "SECRET_KEY is using the insecure default in prod. "
+                "Set a strong SECRET_KEY env var before starting the service."
+            )
         return self
 
     # ── LLM router ─────────────────────────────────────────────
@@ -58,6 +68,9 @@ class Settings(BaseSettings):
     posthog_api_key: str = ""
     posthog_host: str = "https://eu.posthog.com"
     sentry_dsn: str = ""
+    release: str = ""  # set from GIT_SHA in CI
+    otel_exporter_otlp_endpoint: str = ""  # e.g. http://otel-collector:4318 — empty = disabled
+    otel_service_name: str = "driftguard-api"
 
     # ── AWS (STS cross-account) ────────────────────────────────
     aws_region: str = "eu-west-1"

@@ -1,6 +1,15 @@
 const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const API_SECRET = process.env.INTERNAL_API_SECRET || process.env.SECRET_KEY || "dev-only-change-me";
 
+function requireSecret(): string {
+  if (process.env.VERCEL_ENV === "production" && API_SECRET === "dev-only-change-me") {
+    throw new Error(
+      "INTERNAL_API_SECRET / SECRET_KEY is using the insecure default in production."
+    );
+  }
+  return API_SECRET;
+}
+
 export type Org = {
   id: string;
   installation_id: number;
@@ -98,7 +107,7 @@ async function throwApiError(r: Response, fallback: string): Promise<never> {
 async function get<T>(path: string): Promise<T> {
   const headers: HeadersInit = {};
   if (typeof window === "undefined") {
-    headers["Authorization"] = `Bearer ${API_SECRET}`;
+    headers["Authorization"] = `Bearer ${requireSecret()}`;
   }
   const r = await fetch(`${BASE}${path}`, {
     cache: "no-store",
@@ -157,7 +166,7 @@ export async function internalStartCheckout(orgId: string, plan: string): Promis
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${API_SECRET}`,
+      "Authorization": `Bearer ${requireSecret()}`,
     },
     body: JSON.stringify({ org_id: orgId, plan }),
   });
@@ -171,7 +180,7 @@ export async function internalOpenPortal(orgId: string, email?: string | null): 
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${API_SECRET}`,
+      "Authorization": `Bearer ${requireSecret()}`,
     },
     body: JSON.stringify({ org_id: orgId, email: email ?? undefined }),
   });
