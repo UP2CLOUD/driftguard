@@ -18,7 +18,8 @@
     "integrate": "Integrar",
     "docs": "Docs",
     "menuLabel": "Menú",
-    "howItWorks": "▸ cómo funciona"
+    "howItWorks": "▸ cómo funciona",
+    "auditLog": "Auditoría"
   },
   "auth": {
     "goToDashboard": "Ir al panel →",
@@ -1071,5 +1072,23 @@
     "loadError": "No se pudieron cargar los tokens — la API puede no estar disponible.",
     "confirmRevoke": "¿Revocar este token? Los scripts que lo usan dejarán de funcionar de inmediato.",
     "usageTitle": "Uso"
+  },
+  "auditLog": {
+    "eyebrow": "Cumplimiento",
+    "title": "Log de auditoría",
+    "subtitle": "Registro append-only de todas las acciones — evidencia para DORA, NIS2 e ISO 27001.",
+    "exportCSV": "Exportar CSV",
+    "loadError": "No se pudo cargar el log — la API puede no estar disponible.",
+    "empty": "Sin eventos aún. Los eventos se registran automáticamente al usar DriftGuard.",
+    "filterPlaceholder": "Filtrar por actor, acción o destino…",
+    "showing": "mostrando",
+    "of": "de",
+    "events": "eventos",
+    "actor": "actor",
+    "action": "acción",
+    "target": "destino",
+    "time": "hora",
+    "payload": "payload",
+    "noMatch": "Ningún evento coincide con este filtro."
   }
 }

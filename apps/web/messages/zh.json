@@ -18,7 +18,8 @@
     "integrate": "集成",
     "docs": "文档",
     "menuLabel": "菜单",
-    "howItWorks": "▸ 工作原理"
+    "howItWorks": "▸ 工作原理",
+    "auditLog": "审计日志"
   },
   "auth": {
     "goToDashboard": "前往控制台 →",
@@ -1071,5 +1072,23 @@
     "loadError": "无法加载令牌 — API 可能不可达。",
     "confirmRevoke": "吊销此令牌？使用它的脚本将立即停止工作。",
     "usageTitle": "用法"
+  },
+  "auditLog": {
+    "eyebrow": "合规",
+    "title": "审计日志",
+    "subtitle": "所有操作的只追加记录 — 用于 DORA、NIS2 和 ISO 27001 合规证据。",
+    "exportCSV": "导出 CSV",
+    "loadError": "无法加载审计日志 — API 可能不可达。",
+    "empty": "暂无事件。使用 DriftGuard 时，事件将自动记录。",
+    "filterPlaceholder": "按操作者、操作或目标过滤…",
+    "showing": "显示",
+    "of": "/",
+    "events": "条事件",
+    "actor": "操作者",
+    "action": "操作",
+    "target": "目标",
+    "time": "时间",
+    "payload": "载荷",
+    "noMatch": "没有符合此过滤条件的事件。"
   }
 }

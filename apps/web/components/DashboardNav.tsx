@@ -44,6 +44,7 @@ export function DashboardNav({
     { label: l("incidents", "Incidents"), href: `${base}/incidents`, badge: openIncidents > 0 ? openIncidents : 0 },
     { label: l("policies", "Policies"),   href: `${base}/policies` },
     { label: l("memory", "Memory"),       href: `${base}/memory` },
+    { label: l("auditLog", "Audit log"),  href: `${base}/audit-log` },
     { label: l("settings", "Settings"),   href: `${base}/settings` },
   ];
 

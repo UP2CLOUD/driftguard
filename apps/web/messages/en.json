@@ -18,7 +18,8 @@
     "integrate": "Integrate",
     "docs": "Docs",
     "menuLabel": "Menu",
-    "howItWorks": "▸ how it works"
+    "howItWorks": "▸ how it works",
+    "auditLog": "Audit log"
   },
   "auth": {
     "goToDashboard": "Go to Dashboard →",
@@ -1071,5 +1072,23 @@
     "loadError": "Could not load tokens — the API may be unreachable.",
     "confirmRevoke": "Revoke this token? Scripts using it will stop working immediately.",
     "usageTitle": "Usage"
+  },
+  "auditLog": {
+    "eyebrow": "Compliance",
+    "title": "Audit log",
+    "subtitle": "Append-only record of all actions — used for DORA, NIS2 and ISO 27001 evidence.",
+    "exportCSV": "Export CSV",
+    "loadError": "Could not load audit log — the API may be unreachable.",
+    "empty": "No audit events yet. Events are recorded automatically as you use DriftGuard.",
+    "filterPlaceholder": "Filter by actor, action or target…",
+    "showing": "showing",
+    "of": "of",
+    "events": "events",
+    "actor": "actor",
+    "action": "action",
+    "target": "target",
+    "time": "time",
+    "payload": "payload",
+    "noMatch": "No events match this filter."
   }
 }
