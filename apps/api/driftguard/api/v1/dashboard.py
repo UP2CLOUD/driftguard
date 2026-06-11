@@ -140,7 +140,7 @@ async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
             .join(PullRequest, Analysis.pr_id == PullRequest.id)
             .join(Repository, PullRequest.repo_id == Repository.id)
             .where(Repository.org_id == org.id)
-            .order_by(Analysis.started_at.desc())
+            .order_by(Analysis.started_at.desc().nulls_last())
             .limit(5)
         )
     ).all()

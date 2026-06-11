@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
-from sqlalchemy import desc, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.core.db import get_db
@@ -46,7 +46,7 @@ async def list_incidents(
     stmt = (
         select(DriftIncident)
         .where(DriftIncident.org_id == org.id)
-        .order_by(desc(DriftIncident.last_seen_at))
+        .order_by(DriftIncident.last_seen_at.desc().nulls_last())
         .limit(limit)
     )
     if status:
