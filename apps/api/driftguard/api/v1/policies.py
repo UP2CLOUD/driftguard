@@ -10,6 +10,7 @@ from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.core.db import get_db
+from driftguard.core.rate_limit import rate_limit
 from driftguard.db.models import Organization, PolicyRule
 
 router = APIRouter(prefix="/policies", tags=["policies"])
@@ -62,6 +63,7 @@ async def create_policy(
     body: PolicyCreate,
     installation_id: int = Query(...),
     db: AsyncSession = Depends(get_db),
+    _rl: None = Depends(rate_limit(per_minute=20, per_hour=200)),
 ) -> dict:
     if body.rule_type not in VALID_RULE_TYPES:
         raise HTTPException(422, f"rule_type must be one of: {VALID_RULE_TYPES}")
@@ -93,6 +95,7 @@ async def patch_policy(
     rule_id: str,
     body: PolicyPatch,
     db: AsyncSession = Depends(get_db),
+    _rl: None = Depends(rate_limit(per_minute=20, per_hour=200)),
 ) -> dict:
     rule = await db.get(PolicyRule, rule_id)
     if not rule:
@@ -112,7 +115,11 @@ async def patch_policy(
 
 
 @router.delete("/{rule_id}", status_code=204)
-async def delete_policy(rule_id: str, db: AsyncSession = Depends(get_db)) -> None:
+async def delete_policy(
+    rule_id: str,
+    db: AsyncSession = Depends(get_db),
+    _rl: None = Depends(rate_limit(per_minute=20, per_hour=200)),
+) -> None:
     rule = await db.get(PolicyRule, rule_id)
     if not rule:
         raise HTTPException(404, "policy rule not found")
