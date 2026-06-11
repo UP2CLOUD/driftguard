@@ -5,6 +5,9 @@ on:
     - cron: "0 2 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   eval:
     runs-on: ubuntu-latest
@@ -23,8 +26,10 @@ jobs:
 
       - name: Check API key is configured
         id: key_check
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          if [ -z "${{ secrets.ANTHROPIC_API_KEY }}" ]; then
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
             echo "has_key=false" >> $GITHUB_OUTPUT
             echo "⚠ ANTHROPIC_API_KEY secret not set — skipping evals (no cost, no failure)"
           else
