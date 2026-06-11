@@ -141,6 +141,9 @@ async def recall(
         )
 
         return [dict(r) for r in rows]
-    except Exception:
-        # pgvector not available or embedding service down
+    except Exception as exc:
+        # pgvector not available or embedding service down — degrade gracefully
+        from driftguard.core.logging import log
+
+        log.warning("recall_unavailable", installation_id=installation_id, error=str(exc))
         return []
