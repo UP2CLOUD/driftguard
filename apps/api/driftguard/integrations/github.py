@@ -93,6 +93,34 @@ async def submit_pr_review(
             log.warning("submit_review_failed", repo=repo_full_name, status=r.status_code, body=r.text[:200])
 
 
+async def fetch_pr_files(token: str, repo_full_name: str, pr_number: int) -> list[dict]:
+    """Fetch files changed in a PR (includes per-file unified diff patch)."""
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+    }
+    files: list[dict] = []
+    page = 1
+    async with httpx.AsyncClient(timeout=30) as client:
+        while True:
+            r = await client.get(
+                f"{GITHUB_API}/repos/{repo_full_name}/pulls/{pr_number}/files",
+                headers=headers,
+                params={"per_page": 100, "page": page},
+            )
+            if r.status_code != 200:
+                log.warning("fetch_pr_files_failed", repo=repo_full_name, status=r.status_code)
+                break
+            batch = r.json()
+            if not batch:
+                break
+            files.extend(batch)
+            if len(batch) < 100:
+                break
+            page += 1
+    return files
+
+
 async def post_check_run(
     token: str,
     repo_full_name: str,

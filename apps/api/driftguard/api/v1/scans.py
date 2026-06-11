@@ -25,6 +25,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from driftguard.api.deps import require_internal_auth
 from driftguard.core.db import get_db
 from driftguard.core.logging import log
 from driftguard.db.models import Analysis, AuditLog, Organization, PullRequest, Repository
@@ -286,6 +287,7 @@ async def _run_scan_inprocess(
 async def get_scan(
     analysis_id: str,
     db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
 ) -> ScanResultOut:
     """Retrieve a completed scan result."""
     try:

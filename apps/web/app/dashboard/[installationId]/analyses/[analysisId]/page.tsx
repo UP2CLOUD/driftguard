@@ -128,8 +128,8 @@ export default async function AnalysisPage({
           <div className="dg-label mb-1">{t("dashboard.scanResult")}</div>
           <h1 className="font-sans text-2xl font-semibold text-[color:var(--dg-fg)]">
             {data.repo_full_name
-              ? <><span className="text-[color:var(--dg-fg-muted)]">{data.repo_full_name}</span>{data.pr_number ? <span className="font-mono text-lg text-[color:var(--dg-fg-subtle)]"> #{data.pr_number}</span> : null}</>
-              : <>Analysis <span className="font-mono text-[color:var(--dg-fg-muted)] text-lg">{analysisId.slice(0,8)}</span></>
+              ? <><span className="text-[color:var(--dg-fg-muted)]">{data.repo_full_name}</span>{data.pr_number ? <span className="font-mono text-lg text-[color:var(--dg-fg-subtle)]">#{data.pr_number}</span> : null}</>
+              : <>{t("dashboard.scanResult")} <span className="font-mono text-[color:var(--dg-fg-muted)] text-lg">{analysisId.slice(0,8)}</span></>
             }
           </h1>
           {data.head_sha && (
@@ -192,7 +192,7 @@ export default async function AnalysisPage({
             <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
               ⬡ {t("dashboard.aiReview")}
             </span>
-            <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">{t("dashboard.aiReviewDesc")}</span>
+            <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{t("dashboard.aiReviewDesc")}</span>
           </div>
           <div className="prose prose-invert prose-sm max-w-none
             [&_h2]:font-sans [&_h2]:text-[13px] [&_h2]:font-semibold [&_h2]:text-[color:var(--dg-fg)] [&_h2]:mt-4 [&_h2]:mb-2
@@ -224,7 +224,7 @@ export default async function AnalysisPage({
             <div key={i} className="px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition">
               {/* Top row */}
               <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${SEV_STYLE[f.severity] ?? SEV_STYLE.info}`}>
+                <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest ${SEV_STYLE[f.severity] ?? SEV_STYLE.info}`}>
                   {f.severity}
                 </span>
                 <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">
@@ -258,7 +258,7 @@ export default async function AnalysisPage({
               {/* Suggestion */}
               {f.suggestion && (
                 <div className="mt-2 rounded border border-allowed/20 bg-allowed/5 px-3 py-2">
-                  <span className="font-mono text-[9px] uppercase tracking-widest text-allowed mr-2">Fix:</span>
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-allowed mr-2">{t("incidents.suggestedFix")}</span>
                   <span className="font-mono text-[11px] text-allowed">{f.suggestion}</span>
                 </div>
               )}
@@ -267,7 +267,7 @@ export default async function AnalysisPage({
               {f.controls?.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1">
                   {f.controls.map((ctrl: string) => (
-                    <span key={ctrl} className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">
+                    <span key={ctrl} className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">
                       {ctrl}
                     </span>
                   ))}

@@ -65,7 +65,7 @@ export default async function PoliciesPage({
   const policies = await fetchPolicies(installationId);
   const active = policies.filter((p: any) => p.enabled).length;
 
-  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "https://your-api.onrender.com";
+  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-8">
@@ -157,7 +157,7 @@ Content-Type: application/json
                 <div key={ex.name} className="px-4 py-3">
                   <div className="flex items-center gap-2 mb-1">
                     <span
-                      className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest shrink-0 ${TYPE_STYLE[ex.rule_type]}`}
+                      className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest shrink-0 ${TYPE_STYLE[ex.rule_type]}`}
                     >
                       {ex.rule_type}
                     </span>

@@ -77,10 +77,10 @@ export default async function IncidentDetailPage({
         <div className="flex-1 min-w-0">
           <div className="dg-label mb-2">{t("incidents.eyebrow") ?? "Incident"}</div>
           <div className="flex items-center gap-2 flex-wrap mb-2">
-            <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest shrink-0 ${SEV[incident.severity] ?? ""}`}>
+            <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest shrink-0 ${SEV[incident.severity] ?? ""}`}>
               {incident.severity}
             </span>
-            <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest shrink-0 ${STATUS_BADGE[incident.status] ?? ""}`}>
+            <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest shrink-0 ${STATUS_BADGE[incident.status] ?? ""}`}>
               {incident.status}
             </span>
             {incident.recurrence_count > 1 && (
@@ -159,7 +159,7 @@ export default async function IncidentDetailPage({
                 { label: t("incidents.recurrences"), val: String(incident.recurrence_count ?? 0) },
               ].map(({ label, val }) => (
                 <div key={label} className="px-4 py-3">
-                  <div className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-0.5">{label}</div>
+                  <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-0.5">{label}</div>
                   <div className="font-mono text-[12px] text-[color:var(--dg-fg)]">{val}</div>
                 </div>
               ))}

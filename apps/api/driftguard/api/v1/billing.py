@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from stripe import StripeError
 
 from driftguard.api.deps import require_internal_auth
+from driftguard.core.config import settings
 from driftguard.core.db import get_db
-from driftguard.db.models import Organization
+from driftguard.db.models import Organization, Repository
 from driftguard.services.billing import (
     create_checkout_session,
     create_portal_session,
@@ -14,8 +16,49 @@ from driftguard.services.billing import (
     require_stripe_configured,
     stripe_error_message,
 )
+from driftguard.services.quota import get_monthly_pr_count, is_premium
 
 router = APIRouter()
+
+
+@router.get("/plan")
+async def get_plan(
+    installation_id: int,
+    db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
+) -> dict:
+    result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
+    org = result.scalar_one_or_none()
+    if org is None:
+        raise HTTPException(404, "Organization not found")
+
+    active_repos = (
+        await db.execute(
+            select(func.count())
+            .select_from(Repository)
+            .where(
+                Repository.org_id == org.id,
+                Repository.enabled.is_(True),
+            )
+        )
+    ).scalar_one()
+
+    premium = is_premium(org)
+    pr_count = await get_monthly_pr_count(db, org.id) if premium else None
+
+    return {
+        "plan": org.plan,
+        "subscription_status": org.subscription_status,
+        "is_premium": premium,
+        "repos": {
+            "active": active_repos,
+            "limit": None if premium else settings.free_repository_limit,
+        },
+        "monthly_pr_reviews": {
+            "used": pr_count,
+            "limit": settings.premium_monthly_pr_limit if premium else None,
+        },
+    }
 
 
 class CheckoutRequest(BaseModel):

@@ -6,6 +6,7 @@ import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { beGet } from "@/lib/backend";
 import { formatDate } from "@/lib/format-date";
+import { MemorySearch } from "./MemorySearch";
 
 async function fetchMemory(id: string) {
   const [entries, stats] = await Promise.all([
@@ -65,6 +66,20 @@ export default async function MemoryPage({
         </p>
       </div>
 
+      <MemorySearch
+        installationId={installationId}
+        labels={{
+          placeholder: t("memory.searchPlaceholder") ?? "e.g. unencrypted RDS storage in production",
+          search: t("memory.searchButton") ?? "Recall",
+          searching: t("memory.searching") ?? "Searching…",
+          noResults: t("memory.noResults") ?? "No similar incidents in memory for this query.",
+          tooShort: t("memory.tooShort") ?? "Type at least 3 characters.",
+          error: t("memory.searchError") ?? "Search failed — the API or embedding service may be unavailable.",
+          similarity: t("memory.similarity") ?? "match",
+          hint: t("memory.searchHint") ?? "semantic search over past incidents — the same recall the AI reviewer uses on every PR",
+        }}
+      />
+
       {stats.total > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] mb-6">
           <div className="bg-[color:var(--dg-canvas)] px-4 py-4">
@@ -106,17 +121,17 @@ export default async function MemoryPage({
                     {e.pr_number ? <span className="text-[color:var(--dg-fg-muted)]">#{e.pr_number}</span> : null}
                   </code>
                   {e.outcome && (
-                    <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${OUT_BADGE[e.outcome] ?? "border-[color:var(--dg-border)] text-[color:var(--dg-fg-subtle)]"}`}>
+                    <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest ${OUT_BADGE[e.outcome] ?? "border-[color:var(--dg-border)] text-[color:var(--dg-fg-subtle)]"}`}>
                       {e.outcome}
                     </span>
                   )}
                   {e.severity && (
-                    <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)] uppercase tracking-widest">
+                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] uppercase tracking-widest">
                       {e.severity}
                     </span>
                   )}
                   {e.blast_radius && (
-                    <span className={`font-mono text-[9px] uppercase tracking-widest ${BLAST_COLOR[e.blast_radius] ?? ""}`}>
+                    <span className={`font-mono text-[10px] uppercase tracking-widest ${BLAST_COLOR[e.blast_radius] ?? ""}`}>
                       blast:{e.blast_radius}
                     </span>
                   )}
@@ -132,12 +147,12 @@ export default async function MemoryPage({
                 {/* Footer: date + analysis link */}
                 <div className="flex items-center gap-3">
                   {e.created_at && (
-                    <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">
+                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
                       {formatDate(e.created_at, preferences.locale)}
                     </span>
                   )}
                   {e.analysis_id && (
-                    <span className="font-mono text-[9px] text-[color:var(--dg-electric)]">
+                    <span className="font-mono text-[10px] text-[color:var(--dg-electric)]">
                       View analysis →
                     </span>
                   )}

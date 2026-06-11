@@ -9,7 +9,6 @@ Revises: 008
 Create Date: 2026-06-05
 """
 
-import sqlalchemy as sa
 from alembic import op
 
 revision = "009"
@@ -19,11 +18,11 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column("findings", sa.Column("category", sa.String(64), nullable=True))
-    op.add_column("findings", sa.Column("title", sa.String(512), nullable=True))
-    op.add_column("findings", sa.Column("file", sa.String(512), nullable=True))
-    op.add_column("findings", sa.Column("line", sa.Integer, nullable=True))
-    op.add_column("findings", sa.Column("controls", sa.JSON, nullable=True))
+    op.execute("ALTER TABLE findings ADD COLUMN IF NOT EXISTS category VARCHAR(64)")
+    op.execute("ALTER TABLE findings ADD COLUMN IF NOT EXISTS title VARCHAR(512)")
+    op.execute("ALTER TABLE findings ADD COLUMN IF NOT EXISTS file VARCHAR(512)")
+    op.execute("ALTER TABLE findings ADD COLUMN IF NOT EXISTS line INTEGER")
+    op.execute("ALTER TABLE findings ADD COLUMN IF NOT EXISTS controls JSONB")
 
 
 def downgrade() -> None:

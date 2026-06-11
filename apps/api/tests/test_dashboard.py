@@ -7,6 +7,8 @@ from fastapi.testclient import TestClient
 from driftguard.core.db import get_db
 from driftguard.main import app
 
+AUTH = {"Authorization": "Bearer dev-only-change-me"}
+
 
 def _empty_session():
     mock = AsyncMock()

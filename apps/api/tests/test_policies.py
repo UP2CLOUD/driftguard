@@ -11,6 +11,8 @@ from driftguard.core.db import get_db
 from driftguard.db.models import Organization, PolicyRule
 from driftguard.main import app
 
+AUTH = {"Authorization": "Bearer dev-only-change-me"}
+
 
 def _org():
     return Organization(

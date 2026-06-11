@@ -156,7 +156,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
                 className="rounded border border-[color:var(--dg-border)] px-3 font-mono text-[11px] text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] transition">+</button>
             </div>
           </div>
-          {error && <p className="font-mono text-[11px] text-blocked">✗ {error}</p>}
+          {error && <p role="alert" className="font-mono text-[11px] text-blocked">✗ {error}</p>}
           <button
             onClick={saveEdit}
             disabled={loading === "save"}
@@ -173,17 +173,21 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
     <div className="flex items-start gap-4 px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition group">
       {/* Enabled dot */}
       <div className="mt-1 shrink-0">
-        <span className={`h-1.5 w-1.5 rounded-full inline-block ${policy.enabled ? "bg-allowed" : "bg-[color:var(--dg-fg-subtle)]"}`} />
+        <span
+          role="img"
+          aria-label={policy.enabled ? "Enabled" : "Disabled"}
+          className={`h-1.5 w-1.5 rounded-full inline-block ${policy.enabled ? "bg-allowed" : "bg-[color:var(--dg-fg-subtle)]"}`}
+        />
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap mb-1">
-          <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${TYPE_STYLE[policy.rule_type] ?? ""}`}>
+          <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest ${TYPE_STYLE[policy.rule_type] ?? ""}`}>
             {policy.rule_type}
           </span>
           <span className="font-sans text-[13px] font-medium text-[color:var(--dg-fg)]">{policy.name}</span>
           {!policy.enabled && (
-            <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">{t("policies.disabled")}</span>
+            <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{t("policies.disabled")}</span>
           )}
         </div>
         {policy.description && (
@@ -196,20 +200,20 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
             </span>
           )}
           {policy.match_count > 0 && (
-            <span className="text-warned shrink-0">↺ {t("policies.matches")?.replace("{n}", String(policy.match_count)) ?? `${policy.match_count} matches`}</span>
+            <span className="text-warned shrink-0">↺ {t("policies.matches", { n: policy.match_count })}</span>
           )}
         </div>
-        {error && <p className="font-mono text-[11px] text-blocked mt-1">✗ {error}</p>}
+        {error && <p role="alert" className="font-mono text-[11px] text-blocked mt-1">✗ {error}</p>}
       </div>
 
       {/* Actions */}
-      <div className="shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+      <div className="shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition">
         {/* Toggle enable/disable */}
         <button
           onClick={toggleEnabled}
           disabled={loading === "toggle"}
           title={policy.enabled ? t("policies.disable") : t("policies.enable")}
-          className="rounded border border-[color:var(--dg-border)] px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 disabled:opacity-40 transition"
+          className="rounded border border-[color:var(--dg-border)] px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 disabled:opacity-40 transition"
         >
           {loading === "toggle" ? "…" : policy.enabled ? t("policies.disable") : t("policies.enable")}
         </button>
@@ -217,7 +221,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
         {/* Edit */}
         <button
           onClick={() => setEditing(true)}
-          className="rounded border border-[color:var(--dg-border)] px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
+          className="rounded border border-[color:var(--dg-border)] px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
         >
           {t("policies.edit")}
         </button>
@@ -228,7 +232,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
             <button
               onClick={deletePol}
               disabled={loading === "delete"}
-              className="rounded border border-blocked/30 bg-blocked/5 px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-blocked hover:bg-blocked/10 disabled:opacity-40 transition"
+              className="rounded border border-blocked/30 bg-blocked/5 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-blocked hover:bg-blocked/10 disabled:opacity-40 transition"
             >
               {loading === "delete" ? "…" : t("policies.confirm")}
             </button>
@@ -242,7 +246,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
         ) : (
           <button
             onClick={() => setConfirmDelete(true)}
-            className="rounded border border-[color:var(--dg-border)] px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-muted)] hover:text-blocked hover:border-blocked/30 transition"
+            className="rounded border border-[color:var(--dg-border)] px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-muted)] hover:text-blocked hover:border-blocked/30 transition"
           >
             {t("common.delete")}
           </button>

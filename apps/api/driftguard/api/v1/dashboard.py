@@ -27,15 +27,19 @@ async def overview(
     installation_id: int = Query(..., description="GitHub App installation ID"),
     db: AsyncSession = Depends(get_db),
 ) -> dict:
-    # Resolve org
-    org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    ).scalar_one_or_none()
-
-    if not org:
-        return _empty_overview()
-
     try:
+        org = (
+            await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
+        ).scalar_one_or_none()
+
+        if not org:
+            from driftguard.api.v1.orgs import _bootstrap_installation
+
+            org = await _bootstrap_installation(db, installation_id)
+
+        if not org:
+            return _empty_overview()
+
         return await _build_overview(org, installation_id, db)
     except Exception as exc:
         from driftguard.core.logging import log

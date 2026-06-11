@@ -94,7 +94,7 @@ export default async function RepoPage({
             { label: t("repos.highRiskPrs"), value: critHigh },
           ].map(({ label, value }) => (
             <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
-              <div className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">
                 {label}
               </div>
               <div className="font-mono text-xl font-bold text-[color:var(--dg-fg)]">{value}</div>
@@ -144,7 +144,7 @@ export default async function RepoPage({
 
                 <div className="flex items-center gap-3 shrink-0">
                   <span
-                    className={`font-mono text-[9px] uppercase tracking-widest px-2 py-0.5 rounded border ${
+                    className={`font-mono text-[10px] uppercase tracking-widest px-2 py-0.5 rounded border ${
                       a.status === "completed"
                         ? "text-allowed border-allowed/30 bg-allowed/5"
                         : a.status === "failed"

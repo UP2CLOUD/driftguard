@@ -1,44 +1,66 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
-export function RepoToggle({ repoId, enabled }: { repoId: string; enabled: boolean }) {
-  const router = useRouter();
+export function RepoToggle({
+  repoId,
+  initialEnabled,
+  atFreeLimit,
+}: {
+  repoId: string;
+  initialEnabled: boolean;
+  atFreeLimit: boolean;
+}) {
+  const [enabled, setEnabled] = useState(initialEnabled);
   const [loading, setLoading] = useState(false);
-  const [localEnabled, setLocalEnabled] = useState(enabled);
+  const [error, setError] = useState<string | null>(null);
 
   async function toggle() {
+    if (loading) return;
+    const action = enabled ? "disable" : "enable";
+
+    if (!enabled && atFreeLimit) {
+      setError("Repo limit reached. Disable another repo or upgrade.");
+      return;
+    }
+
     setLoading(true);
+    setError(null);
     try {
-      const res = await fetch(`/api/repos/${repoId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ enabled: !localEnabled }),
-      });
-      if (res.ok) {
-        setLocalEnabled(!localEnabled);
-        router.refresh();
+      const res = await fetch(`/api/repos/${repoId}/${action}`, { method: "POST" });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        if (res.status === 402) {
+          setError(body.detail ?? body.error ?? "Plan limit reached. Upgrade to add more repositories.");
+        } else {
+          setError(body.detail ?? body.error ?? `Failed to ${action} repository.`);
+        }
+        return;
       }
+      setEnabled(!enabled);
+    } catch {
+      setError("Network error. Try again.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <button
-      onClick={toggle}
-      disabled={loading}
-      title={localEnabled ? "Disable scanning" : "Enable scanning"}
-      className={`h-4 w-7 rounded-full transition-colors duration-200 relative disabled:opacity-50 ${
-        localEnabled ? "bg-allowed" : "bg-[color:var(--dg-border)]"
-      }`}
-    >
-      <span
-        className={`absolute top-0.5 h-3 w-3 rounded-full bg-white shadow transition-transform duration-200 ${
-          localEnabled ? "translate-x-3.5" : "translate-x-0.5"
+    <div className="flex flex-col items-end gap-1">
+      <button
+        onClick={toggle}
+        disabled={loading}
+        className={`font-mono text-[10px] uppercase tracking-widest px-2 py-1 rounded border transition disabled:opacity-40 ${
+          enabled
+            ? "text-[color:var(--dg-fg-muted)] border-[color:var(--dg-border)] hover:text-blocked hover:border-blocked/40"
+            : "text-[color:var(--dg-electric)] border-[color:var(--dg-electric)]/30 hover:bg-[color:var(--dg-electric)]/5"
         }`}
-      />
-    </button>
+      >
+        {loading ? "…" : enabled ? "Disable" : "Enable"}
+      </button>
+      {error && (
+        <p className="font-mono text-[10px] text-warned text-right max-w-[160px] leading-tight">{error}</p>
+      )}
+    </div>
   );
 }

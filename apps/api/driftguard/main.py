@@ -124,3 +124,8 @@ app.add_middleware(
 )
 
 app.include_router(v1_router, prefix="/api/v1")
+
+# OpenTelemetry instrumentation (no-op unless OTEL_EXPORTER_OTLP_ENDPOINT is set)
+from driftguard.core.observability import init_telemetry  # noqa: E402
+
+init_telemetry(app)

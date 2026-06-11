@@ -11,6 +11,9 @@ const SECRET = process.env.SECRET_KEY          || "dev-only-change-me";
 export const BACKEND_URL = BASE;
 
 export function authHeaders(): Record<string, string> {
+  if (process.env.VERCEL_ENV === "production" && SECRET === "dev-only-change-me") {
+    throw new Error("SECRET_KEY is using the insecure default in production.");
+  }
   return { Authorization: `Bearer ${SECRET}` };
 }
 

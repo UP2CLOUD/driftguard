@@ -20,6 +20,7 @@ def require_stripe_configured() -> None:
 def _stripe() -> "stripe":
     require_stripe_configured()
     stripe.api_key = settings.stripe_api_key
+    stripe.api_version = "2026-05-27"
     return stripe
 
 
@@ -101,6 +102,18 @@ def verify_webhook(payload: bytes, signature: str) -> dict:
     return _stripe().Webhook.construct_event(payload, signature, settings.stripe_webhook_secret)
 
 
+_STRIPE_STATUS_TO_SUBSCRIPTION: dict[str, str] = {
+    "active": "premium_active",
+    "trialing": "premium_active",
+    "past_due": "premium_past_due",
+    "incomplete": "premium_incomplete",
+    "incomplete_expired": "free",
+    "unpaid": "premium_past_due",
+    "canceled": "premium_canceled",
+    "paused": "premium_past_due",
+}
+
+
 async def apply_subscription_event(db: AsyncSession, event: dict) -> None:
     event_type = event["type"]
     data = event["data"]["object"]
@@ -124,16 +137,38 @@ async def apply_subscription_event(db: AsyncSession, event: dict) -> None:
         log.warning("stripe_event_no_org", customer_id=customer_id, event_type=event_type)
         return
 
+    was_premium = org.plan in {"pro", "team", "enterprise"} or org.subscription_status in {
+        "premium_active",
+        "premium_past_due",
+    }
+
     if event_type == "customer.subscription.deleted":
         org.plan = "free"
+        org.subscription_status = "free"
     else:
         status = data.get("status", "")
+        org.subscription_status = _STRIPE_STATUS_TO_SUBSCRIPTION.get(status, "free")
         if status not in {"active", "trialing"}:
             org.plan = "free"
         else:
             items = data.get("items", {}).get("data", [])
             price_id = items[0]["price"]["id"] if items else ""
             org.plan = plan_for_price(price_id)
+            org.subscription_status = "premium_active"
+
+    # Auto-disable excess repos when downgrading to free.
+    disabled_count = 0
+    if was_premium and org.plan == "free":
+        from driftguard.services.quota import auto_disable_excess_repos
+
+        disabled_count = await auto_disable_excess_repos(db, org.id)
 
     await db.commit()
-    log.info("plan_updated", org_id=org.id, plan=org.plan, event_type=event_type)
+    log.info(
+        "plan_updated",
+        org_id=org.id,
+        plan=org.plan,
+        subscription_status=org.subscription_status,
+        event_type=event_type,
+        repos_disabled=disabled_count,
+    )

@@ -56,6 +56,7 @@ export default async function DashboardLayout({
           incidents: t("nav.incidents") ?? "Incidents",
           policies:  t("nav.policies")  ?? "Policies",
           memory:    t("nav.memory")    ?? "Memory",
+          auditLog:  t("nav.auditLog")  ?? "Audit log",
           settings:  t("nav.settings")  ?? "Settings",
         }}
       />

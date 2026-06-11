@@ -9,6 +9,12 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
 import { formatDate } from "@/lib/format-date";
+import { RepoToggle } from "@/components/RepoToggle";
+
+type PlanData = {
+  is_premium: boolean;
+  repos: { active: number; limit: number | null };
+};
 
 async function fetchOrgData(installationId: string) {
   const org = await beGet<{ id: string; plan: string }>(
@@ -61,10 +67,16 @@ export default async function ReposPage({
   const t = createTranslator(msgs);
 
   const org = await fetchOrgData(installationId);
-  const [repos, analyses] = await Promise.all([
+  const [repos, analyses, planData] = await Promise.all([
     org ? fetchRepos(org.id) : Promise.resolve([]),
     org ? fetchAnalyses(org.id) : Promise.resolve([]),
+    beGet<PlanData>(`/api/v1/billing/plan?installation_id=${installationId}`, { revalidate: 30 }),
   ]);
+
+  const atFreeLimit =
+    !planData?.is_premium &&
+    planData?.repos.limit != null &&
+    (planData?.repos.active ?? 0) >= planData.repos.limit;
 
   const recentAnalyses: any[] = analyses.slice(0, 20);
 
@@ -109,11 +121,36 @@ export default async function ReposPage({
             {t("repos.connectedRepos") ?? "Connected repositories"}
           </h2>
           <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-            {repos.length === 1
-              ? (t("repos.repoCountOne") ?? "1 repo")
-              : (t("repos.repoCount")?.replace("{n}", String(repos.length)) ?? `${repos.length} repos`)}
+            {planData?.repos.limit != null
+              ? `${planData.repos.active}/${planData.repos.limit} active`
+              : `${repos.length} repo${repos.length !== 1 ? "s" : ""}`}
           </span>
         </div>
+
+        {/* Free plan quota bar */}
+        {planData && !planData.is_premium && planData.repos.limit != null && (
+          <div className="mb-4 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+                Free plan — {planData.repos.limit} active repos included
+              </span>
+              {atFreeLimit && (
+                <Link
+                  href={`/dashboard/${installationId}/settings?intent=upgrade`}
+                  className="font-mono text-[10px] text-[color:var(--dg-electric)] hover:opacity-70 transition"
+                >
+                  Upgrade →
+                </Link>
+              )}
+            </div>
+            <div className="h-1 rounded-full bg-[color:var(--dg-border)] overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all ${atFreeLimit ? "bg-warned" : "bg-[color:var(--dg-electric)]"}`}
+                style={{ width: `${Math.min(100, ((planData.repos.active) / planData.repos.limit) * 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
 
         {repos.length === 0 ? (
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-12 text-center">
@@ -146,12 +183,12 @@ export default async function ReposPage({
         ) : (
           <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
             {/* Header */}
-            <div className="hidden sm:grid grid-cols-[1fr_80px_100px_80px_60px] gap-4 bg-[color:var(--dg-surface)] px-4 py-2">
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Repository</span>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Risk</span>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Last analyzed</span>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Latest</span>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Scanning</span>
+            <div className="hidden sm:grid grid-cols-[1fr_80px_100px_100px_90px] gap-4 bg-[color:var(--dg-surface)] px-4 py-2">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Repository</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Risk</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Last analyzed</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Status</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Active</span>
             </div>
 
             {repos.map((repo: any) => {
@@ -160,16 +197,18 @@ export default async function ReposPage({
               const lastDate = last?.created_at
                 ? formatDate(last.created_at, prefs.locale)
                 : null;
+              const isEnabled = repo.enabled !== false;
 
               return (
                 <div
                   key={repo.id || repo.full_name}
-                  className="flex sm:grid sm:grid-cols-[1fr_80px_100px_80px_60px] items-center gap-4 px-4 py-3.5 hover:bg-[color:var(--dg-surface-raised)] transition"
+                  className="flex sm:grid sm:grid-cols-[1fr_80px_100px_100px_90px] items-center gap-4 px-4 py-3.5 hover:bg-[color:var(--dg-surface-raised)] transition"
                 >
                   {/* Repo name */}
                   <div className="flex items-center gap-2.5 min-w-0">
+                    <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${isEnabled ? "bg-allowed" : "bg-[color:var(--dg-fg-subtle)]"}`} />
                     <div className="min-w-0">
-                      <code className="font-mono text-[12px] text-[color:var(--dg-fg)] truncate block">
+                      <code className={`font-mono text-[12px] truncate block ${isEnabled ? "text-[color:var(--dg-fg)]" : "text-[color:var(--dg-fg-muted)]"}`}>
                         {repo.full_name}
                       </code>
                       <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
@@ -209,6 +248,15 @@ export default async function ReposPage({
                     ) : (
                       <span className="h-1.5 w-1.5 rounded-full bg-allowed" />
                     )}
+                  </div>
+
+                  {/* Active toggle */}
+                  <div className="hidden sm:flex items-center">
+                    <RepoToggle
+                      repoId={repo.id}
+                      initialEnabled={isEnabled}
+                      atFreeLimit={!!atFreeLimit && !isEnabled}
+                    />
                   </div>
                 </div>
               );
@@ -298,7 +346,7 @@ export default async function ReposPage({
 
                 <div className="flex items-center gap-3 shrink-0">
                   <span
-                    className={`font-mono text-[9px] uppercase tracking-widest px-2 py-0.5 rounded border ${
+                    className={`font-mono text-[10px] uppercase tracking-widest px-2 py-0.5 rounded border ${
                       a.status === "completed"
                         ? "text-allowed border-allowed/30 bg-allowed/5"
                         : a.status === "failed"

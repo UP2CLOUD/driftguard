@@ -57,8 +57,11 @@ async def get_orgs_by_user(login: str, db: AsyncSession = Depends(get_db)) -> li
     # Query orgs where account_login matches the GitHub user
     # account_login is stored in org.settings when the app is installed
     stmt = select(Organization).order_by(Organization.github_installation_id).limit(50)
-    result = await db.execute(stmt)
-    all_orgs = result.scalars().all()
+    try:
+        result = await db.execute(stmt)
+        all_orgs = result.scalars().all()
+    except Exception:
+        return []
 
     # Filter by account_login stored in settings.
     # Org-type installations (account_type=Organization) are returned to any
@@ -91,8 +94,11 @@ async def get_org_by_installation(
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> dict:
-    result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    org = result.scalar_one_or_none()
+    try:
+        result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
+        org = result.scalar_one_or_none()
+    except Exception:
+        org = None
 
     if org is None:
         org = await _bootstrap_installation(db, installation_id)

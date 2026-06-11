@@ -44,6 +44,7 @@ export function DashboardNav({
     { label: l("incidents", "Incidents"), href: `${base}/incidents`, badge: openIncidents > 0 ? openIncidents : 0 },
     { label: l("policies", "Policies"),   href: `${base}/policies` },
     { label: l("memory", "Memory"),       href: `${base}/memory` },
+    { label: l("auditLog", "Audit log"),  href: `${base}/audit-log` },
     { label: l("settings", "Settings"),   href: `${base}/settings` },
   ];
 
@@ -88,10 +89,10 @@ export function DashboardNav({
                   >
                     {item.label}
                     {isActive && (
-                      <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-px w-4 bg-[color:var(--dg-electric)] rounded-full" />
+                      <span className="absolute bottom-0 inset-x-2.5 h-0.5 bg-[color:var(--dg-electric)] rounded-full" />
                     )}
                     {item.badge ? (
-                      <span className="rounded bg-blocked/20 px-1 font-mono text-[9px] text-blocked">
+                      <span className="rounded bg-blocked/20 px-1 font-mono text-[10px] text-blocked">
                         {item.badge}
                       </span>
                     ) : null}
@@ -104,7 +105,7 @@ export function DashboardNav({
           {/* Right */}
           <div className="flex items-center gap-2 sm:gap-3">
             {planLabel && (
-              <span className="hidden md:inline rounded border border-[color:var(--dg-border)] px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+              <span className="hidden md:inline rounded border border-[color:var(--dg-border)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                 {planLabel}
               </span>
             )}
@@ -168,7 +169,7 @@ export function DashboardNav({
                     <span>{item.label}</span>
                     <div className="flex items-center gap-2">
                       {item.badge ? (
-                        <span className="rounded bg-blocked/20 px-1.5 py-0.5 font-mono text-[9px] text-blocked">
+                        <span className="rounded bg-blocked/20 px-1.5 py-0.5 font-mono text-[10px] text-blocked">
                           {item.badge}
                         </span>
                       ) : null}

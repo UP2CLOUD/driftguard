@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useT } from "@/components/I18nProvider";
 
 export function NotFoundPage({ hasSession }: { hasSession: boolean }) {
+  const t = useT();
+  
   return (
     <main className="min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)] flex flex-col dg-grid dg-vignette">
       <div className="dg-grain absolute inset-0 pointer-events-none" />
@@ -18,7 +21,7 @@ export function NotFoundPage({ hasSession }: { hasSession: boolean }) {
         </Link>
         {hasSession && (
           <Link href="/dashboard" className="dg-button dg-button-ghost text-[12px]">
-            Dashboard →
+            {t("notFound.goDashboard")}
           </Link>
         )}
       </nav>
@@ -26,24 +29,24 @@ export function NotFoundPage({ hasSession }: { hasSession: boolean }) {
       {/* Content */}
       <div className="relative flex-1 flex flex-col items-center justify-center text-center px-6 py-20">
         <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric)] mb-4">
-          404
+          {t("notFound.code")}
         </div>
         <h1 className="font-sans text-3xl sm:text-4xl font-semibold tracking-tight text-[color:var(--dg-fg)] mb-4">
-          Page not found
+          {t("notFound.title")}
         </h1>
         <p className="text-[14px] text-[color:var(--dg-fg-muted)] max-w-sm mb-8">
-          This page doesn&apos;t exist or has been moved. Check the URL or head back to safety.
+          {t("notFound.description")}
         </p>
         <div className="flex flex-wrap gap-3 justify-center">
           <Link href="/" className="dg-button dg-button-primary text-[13px]">
-            Go home
+            {t("notFound.backHome")}
           </Link>
           <Link href="/docs" className="dg-button dg-button-ghost text-[13px]">
-            Documentation
+            {t("nav.docs")}
           </Link>
           {hasSession && (
             <Link href="/dashboard" className="dg-button dg-button-ghost text-[13px]">
-              Dashboard
+              {t("nav.dashboard")}
             </Link>
           )}
         </div>
@@ -57,6 +60,7 @@ export function NotFoundPage({ hasSession }: { hasSession: boolean }) {
           <div className="text-[color:var(--dg-fg-subtle)] mt-1">
             similarity: 0.00 · confidence: low
           </div>
+          {/* eslint-enable react/jsx-no-literals */}
         </div>
       </div>
     </main>

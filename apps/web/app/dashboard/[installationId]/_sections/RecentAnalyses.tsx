@@ -85,7 +85,7 @@ export async function RecentAnalysesSection({
                     <code className="font-mono text-[11px] text-[color:var(--dg-fg)] truncate">
                       {a.repo_full_name}#{a.pr_number}
                     </code>
-                    <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)] hidden sm:inline">
+                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] hidden sm:inline">
                       {a.head_sha?.slice(0, 7)}
                     </span>
                   </div>
@@ -100,7 +100,7 @@ export async function RecentAnalysesSection({
                   }`}>
                     {a.risk_score ?? "—"}
                   </span>
-                  <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] opacity-0 group-hover:opacity-100 transition">→</span>
+                  <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition" aria-hidden="true">→</span>
                 </div>
               </Link>
             ))}

@@ -2,13 +2,18 @@ import { cache } from "react";
 import { beGet } from "@/lib/backend";
 
 const _fetch = (path: string, revalidate: number): Promise<any> =>
-  beGet<any>(path, { revalidate, timeout: 8000 });
+  beGet<any>(path, { revalidate, timeout: 25000 });
 
 // React.cache dedupes calls within a single render pass —
 // OverviewSection + RecentAnalysesSection partilham o mesmo fetch.
 export const getOverview = cache(
   (installationId: string) =>
     _fetch(`/api/v1/dashboard/overview?installation_id=${installationId}`, 20)
+);
+
+export const getPlan = cache(
+  (installationId: string) =>
+    _fetch(`/api/v1/billing/plan?installation_id=${installationId}`, 60)
 );
 
 export const getIncidents = cache(

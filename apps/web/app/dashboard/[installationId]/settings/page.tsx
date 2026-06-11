@@ -1,5 +1,6 @@
 import { type Locale } from "@/i18n/config";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { BillingActions } from "@/components/BillingActions";
 import { UserPreferencesSettings } from "@/components/UserPreferencesSettings";
 import { AwsIntegrationForm } from "@/components/AwsIntegrationForm";
@@ -9,6 +10,15 @@ import { requireOrg } from "@/lib/org-server";
 import { getUserPreferences } from "@/lib/preferences/server";
 import type { Org } from "@/lib/api";
 import { localizedPageMeta } from "@/lib/seo";
+import { beGet } from "@/lib/backend";
+
+type PlanData = {
+  plan: string;
+  subscription_status: string;
+  is_premium: boolean;
+  repos: { active: number; limit: number | null };
+  monthly_pr_reviews: { used: number | null; limit: number | null };
+};
 
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -35,8 +45,13 @@ export default async function Settings({
   const t = createTranslator(messages);
 
   let org: Org | null = null;
+  let planData: PlanData | null = null;
   try {
     org = await requireOrg(installationId);
+    planData = await beGet<PlanData>(
+      `/api/v1/billing/plan?installation_id=${installationId}`,
+      { revalidate: 30 }
+    );
   } catch {
     /* API offline — still render preferences */
   }
@@ -77,7 +92,11 @@ export default async function Settings({
           <Row label={t("settings.githubInstallationRow")} value={installationId} mono />
           <Row
             label={t("settings.webhookUrl")}
-            value={`${process.env.NEXT_PUBLIC_API_URL ?? "https://your-api.onrender.com"}/api/v1/webhooks/github`}
+            value={
+              process.env.NEXT_PUBLIC_API_URL
+                ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1/webhooks/github`
+                : "— set NEXT_PUBLIC_API_URL —"
+            }
             mono
           />
           <Row label={t("settings.webhookEvents")} value="pull_request · installation · installation_repositories" mono />
@@ -102,6 +121,21 @@ export default async function Settings({
         </div>
       </Section>
 
+      {/* ── API tokens ──────────────────────────────────────────── */}
+      <Section title={t("tokens.title")} description={t("tokens.settingsDesc")}>
+        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5 flex items-center justify-between gap-4">
+          <p className="text-[13px] text-[color:var(--dg-fg-muted)]">
+            {t("tokens.settingsHint")}
+          </p>
+          <Link
+            href={`/dashboard/${installationId}/settings/tokens`}
+            className="dg-button dg-button-ghost text-[12px] shrink-0"
+          >
+            {t("tokens.manage")} →
+          </Link>
+        </div>
+      </Section>
+
       {/* ── AWS Integration ─────────────────────────────────────── */}
       <Section
         title={t("dashboard.awsIntegration")}
@@ -114,10 +148,84 @@ export default async function Settings({
       {org && (
         <Section title={t("settings.billingTitle")} description={t("settings.billingDesc")}>
           <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] sm:grid-cols-3 mb-4">
-            <PlanCard name="Free"       price="€0"  detail="50 PR analyses/mo · 1 repo"              current={org.plan === "free"}       activeLabel={t("settings.active")} />
-            <PlanCard name="Team"       price="€29" detail="Unlimited PRs · memory · compliance"     current={org.plan === "team"}       activeLabel={t("settings.active")} period="/repo/mo" highlighted />
-            <PlanCard name="Enterprise" price="—"   detail="Self-hosted · SSO · SLA · custom policy" current={org.plan === "enterprise"} activeLabel={t("settings.active")} />
+            <PlanCard
+              name="Free"
+              price="€0"
+              detail={
+                planData && !planData.is_premium
+                  ? `${planData.repos.active}/${planData.repos.limit ?? 3} repos active`
+                  : `Up to 3 repos · unlimited PR reviews`
+              }
+              current={org.plan === "free" || (!planData?.is_premium && org.plan !== "team" && org.plan !== "enterprise")}
+              activeLabel={t("settings.active")}
+            />
+            <PlanCard
+              name="Team"
+              price="€29"
+              period="/repo/mo"
+              detail={
+                planData?.is_premium
+                  ? `${planData.monthly_pr_reviews.used ?? 0}/${planData.monthly_pr_reviews.limit ?? 50} PR reviews this month`
+                  : `50 PR reviews/mo · memory · compliance`
+              }
+              current={org.plan === "team"}
+              activeLabel={t("settings.active")}
+              highlighted
+            />
+            <PlanCard
+              name="Enterprise"
+              price="—"
+              detail="Self-hosted · SSO · SLA · custom policy"
+              current={org.plan === "enterprise"}
+              activeLabel={t("settings.active")}
+            />
           </div>
+
+          {/* Quota bar for free plan */}
+          {planData && !planData.is_premium && planData.repos.limit != null && (
+            <div className="mb-4 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                  Active repositories
+                </span>
+                <span className={`font-mono text-[11px] font-semibold ${planData.repos.active >= planData.repos.limit ? "text-warned" : "text-[color:var(--dg-fg)]"}`}>
+                  {planData.repos.active} / {planData.repos.limit}
+                </span>
+              </div>
+              <div className="h-1 rounded-full bg-[color:var(--dg-border)] overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all ${planData.repos.active >= planData.repos.limit ? "bg-warned" : "bg-[color:var(--dg-electric)]"}`}
+                  style={{ width: `${Math.min(100, (planData.repos.active / planData.repos.limit) * 100)}%` }}
+                />
+              </div>
+              {planData.repos.active >= planData.repos.limit && (
+                <p className="mt-2 font-mono text-[10px] text-warned">
+                  At repo limit. Disable a repository or upgrade to add more.
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Quota bar for premium plan */}
+          {planData?.is_premium && planData.monthly_pr_reviews.limit != null && planData.monthly_pr_reviews.used != null && (
+            <div className="mb-4 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                  PR reviews this month
+                </span>
+                <span className={`font-mono text-[11px] font-semibold ${planData.monthly_pr_reviews.used >= planData.monthly_pr_reviews.limit ? "text-blocked" : planData.monthly_pr_reviews.used / planData.monthly_pr_reviews.limit >= 0.8 ? "text-warned" : "text-[color:var(--dg-fg)]"}`}>
+                  {planData.monthly_pr_reviews.used} / {planData.monthly_pr_reviews.limit}
+                </span>
+              </div>
+              <div className="h-1 rounded-full bg-[color:var(--dg-border)] overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all ${planData.monthly_pr_reviews.used >= planData.monthly_pr_reviews.limit ? "bg-blocked" : planData.monthly_pr_reviews.used / planData.monthly_pr_reviews.limit >= 0.8 ? "bg-warned" : "bg-[color:var(--dg-electric)]"}`}
+                  style={{ width: `${Math.min(100, (planData.monthly_pr_reviews.used / planData.monthly_pr_reviews.limit) * 100)}%` }}
+                />
+              </div>
+            </div>
+          )}
+
           <BillingActions
             orgId={org.id}
             installationId={installationId}
@@ -220,7 +328,7 @@ function PlanCard({
       <div className="flex items-center justify-between gap-2">
         <div className="dg-label">{name}</div>
         {current && (
-          <span className="inline-flex items-center gap-1 rounded border border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
+          <span className="inline-flex items-center gap-1 rounded border border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/10 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
             <span className="h-1 w-1 rounded-full bg-[color:var(--dg-electric)]" />
             {activeLabel}
           </span>

@@ -93,7 +93,7 @@ function FeatureCard({
         <span className="text-2xl text-[color:var(--dg-fg-subtle)] group-hover:text-orange-400 transition-colors duration-300 leading-none select-none">
           {icon}
         </span>
-        <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] border border-[color:var(--dg-border)] px-1.5 py-0.5 rounded group-hover:border-[color:var(--dg-border-strong)] group-hover:text-[color:var(--dg-fg-subtle)] transition-colors duration-300">
+        <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] border border-[color:var(--dg-border)] px-1.5 py-0.5 rounded group-hover:border-[color:var(--dg-border-strong)] group-hover:text-[color:var(--dg-fg-subtle)] transition-colors duration-300">
           {tag}
         </span>
       </div>

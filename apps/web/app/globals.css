@@ -345,6 +345,7 @@ body {
     @apply inline-flex items-center gap-1.5 rounded-md px-3.5 py-2 text-[13px] font-medium transition-all duration-150;
   overflow: hidden;
   position: relative;
+  touch-action: manipulation;
   }
   .dg-button-primary {
     @apply bg-[color:var(--dg-electric)] text-white hover:bg-[color:var(--dg-electric-bright)] active:scale-[0.98]

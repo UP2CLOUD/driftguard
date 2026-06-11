@@ -163,6 +163,7 @@ export function NavigationTransition() {
               <span>.</span>
               <span>.</span>
               <span>.</span>
+              {/* eslint-enable react/jsx-no-literals */}
             </span>
           </p>
         </div>
