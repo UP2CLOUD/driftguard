@@ -207,3 +207,26 @@ class TestMemoryRecall:
             headers=AUTH,
         )
         assert r.status_code == 422
+
+    def test_embedding_service_failure_returns_empty(self):
+        """When pgvector / embedding service is down, degrade gracefully to []."""
+        from unittest.mock import patch
+
+        org = _org()
+        mock = AsyncMock()
+        mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=org)))
+        _override(mock)
+        try:
+            with patch(
+                "driftguard.services.embeddings.embed",
+                side_effect=RuntimeError("service down"),
+            ):
+                r = TestClient(app).post(
+                    "/api/v1/memory/recall?installation_id=42",
+                    json={"query": "public S3 bucket"},
+                    headers=AUTH,
+                )
+            assert r.status_code == 200
+            assert r.json() == []
+        finally:
+            _cleanup()

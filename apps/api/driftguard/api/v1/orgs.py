@@ -207,6 +207,7 @@ async def list_audit_log(
     org_id: str,
     limit: int = 50,
     db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
     """Return the last N audit records for an org. Used for DORA/NIS2 evidence export."""
     from sqlalchemy import text
