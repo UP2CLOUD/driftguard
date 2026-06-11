@@ -106,6 +106,107 @@ def test_ingest_high_severity_review_action():
         _cleanup()
 
 
+def test_ingest_unknown_installation_returns_404():
+    """Events from unregistered installations must be rejected."""
+    mock = AsyncMock()
+    mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None)))
+    mock.flush = AsyncMock()
+    mock.commit = AsyncMock()
+    mock.add = MagicMock()
+
+    async def _override():
+        yield mock
+
+    app.dependency_overrides[get_db] = _override
+    try:
+        r = TestClient(app).post(
+            "/api/v1/ingest/event",
+            json={
+                "installation_id": 9999,
+                "event_type": "pr_opened",
+                "severity": "high",
+                "message": "Injected event from unknown installation",
+            },
+        )
+        assert r.status_code == 404
+    finally:
+        _cleanup()
+
+
+def test_ingest_recurrence_matched_existing():
+    """When a matching open incident already exists, matched_existing=True and no new incident."""
+    from driftguard.db.models import DriftIncident
+
+    org = Organization(id="org-1", github_installation_id=123, plan="free")
+    existing = DriftIncident(
+        id="inc-existing",
+        org_id="org-1",
+        title="Existing incident",
+        severity="high",
+        status="open",
+        fingerprint="abc123",
+        recurrence_count=1,
+        first_seen_at=__import__("datetime").datetime.now(__import__("datetime").timezone.utc),
+        last_seen_at=__import__("datetime").datetime.now(__import__("datetime").timezone.utc),
+    )
+    mock = AsyncMock()
+    org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+    # No repo_full_name → no repo lookup; incident dedup lookup → existing incident; policy lookup → empty
+    incident_result = MagicMock(scalar_one_or_none=MagicMock(return_value=existing))
+    policy_result = MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[]))))
+    mock.execute = AsyncMock(side_effect=[org_result, incident_result, policy_result])
+    mock.flush = AsyncMock()
+    mock.commit = AsyncMock()
+    mock.add = MagicMock()
+
+    async def _override():
+        yield mock
+
+    app.dependency_overrides[get_db] = _override
+    try:
+        r = TestClient(app).post(
+            "/api/v1/ingest/event",
+            json={
+                "installation_id": 123,
+                "event_type": "drift_detected",
+                "severity": "high",
+                "message": "Drift detected in aws_s3_bucket.logs",
+            },
+        )
+        assert r.status_code == 200
+        body = r.json()
+        assert body["accepted"] is True
+        assert body["incident_created"] is False
+        assert body["matched_existing"] is True
+        assert body["incident_id"] == "inc-existing"
+        assert body["incident_recurrence"] == 2  # incremented from 1
+    finally:
+        _cleanup()
+
+
+def test_ingest_rate_limited():
+    """Rate limiter must reject requests over the per-minute limit."""
+    import time
+
+    from driftguard.core.rate_limit import _buckets
+
+    _buckets["testclient"] = [time.monotonic()] * 31  # exceed 30/min limit
+    try:
+        r = TestClient(app).post(
+            "/api/v1/ingest/event",
+            json={
+                "installation_id": 123,
+                "event_type": "pr_opened",
+                "severity": "info",
+                "message": "rate limit test",
+            },
+        )
+        assert r.status_code == 429
+        assert "Retry-After" in r.headers
+    finally:
+        _buckets.pop("testclient", None)
+
+
 def test_ingest_missing_message_rejected():
     client = _make_client()
     try:
