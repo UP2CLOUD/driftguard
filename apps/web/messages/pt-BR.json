@@ -142,7 +142,10 @@
     "statsHintNoneActive": "Nenhum ativo",
     "statsHintClean": "Limpo",
     "statsHintNoDecisionsYet": "Sem decisões ainda",
-    "planBadge": "{plan} plano"
+    "planBadge": "{plan} plano",
+    "demoActive": "Dados de demonstração — conecte o GitHub para ver dados reais",
+    "exitDemo": "Sair da demo",
+    "viewDemo": "Ver telemetria de demo"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -236,7 +239,13 @@
     "meta": {
       "title": "Definições — DriftGuard",
       "description": "Gere as definições da tua organização DriftGuard, integrações e políticas."
-    }
+    },
+    "upgradeToTeam": "Assinar Team →",
+    "upgradeToEnterprise": "Assinar Enterprise →",
+    "manageBilling": "Gerenciar cobrança →",
+    "contactBilling": "Contatar cobrança →",
+    "redirecting": "Redirecionando…",
+    "openingPortal": "Abrindo…"
   },
   "installApp": {
     "title": "Instalar o GitHub App",

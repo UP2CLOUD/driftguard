@@ -120,7 +120,10 @@
     "statsHintNoneActive": "कोई सक्रिय नहीं",
     "statsHintClean": "स्वच्छ",
     "statsHintNoDecisionsYet": "अभी तक कोई निर्णय नहीं",
-    "planBadge": "{plan} प्लान"
+    "planBadge": "{plan} प्लान",
+    "demoActive": "डेमो डेटा — वास्तविक डेटा के लिए GitHub कनेक्ट करें",
+    "exitDemo": "डेमो से बाहर निकलें",
+    "viewDemo": "डेमो डेटा देखें"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -188,7 +191,13 @@
     "meta": {
       "title": "सेटिंग्स — DriftGuard",
       "description": "अपनी DriftGuard संगठन सेटिंग्स प्रबंधित करें।"
-    }
+    },
+    "upgradeToTeam": "Team में अपग्रेड करें →",
+    "upgradeToEnterprise": "Enterprise में अपग्रेड करें →",
+    "manageBilling": "बिलिंग प्रबंधित करें →",
+    "contactBilling": "बिलिंग से संपर्क करें →",
+    "redirecting": "रीडायरेक्ट हो रहा है…",
+    "openingPortal": "खुल रहा है…"
   },
   "installApp": {
     "title": "GitHub App इंस्टॉल करें",

@@ -120,7 +120,10 @@
     "statsHintNoneActive": "None active",
     "statsHintClean": "Clean",
     "statsHintNoDecisionsYet": "No decisions yet",
-    "planBadge": "{plan} plan"
+    "planBadge": "{plan} plan",
+    "demoActive": "Demo telemetry — connect GitHub to see real data",
+    "exitDemo": "Exit demo",
+    "viewDemo": "View demo telemetry"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -236,7 +239,13 @@
     "meta": {
       "title": "Settings — DriftGuard",
       "description": "Manage your DriftGuard organisation settings, integrations, and policies."
-    }
+    },
+    "upgradeToTeam": "Upgrade to Team →",
+    "upgradeToEnterprise": "Upgrade to Enterprise →",
+    "manageBilling": "Manage billing →",
+    "contactBilling": "Contact billing →",
+    "redirecting": "Redirecting…",
+    "openingPortal": "Opening…"
   },
   "installApp": {
     "title": "Install the GitHub App",

@@ -120,7 +120,10 @@
     "statsHintNoneActive": "لا شيء نشط",
     "statsHintClean": "نظيف",
     "statsHintNoDecisionsYet": "لا قرارات بعد",
-    "planBadge": "خطة {plan}"
+    "planBadge": "خطة {plan}",
+    "demoActive": "بيانات تجريبية — اربط GitHub لرؤية بيانات حقيقية",
+    "exitDemo": "الخروج من العرض التجريبي",
+    "viewDemo": "عرض البيانات التجريبية"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -188,7 +191,13 @@
     "meta": {
       "title": "الإعدادات — DriftGuard",
       "description": "إدارة إعدادات مؤسسة DriftGuard والتكاملات والسياسات."
-    }
+    },
+    "upgradeToTeam": "الترقية إلى Team →",
+    "upgradeToEnterprise": "الترقية إلى Enterprise →",
+    "manageBilling": "إدارة الفواتير →",
+    "contactBilling": "التواصل بشأن الفواتير →",
+    "redirecting": "جارٍ التحويل…",
+    "openingPortal": "جارٍ الفتح…"
   },
   "installApp": {
     "title": "تثبيت تطبيق GitHub",

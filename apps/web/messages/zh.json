@@ -120,7 +120,10 @@
     "statsHintNoneActive": "无活跃",
     "statsHintClean": "干净",
     "statsHintNoDecisionsYet": "暂无决策",
-    "planBadge": "{plan} 计划"
+    "planBadge": "{plan} 计划",
+    "demoActive": "演示数据 — 连接 GitHub 以查看真实数据",
+    "exitDemo": "退出演示",
+    "viewDemo": "查看演示数据"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -188,7 +191,13 @@
     "meta": {
       "title": "设置 — DriftGuard",
       "description": "管理您的 DriftGuard 组织设置、集成和策略。"
-    }
+    },
+    "upgradeToTeam": "升级到 Team →",
+    "upgradeToEnterprise": "升级到 Enterprise →",
+    "manageBilling": "管理账单 →",
+    "contactBilling": "联系账单 →",
+    "redirecting": "跳转中…",
+    "openingPortal": "打开中…"
   },
   "installApp": {
     "title": "安装 GitHub 应用",

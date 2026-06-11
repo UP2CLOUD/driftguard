@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { openPortal, startCheckout } from "@/lib/api";
+import { useT } from "@/components/I18nProvider";
 
 export function BillingActions({
   orgId,
@@ -14,6 +15,7 @@ export function BillingActions({
   hasCustomer: boolean;
   plan: string;
 }) {
+  const t = useT();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState("");
 
@@ -53,7 +55,7 @@ export function BillingActions({
             disabled={loading !== null}
             className="dg-button dg-button-primary text-[12px] disabled:opacity-40"
           >
-            {loading === "team" ? "Redirecting…" : "Upgrade to Team →"}
+            {loading === "team" ? (t("settings.redirecting") ?? "Redirecting…") : (t("settings.upgradeToTeam") ?? "Upgrade to Team →")}
           </button>
         )}
         {plan === "team" && (
@@ -62,7 +64,7 @@ export function BillingActions({
             disabled={loading !== null}
             className="dg-button dg-button-ghost text-[12px] disabled:opacity-40"
           >
-            {loading === "enterprise" ? "Redirecting…" : "Upgrade to Enterprise →"}
+            {loading === "enterprise" ? (t("settings.redirecting") ?? "Redirecting…") : (t("settings.upgradeToEnterprise") ?? "Upgrade to Enterprise →")}
           </button>
         )}
         {hasCustomer && (
@@ -71,7 +73,7 @@ export function BillingActions({
             disabled={loading !== null}
             className="dg-button dg-button-ghost text-[12px] disabled:opacity-40"
           >
-            {loading === "portal" ? "Opening…" : "Manage billing →"}
+            {loading === "portal" ? (t("settings.openingPortal") ?? "Opening…") : (t("settings.manageBilling") ?? "Manage billing →")}
           </button>
         )}
         {!hasCustomer && plan !== "free" && (
@@ -79,7 +81,7 @@ export function BillingActions({
             href="mailto:billing@driftguard.io"
             className="dg-button dg-button-ghost text-[12px]"
           >
-            Contact billing →
+            {t("settings.contactBilling") ?? "Contact billing →"}
           </a>
         )}
       </div>
