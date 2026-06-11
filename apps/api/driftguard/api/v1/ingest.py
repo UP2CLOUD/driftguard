@@ -116,15 +116,14 @@ async def ingest_event(
     db: AsyncSession = Depends(get_db),
     _rl: None = Depends(rate_limit(per_minute=30, per_hour=500)),
 ) -> IngestEventResponse:
-    # 1. Resolve org
+    # 1. Resolve org — reject unknown installations to prevent data injection
     org_result = await db.execute(
         select(Organization).where(Organization.github_installation_id == body.installation_id)
     )
     org = org_result.scalar_one_or_none()
     if not org:
-        org = Organization(github_installation_id=body.installation_id, plan="free")
-        db.add(org)
-        await db.flush()
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail=f"Installation {body.installation_id} not registered")
 
     # 2. Resolve optional repo
     repo_id: str | None = None

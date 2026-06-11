@@ -43,33 +43,33 @@ export async function RecentAnalysesSection({
         {recentAnalyses.length === 0 && !apiAvailable ? (
           <div className="px-6 py-10 text-center">
             <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
-              No PR analyses yet
+              {t("dashboard.noAnalysesTitle") ?? "No PR analyses yet"}
             </p>
             <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto mb-5 leading-relaxed">
-              DriftGuard reviews Terraform pull requests for security, cost, and reliability drift. Connect a repository to begin.
+              {t("dashboard.noAnalysesConnectDesc") ?? "DriftGuard reviews Terraform pull requests for security, cost, and reliability drift. Connect a repository to begin."}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-2">
               <a
                 href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-reviews"}/installations/new`}
                 className="rounded bg-[color:var(--dg-electric)] px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-white hover:brightness-110 transition"
               >
-                Connect GitHub →
+                {t("dashboard.connectGithubCta") ?? "Connect GitHub →"}
               </a>
               <a
                 href="/docs/install"
                 className="rounded border border-[color:var(--dg-border)] px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] transition"
               >
-                Setup guide
+                {t("dashboard.setupGuide") ?? "Setup guide"}
               </a>
             </div>
           </div>
         ) : recentAnalyses.length === 0 ? (
           <div className="px-6 py-10 text-center">
             <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
-              No PR analyses yet
+              {t("dashboard.noAnalysesTitle") ?? "No PR analyses yet"}
             </p>
             <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto leading-relaxed">
-              Open a Terraform or OpenTofu pull request in a connected repository to trigger the first analysis.
+              {t("dashboard.noAnalysesOpenPrDesc") ?? "Open a Terraform or OpenTofu pull request in a connected repository to trigger the first analysis."}
             </p>
           </div>
         ) : (
@@ -112,7 +112,7 @@ export async function RecentAnalysesSection({
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
           <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
             <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-              Repositories (GitHub)
+              {t("dashboard.ghReposTitle") ?? "Repositories (GitHub)"}
             </span>
           </div>
           <div className="divide-y divide-[color:var(--dg-border)]">
