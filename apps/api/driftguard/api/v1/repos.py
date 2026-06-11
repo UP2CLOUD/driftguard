@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,6 +10,10 @@ from driftguard.db.models import Organization, Repository
 from driftguard.services.quota import assert_can_enable_repo
 
 router = APIRouter()
+
+
+class RepoPatch(BaseModel):
+    enabled: bool | None = None
 
 
 @router.get("")
@@ -38,6 +43,29 @@ async def list_repos(
         }
         for r in result.scalars()
     ]
+
+
+@router.patch("/{repo_id}")
+async def patch_repo(
+    repo_id: str,
+    body: RepoPatch,
+    db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
+) -> dict:
+    repo = await db.get(Repository, repo_id)
+    if repo is None:
+        raise HTTPException(404, "Repository not found")
+
+    if body.enabled is not None:
+        repo.enabled = body.enabled
+
+    await db.commit()
+    return {
+        "id": repo.id,
+        "full_name": repo.full_name,
+        "default_branch": repo.default_branch,
+        "enabled": repo.enabled,
+    }
 
 
 @router.post("/{repo_id}/enable")
