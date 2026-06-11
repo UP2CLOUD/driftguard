@@ -188,3 +188,45 @@ class TestPatchIncident:
     def test_requires_auth(self):
         r = TestClient(app).patch("/api/v1/incidents/inc-1", json={"status": "resolved"})
         assert r.status_code == 401
+
+    def test_update_severity(self):
+        inc = _incident()
+        _override(_mock_get(incident=inc))
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/incidents/inc-1",
+                json={"severity": "critical"},
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            assert r.json()["severity"] == "critical"
+        finally:
+            _cleanup()
+
+    def test_invalid_severity_returns_422(self):
+        inc = _incident()
+        _override(_mock_get(incident=inc))
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/incidents/inc-1",
+                json={"severity": "ultra"},
+                headers=AUTH,
+            )
+            assert r.status_code == 422
+        finally:
+            _cleanup()
+
+    def test_update_title_and_description(self):
+        inc = _incident()
+        _override(_mock_get(incident=inc))
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/incidents/inc-1",
+                json={"title": "Corrected title", "description": "Updated details"},
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            assert r.json()["title"] == "Corrected title"
+            assert r.json()["description"] == "Updated details"
+        finally:
+            _cleanup()

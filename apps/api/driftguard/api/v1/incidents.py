@@ -17,8 +17,14 @@ router = APIRouter(prefix="/incidents", tags=["incidents"])
 VALID_STATUSES = {"open", "investigating", "resolved", "suppressed"}
 
 
+VALID_SEVERITIES = {"low", "medium", "high", "critical"}
+
+
 class IncidentPatch(BaseModel):
     status: str | None = None
+    severity: str | None = None
+    title: str | None = None
+    description: str | None = None
     root_cause: str | None = None
     suggested_fix: str | None = None
 
@@ -76,6 +82,14 @@ async def patch_incident(
         inc.status = body.status
         if body.status == "resolved" and not inc.resolved_at:
             inc.resolved_at = datetime.now(UTC)
+    if body.severity is not None:
+        if body.severity not in VALID_SEVERITIES:
+            raise HTTPException(422, f"severity must be one of: {VALID_SEVERITIES}")
+        inc.severity = body.severity
+    if body.title is not None:
+        inc.title = body.title
+    if body.description is not None:
+        inc.description = body.description
     if body.root_cause is not None:
         inc.root_cause = body.root_cause
     if body.suggested_fix is not None:
