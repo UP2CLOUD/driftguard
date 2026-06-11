@@ -556,7 +556,17 @@
     "saving": "सहेज रहे हैं…",
     "saveChanges": "परिवर्तन सहेजें",
     "saved": "सहेजा गया",
-    "suppressLabel": "दबाएं"
+    "suppressLabel": "दबाएं",
+    "notFound": "नहीं मिला",
+    "notFoundDesc": "घटना नहीं मिली या अब उपलब्ध नहीं है।",
+    "descriptionSection": "विवरण",
+    "rootCauseSection": "मूल कारण",
+    "timelineSection": "समयरेखा",
+    "firstSeen": "पहली बार देखा",
+    "lastSeen": "अंतिम बार देखा",
+    "resolvedAt": "हल किया गया",
+    "recurrences": "पुनरावृत्ति",
+    "fingerprintLabel": "फिंगरप्रिंट"
   },
   "policies": {
     "title": "नीति नियम",

@@ -556,7 +556,17 @@
     "saving": "保存中…",
     "saveChanges": "保存更改",
     "saved": "已保存",
-    "suppressLabel": "抑制"
+    "suppressLabel": "抑制",
+    "notFound": "未找到",
+    "notFoundDesc": "事件未找到或不再可用。",
+    "descriptionSection": "描述",
+    "rootCauseSection": "根本原因",
+    "timelineSection": "时间线",
+    "firstSeen": "首次发现",
+    "lastSeen": "最近发现",
+    "resolvedAt": "已解决",
+    "recurrences": "重复次数",
+    "fingerprintLabel": "指纹"
   },
   "policies": {
     "title": "策略规则",

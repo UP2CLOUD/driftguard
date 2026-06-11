@@ -45,10 +45,10 @@ export default async function IncidentDetailPage({
     return (
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-20 text-center">
         <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-          Not found
+          {t("incidents.notFound")}
         </div>
         <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-5">
-          Incident not found or no longer available.
+          {t("incidents.notFoundDesc")}
         </p>
         <Link
           href={`/dashboard/${installationId}/incidents`}
@@ -85,7 +85,7 @@ export default async function IncidentDetailPage({
             </span>
             {incident.recurrence_count > 1 && (
               <span className="font-mono text-[10px] text-warned">
-                ↺ {incident.recurrence_count}× {t("incidents.recurrenceLabel")?.replace("{n}", "") ?? "recurrence"}
+                ↺ {t("incidents.recurrenceLabel")?.replace("{n}", String(incident.recurrence_count)) ?? `${incident.recurrence_count}× recurrence`}
               </span>
             )}
           </div>
@@ -102,7 +102,7 @@ export default async function IncidentDetailPage({
           {incident.description && (
             <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-4">
               <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-2">
-                Description
+                {t("incidents.descriptionSection")}
               </div>
               <p className="text-[13px] text-[color:var(--dg-fg-muted)] leading-relaxed">
                 {incident.description}
@@ -114,7 +114,7 @@ export default async function IncidentDetailPage({
           {incident.root_cause && (
             <div className="rounded-md border border-warned/20 bg-warned/5 p-4">
               <div className="font-mono text-[10px] uppercase tracking-widest text-warned mb-2">
-                Root cause
+                {t("incidents.rootCauseSection")}
               </div>
               <p className="text-[13px] text-warned leading-relaxed">
                 {incident.root_cause}
@@ -148,15 +148,15 @@ export default async function IncidentDetailPage({
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
             <div className="border-b border-[color:var(--dg-border)] px-4 py-3">
               <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                Timeline
+                {t("incidents.timelineSection")}
               </span>
             </div>
             <div className="divide-y divide-[color:var(--dg-border)]">
               {[
-                { label: "First seen",  val: incident.first_seen_at  ? formatDateTime(incident.first_seen_at,  preferences.locale) : "—" },
-                { label: "Last seen",   val: incident.last_seen_at   ? formatDateTime(incident.last_seen_at,   preferences.locale) : "—" },
-                { label: "Resolved",    val: incident.resolved_at    ? formatDateTime(incident.resolved_at,    preferences.locale) : "—" },
-                { label: "Recurrences", val: String(incident.recurrence_count ?? 0) },
+                { label: t("incidents.firstSeen"),   val: incident.first_seen_at  ? formatDateTime(incident.first_seen_at,  preferences.locale) : "—" },
+                { label: t("incidents.lastSeen"),    val: incident.last_seen_at   ? formatDateTime(incident.last_seen_at,   preferences.locale) : "—" },
+                { label: t("incidents.resolvedAt"),  val: incident.resolved_at    ? formatDateTime(incident.resolved_at,    preferences.locale) : "—" },
+                { label: t("incidents.recurrences"), val: String(incident.recurrence_count ?? 0) },
               ].map(({ label, val }) => (
                 <div key={label} className="px-4 py-3">
                   <div className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-0.5">{label}</div>
@@ -169,7 +169,7 @@ export default async function IncidentDetailPage({
           {/* Fingerprint */}
           {incident.fingerprint && (
             <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-4">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">Fingerprint</div>
+              <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">{t("incidents.fingerprintLabel")}</div>
               <code className="font-mono text-[10px] text-[color:var(--dg-fg-muted)] break-all">{incident.fingerprint}</code>
             </div>
           )}

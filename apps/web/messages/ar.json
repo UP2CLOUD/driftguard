@@ -556,7 +556,17 @@
     "saving": "جاري الحفظ…",
     "saveChanges": "حفظ التغييرات",
     "saved": "تم الحفظ",
-    "suppressLabel": "تجاهل"
+    "suppressLabel": "تجاهل",
+    "notFound": "غير موجود",
+    "notFoundDesc": "الحادثة غير موجودة أو لم تعد متاحة.",
+    "descriptionSection": "الوصف",
+    "rootCauseSection": "السبب الجذري",
+    "timelineSection": "الجدول الزمني",
+    "firstSeen": "أول ظهور",
+    "lastSeen": "آخر ظهور",
+    "resolvedAt": "تم الحل",
+    "recurrences": "التكرارات",
+    "fingerprintLabel": "البصمة"
   },
   "policies": {
     "title": "قواعد السياسة",

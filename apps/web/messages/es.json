@@ -556,7 +556,17 @@
     "saving": "Guardando…",
     "saveChanges": "Guardar cambios",
     "saved": "Guardado",
-    "suppressLabel": "Suprimir"
+    "suppressLabel": "Suprimir",
+    "notFound": "No encontrado",
+    "notFoundDesc": "Incidente no encontrado o no disponible.",
+    "descriptionSection": "Descripción",
+    "rootCauseSection": "Causa raíz",
+    "timelineSection": "Línea de tiempo",
+    "firstSeen": "Primera vez visto",
+    "lastSeen": "Última vez visto",
+    "resolvedAt": "Resuelto",
+    "recurrences": "Recurrencias",
+    "fingerprintLabel": "Huella digital"
   },
   "policies": {
     "title": "Reglas de política",

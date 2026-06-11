@@ -578,7 +578,17 @@
     "saving": "Saving…",
     "saveChanges": "Save changes",
     "saved": "Saved",
-    "suppressLabel": "Suppress"
+    "suppressLabel": "Suppress",
+    "notFound": "Not found",
+    "notFoundDesc": "Incident not found or no longer available.",
+    "descriptionSection": "Description",
+    "rootCauseSection": "Root cause",
+    "timelineSection": "Timeline",
+    "firstSeen": "First seen",
+    "lastSeen": "Last seen",
+    "resolvedAt": "Resolved",
+    "recurrences": "Recurrences",
+    "fingerprintLabel": "Fingerprint"
   },
   "policies": {
     "title": "Policy rules",
