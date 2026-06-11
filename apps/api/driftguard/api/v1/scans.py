@@ -324,7 +324,7 @@ async def get_scan(
         scan_id=analysis.id,
         status=analysis.status,
         risk_score=analysis.risk_score or 0,
-        files_scanned=0,
+        files_scanned=analysis.files_scanned or 0,
         tf_files=0,
         k8s_files=0,
         gha_files=0,
@@ -395,6 +395,7 @@ async def _persist_scan(
         started_at=now,
         finished_at=now,
         risk_score=result.risk_score,
+        files_scanned=result.files_scanned,
         summary_md=ai_summary,
     )
     db.add(analysis)

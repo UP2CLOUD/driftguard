@@ -5,15 +5,22 @@ from unittest.mock import AsyncMock, MagicMock
 from fastapi.testclient import TestClient
 
 from driftguard.core.db import get_db
+from driftguard.db.models import Organization
 from driftguard.main import app
 
 AUTH = {"Authorization": "Bearer dev-only-change-me"}
 
+_ORG = Organization(id="org-1", github_installation_id=123, plan="free")
+
+_ORG_RESULT = MagicMock(scalar_one_or_none=MagicMock(return_value=_ORG))
+_NONE_RESULT = MagicMock(scalar_one_or_none=MagicMock(return_value=None))
+
 
 def _db_session():
-    """Dependency override that provides a mock DB session."""
+    """Dependency override that provides a mock DB session with a registered org."""
     mock = AsyncMock()
-    mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None)))
+    # First execute → org lookup (returns org); subsequent → incident/event queries (return None)
+    mock.execute = AsyncMock(side_effect=[_ORG_RESULT, _NONE_RESULT, _NONE_RESULT, _NONE_RESULT])
     mock.flush = AsyncMock()
     mock.commit = AsyncMock()
     mock.add = MagicMock()
