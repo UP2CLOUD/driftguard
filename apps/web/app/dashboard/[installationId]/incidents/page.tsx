@@ -72,10 +72,10 @@ export default async function IncidentsPage({
           : allIncidents;
 
   const tabs = [
-    { key: "all", label: "All", count: allIncidents.length },
-    { key: "open", label: "Open", count: open.length },
-    { key: "investigating", label: "Investigating", count: investigating.length },
-    { key: "resolved", label: "Resolved", count: resolved.length },
+    { key: "all", label: t("incidents.tabAll"), count: allIncidents.length },
+    { key: "open", label: t("incidents.tabOpen"), count: open.length },
+    { key: "investigating", label: t("incidents.tabInvestigating"), count: investigating.length },
+    { key: "resolved", label: t("incidents.tabResolved"), count: resolved.length },
   ];
 
   const activeTab = filter ?? "all";
@@ -127,12 +127,12 @@ export default async function IncidentsPage({
 
       {filtered.length === 0 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
-          <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-allowed">● No active incidents</div>
+          <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-allowed">● {t("incidents.noActive")}</div>
           <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
-            {t("incidents.noTitle") ?? "No incidents detected"}
+            {t("incidents.noTitle")}
           </p>
           <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto leading-relaxed">
-            DriftGuard automatically creates incidents when repeated drift patterns or critical findings are detected across pull requests.
+            {t("incidents.noActiveDesc")}
           </p>
         </div>
       ) : (
@@ -179,7 +179,7 @@ export default async function IncidentsPage({
                   </span>
                   {inc.recurrence_count > 1 && (
                     <span className="font-mono text-[10px] text-warned">
-                      ↺ {inc.recurrence_count}× recurrence
+                      {t("incidents.recurrenceBadge")?.replace("{n}", String(inc.recurrence_count)) ?? `↺ ${inc.recurrence_count}× recurrence`}
                     </span>
                   )}
                   {inc.last_seen_at && (

@@ -13,6 +13,7 @@ router = APIRouter()
 async def list_analyses(
     repo_id: str | None = None,
     limit: int = 20,
+    offset: int = 0,
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
@@ -22,6 +23,7 @@ async def list_analyses(
         .join(Repository, PullRequest.repo_id == Repository.id)
         .order_by(desc(Analysis.id))
         .limit(min(limit, 100))
+        .offset(max(offset, 0))
     )
     if repo_id:
         stmt = stmt.where(Repository.id == repo_id)
@@ -73,7 +75,7 @@ async def get_analysis(
         "head_sha": pr.head_sha if pr else None,
         "started_at": a.started_at.isoformat() if a.started_at else None,
         "finished_at": a.finished_at.isoformat() if a.finished_at else None,
-        "files_scanned": 0,
+        "files_scanned": a.files_scanned or 0,
         "critical": critical,
         "high": high,
         "duration_ms": duration_ms,

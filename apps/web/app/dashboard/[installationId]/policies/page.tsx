@@ -78,7 +78,7 @@ export default async function PoliciesPage({
           </h1>
           {policies.length > 0 && (
             <p className="mt-1 text-[13px] text-[color:var(--dg-fg-muted)]">
-              {active} active · {policies.length} total
+              {t("policies.subtitle")?.replace("{active}", String(active)).replace("{total}", String(policies.length))}
             </p>
           )}
         </div>
@@ -91,14 +91,13 @@ export default async function PoliciesPage({
           {policies.length === 0 ? (
             <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-12 text-center">
               <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                Policy engine ready
+                {t("policies.engineReady")}
               </div>
               <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
-                No policies configured
+                {t("policies.noPoliciesTitle")}
               </p>
               <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-md mx-auto leading-relaxed mb-6">
-                Policies enforce rules on every PR review — blocking merges, warning reviewers, or
-                auto-approving safe changes based on severity, resource patterns, and rule IDs.
+                {t("policies.noPoliciesDesc")}
               </p>
               <a
                 href="/docs/policies"
@@ -119,12 +118,12 @@ export default async function PoliciesPage({
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
             <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
               <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                Create policy via API
+                {t("policies.createViaApi")}
               </span>
             </div>
             <div className="p-4">
               <p className="text-[12px] text-[color:var(--dg-fg-muted)] mb-3">
-                Policies are created via REST API. Use your installation&apos;s secret key.
+                {t("policies.createViaApiDesc")}
               </p>
               <pre className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-4 py-3 font-mono text-[10px] text-[color:var(--dg-electric-bright)] overflow-x-auto whitespace-pre-wrap">
 {`POST ${apiBase}/api/v1/policies?installation_id=${installationId}
@@ -150,7 +149,7 @@ Content-Type: application/json
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
             <div className="border-b border-[color:var(--dg-border)] px-4 py-3">
               <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                Example rules
+                {t("policies.exampleRules") ?? "Example rules"}
               </span>
             </div>
             <div className="divide-y divide-[color:var(--dg-border)]">
@@ -178,7 +177,7 @@ Content-Type: application/json
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
             <div className="border-b border-[color:var(--dg-border)] px-4 py-3">
               <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                Conditions reference
+                {t("policies.conditionsRef") ?? "Conditions reference"}
               </span>
             </div>
             <div className="px-4 py-4 space-y-3">

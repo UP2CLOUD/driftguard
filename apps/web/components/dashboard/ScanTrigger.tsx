@@ -27,8 +27,15 @@ export function ScanTrigger({ installationId }: { installationId: string }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Scan failed");
       setStatus("done");
-      setMsg(`Scan queued — task ${data.task_id?.slice(0,8) ?? "started"}`);
-      setTimeout(() => router.refresh(), 2500);
+      if (data.analysis_id) {
+        // In-process scan completed — navigate directly to the analysis page
+        setMsg(`Scan complete — redirecting…`);
+        setTimeout(() => router.push(`/dashboard/${installationId}/analyses/${data.analysis_id}`), 800);
+      } else {
+        // Celery queued — just refresh the list
+        setMsg(`Scan queued — task ${data.task_id?.slice(0,8) ?? "started"}`);
+        setTimeout(() => router.refresh(), 2500);
+      }
     } catch (e: any) {
       setStatus("error");
       setMsg(e.message ?? "Unknown error");

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ScanTrigger } from "@/components/dashboard/ScanTrigger";
 import { UploadScan } from "@/components/dashboard/UploadScan";
+import { RepoToggle } from "@/components/RepoToggle";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
@@ -117,7 +118,7 @@ export default async function ReposPage({
       <section>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-            Connected repositories
+            {t("repos.connectedRepos") ?? "Connected repositories"}
           </h2>
           <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
             {planData?.repos.limit != null
@@ -154,13 +155,13 @@ export default async function ReposPage({
         {repos.length === 0 ? (
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-12 text-center">
             <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-              No repositories connected
+              {t("repos.noReposConnected") ?? "No repositories connected"}
             </div>
             <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
-              Install the GitHub App to begin scanning
+              {t("repos.installAppToScan") ?? "Install the GitHub App to begin scanning"}
             </p>
             <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto mb-6 leading-relaxed">
-              DriftGuard reviews every Terraform pull request — detecting security misconfigs, cost drift, and policy violations before merge.
+              {t("repos.installAppDesc") ?? "DriftGuard reviews every Terraform pull request — detecting security misconfigs, cost drift, and policy violations before merge."}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-2">
               <a
@@ -169,13 +170,13 @@ export default async function ReposPage({
                 rel="noreferrer"
                 className="rounded bg-[color:var(--dg-electric)] px-4 py-2 font-mono text-[11px] uppercase tracking-wider text-white hover:brightness-110 transition"
               >
-                Install GitHub App →
+                {t("repos.installGithubApp") ?? "Install GitHub App →"}
               </a>
               <Link
                 href="/docs/install"
                 className="rounded border border-[color:var(--dg-border)] px-4 py-2 font-mono text-[11px] uppercase tracking-wider text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] transition"
               >
-                Setup guide
+                {t("dashboard.setupGuide") ?? "Setup guide"}
               </Link>
             </div>
           </div>
@@ -223,20 +224,29 @@ export default async function ReposPage({
 
                   {/* Last analyzed */}
                   <div className="hidden sm:block font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-                    {lastDate ?? "Never"}
+                    {lastDate ?? t("repos.never")}
                   </div>
 
-                  {/* Status / action */}
+                  {/* View latest */}
                   <div className="hidden sm:flex items-center gap-2">
                     {last ? (
                       <Link
                         href={`/dashboard/${installationId}/analyses/${last.id || last.analysis_id}`}
                         className="font-mono text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
                       >
-                        View →
+                        {t("repos.viewLatest")}
                       </Link>
                     ) : (
-                      <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">No scans</span>
+                      <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">—</span>
+                    )}
+                  </div>
+
+                  {/* Scanning toggle */}
+                  <div className="hidden sm:flex items-center">
+                    {repo.id ? (
+                      <RepoToggle repoId={repo.id} enabled={repo.enabled ?? true} />
+                    ) : (
+                      <span className="h-1.5 w-1.5 rounded-full bg-allowed" />
                     )}
                   </div>
 
@@ -325,10 +335,10 @@ export default async function ReposPage({
 
                 <div className="flex-1 min-w-0">
                   <p className="font-mono text-[12px] text-[color:var(--dg-fg)] truncate">
-                    {a.repo_full_name || a.source || "Scan " + (a.id || a.analysis_id)?.slice(0, 8)}
+                    {a.repo_full_name || a.source || `${t("repos.scanFallback") ?? "Scan"} ${(a.id || a.analysis_id)?.slice(0, 8) ?? ""}`}
                   </p>
                   <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
-                    {a.pr_number ? `PR #${a.pr_number}` : "manual"}
+                    {a.pr_number ? `PR #${a.pr_number}` : (t("repos.manualScanLabel") ?? "manual")}
                     {a.head_sha ? ` · ${a.head_sha.slice(0, 7)}` : ""}
                     {a.created_at ? ` · ${formatDate(a.created_at, prefs.locale)}` : ""}
                   </p>

@@ -16,7 +16,7 @@ export async function NavStatusSection({
   return (
     <div className="flex items-center gap-3">
       <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hidden sm:inline">
-        {orgPlan} plan
+        {t("dashboard.planBadge")?.replace("{plan}", orgPlan) ?? `${orgPlan} plan`}
       </span>
       {!apiAvailable && (
         <span className="font-mono text-[10px] text-warned bg-warned/10 border border-warned/20 rounded px-2 py-1">

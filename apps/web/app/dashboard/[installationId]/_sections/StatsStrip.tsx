@@ -47,31 +47,31 @@ export async function StatsStripSection({
       label: t("repos.statsAnalyses") ?? "Analyses 7d",
       value: analyses7d,
       color: "",
-      hint: analyses7d === 0 ? "Open a PR" : null,
+      hint: analyses7d === 0 ? (t("dashboard.statsHintOpenPr") ?? "Open a PR") : null,
     },
     {
       label: t("dashboard.avgRisk") ?? "Avg risk",
       value: avgRisk != null ? `${avgRisk}` : "—",
       color: avgRisk != null && avgRisk >= 70 ? "text-blocked" : avgRisk != null && avgRisk >= 40 ? "text-warned" : "",
-      hint: avgRisk == null ? "No baseline" : null,
+      hint: avgRisk == null ? (t("dashboard.statsHintNoBaseline") ?? "No baseline") : null,
     },
     {
       label: t("dashboard.openIncidents") ?? "Open incidents",
       value: openInc,
       color: openInc > 0 ? "text-blocked" : "",
-      hint: openInc === 0 ? "None active" : null,
+      hint: openInc === 0 ? (t("dashboard.statsHintNoneActive") ?? "None active") : null,
     },
     {
       label: t("dashboard.critical") ?? "Critical",
       value: criticalInc,
       color: criticalInc > 0 ? "text-blocked" : "",
-      hint: criticalInc === 0 ? "Clean" : null,
+      hint: criticalInc === 0 ? (t("dashboard.statsHintClean") ?? "Clean") : null,
     },
     {
       label: t("dashboard.memoryEntries") ?? "Memory",
       value: memoryCount,
       color: "",
-      hint: memoryCount === 0 ? "No decisions yet" : null,
+      hint: memoryCount === 0 ? (t("dashboard.statsHintNoDecisionsYet") ?? "No decisions yet") : null,
     },
   ];
 

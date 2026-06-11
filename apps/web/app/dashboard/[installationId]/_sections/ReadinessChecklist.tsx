@@ -5,7 +5,7 @@ type T = (key: string) => string | null | undefined;
 
 export async function ReadinessChecklistSection({
   installationId,
-  t: _t,
+  t,
 }: {
   installationId: string;
   t: T;
@@ -26,34 +26,34 @@ export async function ReadinessChecklistSection({
 
   const items = [
     {
-      label: "Install the GitHub App",
+      label: t("dashboard.readinessInstallApp") ?? "Install the GitHub App",
       done: repos > 0,
       href: installUrl,
-      ctaLabel: "Install",
+      ctaLabel: t("dashboard.readinessCtaInstall") ?? "Install",
     },
     {
-      label: "Connect your first repository",
+      label: t("dashboard.readinessConnectRepo") ?? "Connect your first repository",
       done: repos > 0,
       href: installUrl,
-      ctaLabel: "Connect",
+      ctaLabel: t("dashboard.readinessCtaConnect") ?? "Connect",
     },
     {
-      label: "Run your first PR analysis",
+      label: t("dashboard.readinessRunAnalysis") ?? "Run your first PR analysis",
       done: analyses > 0,
       href: `/dashboard/${installationId}/repos`,
-      ctaLabel: "Scan",
+      ctaLabel: t("dashboard.readinessCtaScan") ?? "Scan",
     },
     {
-      label: "Detect an incident or finding",
+      label: t("dashboard.readinessDetectIncident") ?? "Detect an incident or finding",
       done: incidents > 0,
     },
     {
-      label: "Build AI memory from PR decisions",
+      label: t("dashboard.readinessBuildMemory") ?? "Build AI memory from PR decisions",
       done: memory > 0,
       href: `/dashboard/${installationId}/memory`,
-      ctaLabel: "View memory",
+      ctaLabel: t("dashboard.readinessCtaViewMemory") ?? "View memory",
     },
   ];
 
-  return <ReadinessChecklist items={items} title="Production readiness" />;
+  return <ReadinessChecklist items={items} title={t("dashboard.readinessTitle") ?? "Production readiness"} />;
 }

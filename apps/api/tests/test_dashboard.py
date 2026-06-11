@@ -38,6 +38,9 @@ def _cleanup():
     app.dependency_overrides.pop(get_db, None)
 
 
+AUTH = {"Authorization": "Bearer dev-only-change-me"}
+
+
 class TestDashboardOverview:
     def test_unknown_installation_returns_empty(self):
         _override(_empty_session())

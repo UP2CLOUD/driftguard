@@ -66,6 +66,8 @@ def _mock_session(org=None, rules=None, get_return=None):
     return mock
 
 
+AUTH = {"Authorization": "Bearer dev-only-change-me"}
+
 # ── Policies ──────────────────────────────────────────────────────────────────
 
 

@@ -58,6 +58,7 @@ class Analysis(Base):
     plan_storage_key: Mapped[str | None] = mapped_column(String(255))
     cost_delta_cents: Mapped[int | None] = mapped_column(Integer)
     risk_score: Mapped[int | None] = mapped_column(Integer)
+    files_scanned: Mapped[int | None] = mapped_column(Integer)
     summary_md: Mapped[str | None] = mapped_column(Text)
     contact_email: Mapped[str | None] = mapped_column(String(255))
 
