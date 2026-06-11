@@ -25,8 +25,6 @@ export function AwsIntegrationForm({
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
-
   async function handleSave() {
     if (!roleArn.startsWith("arn:aws:iam::")) {
       setError("Role ARN must start with arn:aws:iam::");
@@ -35,7 +33,7 @@ export function AwsIntegrationForm({
     setSaving(true);
     setError("");
     try {
-      const res = await fetch(`${apiUrl}/api/v1/orgs/${org?.id}/aws`, {
+      const res = await fetch(`/api/orgs/${org?.id}/aws`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
