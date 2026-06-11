@@ -49,6 +49,9 @@ spec:
         image: europe-west1-docker.pkg.dev/driftguard-prod/ai/model-loader@sha256:DIGEST
         securityContext:
           allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
         resources:
           requests: { cpu: 200m, memory: 512Mi }
           limits: { cpu: 1, memory: 2Gi }
@@ -96,6 +99,8 @@ spec:
         - name: model-cache
           mountPath: /models
           readOnly: true
+        - name: tmp-dir
+          mountPath: /tmp
 
         livenessProbe:
           httpGet: { path: /health, port: 8080 }
@@ -111,13 +116,17 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
           capabilities: { drop: [ALL] }
-          readOnlyRootFilesystem: false  # Model files need writable /tmp
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
 
       volumes:
       - name: model-cache
         emptyDir:
           medium: Memory
           sizeLimit: 2Gi
+      - name: tmp-dir
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service

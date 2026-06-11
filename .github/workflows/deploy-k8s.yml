@@ -236,8 +236,10 @@ jobs:
 
     - name: Wait for ArgoCD sync (optional)
       continue-on-error: true
+      env:
+        KUBECONFIG_B64: ${{ secrets.KUBECONFIG }}
       run: |
-        echo "${{ secrets.KUBECONFIG }}" | base64 -d > /tmp/kubeconfig
+        echo "$KUBECONFIG_B64" | base64 -d > /tmp/kubeconfig
         kubectl --kubeconfig=/tmp/kubeconfig \
           -n driftguard-argocd \
           wait application/driftguard-api \
@@ -260,10 +262,12 @@ jobs:
 
     - name: Notify Slack
       if: always()
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       run: |
         RESULT="${{ job.status }}"
         COLOR=$([ "$RESULT" = "success" ] && echo "#22d38d" || echo "#ff4757")
-        curl -s -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
+        curl -s -X POST "$SLACK_WEBHOOK_URL" \
           -H "Content-Type: application/json" \
           -d "{
             \"attachments\": [{

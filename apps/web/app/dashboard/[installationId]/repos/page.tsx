@@ -242,11 +242,15 @@ export default async function ReposPage({
 
                   {/* Active toggle */}
                   <div className="hidden sm:flex items-center">
-                    <RepoToggle
-                      repoId={repo.id}
-                      initialEnabled={isEnabled}
-                      atFreeLimit={!!atFreeLimit && !isEnabled}
-                    />
+                    {repo.id ? (
+                      <RepoToggle
+                        repoId={repo.id}
+                        initialEnabled={isEnabled}
+                        atFreeLimit={!!atFreeLimit && !isEnabled}
+                      />
+                    ) : (
+                      <span className="h-1.5 w-1.5 rounded-full bg-allowed" />
+                    )}
                   </div>
                 </div>
               );
