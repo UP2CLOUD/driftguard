@@ -612,7 +612,9 @@
     "noBody": "Memory is built as DriftGuard reviews PRs and records incident embeddings.",
     "blocked": "blocked",
     "approved": "approved",
-    "warned": "warned"
+    "warned": "warned",
+    "merged": "merged",
+    "engineReady": "Memory engine ready"
   },
   "docs": {
     "eyebrow": "Documentation",

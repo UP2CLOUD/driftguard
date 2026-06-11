@@ -590,7 +590,9 @@
     "noBody": "随着 DriftGuard 审查 PR 并记录事件嵌入，记忆将逐步构建。",
     "blocked": "已阻断",
     "approved": "已批准",
-    "warned": "已警告"
+    "warned": "已警告",
+    "merged": "已合并",
+    "engineReady": "记忆引擎就绪"
   },
   "docs": {
     "eyebrow": "文档",

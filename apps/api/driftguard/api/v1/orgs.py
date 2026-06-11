@@ -131,6 +131,7 @@ async def list_org_repos(
 async def list_org_analyses(
     org_id: str,
     limit: int = 20,
+    offset: int = 0,
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
@@ -141,6 +142,7 @@ async def list_org_analyses(
         .where(Repository.org_id == org_id)
         .order_by(desc(Analysis.id))
         .limit(min(limit, 100))
+        .offset(max(offset, 0))
     )
     result = await db.execute(stmt)
     return [
@@ -149,6 +151,7 @@ async def list_org_analyses(
             "status": a.status,
             "cost_delta_cents": a.cost_delta_cents,
             "risk_score": a.risk_score,
+            "files_scanned": a.files_scanned or 0,
             "pr_number": p.github_pr_number,
             "head_sha": p.head_sha,
             "repo_full_name": r.full_name,

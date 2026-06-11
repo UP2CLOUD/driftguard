@@ -82,12 +82,12 @@ export default async function MemoryPage({
 
       {entries.length === 0 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
-          <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">Memory engine ready</div>
+          <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">{t("memory.engineReady")}</div>
           <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
-            {t("memory.noTitle") ?? "No memory decisions yet"}
+            {t("memory.noTitle")}
           </p>
           <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-md mx-auto leading-relaxed">
-            DriftGuard remembers accepted risks, suppressed findings, and repeated patterns — building institutional knowledge across all repositories. Every PR review contributes.
+            {t("memory.noBody")}
           </p>
         </div>
       ) : (
@@ -103,7 +103,7 @@ export default async function MemoryPage({
                 <div className="flex items-center gap-2 flex-wrap mb-1.5">
                   <code className="font-mono text-[12px] text-[color:var(--dg-fg)]">
                     {e.repo_full_name}
-                    {e.pr_number ? <span className="text-[color:var(--dg-fg-muted)">#{e.pr_number}</span> : null}
+                    {e.pr_number ? <span className="text-[color:var(--dg-fg-muted)]">#{e.pr_number}</span> : null}
                   </code>
                   {e.outcome && (
                     <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${OUT_BADGE[e.outcome] ?? "border-[color:var(--dg-border)] text-[color:var(--dg-fg-subtle)]"}`}>

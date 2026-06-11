@@ -590,7 +590,9 @@
     "noBody": "La memoria se construye mientras DriftGuard revisa PRs y registra embeddings.",
     "blocked": "bloqueado",
     "approved": "aprobado",
-    "warned": "advertido"
+    "warned": "advertido",
+    "merged": "fusionado",
+    "engineReady": "Motor de memoria listo"
   },
   "docs": {
     "eyebrow": "Documentación",
