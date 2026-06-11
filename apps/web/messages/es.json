@@ -112,7 +112,14 @@
     "readinessCtaInstall": "Instalar",
     "readinessCtaConnect": "Conectar",
     "readinessCtaScan": "Escanear",
-    "readinessCtaViewMemory": "Ver memoria"
+    "readinessCtaViewMemory": "Ver memoria",
+    "openCount": "{n} abierto(s)",
+    "statsHintConnectGitHub": "Conectar GitHub",
+    "statsHintOpenPr": "Abrir un PR",
+    "statsHintNoBaseline": "Sin base",
+    "statsHintNoneActive": "Ninguno activo",
+    "statsHintClean": "Limpio",
+    "statsHintNoDecisionsYet": "Sin decisiones aún"
   },
   "waitlist": {
     "placeholder": "you@company.com",

@@ -112,7 +112,14 @@
     "readinessCtaInstall": "تثبيت",
     "readinessCtaConnect": "توصيل",
     "readinessCtaScan": "فحص",
-    "readinessCtaViewMemory": "عرض الذاكرة"
+    "readinessCtaViewMemory": "عرض الذاكرة",
+    "openCount": "{n} مفتوح",
+    "statsHintConnectGitHub": "ربط GitHub",
+    "statsHintOpenPr": "فتح PR",
+    "statsHintNoBaseline": "لا قاعدة",
+    "statsHintNoneActive": "لا شيء نشط",
+    "statsHintClean": "نظيف",
+    "statsHintNoDecisionsYet": "لا قرارات بعد"
   },
   "waitlist": {
     "placeholder": "you@company.com",

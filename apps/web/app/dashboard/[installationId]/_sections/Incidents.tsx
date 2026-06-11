@@ -41,7 +41,7 @@ export async function IncidentsSection({
           {t("dashboard.driftIncidents") ?? "Drift incidents"}
         </span>
         <span className="font-mono text-[10px] rounded border border-blocked/30 bg-blocked/10 text-blocked px-1.5 py-0.5">
-          {openInc} open
+          {t("dashboard.openCount")?.replace("{n}", String(openInc)) ?? `${openInc} open`}
         </span>
       </div>
       <div className="divide-y divide-[color:var(--dg-border)]">

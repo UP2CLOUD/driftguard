@@ -112,7 +112,14 @@
     "readinessCtaInstall": "安装",
     "readinessCtaConnect": "连接",
     "readinessCtaScan": "扫描",
-    "readinessCtaViewMemory": "查看记忆"
+    "readinessCtaViewMemory": "查看记忆",
+    "openCount": "{n} 个开放",
+    "statsHintConnectGitHub": "连接 GitHub",
+    "statsHintOpenPr": "创建 PR",
+    "statsHintNoBaseline": "无基准",
+    "statsHintNoneActive": "无活跃",
+    "statsHintClean": "干净",
+    "statsHintNoDecisionsYet": "暂无决策"
   },
   "waitlist": {
     "placeholder": "you@company.com",

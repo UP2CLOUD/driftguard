@@ -183,7 +183,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
           </span>
           <span className="font-sans text-[13px] font-medium text-[color:var(--dg-fg)]">{policy.name}</span>
           {!policy.enabled && (
-            <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">disabled</span>
+            <span className="font-mono text-[9px] text-[color:var(--dg-fg-subtle)]">{t("policies.disabled")}</span>
           )}
         </div>
         {policy.description && (
@@ -196,7 +196,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
             </span>
           )}
           {policy.match_count > 0 && (
-            <span className="text-warned shrink-0">↺ {policy.match_count} matches</span>
+            <span className="text-warned shrink-0">↺ {t("policies.matches")?.replace("{n}", String(policy.match_count)) ?? `${policy.match_count} matches`}</span>
           )}
         </div>
         {error && <p className="font-mono text-[11px] text-blocked mt-1">✗ {error}</p>}
@@ -244,7 +244,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
             onClick={() => setConfirmDelete(true)}
             className="rounded border border-[color:var(--dg-border)] px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-muted)] hover:text-blocked hover:border-blocked/30 transition"
           >
-            Delete
+            {t("common.delete")}
           </button>
         )}
       </div>

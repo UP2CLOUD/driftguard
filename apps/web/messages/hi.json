@@ -112,7 +112,14 @@
     "readinessCtaInstall": "इंस्टॉल करें",
     "readinessCtaConnect": "कनेक्ट करें",
     "readinessCtaScan": "स्कैन करें",
-    "readinessCtaViewMemory": "स्मृति देखें"
+    "readinessCtaViewMemory": "स्मृति देखें",
+    "openCount": "{n} खुला",
+    "statsHintConnectGitHub": "GitHub कनेक्ट करें",
+    "statsHintOpenPr": "PR खोलें",
+    "statsHintNoBaseline": "कोई आधार नहीं",
+    "statsHintNoneActive": "कोई सक्रिय नहीं",
+    "statsHintClean": "स्वच्छ",
+    "statsHintNoDecisionsYet": "अभी तक कोई निर्णय नहीं"
   },
   "waitlist": {
     "placeholder": "you@company.com",
