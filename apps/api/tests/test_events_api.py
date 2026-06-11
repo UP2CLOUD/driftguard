@@ -100,6 +100,9 @@ class TestListEventsWithOrg:
         try:
             r = TestClient(app).get("/api/v1/events?installation_id=111", headers=AUTH)
             item = r.json()[0]
-            assert set(item.keys()) == {"id", "event_type", "severity", "source", "message", "metadata", "repo_id", "created_at"}
+            assert set(item.keys()) == {
+                "id", "event_type", "severity", "source", "message",
+                "metadata", "repo_id", "created_at",
+            }
         finally:
             _cleanup()
