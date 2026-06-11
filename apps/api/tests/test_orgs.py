@@ -423,3 +423,140 @@ class TestListOrgRepos:
             assert data[0]["enabled"] is True
         finally:
             _cleanup()
+
+
+# ── GET /orgs/by-user ─────────────────────────────────────────────────────────
+
+
+def _org_with_settings(
+    org_id: str = "org-1",
+    installation_id: int = 42,
+    account_login: str | None = None,
+    account_type: str = "User",
+) -> Organization:
+    settings_val = {}
+    if account_login:
+        settings_val["account_login"] = account_login
+        settings_val["account_type"] = account_type
+    return Organization(
+        id=org_id,
+        github_installation_id=installation_id,
+        plan="free",
+        subscription_status="free",
+        settings=settings_val or None,
+    )
+
+
+class TestGetOrgsByUser:
+    def test_requires_auth(self):
+        r = TestClient(app).get("/api/v1/orgs/by-user?login=alice")
+        assert r.status_code == 401
+
+    def test_empty_login_returns_empty(self):
+        mock = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/by-user?login=", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json() == []
+        finally:
+            _cleanup()
+
+    def test_no_orgs_returns_empty(self):
+        mock = AsyncMock()
+        mock.execute = AsyncMock(
+            return_value=MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[]))))
+        )
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/by-user?login=alice", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json() == []
+        finally:
+            _cleanup()
+
+    def test_legacy_org_no_login_visible_to_any_user(self):
+        """Orgs without account_login in settings match any login (legacy installs)."""
+        org = _org_with_settings("org-1", 42, account_login=None)
+        mock = AsyncMock()
+        mock.execute = AsyncMock(
+            return_value=MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[org]))))
+        )
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/by-user?login=anyone", headers=AUTH)
+            assert r.status_code == 200
+            data = r.json()
+            assert len(data) == 1
+            assert data[0]["id"] == "org-1"
+            assert data[0]["installation_id"] == 42
+        finally:
+            _cleanup()
+
+    def test_org_type_installation_visible_to_all_users(self):
+        """Organization-type installs are returned to any authenticated user."""
+        org = _org_with_settings("org-1", 42, account_login="acme-corp", account_type="Organization")
+        mock = AsyncMock()
+        mock.execute = AsyncMock(
+            return_value=MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[org]))))
+        )
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/by-user?login=random-user", headers=AUTH)
+            assert r.status_code == 200
+            assert len(r.json()) == 1
+        finally:
+            _cleanup()
+
+    def test_user_type_only_visible_to_matching_login(self):
+        """User-type installs are only returned when login matches (case-insensitive)."""
+        org = _org_with_settings("org-1", 42, account_login="Alice", account_type="User")
+        mock = AsyncMock()
+        mock.execute = AsyncMock(
+            return_value=MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[org]))))
+        )
+        _override(mock)
+        try:
+            # Matching login (case-insensitive)
+            r = TestClient(app).get("/api/v1/orgs/by-user?login=alice", headers=AUTH)
+            assert r.status_code == 200
+            assert len(r.json()) == 1
+
+            # Non-matching login gets nothing
+            r2 = TestClient(app).get("/api/v1/orgs/by-user?login=bob", headers=AUTH)
+            assert r2.status_code == 200
+            assert r2.json() == []
+        finally:
+            _cleanup()
+
+    def test_db_exception_returns_empty(self):
+        """DB errors are swallowed and return an empty list."""
+        mock = AsyncMock()
+        mock.execute = AsyncMock(side_effect=RuntimeError("db down"))
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/by-user?login=alice", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json() == []
+        finally:
+            _cleanup()
+
+    def test_response_shape_includes_account(self):
+        """Response items contain id, installation_id, and account dict."""
+        org = _org_with_settings("org-1", 42, account_login="alice", account_type="User")
+        mock = AsyncMock()
+        mock.execute = AsyncMock(
+            return_value=MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[org]))))
+        )
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/by-user?login=alice", headers=AUTH)
+            assert r.status_code == 200
+            data = r.json()
+            assert len(data) == 1
+            item = data[0]
+            assert item["id"] == "org-1"
+            assert item["installation_id"] == 42
+            assert item["account"]["login"] == "alice"
+        finally:
+            _cleanup()
