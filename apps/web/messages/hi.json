@@ -119,7 +119,8 @@
     "statsHintNoBaseline": "कोई आधार नहीं",
     "statsHintNoneActive": "कोई सक्रिय नहीं",
     "statsHintClean": "स्वच्छ",
-    "statsHintNoDecisionsYet": "अभी तक कोई निर्णय नहीं"
+    "statsHintNoDecisionsYet": "अभी तक कोई निर्णय नहीं",
+    "planBadge": "{plan} प्लान"
   },
   "waitlist": {
     "placeholder": "you@company.com",

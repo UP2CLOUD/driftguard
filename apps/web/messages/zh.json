@@ -119,7 +119,8 @@
     "statsHintNoBaseline": "无基准",
     "statsHintNoneActive": "无活跃",
     "statsHintClean": "干净",
-    "statsHintNoDecisionsYet": "暂无决策"
+    "statsHintNoDecisionsYet": "暂无决策",
+    "planBadge": "{plan} 计划"
   },
   "waitlist": {
     "placeholder": "you@company.com",

@@ -119,7 +119,8 @@
     "statsHintNoBaseline": "لا قاعدة",
     "statsHintNoneActive": "لا شيء نشط",
     "statsHintClean": "نظيف",
-    "statsHintNoDecisionsYet": "لا قرارات بعد"
+    "statsHintNoDecisionsYet": "لا قرارات بعد",
+    "planBadge": "خطة {plan}"
   },
   "waitlist": {
     "placeholder": "you@company.com",

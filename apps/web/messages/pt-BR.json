@@ -141,7 +141,8 @@
     "statsHintNoBaseline": "Sem base",
     "statsHintNoneActive": "Nenhum ativo",
     "statsHintClean": "Limpo",
-    "statsHintNoDecisionsYet": "Sem decisões ainda"
+    "statsHintNoDecisionsYet": "Sem decisões ainda",
+    "planBadge": "{plan} plano"
   },
   "waitlist": {
     "placeholder": "you@company.com",
