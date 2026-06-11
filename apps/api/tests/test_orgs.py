@@ -1,6 +1,6 @@
-"""Tests for incidents + events endpoints."""
+"""Tests for org, incidents, and events endpoints."""
 
-from datetime import UTC
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock
 
 from fastapi.testclient import TestClient
@@ -77,6 +77,59 @@ def test_list_events_no_org_returns_empty():
         assert r.json() == []
     finally:
         _cleanup()
+
+
+def _audit_row(
+    row_id: str = "audit-1",
+    actor: str = "user@example.com",
+    action: str = "analysis_complete",
+):
+    row = MagicMock()
+    row.id = row_id
+    row.actor = actor
+    row.action = action
+    row.target = "acme/infra"
+    row.payload = {"risk_score": 42}
+    row.created_at = datetime(2026, 1, 1, tzinfo=UTC)
+    return row
+
+
+class TestAuditLog:
+    def test_requires_auth(self):
+        r = TestClient(app).get("/api/v1/orgs/org-1/audit-log")
+        assert r.status_code == 401
+
+    def test_returns_empty_list(self):
+        mock = AsyncMock()
+        result = MagicMock()
+        result.fetchall.return_value = []
+        mock.execute = AsyncMock(return_value=result)
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/org-1/audit-log", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json() == []
+        finally:
+            _cleanup()
+
+    def test_returns_entries(self):
+        mock = AsyncMock()
+        result = MagicMock()
+        result.fetchall.return_value = [_audit_row("a1", "alice", "analysis_complete")]
+        mock.execute = AsyncMock(return_value=result)
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/org-1/audit-log?limit=10", headers=AUTH)
+            assert r.status_code == 200
+            data = r.json()
+            assert len(data) == 1
+            assert data[0]["id"] == "a1"
+            assert data[0]["actor"] == "alice"
+            assert data[0]["action"] == "analysis_complete"
+            assert data[0]["target"] == "acme/infra"
+            assert data[0]["created_at"] == "2026-01-01T00:00:00+00:00"
+        finally:
+            _cleanup()
 
 
 def test_patch_incident_invalid_status():
