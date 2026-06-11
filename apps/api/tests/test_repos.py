@@ -1,4 +1,4 @@
-"""Tests for GET /api/v1/repos and PATCH /api/v1/repos/{repo_id}."""
+"""Tests for GET /api/v1/repos, PATCH, POST enable/disable."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, MagicMock
 from fastapi.testclient import TestClient
 
 from driftguard.core.db import get_db
-from driftguard.db.models import Repository
+from driftguard.db.models import Organization, Repository
 from driftguard.main import app
 
 AUTH = {"Authorization": "Bearer dev-only-change-me"}
@@ -138,4 +138,146 @@ class TestPatchRepo:
 
     def test_requires_auth(self):
         r = TestClient(app).patch("/api/v1/repos/repo-1", json={"enabled": False})
+        assert r.status_code == 401
+
+
+def _free_org(org_id: str = "org-1") -> Organization:
+    return Organization(
+        id=org_id,
+        github_installation_id=123,
+        plan="free",
+        subscription_status="free",
+    )
+
+
+def _premium_org(org_id: str = "org-1") -> Organization:
+    return Organization(
+        id=org_id,
+        github_installation_id=123,
+        plan="pro",
+        subscription_status="premium_active",
+    )
+
+
+# ── POST /repos/{repo_id}/enable ──────────────────────────────────────────────
+
+
+class TestEnableRepo:
+    def test_not_found_returns_404(self):
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=None)
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).post("/api/v1/repos/missing/enable", headers=AUTH)
+            assert r.status_code == 404
+        finally:
+            _cleanup()
+
+    def test_already_enabled_is_idempotent(self):
+        repo = _repo(enabled=True)
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=repo)
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).post("/api/v1/repos/repo-1/enable", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json()["enabled"] is True
+        finally:
+            _cleanup()
+
+    def test_enable_disabled_repo_success(self):
+        repo = _repo(enabled=False)
+        org = _free_org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(side_effect=[repo, org])
+        # assert_can_enable_repo calls db.execute(select(func.count())) → scalar_one returns 0
+        mock.execute = AsyncMock(return_value=MagicMock(scalar_one=MagicMock(return_value=0)))
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).post("/api/v1/repos/repo-1/enable", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json()["enabled"] is True
+        finally:
+            _cleanup()
+
+    def test_enable_premium_org_skips_quota(self):
+        repo = _repo(enabled=False)
+        org = _premium_org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(side_effect=[repo, org])
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).post("/api/v1/repos/repo-1/enable", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json()["enabled"] is True
+        finally:
+            _cleanup()
+
+    def test_enable_quota_exceeded_returns_402(self):
+        repo = _repo(enabled=False)
+        org = _free_org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(side_effect=[repo, org])
+        # 3 active repos already = at the free plan limit
+        mock.execute = AsyncMock(return_value=MagicMock(scalar_one=MagicMock(return_value=3)))
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).post("/api/v1/repos/repo-1/enable", headers=AUTH)
+            assert r.status_code == 402
+        finally:
+            _cleanup()
+
+    def test_requires_auth(self):
+        r = TestClient(app).post("/api/v1/repos/repo-1/enable")
+        assert r.status_code == 401
+
+
+# ── POST /repos/{repo_id}/disable ────────────────────────────────────────────
+
+
+class TestDisableRepo:
+    def test_not_found_returns_404(self):
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=None)
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).post("/api/v1/repos/missing/disable", headers=AUTH)
+            assert r.status_code == 404
+        finally:
+            _cleanup()
+
+    def test_disable_enabled_repo(self):
+        repo = _repo(enabled=True)
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=repo)
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).post("/api/v1/repos/repo-1/disable", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json()["enabled"] is False
+        finally:
+            _cleanup()
+
+    def test_disable_already_disabled_repo(self):
+        repo = _repo(enabled=False)
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=repo)
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).post("/api/v1/repos/repo-1/disable", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json()["enabled"] is False
+        finally:
+            _cleanup()
+
+    def test_requires_auth(self):
+        r = TestClient(app).post("/api/v1/repos/repo-1/disable")
         assert r.status_code == 401

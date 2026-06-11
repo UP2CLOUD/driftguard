@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import desc, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.api.deps import require_internal_auth
@@ -21,7 +21,7 @@ async def list_analyses(
         select(Analysis, PullRequest, Repository)
         .join(PullRequest, Analysis.pr_id == PullRequest.id)
         .join(Repository, PullRequest.repo_id == Repository.id)
-        .order_by(desc(Analysis.id))
+        .order_by(Analysis.started_at.desc().nulls_last())
         .limit(min(limit, 100))
         .offset(max(offset, 0))
     )
