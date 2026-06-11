@@ -54,9 +54,7 @@ def _mock_list(org=None, incidents: list | None = None) -> AsyncMock:
     """Mock for GET /incidents (two execute calls: org lookup + incident list)."""
     mock = AsyncMock()
     org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
-    rows_result = MagicMock(
-        scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=incidents or [])))
-    )
+    rows_result = MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=incidents or []))))
     mock.execute = AsyncMock(side_effect=[org_result, rows_result])
     return mock
 
@@ -139,9 +137,7 @@ class TestPatchIncident:
     def test_not_found_returns_404(self):
         _override(_mock_get(incident=None))
         try:
-            r = TestClient(app).patch(
-                "/api/v1/incidents/missing", json={"status": "resolved"}, headers=AUTH
-            )
+            r = TestClient(app).patch("/api/v1/incidents/missing", json={"status": "resolved"}, headers=AUTH)
             assert r.status_code == 404
         finally:
             _cleanup()
