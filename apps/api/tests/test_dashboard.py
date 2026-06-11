@@ -54,6 +54,8 @@ class TestDashboardOverview:
             assert body["memory_entries"] == 0
             assert body["recent_events"] == []
             assert body["recent_analyses"] == []
+            # installation_id echoed back even on empty response
+            assert body["installation_id"] == 9999
         finally:
             _cleanup()
 
