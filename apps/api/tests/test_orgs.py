@@ -359,8 +359,15 @@ class TestPatchOrgAws:
         finally:
             _cleanup()
 
-    def test_null_arn_clears_setting(self):
-        org = _org()
+    def test_null_arn_clears_existing_setting(self):
+        """Explicitly sending null removes the ARN from stored settings."""
+        org = Organization(
+            id="org-1",
+            github_installation_id=42,
+            plan="free",
+            subscription_status="free",
+            settings={"aws_role_arn": "arn:aws:iam::123456789012:role/Old"},
+        )
         mock = AsyncMock()
         mock.get = AsyncMock(return_value=org)
         mock.commit = AsyncMock()
@@ -372,7 +379,36 @@ class TestPatchOrgAws:
                 headers=AUTH,
             )
             assert r.status_code == 200
+            # Response reflects the cleared value
             assert r.json()["aws_role_arn"] is None
+            # Stored settings no longer contain the ARN key
+            assert "aws_role_arn" not in org.settings
+        finally:
+            _cleanup()
+
+    def test_omitting_arn_field_leaves_existing_unchanged(self):
+        """Not sending aws_role_arn should leave the existing ARN intact."""
+        org = Organization(
+            id="org-1",
+            github_installation_id=42,
+            plan="free",
+            subscription_status="free",
+            settings={"aws_role_arn": "arn:aws:iam::123456789012:role/Existing"},
+        )
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=org)
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/orgs/org-1/aws",
+                json={"state_bucket": "my-tf-state"},
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            # ARN is preserved — returned in the response
+            assert r.json()["aws_role_arn"] == "arn:aws:iam::123456789012:role/Existing"
+            assert org.settings.get("aws_role_arn") == "arn:aws:iam::123456789012:role/Existing"
         finally:
             _cleanup()
 

@@ -190,8 +190,15 @@ async def update_aws_settings(
         raise HTTPException(422, "invalid role ARN format")
 
     settings_patch = dict(org.settings or {})
-    if body.aws_role_arn is not None:
-        settings_patch["aws_role_arn"] = body.aws_role_arn
+
+    # Use model_fields_set to distinguish "not provided" (leave unchanged) from
+    # "explicitly set to null" (clear the key) for aws_role_arn.
+    if "aws_role_arn" in body.model_fields_set:
+        if body.aws_role_arn is None:
+            settings_patch.pop("aws_role_arn", None)
+        else:
+            settings_patch["aws_role_arn"] = body.aws_role_arn
+
     if body.state_bucket is not None:
         settings_patch["state_bucket"] = body.state_bucket
     settings_patch["state_key"] = body.state_key
@@ -199,7 +206,7 @@ async def update_aws_settings(
     org.settings = settings_patch
     await db.commit()
 
-    return {"status": "ok", "aws_role_arn": body.aws_role_arn}
+    return {"status": "ok", "aws_role_arn": settings_patch.get("aws_role_arn")}
 
 
 @router.get("/{org_id}/audit-log")
