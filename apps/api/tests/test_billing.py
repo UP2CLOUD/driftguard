@@ -205,3 +205,84 @@ def test_stripe_configured(monkeypatch):
     assert stripe_configured() is False
     monkeypatch.setattr(settings, "stripe_api_key", "sk_test_123")
     assert stripe_configured() is True
+
+
+# ── GET /billing/plan ──────────────────────────────────────────────────────────
+
+
+@pytest.fixture
+async def plan_api_db():
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:")
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    session_maker = async_sessionmaker(engine, expire_on_commit=False)
+
+    async def override_get_db():
+        async with session_maker() as session:
+            yield session
+
+    app.dependency_overrides[get_db] = override_get_db
+    yield session_maker
+    app.dependency_overrides.pop(get_db, None)
+    await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_get_plan_not_found(plan_api_db):
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        r = await client.get(
+            "/api/v1/billing/plan?installation_id=99999",
+            headers={"Authorization": "Bearer dev-only-change-me"},
+        )
+    assert r.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_get_plan_free_org(plan_api_db):
+    async with plan_api_db() as seed:
+        org = Organization(github_installation_id=7001, plan="free", subscription_status="free")
+        seed.add(org)
+        await seed.commit()
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        r = await client.get(
+            "/api/v1/billing/plan?installation_id=7001",
+            headers={"Authorization": "Bearer dev-only-change-me"},
+        )
+    assert r.status_code == 200
+    data = r.json()
+    assert data["plan"] == "free"
+    assert data["is_premium"] is False
+    assert data["repos"]["active"] == 0
+    assert data["repos"]["limit"] == settings.free_repository_limit
+    assert data["monthly_pr_reviews"]["limit"] is None
+
+
+@pytest.mark.asyncio
+async def test_get_plan_premium_org(plan_api_db):
+    async with plan_api_db() as seed:
+        org = Organization(
+            github_installation_id=7002,
+            plan="pro",
+            subscription_status="premium_active",
+        )
+        seed.add(org)
+        await seed.commit()
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        r = await client.get(
+            "/api/v1/billing/plan?installation_id=7002",
+            headers={"Authorization": "Bearer dev-only-change-me"},
+        )
+    assert r.status_code == 200
+    data = r.json()
+    assert data["is_premium"] is True
+    assert data["repos"]["limit"] is None
+    assert data["monthly_pr_reviews"]["limit"] == settings.premium_monthly_pr_limit
+
+
+@pytest.mark.asyncio
+async def test_get_plan_requires_auth(plan_api_db):
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        r = await client.get("/api/v1/billing/plan?installation_id=1")
+    assert r.status_code == 401
