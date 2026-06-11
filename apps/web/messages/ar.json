@@ -231,7 +231,16 @@
     "defaultBranch": "الفرع الافتراضي:",
     "connected": "متصل",
     "never": "أبدًا",
-    "viewLatest": "عرض →"
+    "viewLatest": "عرض →",
+    "connectedRepos": "المستودعات المتصلة",
+    "repoCountOne": "مستودع واحد",
+    "repoCount": "{n} مستودعات",
+    "noReposConnected": "لا توجد مستودعات متصلة",
+    "installAppToScan": "ثبّت تطبيق GitHub للبدء في الفحص",
+    "installAppDesc": "يراجع DriftGuard كل طلب سحب Terraform — يكتشف الأخطاء الأمنية وانحراف التكاليف وانتهاكات السياسة قبل الدمج.",
+    "installGithubApp": "تثبيت تطبيق GitHub →",
+    "scanFallback": "فحص",
+    "manualScanLabel": "يدوي"
   },
   "landing": {
     "ctaTitle": "استعد السيطرة على بنيتك السحابية.",
@@ -621,7 +630,9 @@
     "disable": "تعطيل",
     "enable": "تفعيل",
     "edit": "تعديل",
-    "confirm": "تأكيد"
+    "confirm": "تأكيد",
+    "exampleRules": "أمثلة على القواعد",
+    "conditionsRef": "مرجع الشروط"
   },
   "memory": {
     "title": "الذاكرة التشغيلية",

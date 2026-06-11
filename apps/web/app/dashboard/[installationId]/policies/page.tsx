@@ -149,7 +149,7 @@ Content-Type: application/json
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
             <div className="border-b border-[color:var(--dg-border)] px-4 py-3">
               <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                Example rules
+                {t("policies.exampleRules") ?? "Example rules"}
               </span>
             </div>
             <div className="divide-y divide-[color:var(--dg-border)]">
@@ -177,7 +177,7 @@ Content-Type: application/json
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
             <div className="border-b border-[color:var(--dg-border)] px-4 py-3">
               <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                Conditions reference
+                {t("policies.conditionsRef") ?? "Conditions reference"}
               </span>
             </div>
             <div className="px-4 py-4 space-y-3">

@@ -231,7 +231,16 @@
     "defaultBranch": "डिफ़ॉल्ट शाखा:",
     "connected": "जुड़ा हुआ",
     "never": "कभी नहीं",
-    "viewLatest": "देखें →"
+    "viewLatest": "देखें →",
+    "connectedRepos": "कनेक्टेड रिपॉजिटरी",
+    "repoCountOne": "1 रिपॉजिटरी",
+    "repoCount": "{n} रिपॉजिटरी",
+    "noReposConnected": "कोई रिपॉजिटरी कनेक्ट नहीं",
+    "installAppToScan": "स्कैन शुरू करने के लिए GitHub App इंस्टॉल करें",
+    "installAppDesc": "DriftGuard हर Terraform pull request की समीक्षा करता है — मर्ज से पहले सुरक्षा गलत कॉन्फ़िगरेशन, लागत विचलन और नीति उल्लंघन का पता लगाता है।",
+    "installGithubApp": "GitHub App इंस्टॉल करें →",
+    "scanFallback": "स्कैन",
+    "manualScanLabel": "मैनुअल"
   },
   "landing": {
     "ctaTitle": "अपने क्लाउड पर नियंत्रण वापस पाएं।",
@@ -621,7 +630,9 @@
     "disable": "अक्षम करें",
     "enable": "सक्षम करें",
     "edit": "संपादित करें",
-    "confirm": "पुष्टि करें"
+    "confirm": "पुष्टि करें",
+    "exampleRules": "उदाहरण नियम",
+    "conditionsRef": "शर्त संदर्भ"
   },
   "memory": {
     "title": "परिचालन स्मृति",

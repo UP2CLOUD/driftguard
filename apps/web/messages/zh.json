@@ -231,7 +231,16 @@
     "defaultBranch": "默认分支：",
     "connected": "已连接",
     "never": "从未",
-    "viewLatest": "查看 →"
+    "viewLatest": "查看 →",
+    "connectedRepos": "已连接的仓库",
+    "repoCountOne": "1 个仓库",
+    "repoCount": "{n} 个仓库",
+    "noReposConnected": "未连接任何仓库",
+    "installAppToScan": "安装 GitHub App 以开始扫描",
+    "installAppDesc": "DriftGuard 审查每个 Terraform pull request — 在合并前检测安全错误配置、成本偏移和策略违规。",
+    "installGithubApp": "安装 GitHub App →",
+    "scanFallback": "扫描",
+    "manualScanLabel": "手动"
   },
   "landing": {
     "ctaTitle": "重新掌控您的云基础设施。",
@@ -621,7 +630,9 @@
     "disable": "禁用",
     "enable": "启用",
     "edit": "编辑",
-    "confirm": "确认"
+    "confirm": "确认",
+    "exampleRules": "示例规则",
+    "conditionsRef": "条件参考"
   },
   "memory": {
     "title": "运行记忆",

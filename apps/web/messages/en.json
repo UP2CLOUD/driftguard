@@ -192,7 +192,16 @@
     "defaultBranch": "default branch:",
     "connected": "Connected",
     "never": "Never",
-    "viewLatest": "View →"
+    "viewLatest": "View →",
+    "connectedRepos": "Connected repositories",
+    "repoCountOne": "1 repo",
+    "repoCount": "{n} repos",
+    "noReposConnected": "No repositories connected",
+    "installAppToScan": "Install the GitHub App to begin scanning",
+    "installAppDesc": "DriftGuard reviews every Terraform pull request — detecting security misconfigs, cost drift, and policy violations before merge.",
+    "installGithubApp": "Install GitHub App →",
+    "scanFallback": "Scan",
+    "manualScanLabel": "manual"
   },
   "settings": {
     "title": "Settings",
@@ -643,7 +652,9 @@
     "disable": "Disable",
     "enable": "Enable",
     "edit": "Edit",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "exampleRules": "Example rules",
+    "conditionsRef": "Conditions reference"
   },
   "memory": {
     "title": "Operational memory",

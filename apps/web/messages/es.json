@@ -231,7 +231,16 @@
     "defaultBranch": "rama predeterminada:",
     "connected": "Conectado",
     "never": "Nunca",
-    "viewLatest": "Ver →"
+    "viewLatest": "Ver →",
+    "connectedRepos": "Repositorios conectados",
+    "repoCountOne": "1 repositorio",
+    "repoCount": "{n} repositorios",
+    "noReposConnected": "Sin repositorios conectados",
+    "installAppToScan": "Instala la GitHub App para empezar a escanear",
+    "installAppDesc": "DriftGuard revisa cada pull request de Terraform — detectando errores de seguridad, desvío de costos y violaciones de política antes del merge.",
+    "installGithubApp": "Instalar GitHub App →",
+    "scanFallback": "Scan",
+    "manualScanLabel": "manual"
   },
   "landing": {
     "ctaTitle": "Recupera el control de tu cloud.",
@@ -621,7 +630,9 @@
     "disable": "Deshabilitar",
     "enable": "Habilitar",
     "edit": "Editar",
-    "confirm": "Confirmar"
+    "confirm": "Confirmar",
+    "exampleRules": "Reglas de ejemplo",
+    "conditionsRef": "Referencia de condiciones"
   },
   "memory": {
     "title": "Memoria operacional",
