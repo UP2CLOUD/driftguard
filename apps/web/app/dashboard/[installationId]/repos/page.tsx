@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ScanTrigger } from "@/components/dashboard/ScanTrigger";
 import { UploadScan } from "@/components/dashboard/UploadScan";
+import { RepoToggle } from "@/components/RepoToggle";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
@@ -143,11 +144,12 @@ export default async function ReposPage({
         ) : (
           <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
             {/* Header */}
-            <div className="hidden sm:grid grid-cols-[1fr_80px_100px_100px] gap-4 bg-[color:var(--dg-surface)] px-4 py-2">
+            <div className="hidden sm:grid grid-cols-[1fr_80px_100px_80px_60px] gap-4 bg-[color:var(--dg-surface)] px-4 py-2">
               <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Repository</span>
               <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Risk</span>
               <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Last analyzed</span>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Status</span>
+              <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Latest</span>
+              <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Scanning</span>
             </div>
 
             {repos.map((repo: any) => {
@@ -160,11 +162,10 @@ export default async function ReposPage({
               return (
                 <div
                   key={repo.id || repo.full_name}
-                  className="flex sm:grid sm:grid-cols-[1fr_80px_100px_100px] items-center gap-4 px-4 py-3.5 hover:bg-[color:var(--dg-surface-raised)] transition"
+                  className="flex sm:grid sm:grid-cols-[1fr_80px_100px_80px_60px] items-center gap-4 px-4 py-3.5 hover:bg-[color:var(--dg-surface-raised)] transition"
                 >
                   {/* Repo name */}
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="h-1.5 w-1.5 rounded-full bg-allowed shrink-0" />
                     <div className="min-w-0">
                       <code className="font-mono text-[12px] text-[color:var(--dg-fg)] truncate block">
                         {repo.full_name}
@@ -185,7 +186,7 @@ export default async function ReposPage({
                     {lastDate ?? "Never"}
                   </div>
 
-                  {/* Status / action */}
+                  {/* View latest */}
                   <div className="hidden sm:flex items-center gap-2">
                     {last ? (
                       <Link
@@ -195,7 +196,16 @@ export default async function ReposPage({
                         View →
                       </Link>
                     ) : (
-                      <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">No scans</span>
+                      <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">—</span>
+                    )}
+                  </div>
+
+                  {/* Scanning toggle */}
+                  <div className="hidden sm:flex items-center">
+                    {repo.id ? (
+                      <RepoToggle repoId={repo.id} enabled={repo.enabled ?? true} />
+                    ) : (
+                      <span className="h-1.5 w-1.5 rounded-full bg-allowed" />
                     )}
                   </div>
                 </div>
