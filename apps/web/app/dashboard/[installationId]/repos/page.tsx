@@ -240,15 +240,6 @@ export default async function ReposPage({
                     )}
                   </div>
 
-                  {/* Scanning toggle */}
-                  <div className="hidden sm:flex items-center">
-                    {repo.id ? (
-                      <RepoToggle repoId={repo.id} enabled={repo.enabled ?? true} />
-                    ) : (
-                      <span className="h-1.5 w-1.5 rounded-full bg-allowed" />
-                    )}
-                  </div>
-
                   {/* Active toggle */}
                   <div className="hidden sm:flex items-center">
                     <RepoToggle
