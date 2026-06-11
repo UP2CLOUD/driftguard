@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from driftguard.api.deps import require_internal_auth
 from driftguard.core.db import get_db
 from driftguard.db.models import (
     Analysis,
@@ -26,6 +27,7 @@ router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 async def overview(
     installation_id: int = Query(..., description="GitHub App installation ID"),
     db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
 ) -> dict:
     try:
         org = (

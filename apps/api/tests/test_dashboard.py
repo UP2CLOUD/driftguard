@@ -57,6 +57,10 @@ class TestDashboardOverview:
         finally:
             _cleanup()
 
+    def test_requires_auth(self):
+        r = TestClient(app).get("/api/v1/dashboard/overview?installation_id=1")
+        assert r.status_code == 401
+
     def test_missing_installation_id_returns_422(self):
         r = TestClient(app).get("/api/v1/dashboard/overview", headers=AUTH)
         assert r.status_code == 422
