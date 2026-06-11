@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 from fastapi.testclient import TestClient
 
 from driftguard.core.db import get_db
-from driftguard.db.models import Analysis, PullRequest, Repository
+from driftguard.db.models import Analysis, Organization, PullRequest, Repository
 from driftguard.main import app
 
 AUTH = {"Authorization": "Bearer dev-only-change-me"}
@@ -250,5 +250,176 @@ class TestOrgAnalyses:
         try:
             r = TestClient(app).get("/api/v1/orgs/org-1/analyses?limit=100", headers=AUTH)
             assert r.status_code == 200
+        finally:
+            _cleanup()
+
+
+# ── GET /orgs/by-installation/{installation_id} ───────────────────────────────
+
+
+def _org(org_id: str = "org-1", installation_id: int = 42) -> Organization:
+    return Organization(
+        id=org_id,
+        github_installation_id=installation_id,
+        plan="free",
+        subscription_status="free",
+    )
+
+
+class TestGetOrgByInstallation:
+    def test_requires_auth(self):
+        r = TestClient(app).get("/api/v1/orgs/by-installation/42")
+        assert r.status_code == 401
+
+    def test_returns_org_when_found(self):
+        org = _org()
+        mock = AsyncMock()
+        mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=org)))
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/by-installation/42", headers=AUTH)
+            assert r.status_code == 200
+            data = r.json()
+            assert data["id"] == "org-1"
+            assert data["installation_id"] == 42
+            assert data["plan"] == "free"
+        finally:
+            _cleanup()
+
+    def test_returns_404_when_not_found_and_no_github_app(self, monkeypatch):
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "github_app_id", None)
+        mock = AsyncMock()
+        mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None)))
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/by-installation/9999", headers=AUTH)
+            assert r.status_code == 404
+        finally:
+            _cleanup()
+
+
+# ── PATCH /orgs/{org_id}/aws ──────────────────────────────────────────────────
+
+
+class TestPatchOrgAws:
+    def test_requires_auth(self):
+        r = TestClient(app).patch(
+            "/api/v1/orgs/org-1/aws",
+            json={"aws_role_arn": "arn:aws:iam::123456789012:role/DriftGuard"},
+        )
+        assert r.status_code == 401
+
+    def test_not_found_returns_404(self):
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=None)
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/orgs/nonexistent/aws",
+                json={"aws_role_arn": "arn:aws:iam::123456789012:role/DriftGuard"},
+                headers=AUTH,
+            )
+            assert r.status_code == 404
+        finally:
+            _cleanup()
+
+    def test_invalid_arn_format_returns_422(self):
+        org = _org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=org)
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/orgs/org-1/aws",
+                json={"aws_role_arn": "not-an-arn"},
+                headers=AUTH,
+            )
+            assert r.status_code == 422
+        finally:
+            _cleanup()
+
+    def test_valid_arn_updates_settings(self):
+        org = _org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=org)
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/orgs/org-1/aws",
+                json={"aws_role_arn": "arn:aws:iam::123456789012:role/DriftGuard"},
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            assert r.json()["status"] == "ok"
+            assert r.json()["aws_role_arn"] == "arn:aws:iam::123456789012:role/DriftGuard"
+        finally:
+            _cleanup()
+
+    def test_null_arn_clears_setting(self):
+        org = _org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=org)
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/orgs/org-1/aws",
+                json={"aws_role_arn": None},
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            assert r.json()["aws_role_arn"] is None
+        finally:
+            _cleanup()
+
+
+# ── GET /orgs/{org_id}/repos ──────────────────────────────────────────────────
+
+
+def _repo_obj(repo_id: str = "repo-1", full_name: str = "acme/infra") -> Repository:
+    return Repository(
+        id=repo_id,
+        org_id="org-1",
+        github_repo_id=42,
+        full_name=full_name,
+        default_branch="main",
+        enabled=True,
+    )
+
+
+class TestListOrgRepos:
+    def test_requires_auth(self):
+        r = TestClient(app).get("/api/v1/orgs/org-1/repos")
+        assert r.status_code == 401
+
+    def test_returns_empty_list(self):
+        mock = AsyncMock()
+        mock.execute = AsyncMock(return_value=MagicMock(scalars=MagicMock(return_value=[])))
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/org-1/repos", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json() == []
+        finally:
+            _cleanup()
+
+    def test_returns_repos_with_correct_shape(self):
+        repos = [_repo_obj("r1", "acme/infra"), _repo_obj("r2", "acme/app")]
+        mock = AsyncMock()
+        mock.execute = AsyncMock(return_value=MagicMock(scalars=MagicMock(return_value=repos)))
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/org-1/repos", headers=AUTH)
+            assert r.status_code == 200
+            data = r.json()
+            assert len(data) == 2
+            assert data[0]["id"] == "r1"
+            assert data[0]["full_name"] == "acme/infra"
+            assert data[0]["default_branch"] == "main"
+            assert data[0]["enabled"] is True
         finally:
             _cleanup()
