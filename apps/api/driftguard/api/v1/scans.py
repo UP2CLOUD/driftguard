@@ -28,6 +28,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from driftguard.api.deps import require_internal_auth
 from driftguard.core.db import get_db
 from driftguard.core.logging import log
+from driftguard.core.rate_limit import rate_limit
 from driftguard.db.models import Analysis, AuditLog, Organization, PullRequest, Repository
 from driftguard.db.models import Finding as FindingModel
 from driftguard.services.analysis.ai_review import run_ai_review
@@ -91,6 +92,7 @@ async def scan_upload(
     file: UploadFile = File(..., description="tar.gz archive of IaC files"),
     installation_id: int = Form(...),
     db: AsyncSession = Depends(get_db),
+    _rl: None = Depends(rate_limit(per_minute=5, per_hour=20)),
 ) -> ScanResultOut:
     """
     POST /api/v1/scans/upload
@@ -167,6 +169,7 @@ async def scan_upload(
 async def trigger_scan(
     body: TriggerScanRequest,
     db: AsyncSession = Depends(get_db),
+    _rl: None = Depends(rate_limit(per_minute=10, per_hour=50)),
 ) -> dict:
     """
     Enqueue a background scan of a GitHub repo.

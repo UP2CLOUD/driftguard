@@ -226,3 +226,47 @@ class TestGetScan:
             assert data["ai_summary"] == "No critical issues."
         finally:
             _cleanup()
+
+
+# ── Rate limiting ─────────────────────────────────────────────────────────────
+
+
+class TestScanRateLimiting:
+    def _exhaust(self, limit: int) -> None:
+        import time
+
+        from driftguard.core.rate_limit import _buckets
+
+        _buckets["testclient"] = [time.monotonic()] * limit
+
+    def _clear(self) -> None:
+        from driftguard.core.rate_limit import _buckets
+
+        _buckets.pop("testclient", None)
+
+    def test_upload_rate_limited(self):
+        self._exhaust(6)  # exceeds 5/min
+        try:
+            r = TestClient(app).post(
+                "/api/v1/scans/upload",
+                data={"installation_id": "123"},
+                files={"file": ("test.tar.gz", b"", "application/gzip")},
+                headers=AUTH,
+            )
+            assert r.status_code == 429
+            assert "Retry-After" in r.headers
+        finally:
+            self._clear()
+
+    def test_trigger_rate_limited(self):
+        self._exhaust(11)  # exceeds 10/min
+        try:
+            r = TestClient(app).post(
+                "/api/v1/scans/trigger",
+                json={"installation_id": 123, "repo_full_name": "acme/infra"},
+                headers=AUTH,
+            )
+            assert r.status_code == 429
+            assert "Retry-After" in r.headers
+        finally:
+            self._clear()
