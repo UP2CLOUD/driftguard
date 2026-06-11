@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { withSentryConfig } = require("@sentry/nextjs");
+
 /** @type {import('next').NextConfig} */
 // Dev-only allowance so impeccable live mode can load.
 const __impeccableLiveDev =
@@ -57,11 +60,7 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
-
-const { withSentryConfig } = require("@sentry/nextjs");
-
-module.exports = withSentryConfig(module.exports, {
+module.exports = withSentryConfig(nextConfig, {
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
   authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -70,4 +69,8 @@ module.exports = withSentryConfig(module.exports, {
   widenClientFileUpload: true,
   disableLogger: true,
   tunnelRoute: "/monitoring",
+  // Disable server-side auto-wrapping: causes CJS identifier conflicts (e.g. duplicate
+  // 'RepoToggle' binding) in Sentry's wrapping loader for Next.js server components.
+  autoInstrumentServerFunctions: false,
+  autoInstrumentMiddleware: false,
 });
