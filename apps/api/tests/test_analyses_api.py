@@ -79,9 +79,7 @@ def _cleanup() -> None:
 class TestListAnalyses:
     def _mock_list(self, rows: list) -> AsyncMock:
         mock = AsyncMock()
-        mock.execute = AsyncMock(
-            return_value=MagicMock(all=MagicMock(return_value=rows))
-        )
+        mock.execute = AsyncMock(return_value=MagicMock(all=MagicMock(return_value=rows)))
         return mock
 
     def test_empty_returns_empty_list(self):
@@ -124,9 +122,7 @@ class TestGetAnalysis:
         mock.get = AsyncMock(side_effect=[analysis, pr, repo])
         mock.execute = AsyncMock(
             return_value=MagicMock(
-                scalars=MagicMock(
-                    return_value=MagicMock(all=MagicMock(return_value=findings or []))
-                )
+                scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=findings or [])))
             )
         )
         return mock

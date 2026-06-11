@@ -38,11 +38,7 @@ def _cleanup() -> None:
 def _mock_session(repos: list | None = None, get_return=None) -> AsyncMock:
     mock = AsyncMock()
     # list_repos iterates result.scalars() directly (no .all()), so scalars() must return an iterable
-    mock.execute = AsyncMock(
-        return_value=MagicMock(
-            scalars=MagicMock(return_value=repos or [])
-        )
-    )
+    mock.execute = AsyncMock(return_value=MagicMock(scalars=MagicMock(return_value=repos or [])))
     mock.get = AsyncMock(return_value=get_return)
     mock.commit = AsyncMock()
     return mock
