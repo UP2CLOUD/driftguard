@@ -212,7 +212,9 @@
     "manualScan": "मैनुअल स्कैन",
     "noAnalysesTrigger": "पहला विश्लेषण शुरू करने के लिए इस रिपॉज़िटरी में एक Terraform pull request खोलें।",
     "defaultBranch": "डिफ़ॉल्ट शाखा:",
-    "connected": "जुड़ा हुआ"
+    "connected": "जुड़ा हुआ",
+    "never": "कभी नहीं",
+    "viewLatest": "देखें →"
   },
   "landing": {
     "ctaTitle": "अपने क्लाउड पर नियंत्रण वापस पाएं।",

@@ -212,7 +212,9 @@
     "manualScan": "فحص يدوي",
     "noAnalysesTrigger": "افتح طلب سحب Terraform في هذا المستودع لبدء أول تحليل.",
     "defaultBranch": "الفرع الافتراضي:",
-    "connected": "متصل"
+    "connected": "متصل",
+    "never": "أبدًا",
+    "viewLatest": "عرض →"
   },
   "landing": {
     "ctaTitle": "استعد السيطرة على بنيتك السحابية.",

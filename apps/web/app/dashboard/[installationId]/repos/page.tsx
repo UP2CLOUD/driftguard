@@ -183,7 +183,7 @@ export default async function ReposPage({
 
                   {/* Last analyzed */}
                   <div className="hidden sm:block font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-                    {lastDate ?? "Never"}
+                    {lastDate ?? t("repos.never")}
                   </div>
 
                   {/* View latest */}
@@ -193,7 +193,7 @@ export default async function ReposPage({
                         href={`/dashboard/${installationId}/analyses/${last.id || last.analysis_id}`}
                         className="font-mono text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
                       >
-                        View →
+                        {t("repos.viewLatest")}
                       </Link>
                     ) : (
                       <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">—</span>

@@ -212,7 +212,9 @@
     "manualScan": "手动扫描",
     "noAnalysesTrigger": "在此仓库中打开 Terraform pull request 以触发首次分析。",
     "defaultBranch": "默认分支：",
-    "connected": "已连接"
+    "connected": "已连接",
+    "never": "从未",
+    "viewLatest": "查看 →"
   },
   "landing": {
     "ctaTitle": "重新掌控您的云基础设施。",

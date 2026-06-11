@@ -179,7 +179,9 @@
     "manualScan": "Manual scan",
     "noAnalysesTrigger": "Open a Terraform pull request in this repository to trigger the first analysis.",
     "defaultBranch": "default branch:",
-    "connected": "Connected"
+    "connected": "Connected",
+    "never": "Never",
+    "viewLatest": "View →"
   },
   "settings": {
     "title": "Settings",

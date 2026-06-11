@@ -13,7 +13,7 @@ import { beGet } from "@/lib/backend";
 
 async function fetchOpenIncidents(installationId: string): Promise<number> {
   const data = await beGet<unknown[]>(
-    `/api/v1/incidents?installation_id=${installationId}&status=open&limit=1`,
+    `/api/v1/incidents?installation_id=${installationId}&status=open&limit=100`,
     { revalidate: 30, timeout: 2000 },
   );
   return Array.isArray(data) ? data.length : 0;
