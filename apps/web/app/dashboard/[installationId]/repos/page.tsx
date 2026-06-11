@@ -9,7 +9,6 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
 import { formatDate } from "@/lib/format-date";
-import { RepoToggle } from "@/components/RepoToggle";
 
 type PlanData = {
   is_premium: boolean;

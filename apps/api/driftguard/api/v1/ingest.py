@@ -123,6 +123,7 @@ async def ingest_event(
     org = org_result.scalar_one_or_none()
     if not org:
         from fastapi import HTTPException
+
         raise HTTPException(status_code=404, detail=f"Installation {body.installation_id} not registered")
 
     # 2. Resolve optional repo

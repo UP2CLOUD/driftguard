@@ -49,9 +49,7 @@ def _mock_list(org=None, embeddings: list | None = None) -> AsyncMock:
     """Mock for GET /memory — two execute calls: org lookup + embeddings list."""
     mock = AsyncMock()
     org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
-    rows_result = MagicMock(
-        scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=embeddings or [])))
-    )
+    rows_result = MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=embeddings or []))))
     mock.execute = AsyncMock(side_effect=[org_result, rows_result])
     return mock
 
@@ -126,9 +124,7 @@ class TestListMemory:
 class TestMemoryStats:
     def test_no_org_returns_zero_stats(self):
         mock = AsyncMock()
-        mock.execute = AsyncMock(
-            return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None))
-        )
+        mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None)))
         _override(mock)
         try:
             r = TestClient(app).get("/api/v1/memory/stats?installation_id=9999", headers=AUTH)
@@ -176,9 +172,7 @@ class TestMemoryStats:
 class TestMemoryRecall:
     def test_no_org_returns_empty(self):
         mock = AsyncMock()
-        mock.execute = AsyncMock(
-            return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None))
-        )
+        mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None)))
         _override(mock)
         try:
             r = TestClient(app).post(
