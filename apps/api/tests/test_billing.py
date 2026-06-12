@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from driftguard.core.config import settings
 from driftguard.core.db import get_db
-from driftguard.db.models import Base, Organization
+from driftguard.db.models import Base, Organization, Repository
 from driftguard.main import app
 from driftguard.services.billing import (
     apply_subscription_event,
@@ -428,3 +428,115 @@ async def test_get_plan_requires_auth(plan_api_db):
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         r = await client.get("/api/v1/billing/plan?installation_id=1")
     assert r.status_code == 401
+
+
+# ── Downgrade auto-disable integration ───────────────────────────────────────
+
+
+def _make_repo(org_id: str, enabled: bool = True) -> Repository:
+    from uuid import uuid4
+
+    return Repository(
+        id=str(uuid4()),
+        org_id=org_id,
+        github_repo_id=int(uuid4().int % 10**9),
+        full_name=f"org/repo-{uuid4().hex[:6]}",
+        enabled=enabled,
+    )
+
+
+@pytest.mark.asyncio
+async def test_downgrade_disables_excess_repos(db, stripe_prices, monkeypatch):
+    """Subscription deletion triggers auto_disable_excess_repos for the downgraded org."""
+    monkeypatch.setattr(settings, "free_repository_limit", 2)
+
+    org = Organization(github_installation_id=8001, plan="team", stripe_customer_id="cus_down")
+    db.add(org)
+    await db.flush()
+
+    # Add 4 enabled repos — 2 over the free limit
+    for _ in range(4):
+        db.add(_make_repo(org.id, enabled=True))
+    await db.commit()
+
+    event = {
+        "type": "customer.subscription.deleted",
+        "data": {"object": {"customer": "cus_down", "status": "canceled"}},
+    }
+    await apply_subscription_event(db, event)
+
+    # Org should be downgraded
+    refreshed = (await db.execute(select(Organization).where(Organization.id == org.id))).scalar_one()
+    assert refreshed.plan == "free"
+
+    # Only 2 repos should remain enabled
+    active = (
+        await db.execute(
+            select(Repository).where(Repository.org_id == org.id, Repository.enabled.is_(True))
+        )
+    ).scalars().all()
+    assert len(active) == 2
+
+
+@pytest.mark.asyncio
+async def test_downgrade_within_limit_leaves_repos_untouched(db, stripe_prices, monkeypatch):
+    """When premium org has ≤ free_limit repos, none are disabled on downgrade."""
+    monkeypatch.setattr(settings, "free_repository_limit", 3)
+
+    org = Organization(github_installation_id=8002, plan="pro", stripe_customer_id="cus_small")
+    db.add(org)
+    await db.flush()
+
+    for _ in range(2):
+        db.add(_make_repo(org.id, enabled=True))
+    await db.commit()
+
+    await apply_subscription_event(
+        db,
+        {
+            "type": "customer.subscription.deleted",
+            "data": {"object": {"customer": "cus_small", "status": "canceled"}},
+        },
+    )
+
+    active = (
+        await db.execute(
+            select(Repository).where(Repository.org_id == org.id, Repository.enabled.is_(True))
+        )
+    ).scalars().all()
+    assert len(active) == 2  # unchanged
+
+
+@pytest.mark.asyncio
+async def test_updated_past_due_disables_excess_repos(db, stripe_prices, monkeypatch):
+    """subscription.updated with past_due status → downgrade triggers auto-disable."""
+    monkeypatch.setattr(settings, "free_repository_limit", 1)
+
+    org = Organization(github_installation_id=8003, plan="team", stripe_customer_id="cus_pd")
+    db.add(org)
+    await db.flush()
+
+    for _ in range(3):
+        db.add(_make_repo(org.id, enabled=True))
+    await db.commit()
+
+    await apply_subscription_event(
+        db,
+        {
+            "type": "customer.subscription.updated",
+            "data": {
+                "object": {
+                    "customer": "cus_pd",
+                    "status": "past_due",
+                    "items": {"data": [{"price": {"id": "price_team_xyz"}}]},
+                }
+            },
+        },
+    )
+
+    active = (
+        await db.execute(
+            select(Repository).where(Repository.org_id == org.id, Repository.enabled.is_(True))
+        )
+    ).scalars().all()
+    assert len(active) == 1
