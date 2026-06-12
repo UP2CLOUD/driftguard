@@ -149,9 +149,10 @@ def send_notification(*, analysis_id: str, repo_full_name: str, pr_number: int) 
 
 
 async def _send_notification_async(analysis_id: str, repo_full_name: str, pr_number: int) -> None:
+    from sqlalchemy import func, select
 
     from driftguard.core.db import SessionLocal
-    from driftguard.db.models import Analysis, Organization, PullRequest, Repository
+    from driftguard.db.models import Analysis, Finding, Organization, PullRequest, Repository
     from driftguard.services.email import send_review_complete
 
     async with SessionLocal() as session:
@@ -171,17 +172,11 @@ async def _send_notification_async(analysis_id: str, repo_full_name: str, pr_num
         if not org or not getattr(org, "contact_email", None):
             return
 
-        findings_count = len(
-            (
-                await session.execute(
-                    __import__("sqlalchemy")
-                    .select(__import__("driftguard.db.models", fromlist=["Finding"]).Finding)
-                    .where(__import__("driftguard.db.models", fromlist=["Finding"]).Finding.analysis_id == analysis_id)
-                )
+        findings_count = (
+            await session.execute(
+                select(func.count()).select_from(Finding).where(Finding.analysis_id == analysis_id)
             )
-            .scalars()
-            .all()
-        )
+        ).scalar_one()
 
         await send_review_complete(
             to=org.contact_email,
