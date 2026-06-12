@@ -117,6 +117,9 @@ async def _store_embedding_async(analysis_id: str) -> None:
             default=None,
         )
 
+        risk = analysis.risk_score or 0
+        blast = "high" if risk >= 70 else "medium" if risk >= 40 else "low"
+
         ie = IncidentEmbedding(
             id=str(uuid.uuid4()),
             org_id=repo.org_id,
@@ -125,7 +128,8 @@ async def _store_embedding_async(analysis_id: str) -> None:
             pr_number=pr.github_pr_number,
             intent_text=text,
             severity=top_sev,
-            outcome="blocked" if analysis.risk_score and analysis.risk_score > 70 else "allowed",
+            outcome="blocked" if risk > 70 else "allowed",
+            blast_radius=blast,
         )
         session.add(ie)
         await session.flush()
