@@ -18,6 +18,7 @@ async def list_events(
     event_type: str | None = Query(None),
     severity: str | None = Query(None),
     limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
 ) -> list[dict]:
     try:
@@ -30,7 +31,11 @@ async def list_events(
         return []
 
     stmt = (
-        select(RuntimeEvent).where(RuntimeEvent.org_id == org.id).order_by(RuntimeEvent.created_at.desc()).limit(limit)
+        select(RuntimeEvent)
+        .where(RuntimeEvent.org_id == org.id)
+        .order_by(RuntimeEvent.created_at.desc())
+        .limit(limit)
+        .offset(offset)
     )
     if event_type:
         stmt = stmt.where(RuntimeEvent.event_type == event_type)

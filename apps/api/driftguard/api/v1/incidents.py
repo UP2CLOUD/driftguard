@@ -35,6 +35,7 @@ async def list_incidents(
     status: str | None = Query(None),
     severity: str | None = Query(None),
     limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
 ) -> list[dict]:
     org = (
@@ -48,6 +49,7 @@ async def list_incidents(
         .where(DriftIncident.org_id == org.id)
         .order_by(DriftIncident.last_seen_at.desc().nulls_last())
         .limit(limit)
+        .offset(offset)
     )
     if status:
         stmt = stmt.where(DriftIncident.status == status)
