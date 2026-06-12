@@ -102,9 +102,9 @@ class TestAuditLog:
 
     def test_returns_empty_list(self):
         mock = AsyncMock()
-        result = MagicMock()
-        result.fetchall.return_value = []
-        mock.execute = AsyncMock(return_value=result)
+        mock.execute = AsyncMock(
+            return_value=MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[]))))
+        )
         _override(mock)
         try:
             r = TestClient(app).get("/api/v1/orgs/org-1/audit-log", headers=AUTH)
@@ -115,9 +115,10 @@ class TestAuditLog:
 
     def test_returns_entries(self):
         mock = AsyncMock()
-        result = MagicMock()
-        result.fetchall.return_value = [_audit_row("a1", "alice", "analysis_complete")]
-        mock.execute = AsyncMock(return_value=result)
+        rows = [_audit_row("a1", "alice", "analysis_complete")]
+        mock.execute = AsyncMock(
+            return_value=MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=rows))))
+        )
         _override(mock)
         try:
             r = TestClient(app).get("/api/v1/orgs/org-1/audit-log?limit=10", headers=AUTH)

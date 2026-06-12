@@ -8,7 +8,7 @@ from driftguard.api.deps import require_internal_auth
 from driftguard.core.config import settings
 from driftguard.core.db import get_db
 from driftguard.core.logging import log
-from driftguard.db.models import Analysis, Organization, PullRequest, Repository
+from driftguard.db.models import Analysis, AuditLog, Organization, PullRequest, Repository
 from driftguard.integrations.github import _app_jwt
 from driftguard.services.onboarding import upsert_installation
 
@@ -217,20 +217,18 @@ async def list_audit_log(
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
     """Return the last N audit records for an org. Used for DORA/NIS2 evidence export."""
-    from sqlalchemy import text
-
     rows = (
-        await db.execute(
-            text("""
-                SELECT id, actor, action, target, payload, created_at
-                FROM audit_log
-                WHERE org_id = :org_id
-                ORDER BY created_at DESC
-                LIMIT :limit
-            """),
-            {"org_id": org_id, "limit": min(limit, 500)},
+        (
+            await db.execute(
+                select(AuditLog)
+                .where(AuditLog.org_id == org_id)
+                .order_by(AuditLog.created_at.desc())
+                .limit(min(limit, 500))
+            )
         )
-    ).fetchall()
+        .scalars()
+        .all()
+    )
 
     return [
         {
