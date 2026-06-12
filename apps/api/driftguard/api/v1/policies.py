@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
-from sqlalchemy import desc, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.core.db import get_db
@@ -50,7 +50,7 @@ async def list_policies(
     if not org:
         return []
 
-    stmt = select(PolicyRule).where(PolicyRule.org_id == org.id).order_by(desc(PolicyRule.created_at))
+    stmt = select(PolicyRule).where(PolicyRule.org_id == org.id).order_by(PolicyRule.created_at.desc())
     if enabled_only:
         stmt = stmt.where(PolicyRule.enabled.is_(True))
 
