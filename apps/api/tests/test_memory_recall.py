@@ -2,18 +2,17 @@
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 from driftguard.ai.findings import Finding
 from driftguard.db.models import IncidentEmbedding, Organization
 from driftguard.services.memory_recall import (
-    _SIMILARITY_THRESHOLD,
     format_recall_section,
     recall_similar,
     store_memory,
 )
-
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 

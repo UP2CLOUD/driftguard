@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import tempfile
 from pathlib import Path
 
@@ -14,7 +13,6 @@ from driftguard.services.storage import (
     evidence_key,
     plan_key,
 )
-
 
 # ── plan_key ──────────────────────────────────────────────────────────────────
 

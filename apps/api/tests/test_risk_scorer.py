@@ -2,17 +2,12 @@
 
 from __future__ import annotations
 
-import pytest
-
 from driftguard.events.schemas import ChangeAction, ResourceChange, Severity
 from driftguard.services.terraform.risk_scorer import (
-    RiskResult,
-    ScoredChange,
     _env_multiplier,
     _severity_from_score,
     score,
 )
-
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 

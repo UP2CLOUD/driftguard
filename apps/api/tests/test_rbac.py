@@ -8,15 +8,12 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from driftguard.middleware.rbac import (
-    Principal,
     Role,
     _has_role,
     _resolve_api_token,
     _resolve_jwt,
     generate_api_token,
-    get_current_principal,
 )
-
 
 # ── _has_role() ───────────────────────────────────────────────────────────────
 
@@ -148,8 +145,9 @@ class TestResolveJwt:
 
     @pytest.mark.asyncio
     async def test_expired_jwt_returns_none(self):
-        import jwt as pyjwt
         from unittest.mock import patch
+
+        import jwt as pyjwt
 
         expired = pyjwt.encode(
             {"sub": "user-1", "org_id": "org-1", "role": "org:member", "exp": 1},
@@ -164,9 +162,10 @@ class TestResolveJwt:
 
     @pytest.mark.asyncio
     async def test_valid_jwt_returns_principal(self):
-        import jwt as pyjwt
-        from datetime import datetime, timedelta, UTC
+        from datetime import UTC, datetime, timedelta
         from unittest.mock import patch
+
+        import jwt as pyjwt
 
         payload = {
             "sub": "user-abc",

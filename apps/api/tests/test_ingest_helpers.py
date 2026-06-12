@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from driftguard.api.v1.ingest import (
     _auto_fix_hint,
     _fingerprint,
@@ -12,7 +10,6 @@ from driftguard.api.v1.ingest import (
     _root_cause_hint,
     _title_from,
 )
-
 
 # ── _fingerprint ──────────────────────────────────────────────────────────────
 

@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import math
 
-import pytest
-
 from driftguard.services.embeddings import (
     EMBED_DIM,
     _dev_embed,
@@ -14,7 +12,6 @@ from driftguard.services.embeddings import (
     intent_text,
     vec_to_pg,
 )
-
 
 # ── _dev_embed ─────────────────────────────────────────────────────────────────
 

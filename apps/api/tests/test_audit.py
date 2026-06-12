@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from unittest.mock import AsyncMock, MagicMock, patch
 
 from driftguard.db.models import AuditLog, Base
 from driftguard.services.audit import record

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import tempfile
 from pathlib import Path
 
@@ -15,7 +14,6 @@ from driftguard.services.scanner.engine import (
     Severity,
     scan_directory,
 )
-
 
 # ── ScanResult properties ─────────────────────────────────────────────────────
 

@@ -5,13 +5,13 @@ Tests cover _matches() (pure function) and apply_policies() (async DB call).
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 from driftguard.ai.findings import Finding
 from driftguard.db.models import Organization, PolicyRule
 from driftguard.services.policy_engine import _matches, apply_policies
-
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
