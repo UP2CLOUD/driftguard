@@ -7,6 +7,7 @@ from driftguard.core.config import settings
 from driftguard.db.models import Base, MonthlyUsage, Organization, Repository
 from driftguard.services.quota import (
     assert_can_enable_repo,
+    auto_disable_excess_repos,
     get_active_repo_count,
     get_monthly_pr_count,
     is_premium,
@@ -258,3 +259,81 @@ async def test_scan_run_new_month_resets(db, monkeypatch):
     # get_monthly_pr_count for current month (different from July) should be 0
     count = await get_monthly_pr_count(db, org.id, "2026-08")
     assert count == 0
+
+
+# ── auto_disable_excess_repos ─────────────────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_auto_disable_within_limit_does_nothing(db, monkeypatch):
+    """When active repos <= free limit, nothing gets disabled."""
+    monkeypatch.setattr(settings, "free_repository_limit", 3)
+    org = make_org()
+    db.add(org)
+    await db.flush()
+
+    for _ in range(2):
+        db.add(make_repo(org_id=org.id, enabled=True))
+    await db.commit()
+
+    disabled = await auto_disable_excess_repos(db, org.id)
+    assert disabled == 0
+
+    count = await get_active_repo_count(db, org.id)
+    assert count == 2
+
+
+@pytest.mark.asyncio
+async def test_auto_disable_excess_repos_disables_newest(db, monkeypatch):
+    """Excess repos (beyond free limit) are disabled; oldest are kept enabled."""
+    monkeypatch.setattr(settings, "free_repository_limit", 2)
+    org = make_org()
+    db.add(org)
+    await db.flush()
+
+    # Add 4 enabled repos
+    repos = [make_repo(org_id=org.id, enabled=True) for _ in range(4)]
+    for r in repos:
+        db.add(r)
+    await db.commit()
+
+    disabled = await auto_disable_excess_repos(db, org.id)
+    assert disabled == 2
+
+    active = await get_active_repo_count(db, org.id)
+    assert active == 2
+
+
+@pytest.mark.asyncio
+async def test_auto_disable_already_disabled_repos_excluded(db, monkeypatch):
+    """Disabled repos don't count toward the limit and aren't touched."""
+    monkeypatch.setattr(settings, "free_repository_limit", 2)
+    org = make_org()
+    db.add(org)
+    await db.flush()
+
+    db.add(make_repo(org_id=org.id, enabled=True))
+    db.add(make_repo(org_id=org.id, enabled=True))
+    db.add(make_repo(org_id=org.id, enabled=False))
+    await db.commit()
+
+    disabled = await auto_disable_excess_repos(db, org.id)
+    assert disabled == 0
+
+    active = await get_active_repo_count(db, org.id)
+    assert active == 2
+
+
+@pytest.mark.asyncio
+async def test_auto_disable_exactly_at_limit_does_nothing(db, monkeypatch):
+    monkeypatch.setattr(settings, "free_repository_limit", 3)
+    org = make_org()
+    db.add(org)
+    await db.flush()
+
+    for _ in range(3):
+        db.add(make_repo(org_id=org.id, enabled=True))
+    await db.commit()
+
+    disabled = await auto_disable_excess_repos(db, org.id)
+    assert disabled == 0
