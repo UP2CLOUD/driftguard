@@ -204,6 +204,18 @@ async def update_aws_settings(
     settings_patch["state_key"] = body.state_key
 
     org.settings = settings_patch
+    db.add(
+        AuditLog(
+            org_id=org_id,
+            actor="api",
+            action="aws_settings.updated",
+            target=org_id,
+            payload={
+                "aws_role_arn_set": bool(settings_patch.get("aws_role_arn")),
+                "state_bucket": settings_patch.get("state_bucket"),
+            },
+        )
+    )
     await db.commit()
 
     return {"status": "ok", "aws_role_arn": settings_patch.get("aws_role_arn")}
