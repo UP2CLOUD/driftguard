@@ -91,6 +91,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Verify required secrets and variables
+        env:
+          GCP_WIF_PROVIDER: ${{ secrets.GCP_WIF_PROVIDER }}
+          GCP_DEPLOYER_SA: ${{ secrets.GCP_DEPLOYER_SA }}
+        run: |
+          missing=()
+          [ -z "$GCP_WIF_PROVIDER" ] && missing+=("secret GCP_WIF_PROVIDER (Workload Identity Federation provider)")
+          [ -z "$GCP_DEPLOYER_SA" ] && missing+=("secret GCP_DEPLOYER_SA (deployer service account email)")
+          [ -z "$GCP_PROJECT" ] && missing+=("variable GCP_PROJECT (GCP project ID)")
+          [ -z "$REGION" ] && missing+=("variable GCP_REGION (Artifact Registry region)")
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::Deploy blocked — required GitHub configuration is missing:"
+            for item in "${missing[@]}"; do
+              echo "::error::  - $item"
+            done
+            echo "::error::Set these in: Settings → Secrets and variables → Actions"
+            exit 1
+          fi
       - uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed # v2
         with:
           workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
