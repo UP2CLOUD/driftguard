@@ -75,6 +75,13 @@ async def ready() -> dict:
         checks["redis"] = f"error: {exc!s:.80}"
         overall = "degraded"
 
+    # Integration configuration visibility (booleans only — never degrades
+    # readiness, since some deployments intentionally omit integrations)
+    missing_gh = settings.missing_github_config()
+    checks["github_app"] = "ok" if not missing_gh else f"not_configured: {', '.join(missing_gh)}"
+    checks["stripe"] = "ok" if settings.stripe_webhook_secret else "not_configured"
+    checks["ai_review"] = "ok" if settings.anthropic_api_key else "not_configured"
+
     from fastapi import Response
 
     content = {"status": overall, "checks": checks}

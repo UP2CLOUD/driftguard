@@ -17,6 +17,17 @@ async def lifespan(app: FastAPI):
 
     init_sentry()
 
+    if settings.environment == "prod":
+        missing = settings.missing_github_config()
+        if missing:
+            from driftguard.core.logging import log
+
+            log.error(
+                "github_app_config_missing",
+                missing=missing,
+                impact="GitHub webhooks will be rejected (401) and PR analyses cannot run",
+            )
+
     if settings.environment == "dev":
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
