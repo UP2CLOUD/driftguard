@@ -75,6 +75,38 @@ class TestListRepos:
         r = TestClient(app).get("/api/v1/repos")
         assert r.status_code == 401
 
+    def test_installation_id_filter_unknown_org_returns_empty(self):
+        """installation_id with no matching org → empty list, not 404."""
+        mock = AsyncMock()
+        org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=None))
+        mock.execute = AsyncMock(return_value=org_result)
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/repos?installation_id=9999", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json() == []
+        finally:
+            _cleanup()
+
+    def test_installation_id_filter_returns_all_repos_including_disabled(self):
+        """installation_id filter returns all repos (enabled + disabled) for the org."""
+        org = Organization(id="org-1", github_installation_id=42, plan="free")
+        repos = [_repo("r1", enabled=True), _repo("r2", enabled=False)]
+        mock = AsyncMock()
+        org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+        repo_result = MagicMock(scalars=MagicMock(return_value=repos))
+        mock.execute = AsyncMock(side_effect=[org_result, repo_result])
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/repos?installation_id=42", headers=AUTH)
+            assert r.status_code == 200
+            data = r.json()
+            assert len(data) == 2
+            ids = {d["id"] for d in data}
+            assert ids == {"r1", "r2"}
+        finally:
+            _cleanup()
+
 
 # ── PATCH /repos/{repo_id} ────────────────────────────────────────────────────
 
