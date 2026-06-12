@@ -135,6 +135,48 @@ async def test_unrelated_event_ignored(db):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "stripe_status, expected_sub_status",
+    [
+        ("incomplete", "premium_incomplete"),
+        ("incomplete_expired", "free"),
+        ("unpaid", "premium_past_due"),
+        ("canceled", "premium_canceled"),
+        ("paused", "premium_past_due"),
+        ("unknown_future_status", "free"),  # fallback to "free" for unknown values
+    ],
+)
+async def test_subscription_updated_non_active_statuses(db, stripe_prices, stripe_status, expected_sub_status):
+    """Non-active/trialing statuses downgrade plan to free with correct subscription_status."""
+    from uuid import uuid4
+
+    iid = int(uuid4().int % 10**8) + 9000
+    cus = f"cus_{stripe_status[:6]}"
+    org = Organization(github_installation_id=iid, plan="team", stripe_customer_id=cus)
+    db.add(org)
+    await db.commit()
+
+    event = {
+        "type": "customer.subscription.updated",
+        "data": {
+            "object": {
+                "customer": cus,
+                "status": stripe_status,
+                "items": {"data": [{"price": {"id": "price_team_xyz"}}]},
+            }
+        },
+    }
+    await apply_subscription_event(db, event)
+
+    result = await db.execute(select(Organization).where(Organization.id == org.id))
+    refreshed = result.scalar_one()
+    assert refreshed.plan == "free", f"status={stripe_status}: expected plan=free, got {refreshed.plan}"
+    assert refreshed.subscription_status == expected_sub_status, (
+        f"status={stripe_status}: expected sub_status={expected_sub_status}, got {refreshed.subscription_status}"
+    )
+
+
+@pytest.mark.asyncio
 async def test_subscription_updated_changes_plan(db, stripe_prices):
     org = Organization(github_installation_id=5001, plan="pro", stripe_customer_id="cus_upd")
     db.add(org)
