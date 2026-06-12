@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.core.db import get_db
 from driftguard.core.rate_limit import rate_limit
-from driftguard.db.models import Organization, PolicyRule
+from driftguard.db.models import AuditLog, Organization, PolicyRule
 
 router = APIRouter(prefix="/policies", tags=["policies"])
 
@@ -85,6 +85,16 @@ async def create_policy(
         actions=body.actions,
     )
     db.add(rule)
+    await db.flush()
+    db.add(
+        AuditLog(
+            org_id=org.id,
+            actor="api",
+            action="policy.created",
+            target=rule.id,
+            payload={"name": rule.name, "rule_type": rule.rule_type, "severity": rule.severity},
+        )
+    )
     await db.commit()
     await db.refresh(rule)
     return _ser(rule)
@@ -110,6 +120,15 @@ async def patch_policy(
             setattr(rule, field, val)
 
     rule.updated_at = datetime.now(UTC)
+    db.add(
+        AuditLog(
+            org_id=rule.org_id,
+            actor="api",
+            action="policy.updated",
+            target=rule.id,
+            payload=body.model_dump(exclude_none=True),
+        )
+    )
     await db.commit()
     return _ser(rule)
 
@@ -123,6 +142,9 @@ async def delete_policy(
     rule = await db.get(PolicyRule, rule_id)
     if not rule:
         raise HTTPException(404, "policy rule not found")
+    db.add(
+        AuditLog(org_id=rule.org_id, actor="api", action="policy.deleted", target=rule_id, payload={"name": rule.name})
+    )
     await db.delete(rule)
     await db.commit()
 
