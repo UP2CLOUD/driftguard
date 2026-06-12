@@ -134,6 +134,78 @@ async def test_unrelated_event_ignored(db):
     await apply_subscription_event(db, event)  # no-op, no raise
 
 
+@pytest.mark.asyncio
+async def test_subscription_updated_changes_plan(db, stripe_prices):
+    org = Organization(github_installation_id=5001, plan="pro", stripe_customer_id="cus_upd")
+    db.add(org)
+    await db.commit()
+
+    event = {
+        "type": "customer.subscription.updated",
+        "data": {
+            "object": {
+                "customer": "cus_upd",
+                "status": "active",
+                "items": {"data": [{"price": {"id": "price_team_xyz"}}]},
+            }
+        },
+    }
+    await apply_subscription_event(db, event)
+
+    result = await db.execute(select(Organization).where(Organization.id == org.id))
+    refreshed = result.scalar_one()
+    assert refreshed.plan == "team"
+    assert refreshed.subscription_status == "premium_active"
+
+
+@pytest.mark.asyncio
+async def test_subscription_updated_past_due_keeps_plan_free(db, stripe_prices):
+    """past_due status → plan reverts to free, subscription_status stays non-premium."""
+    org = Organization(github_installation_id=5002, plan="pro", stripe_customer_id="cus_pastdue")
+    db.add(org)
+    await db.commit()
+
+    event = {
+        "type": "customer.subscription.updated",
+        "data": {
+            "object": {
+                "customer": "cus_pastdue",
+                "status": "past_due",
+                "items": {"data": [{"price": {"id": "price_pro_xyz"}}]},
+            }
+        },
+    }
+    await apply_subscription_event(db, event)
+
+    result = await db.execute(select(Organization).where(Organization.id == org.id))
+    refreshed = result.scalar_one()
+    assert refreshed.plan == "free"
+
+
+@pytest.mark.asyncio
+async def test_subscription_updated_trialing_sets_pro(db, stripe_prices):
+    org = Organization(github_installation_id=5003, plan="free", stripe_customer_id="cus_trial")
+    db.add(org)
+    await db.commit()
+
+    event = {
+        "type": "customer.subscription.updated",
+        "data": {
+            "object": {
+                "customer": "cus_trial",
+                "status": "trialing",
+                "items": {"data": [{"price": {"id": "price_pro_xyz"}}]},
+            }
+        },
+    }
+    await apply_subscription_event(db, event)
+
+    result = await db.execute(select(Organization).where(Organization.id == org.id))
+    refreshed = result.scalar_one()
+    assert refreshed.plan == "pro"
+    assert refreshed.subscription_status == "premium_active"
+
+
 @pytest.fixture
 async def billing_api_db():
     engine = create_async_engine("sqlite+aiosqlite:///:memory:")
