@@ -68,6 +68,32 @@ async def test_remove_installation_disables_all(db):
 
 
 @pytest.mark.asyncio
+async def test_upsert_stores_account_metadata(db):
+    """Account metadata (login, avatar_url, type) stored in org.settings for by-user filtering."""
+    account = {"login": "acme-corp", "avatar_url": "https://example.com/avatar.png", "type": "Organization"}
+    org = await upsert_installation(
+        db,
+        installation_id=500,
+        repositories=[{"id": 1, "full_name": "acme-corp/infra"}],
+        account=account,
+    )
+    assert org.settings["account_login"] == "acme-corp"
+    assert org.settings["account_type"] == "Organization"
+    assert org.settings["account_avatar_url"] == "https://example.com/avatar.png"
+
+
+@pytest.mark.asyncio
+async def test_upsert_without_account_leaves_settings_empty(db):
+    org = await upsert_installation(
+        db,
+        installation_id=600,
+        repositories=[{"id": 1, "full_name": "acme/infra"}],
+        account=None,
+    )
+    assert not (org.settings or {}).get("account_login")
+
+
+@pytest.mark.asyncio
 async def test_remove_repositories_disables_subset(db):
     await upsert_installation(
         db,
