@@ -10,7 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.core.db import get_db
-from driftguard.db.models import DriftIncident, Organization
+from driftguard.db.models import AuditLog, DriftIncident, Organization
 
 router = APIRouter(prefix="/incidents", tags=["incidents"])
 
@@ -79,9 +79,20 @@ async def patch_incident(
     if body.status is not None:
         if body.status not in VALID_STATUSES:
             raise HTTPException(422, f"status must be one of: {VALID_STATUSES}")
+        prev_status = inc.status
         inc.status = body.status
         if body.status == "resolved" and not inc.resolved_at:
             inc.resolved_at = datetime.now(UTC)
+        if prev_status != body.status:
+            db.add(
+                AuditLog(
+                    org_id=inc.org_id,
+                    actor="api",
+                    action="incident.status_changed",
+                    target=incident_id,
+                    payload={"from": prev_status, "to": body.status, "title": inc.title},
+                )
+            )
     if body.severity is not None:
         if body.severity not in VALID_SEVERITIES:
             raise HTTPException(422, f"severity must be one of: {VALID_SEVERITIES}")
