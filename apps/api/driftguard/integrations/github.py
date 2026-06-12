@@ -45,8 +45,10 @@ async def post_pr_comment(token: str, repo_full_name: str, pr_number: int, body:
         r.raise_for_status()
 
 
-def tarball_url(repo_full_name: str, ref: str) -> str:
-    return f"{GITHUB_API}/repos/{repo_full_name}/tarball/{ref}"
+def tarball_url(repo_full_name: str, ref: str | None = None) -> str:
+    """Tarball URL; without a ref GitHub serves the repository's default branch."""
+    base = f"{GITHUB_API}/repos/{repo_full_name}/tarball"
+    return f"{base}/{ref}" if ref else base
 
 
 async def request_pr_review(token: str, repo_full_name: str, pr_number: int) -> None:

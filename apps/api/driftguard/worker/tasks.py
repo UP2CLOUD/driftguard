@@ -198,7 +198,7 @@ def run_manual_scan(
     *,
     installation_id: int,
     repo_full_name: str,
-    ref: str = "main",
+    ref: str | None = None,
 ) -> dict:
     """
     Download a GitHub repo tarball and run the static scanner on it.
@@ -233,15 +233,16 @@ def run_manual_scan(
             if not org:
                 return {"status": "error", "reason": "org_not_found"}
 
-            # Download tarball
+            # Download tarball (no ref = repository's default branch)
+            from driftguard.integrations.github import tarball_url
+
+            url = tarball_url(repo_full_name, ref)
             try:
-                from driftguard.integrations.github import installation_token, tarball_url
+                from driftguard.integrations.github import installation_token
 
                 token = await installation_token(installation_id)
-                url = tarball_url(repo_full_name, ref)
             except Exception:
-                # Fall back to public repo if no GitHub App configured
-                url = f"https://api.github.com/repos/{repo_full_name}/tarball/{ref}"
+                # Fall back to unauthenticated if no GitHub App configured
                 token = None
 
             headers = {"Accept": "application/vnd.github+json"}
@@ -268,12 +269,13 @@ def run_manual_scan(
 
                 result = await scan_directory(scan_root)
 
+            ref_label = ref or "default"
             analysis_id = await _persist_scan(
                 db=db,
                 org_id=org.id,
                 result=result,
-                source=f"{repo_full_name}@{ref}",
-                ref=ref,
+                source=f"{repo_full_name}@{ref_label}",
+                ref=ref_label,
             )
             return {
                 "status": "completed",

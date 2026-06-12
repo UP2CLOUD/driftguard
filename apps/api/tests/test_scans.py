@@ -178,6 +178,29 @@ class TestScanTrigger:
         assert r.status_code == 422
 
 
+# ── Default-branch handling ───────────────────────────────────────────────────
+
+
+class TestDefaultBranchHandling:
+    def test_tarball_url_with_ref(self):
+        from driftguard.integrations.github import tarball_url
+
+        assert tarball_url("acme/infra", "develop") == "https://api.github.com/repos/acme/infra/tarball/develop"
+
+    def test_tarball_url_without_ref_serves_default_branch(self):
+        from driftguard.integrations.github import tarball_url
+
+        # No ref → GitHub serves the repository's default branch (main, master, …)
+        assert tarball_url("acme/infra") == "https://api.github.com/repos/acme/infra/tarball"
+        assert tarball_url("acme/infra", None) == "https://api.github.com/repos/acme/infra/tarball"
+
+    def test_trigger_request_ref_defaults_to_none(self):
+        from driftguard.api.v1.scans import TriggerScanRequest
+
+        req = TriggerScanRequest(installation_id=1, repo_full_name="acme/infra")
+        assert req.ref is None
+
+
 # ── Quota enforcement on manual scans ─────────────────────────────────────────
 
 

@@ -95,7 +95,9 @@ class ScanResultOut(BaseModel):
 class TriggerScanRequest(BaseModel):
     installation_id: int
     repo_full_name: str
-    ref: str = "main"
+    # None = scan the repository's default branch (installation webhooks don't
+    # carry default_branch, so a hardcoded "main" 404s on master-default repos)
+    ref: str | None = None
 
 
 @router.post(
@@ -220,7 +222,7 @@ async def trigger_scan(
             return {
                 "status": "queued",
                 "task_id": task.id,
-                "message": f"Scan queued for {body.repo_full_name}@{body.ref}",
+                "message": f"Scan queued for {body.repo_full_name}@{body.ref or 'default'}",
             }
         except Exception as exc:
             log.warning("scan.trigger.failed", extra={"error": str(exc)})
@@ -249,7 +251,7 @@ async def _run_scan_inprocess(
     org_id: str,
     installation_id: int,
     repo_full_name: str,
-    ref: str,
+    ref: str | None,
 ) -> dict:
     import io
     import tarfile
@@ -258,15 +260,16 @@ async def _run_scan_inprocess(
 
     import httpx
 
+    from driftguard.integrations.github import tarball_url
     from driftguard.services.scanner.engine import scan_directory
 
+    url = tarball_url(repo_full_name, ref)
     try:
-        from driftguard.integrations.github import installation_token, tarball_url
+        from driftguard.integrations.github import installation_token
 
         token = await installation_token(installation_id)
-        url = tarball_url(repo_full_name, ref)
     except Exception:
-        url = f"https://api.github.com/repos/{repo_full_name}/tarball/{ref}"
+        # No GitHub App configured — fall back to unauthenticated (public repos)
         token = None
 
     headers = {"Accept": "application/vnd.github+json"}
@@ -276,7 +279,9 @@ async def _run_scan_inprocess(
     async with httpx.AsyncClient(timeout=60, follow_redirects=True) as client:
         resp = await client.get(url, headers=headers)
         if resp.status_code == 404:
-            raise HTTPException(404, f"Repository {repo_full_name}@{ref} not found or not accessible")
+            raise HTTPException(
+                404, f"Repository {repo_full_name}@{ref or 'default branch'} not found or not accessible"
+            )
         resp.raise_for_status()
         archive = resp.content
 
@@ -289,12 +294,13 @@ async def _run_scan_inprocess(
         scan_root = subdirs[0] if len(subdirs) == 1 else root
         result = await scan_directory(scan_root)
 
+    ref_label = ref or "default"
     analysis_id = await _persist_scan(
         db=db,
         org_id=org_id,
         result=result,
-        source=f"{repo_full_name}@{ref}",
-        ref=ref,
+        source=f"{repo_full_name}@{ref_label}",
+        ref=ref_label,
     )
     return {
         "status": "completed",
@@ -302,7 +308,7 @@ async def _run_scan_inprocess(
         "analysis_id": analysis_id,
         "risk_score": result.risk_score,
         "findings": len(result.findings),
-        "message": f"Scan completed for {repo_full_name}@{ref}",
+        "message": f"Scan completed for {repo_full_name}@{ref_label}",
     }
 
 
