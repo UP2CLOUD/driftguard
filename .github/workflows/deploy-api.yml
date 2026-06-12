@@ -93,12 +93,12 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: Verify required secrets and variables
         env:
-          GCP_WIF_PROVIDER: ${{ secrets.GCP_WIF_PROVIDER }}
-          GCP_DEPLOYER_SA: ${{ secrets.GCP_DEPLOYER_SA }}
+          GCP_WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+          GCP_DEPLOYER_SA: ${{ vars.GCP_DEPLOYER_SA }}
         run: |
           missing=()
-          [ -z "$GCP_WIF_PROVIDER" ] && missing+=("secret GCP_WIF_PROVIDER (Workload Identity Federation provider)")
-          [ -z "$GCP_DEPLOYER_SA" ] && missing+=("secret GCP_DEPLOYER_SA (deployer service account email)")
+          [ -z "$GCP_WIF_PROVIDER" ] && missing+=("variable GCP_WIF_PROVIDER (Workload Identity Federation provider)")
+          [ -z "$GCP_DEPLOYER_SA" ] && missing+=("variable GCP_DEPLOYER_SA (deployer service account email)")
           [ -z "$GCP_PROJECT" ] && missing+=("variable GCP_PROJECT (GCP project ID)")
           [ -z "$REGION" ] && missing+=("variable GCP_REGION (Artifact Registry region)")
           if [ ${#missing[@]} -gt 0 ]; then
