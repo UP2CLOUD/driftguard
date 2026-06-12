@@ -69,14 +69,10 @@ async def live_event_stream(
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         return
 
-    async with aioredis.from_url(settings.redis_url, decode_responses=True) as _:
-        from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-        from sqlalchemy.orm import sessionmaker as _sm
+    from driftguard.core.db import SessionLocal
 
-        engine = create_async_engine(settings.database_url, echo=False)
-        async_session = _sm(engine, class_=AsyncSession, expire_on_commit=False)
-        async with async_session() as db:
-            principal = await _resolve_api_token(token, db)
+    async with SessionLocal() as db:
+        principal = await _resolve_api_token(token, db)
 
     if principal is None or principal.org_id != org_id:
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
