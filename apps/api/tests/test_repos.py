@@ -108,9 +108,14 @@ class TestPatchRepo:
         finally:
             _cleanup()
 
-    def test_enable_repo(self):
+    def test_enable_repo_within_quota(self):
         repo = _repo(enabled=False)
-        _override(_mock_session(get_return=repo))
+        org = _free_org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(side_effect=[repo, org])
+        mock.execute = AsyncMock(return_value=MagicMock(scalar_one=MagicMock(return_value=0)))
+        mock.commit = AsyncMock()
+        _override(mock)
         try:
             r = TestClient(app).patch(
                 "/api/v1/repos/repo-1",
@@ -119,6 +124,24 @@ class TestPatchRepo:
             )
             assert r.status_code == 200
             assert r.json()["enabled"] is True
+        finally:
+            _cleanup()
+
+    def test_enable_repo_quota_exceeded_returns_402(self):
+        repo = _repo(enabled=False)
+        org = _free_org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(side_effect=[repo, org])
+        mock.execute = AsyncMock(return_value=MagicMock(scalar_one=MagicMock(return_value=3)))
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/repos/repo-1",
+                json={"enabled": True},
+                headers=AUTH,
+            )
+            assert r.status_code == 402
         finally:
             _cleanup()
 
