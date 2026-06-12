@@ -197,6 +197,7 @@ class TestRevokeToken:
         mock = AsyncMock()
         mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=tok)))
         mock.commit = AsyncMock()
+        mock.add = MagicMock()
         _override_db(mock)
         _override_principal(_admin_principal())
         try:

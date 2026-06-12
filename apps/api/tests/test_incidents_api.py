@@ -64,6 +64,7 @@ def _mock_get(incident=None) -> AsyncMock:
     mock = AsyncMock()
     mock.get = AsyncMock(return_value=incident)
     mock.commit = AsyncMock()
+    mock.add = MagicMock()
     return mock
 
 

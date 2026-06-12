@@ -347,6 +347,7 @@ class TestPatchOrgAws:
         mock = AsyncMock()
         mock.get = AsyncMock(return_value=org)
         mock.commit = AsyncMock()
+        mock.add = MagicMock()
         _override(mock)
         try:
             r = TestClient(app).patch(
@@ -372,6 +373,7 @@ class TestPatchOrgAws:
         mock = AsyncMock()
         mock.get = AsyncMock(return_value=org)
         mock.commit = AsyncMock()
+        mock.add = MagicMock()
         _override(mock)
         try:
             r = TestClient(app).patch(
@@ -399,6 +401,7 @@ class TestPatchOrgAws:
         mock = AsyncMock()
         mock.get = AsyncMock(return_value=org)
         mock.commit = AsyncMock()
+        mock.add = MagicMock()
         _override(mock)
         try:
             r = TestClient(app).patch(
