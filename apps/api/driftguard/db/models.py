@@ -309,3 +309,13 @@ class ProcessedStripeEvent(Base):
     event_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     event_type: Mapped[str] = mapped_column(String(64))
     processed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class ProcessedGithubDelivery(Base):
+    """Replay protection for GitHub webhook deliveries (X-GitHub-Delivery GUID)."""
+
+    __tablename__ = "processed_github_deliveries"
+
+    delivery_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    event_type: Mapped[str] = mapped_column(String(64))
+    processed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)

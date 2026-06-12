@@ -1,7 +1,9 @@
 import hashlib
 import hmac
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Request
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.core.config import settings
@@ -30,6 +32,39 @@ def _verify_signature(payload: bytes, signature: str | None) -> bool:
     return hmac.compare_digest(expected, signature)
 
 
+async def _claim_delivery(db: AsyncSession, delivery_id: str, event_type: str) -> bool:
+    """Replay protection: INSERT-first claim on the X-GitHub-Delivery GUID.
+
+    Returns False when this delivery was already processed (GitHub redelivery
+    or a replayed capture — the HMAC signature alone can't distinguish these).
+    Fails open on infrastructure errors so deliveries are never dropped.
+    """
+    try:
+        claimed = await db.execute(
+            text(
+                "INSERT INTO processed_github_deliveries (delivery_id, event_type) "
+                "VALUES (:id, :type) ON CONFLICT (delivery_id) DO NOTHING "
+                "RETURNING delivery_id"
+            ),
+            {"id": delivery_id[:64], "type": event_type[:64]},
+        )
+        is_new = claimed.scalar_one_or_none() is not None
+        if is_new:
+            await db.execute(
+                text("DELETE FROM processed_github_deliveries WHERE processed_at < :cutoff"),
+                {"cutoff": datetime.now(UTC) - timedelta(days=14)},
+            )
+            await db.commit()
+        return is_new
+    except Exception as exc:  # noqa: BLE001
+        log.warning("delivery_dedup_failed", error=str(exc))
+        try:
+            await db.rollback()
+        except Exception:  # noqa: S110
+            pass
+        return True
+
+
 @router.post("/github", dependencies=[WebhookRateLimit])
 async def github_webhook(
     request: Request,
@@ -37,10 +72,15 @@ async def github_webhook(
     db: AsyncSession = Depends(get_db),
     x_github_event: str = Header(...),
     x_hub_signature_256: str | None = Header(None),
+    x_github_delivery: str | None = Header(None),
 ):
     body = await request.body()
     if not _verify_signature(body, x_hub_signature_256):
         raise HTTPException(401, "invalid signature")
+
+    if x_github_delivery and not await _claim_delivery(db, x_github_delivery, x_github_event):
+        log.info("github_delivery_duplicate", delivery_id=x_github_delivery, gh_event=x_github_event)
+        return {"received": True, "duplicate": True}
 
     payload = await request.json()
     action = payload.get("action")

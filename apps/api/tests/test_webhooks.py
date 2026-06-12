@@ -330,3 +330,116 @@ async def test_unknown_event_type_is_ignored(monkeypatch):
         assert r.status_code == 200
     finally:
         _cleanup()
+
+
+# ── Replay protection (X-GitHub-Delivery) ─────────────────────────────────────
+
+
+def _pr_payload() -> dict:
+    return {
+        "action": "opened",
+        "installation": {"id": 123},
+        "repository": {"full_name": "acme/infra"},
+        "pull_request": {"number": 7, "head": {"sha": "abc123"}},
+    }
+
+
+async def _post_with_delivery(body: bytes, sig: str, event: str, delivery: str):
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        return await client.post(
+            "/api/v1/webhooks/github",
+            content=body,
+            headers={
+                "X-GitHub-Event": event,
+                "X-Hub-Signature-256": sig,
+                "X-GitHub-Delivery": delivery,
+                "Content-Type": "application/json",
+            },
+        )
+
+
+@pytest.mark.asyncio
+async def test_duplicate_delivery_is_skipped(monkeypatch):
+    """A replayed X-GitHub-Delivery GUID must not re-trigger processing."""
+    monkeypatch.setattr(settings, "github_webhook_secret", "test-secret")
+    # INSERT ... RETURNING yields no row → already claimed
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None)))
+    mock_session.commit = AsyncMock()
+    _db_override(mock_session)
+    body, sig, event = _signed_post(_pr_payload(), "pull_request")
+    try:
+        with patch("driftguard.api.v1.webhooks.enqueue_pr_analysis") as mock_enqueue:
+            r = await _post_with_delivery(body, sig, event, "guid-already-seen")
+        assert r.status_code == 200
+        assert r.json() == {"received": True, "duplicate": True}
+        mock_enqueue.assert_not_called()
+    finally:
+        _cleanup()
+
+
+@pytest.mark.asyncio
+async def test_new_delivery_is_processed(monkeypatch):
+    monkeypatch.setattr(settings, "github_webhook_secret", "test-secret")
+    # INSERT ... RETURNING yields the delivery id → freshly claimed
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock(
+        return_value=MagicMock(scalar_one_or_none=MagicMock(return_value="guid-new"))
+    )
+    mock_session.commit = AsyncMock()
+    _db_override(mock_session)
+    body, sig, event = _signed_post(_pr_payload(), "pull_request")
+    try:
+        with patch("driftguard.api.v1.webhooks.enqueue_pr_analysis") as mock_enqueue:
+            r = await _post_with_delivery(body, sig, event, "guid-new")
+        assert r.status_code == 200
+        assert r.json() == {"received": True}
+        mock_enqueue.assert_called_once()
+    finally:
+        _cleanup()
+
+
+@pytest.mark.asyncio
+async def test_delivery_dedup_error_fails_open(monkeypatch):
+    """Dedup infrastructure failure must not drop the delivery."""
+    monkeypatch.setattr(settings, "github_webhook_secret", "test-secret")
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock(side_effect=RuntimeError("table missing"))
+    mock_session.rollback = AsyncMock()
+    _db_override(mock_session)
+    body, sig, event = _signed_post(_pr_payload(), "pull_request")
+    try:
+        with patch("driftguard.api.v1.webhooks.enqueue_pr_analysis") as mock_enqueue:
+            r = await _post_with_delivery(body, sig, event, "guid-x")
+        assert r.status_code == 200
+        assert r.json() == {"received": True}
+        mock_enqueue.assert_called_once()
+    finally:
+        _cleanup()
+
+
+@pytest.mark.asyncio
+async def test_missing_delivery_header_skips_dedup(monkeypatch):
+    """No X-GitHub-Delivery header → no dedup query, event still processed."""
+    monkeypatch.setattr(settings, "github_webhook_secret", "test-secret")
+    mock_session = AsyncMock()
+    mock_session.execute = AsyncMock()
+    _db_override(mock_session)
+    body, sig, event = _signed_post(_pr_payload(), "pull_request")
+    try:
+        with patch("driftguard.api.v1.webhooks.enqueue_pr_analysis") as mock_enqueue:
+            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+                r = await client.post(
+                    "/api/v1/webhooks/github",
+                    content=body,
+                    headers={
+                        "X-GitHub-Event": event,
+                        "X-Hub-Signature-256": sig,
+                        "Content-Type": "application/json",
+                    },
+                )
+        assert r.status_code == 200
+        mock_enqueue.assert_called_once()
+        mock_session.execute.assert_not_called()
+    finally:
+        _cleanup()
