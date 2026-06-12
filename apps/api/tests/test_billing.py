@@ -200,6 +200,76 @@ async def test_portal_creates_session(billing_api_db, monkeypatch):
     assert r.json()["url"] == "https://billing.stripe.com/session/test"
 
 
+# ── POST /billing/checkout ────────────────────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_checkout_returns_503_when_stripe_not_configured(billing_api_db, monkeypatch):
+    monkeypatch.setattr(settings, "stripe_price_pro", "price_pro_xyz")
+    monkeypatch.setattr(settings, "stripe_api_key", "")
+    org_id = billing_api_db
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        r = await client.post(
+            "/api/v1/billing/checkout",
+            json={"org_id": org_id, "plan": "pro"},
+            headers={"Authorization": "Bearer dev-only-change-me"},
+        )
+    assert r.status_code == 503
+    assert "STRIPE_API_KEY" in r.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_checkout_returns_404_for_unknown_org(billing_api_db, monkeypatch):
+    monkeypatch.setattr(settings, "stripe_api_key", "sk_test_fake")
+    monkeypatch.setattr(settings, "stripe_price_pro", "price_pro_xyz")
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        r = await client.post(
+            "/api/v1/billing/checkout",
+            json={"org_id": "00000000-0000-0000-0000-000000000000", "plan": "pro"},
+            headers={"Authorization": "Bearer dev-only-change-me"},
+        )
+    assert r.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_checkout_returns_400_for_unknown_plan(billing_api_db, monkeypatch):
+    monkeypatch.setattr(settings, "stripe_api_key", "sk_test_fake")
+    org_id = billing_api_db
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        r = await client.post(
+            "/api/v1/billing/checkout",
+            json={"org_id": org_id, "plan": "enterprise_platinum_ultra"},
+            headers={"Authorization": "Bearer dev-only-change-me"},
+        )
+    assert r.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_checkout_creates_session(billing_api_db, monkeypatch):
+    monkeypatch.setattr(settings, "stripe_api_key", "sk_test_fake")
+    monkeypatch.setattr(settings, "stripe_price_pro", "price_pro_xyz")
+    org_id = billing_api_db
+    fake_session = MagicMock(url="https://checkout.stripe.com/pay/cs_test_xyz")
+    with patch("driftguard.services.billing.stripe") as mock_stripe:
+        mock_stripe.Customer.create.return_value = MagicMock(id="cus_new")
+        mock_stripe.checkout.Session.create.return_value = fake_session
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            r = await client.post(
+                "/api/v1/billing/checkout",
+                json={"org_id": org_id, "plan": "pro", "email": "admin@example.com"},
+                headers={"Authorization": "Bearer dev-only-change-me"},
+            )
+    assert r.status_code == 200
+    assert r.json()["url"] == "https://checkout.stripe.com/pay/cs_test_xyz"
+
+
+@pytest.mark.asyncio
+async def test_checkout_requires_auth(billing_api_db):
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        r = await client.post("/api/v1/billing/checkout", json={"org_id": "x", "plan": "pro"})
+    assert r.status_code == 401
+
+
 def test_stripe_configured(monkeypatch):
     monkeypatch.setattr(settings, "stripe_api_key", "")
     assert stripe_configured() is False
