@@ -210,7 +210,8 @@ class TestAutoFixHint:
     def test_wildcard_iam_returns_hint(self):
         hint = _auto_fix_hint("security_finding", "IAM wildcard resource detected")
         assert hint is not None
-        assert "wildcard" in hint.lower() or "arn" in hint.lower() or "iam" in hint.lower() or "restrict" in hint.lower()
+        keywords = ["wildcard", "arn", "iam", "restrict"]
+        assert any(k in hint.lower() for k in keywords)
 
     def test_rds_delete_returns_hint(self):
         hint = _auto_fix_hint("drift_detected", "delete rds instance prod")

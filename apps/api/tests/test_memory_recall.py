@@ -69,20 +69,22 @@ class TestFormatRecallSection:
         assert "Public S3 bucket detected" in output
         assert "<details>" in output
 
+    def _recall(self, outcome: str, severity: str = "low") -> list[dict]:
+        return [{"repo": "x/y", "pr": 1, "similarity": 0.80, "outcome": outcome,
+                 "severity": severity, "summary": ""}]
+
     def test_approved_recall_uses_green_icon(self):
-        recalls = [{"repo": "x/y", "pr": 1, "similarity": 0.80, "outcome": "approved", "severity": "low", "summary": ""}]
-        assert "🟢" in format_recall_section(recalls)
+        assert "🟢" in format_recall_section(self._recall("approved"))
 
     def test_warned_recall_uses_orange_icon(self):
-        recalls = [{"repo": "x/y", "pr": 1, "similarity": 0.80, "outcome": "warned", "severity": "medium", "summary": ""}]
-        assert "🟠" in format_recall_section(recalls)
+        assert "🟠" in format_recall_section(self._recall("warned", "medium"))
 
     def test_unknown_outcome_uses_white_icon(self):
-        recalls = [{"repo": "x/y", "pr": 1, "similarity": 0.80, "outcome": "unknown_status", "severity": "low", "summary": ""}]
-        assert "⚪" in format_recall_section(recalls)
+        assert "⚪" in format_recall_section(self._recall("unknown_status"))
 
     def test_no_summary_skips_quote_line(self):
-        recalls = [{"repo": "x/y", "pr": 1, "similarity": 0.80, "outcome": "blocked", "severity": "high", "summary": ""}]
+        recalls = [{"repo": "x/y", "pr": 1, "similarity": 0.80, "outcome": "blocked",
+                    "severity": "high", "summary": ""}]
         output = format_recall_section(recalls)
         assert "  > _" not in output  # no markdown blockquote line
 
