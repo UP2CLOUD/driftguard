@@ -78,6 +78,7 @@ class Settings(BaseSettings):
     # ── Plan limits ────────────────────────────────────────────────────────────
     free_repository_limit: int = 3
     premium_monthly_pr_limit: int = 50
+    free_monthly_scan_limit: int = 20  # manual scans (/scans/upload, /scans/trigger) for free orgs
 
     # ── App ────────────────────────────────────────────────────
     public_base_url: str = "http://localhost:3000"

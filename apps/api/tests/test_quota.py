@@ -11,6 +11,7 @@ from driftguard.services.quota import (
     get_active_repo_count,
     get_monthly_pr_count,
     is_premium,
+    try_consume_manual_scan_quota,
     try_consume_pr_quota,
     try_record_scan_run,
 )
@@ -203,6 +204,78 @@ async def test_premium_org_51st_pr_blocked(db, monkeypatch):
 
     count = await get_monthly_pr_count(db, org.id)
     assert count == 50  # not incremented
+
+
+# ── try_consume_manual_scan_quota ─────────────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_manual_scan_free_org_allowed_under_limit(db, monkeypatch):
+    monkeypatch.setattr(settings, "free_monthly_scan_limit", 20)
+    org = make_org(plan="free", subscription_status="free")
+    db.add(org)
+    await db.commit()
+
+    result = await try_consume_manual_scan_quota(db, org)
+    assert result is True
+
+    count = await get_monthly_pr_count(db, org.id)
+    assert count == 1
+
+
+@pytest.mark.asyncio
+async def test_manual_scan_free_org_blocked_at_limit(db, monkeypatch):
+    monkeypatch.setattr(settings, "free_monthly_scan_limit", 2)
+    org = make_org(plan="free", subscription_status="free")
+    db.add(org)
+    await db.flush()
+
+    from datetime import UTC, datetime
+
+    month = datetime.now(UTC).strftime("%Y-%m")
+    db.add(MonthlyUsage(org_id=org.id, month=month, pr_count=2))
+    await db.commit()
+
+    result = await try_consume_manual_scan_quota(db, org)
+    assert result is False
+
+    count = await get_monthly_pr_count(db, org.id)
+    assert count == 2  # not incremented
+
+
+@pytest.mark.asyncio
+async def test_manual_scan_premium_shares_pr_pool(db, monkeypatch):
+    """Premium manual scans draw from the same monthly counter as PR reviews."""
+    monkeypatch.setattr(settings, "premium_monthly_pr_limit", 3)
+    org = make_org(plan="team", subscription_status="premium_active")
+    db.add(org)
+    await db.commit()
+
+    assert await try_consume_pr_quota(db, org) is True  # 1
+    assert await try_consume_manual_scan_quota(db, org) is True  # 2
+    assert await try_consume_pr_quota(db, org) is True  # 3
+    assert await try_consume_manual_scan_quota(db, org) is False  # over
+
+    count = await get_monthly_pr_count(db, org.id)
+    assert count == 3
+
+
+@pytest.mark.asyncio
+async def test_manual_scan_premium_uses_premium_limit_not_free(db, monkeypatch):
+    monkeypatch.setattr(settings, "free_monthly_scan_limit", 1)
+    monkeypatch.setattr(settings, "premium_monthly_pr_limit", 50)
+    org = make_org(plan="team", subscription_status="premium_active")
+    db.add(org)
+    await db.flush()
+
+    from datetime import UTC, datetime
+
+    month = datetime.now(UTC).strftime("%Y-%m")
+    db.add(MonthlyUsage(org_id=org.id, month=month, pr_count=5))
+    await db.commit()
+
+    # 5 used > free limit of 1, but premium limit is 50 → still allowed
+    assert await try_consume_manual_scan_quota(db, org) is True
 
 
 # ── try_record_scan_run ───────────────────────────────────────────────────────

@@ -108,11 +108,11 @@ class TestScanUpload:
         from driftguard.services.scanner.engine import ScanResult
 
         org = _org()
-        # Two executes: org lookup + repo lookup (inside _persist_scan)
+        # Three executes: org lookup + quota usage lookup + repo lookup (inside _persist_scan)
         org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
-        no_repo_result = MagicMock(scalar_one_or_none=MagicMock(return_value=None))
+        no_row_result = MagicMock(scalar_one_or_none=MagicMock(return_value=None))
         mock_session = AsyncMock()
-        mock_session.execute = AsyncMock(side_effect=[org_result, no_repo_result])
+        mock_session.execute = AsyncMock(side_effect=[org_result, no_row_result, no_row_result])
         mock_session.flush = AsyncMock()
         mock_session.commit = AsyncMock()
         mock_session.add = MagicMock()
@@ -176,6 +176,93 @@ class TestScanTrigger:
             headers=AUTH,
         )
         assert r.status_code == 422
+
+
+# ── Quota enforcement on manual scans ─────────────────────────────────────────
+
+
+class TestScanQuota:
+    def setup_method(self):
+        from driftguard.core.rate_limit import _buckets
+
+        _buckets.pop("testclient", None)
+
+    def test_upload_quota_exceeded_returns_402(self):
+        _override(_mock_org_session(org=_org()))
+        try:
+            with patch(
+                "driftguard.api.v1.scans.try_consume_manual_scan_quota",
+                new_callable=AsyncMock,
+                return_value=False,
+            ):
+                r = TestClient(app).post(
+                    "/api/v1/scans/upload",
+                    data={"installation_id": "42"},
+                    files={"file": ("infra.tar.gz", _make_tgz(), "application/gzip")},
+                    headers=AUTH,
+                )
+            assert r.status_code == 402
+            assert "limit" in r.json()["detail"].lower()
+        finally:
+            _cleanup()
+
+    def test_trigger_quota_exceeded_returns_402(self):
+        _override(_mock_org_session(org=_org()))
+        try:
+            with patch(
+                "driftguard.api.v1.scans.try_consume_manual_scan_quota",
+                new_callable=AsyncMock,
+                return_value=False,
+            ):
+                r = TestClient(app).post(
+                    "/api/v1/scans/trigger",
+                    json={"installation_id": 42, "repo_full_name": "acme/infra"},
+                    headers=AUTH,
+                )
+            assert r.status_code == 402
+        finally:
+            _cleanup()
+
+    def test_upload_quota_gate_error_fails_open(self):
+        """Quota infrastructure errors must not block scans (parity with webhook path)."""
+        org = _org()
+        org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+        no_row_result = MagicMock(scalar_one_or_none=MagicMock(return_value=None))
+        mock_session = AsyncMock()
+        mock_session.execute = AsyncMock(side_effect=[org_result, no_row_result, no_row_result])
+        mock_session.flush = AsyncMock()
+        mock_session.commit = AsyncMock()
+        mock_session.add = MagicMock()
+        _override(mock_session)
+        try:
+            from driftguard.services.scanner.engine import ScanResult
+
+            with (
+                patch(
+                    "driftguard.api.v1.scans.try_consume_manual_scan_quota",
+                    new_callable=AsyncMock,
+                    side_effect=RuntimeError("db lock timeout"),
+                ),
+                patch(
+                    "driftguard.api.v1.scans.scan_directory",
+                    new_callable=AsyncMock,
+                    return_value=ScanResult(directory="/tmp/test", files_scanned=1, tf_files=1),
+                ),
+                patch(
+                    "driftguard.api.v1.scans.run_ai_review",
+                    new_callable=AsyncMock,
+                    return_value=MagicMock(narrative="ok"),
+                ),
+            ):
+                r = TestClient(app).post(
+                    "/api/v1/scans/upload",
+                    data={"installation_id": "42"},
+                    files={"file": ("infra.tar.gz", _make_tgz(), "application/gzip")},
+                    headers=AUTH,
+                )
+            assert r.status_code == 200
+        finally:
+            _cleanup()
 
 
 # ── GET /scans/{analysis_id} ──────────────────────────────────────────────────

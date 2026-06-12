@@ -32,9 +32,26 @@ from driftguard.core.rate_limit import rate_limit
 from driftguard.db.models import Analysis, AuditLog, Organization, PullRequest, Repository
 from driftguard.db.models import Finding as FindingModel
 from driftguard.services.analysis.ai_review import run_ai_review
+from driftguard.services.quota import try_consume_manual_scan_quota
 from driftguard.services.scanner.engine import ScanResult, scan_directory
 
 router = APIRouter(prefix="/scans", tags=["scans"])
+
+QUOTA_EXCEEDED_DETAIL = "Monthly scan limit reached. Upgrade your plan or wait for the next billing cycle."
+
+
+async def _enforce_scan_quota(db: AsyncSession, org: Organization) -> None:
+    """Consume one unit of monthly scan quota; raise 402 when exhausted.
+
+    Fails open on infrastructure errors, matching the webhook analysis path.
+    """
+    try:
+        allowed = await try_consume_manual_scan_quota(db, org)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("scan.quota_gate_failed", extra={"org_id": org.id, "error": str(exc)})
+        return
+    if not allowed:
+        raise HTTPException(status.HTTP_402_PAYMENT_REQUIRED, QUOTA_EXCEEDED_DETAIL)
 
 
 class ScanFindingOut(BaseModel):
@@ -115,6 +132,8 @@ async def scan_upload(
     if not org:
         raise HTTPException(404, f"Installation {installation_id} not found")
 
+    await _enforce_scan_quota(db, org)
+
     content = await file.read()
     if len(content) > 50 * 1024 * 1024:  # 50MB limit
         raise HTTPException(413, "Archive too large (max 50MB)")
@@ -184,7 +203,12 @@ async def trigger_scan(
     if not org:
         raise HTTPException(404, "Installation not found")
 
+    await _enforce_scan_quota(db, org)
+
     if settings.celery_enabled:
+        # Persist the quota consumption before handing off — the Celery branch
+        # never reaches a later commit in this request.
+        await db.commit()
         try:
             from driftguard.worker.tasks import run_manual_scan
 
