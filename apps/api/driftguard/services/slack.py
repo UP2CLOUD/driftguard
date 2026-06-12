@@ -45,18 +45,12 @@ async def notify_incident(
                         "type": "section",
                         "fields": [
                             {"type": "mrkdwn", "text": f"*Repo*\n`{repo}`"},
-                            {
-                                "type": "mrkdwn",
-                                "text": f"*PR*\n#{pr_number}"
-                                if pr_number
-                                else {"type": "mrkdwn", "text": "*Severity*\n" + severity},
-                            },
-                            {
-                                "type": "mrkdwn",
-                                "text": f"*Risk score*\n{risk_score}/100"
-                                if risk_score
-                                else {"type": "mrkdwn", "text": "*Status*\nOpen"},
-                            },
+                            {"type": "mrkdwn", "text": f"*PR*\n#{pr_number}"}
+                            if pr_number
+                            else {"type": "mrkdwn", "text": f"*Severity*\n{severity}"},
+                            {"type": "mrkdwn", "text": f"*Risk score*\n{risk_score}/100"}
+                            if risk_score
+                            else {"type": "mrkdwn", "text": "*Status*\nOpen"},
                         ],
                     },
                     *(
