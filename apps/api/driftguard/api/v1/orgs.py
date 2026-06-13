@@ -300,6 +300,7 @@ async def update_aws_settings(
 async def list_audit_log(
     org_id: str,
     limit: int = 50,
+    offset: int = 0,
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
@@ -311,6 +312,7 @@ async def list_audit_log(
                 .where(AuditLog.org_id == org_id)
                 .order_by(AuditLog.created_at.desc())
                 .limit(min(limit, 500))
+                .offset(max(offset, 0))
             )
         )
         .scalars()

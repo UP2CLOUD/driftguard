@@ -3,12 +3,13 @@ import { redirect } from "next/navigation";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
+import Link from "next/link";
 import { BACKEND_URL, authHeaders } from "@/lib/backend";
 import { AuditLogClient } from "./AuditLogClient";
 
-const LIMIT = 200;
+const PAGE_SIZE = 100;
 
-async function fetchAuditLog(installationId: string): Promise<AuditEntry[] | null> {
+async function fetchAuditLog(installationId: string, offset: number): Promise<AuditEntry[] | null> {
   try {
     // 1. resolve org_id
     const orgRes = await fetch(
@@ -21,7 +22,7 @@ async function fetchAuditLog(installationId: string): Promise<AuditEntry[] | nul
 
     // 2. fetch audit log
     const res = await fetch(
-      `${BACKEND_URL}/api/v1/orgs/${org.id}/audit-log?limit=${LIMIT}`,
+      `${BACKEND_URL}/api/v1/orgs/${org.id}/audit-log?limit=${PAGE_SIZE}&offset=${offset}`,
       { headers: authHeaders(), cache: "no-store", signal: AbortSignal.timeout(10000) }
     );
     if (!res.ok) return null;
@@ -63,18 +64,24 @@ const ACTION_COLOR: Record<string, string> = {
 
 export default async function AuditLogPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ installationId: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
   const session = await auth();
   if (!session) redirect("/");
   const { installationId } = await params;
+  const { page: pageStr } = await searchParams;
+  const page = Math.max(1, parseInt(pageStr ?? "1", 10) || 1);
+  const offset = (page - 1) * PAGE_SIZE;
 
   const preferences = await getUserPreferences();
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
 
-  const entries = await fetchAuditLog(installationId);
+  const entries = await fetchAuditLog(installationId, offset);
+  const hasNext = Array.isArray(entries) && entries.length === PAGE_SIZE;
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-6">
@@ -129,22 +136,47 @@ export default async function AuditLogPage({
           </p>
         </div>
       ) : (
-        <AuditLogClient
-          entries={entries}
-          actionColors={ACTION_COLOR}
-          labels={{
-            filterPlaceholder: t("auditLog.filterPlaceholder") ?? "Filter by actor, action or target…",
-            showing: t("auditLog.showing") ?? "showing",
-            of: t("auditLog.of") ?? "of",
-            events: t("auditLog.events") ?? "events",
-            actor: t("auditLog.actor") ?? "actor",
-            action: t("auditLog.action") ?? "action",
-            target: t("auditLog.target") ?? "target",
-            time: t("auditLog.time") ?? "time",
-            payload: t("auditLog.payload") ?? "payload",
-            noMatch: t("auditLog.noMatch") ?? "No events match this filter.",
-          }}
-        />
+        <>
+          <AuditLogClient
+            entries={entries}
+            actionColors={ACTION_COLOR}
+            labels={{
+              filterPlaceholder: t("auditLog.filterPlaceholder") ?? "Filter by actor, action or target…",
+              showing: t("auditLog.showing") ?? "showing",
+              of: t("auditLog.of") ?? "of",
+              events: t("auditLog.events") ?? "events",
+              actor: t("auditLog.actor") ?? "actor",
+              action: t("auditLog.action") ?? "action",
+              target: t("auditLog.target") ?? "target",
+              time: t("auditLog.time") ?? "time",
+              payload: t("auditLog.payload") ?? "payload",
+              noMatch: t("auditLog.noMatch") ?? "No events match this filter.",
+            }}
+          />
+          {(page > 1 || hasNext) && (
+            <div className="flex items-center justify-between pt-2">
+              {page > 1 ? (
+                <Link
+                  href={`?page=${page - 1}`}
+                  className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+                >
+                  ← Previous
+                </Link>
+              ) : <span />}
+              <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+                Page {page}
+              </span>
+              {hasNext ? (
+                <Link
+                  href={`?page=${page + 1}`}
+                  className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+                >
+                  Next →
+                </Link>
+              ) : <span />}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
