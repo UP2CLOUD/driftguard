@@ -9,7 +9,7 @@ import { AuditLogClient } from "./AuditLogClient";
 
 const PAGE_SIZE = 100;
 
-async function fetchAuditLog(installationId: string, offset: number): Promise<AuditEntry[] | null> {
+async function fetchAuditLog(installationId: string, offset: number): Promise<{ entries: AuditEntry[]; hasNext: boolean } | null> {
   try {
     // 1. resolve org_id
     const orgRes = await fetch(
@@ -20,13 +20,14 @@ async function fetchAuditLog(installationId: string, offset: number): Promise<Au
     const org = (await orgRes.json()) as { id?: string };
     if (!org?.id) return null;
 
-    // 2. fetch audit log
+    // 2. fetch PAGE_SIZE+1 to detect next page without a separate COUNT query
     const res = await fetch(
-      `${BACKEND_URL}/api/v1/orgs/${org.id}/audit-log?limit=${PAGE_SIZE}&offset=${offset}`,
+      `${BACKEND_URL}/api/v1/orgs/${org.id}/audit-log?limit=${PAGE_SIZE + 1}&offset=${offset}`,
       { headers: authHeaders(), cache: "no-store", signal: AbortSignal.timeout(10000) }
     );
     if (!res.ok) return null;
-    return res.json();
+    const raw: AuditEntry[] = await res.json();
+    return { entries: raw.slice(0, PAGE_SIZE), hasNext: raw.length > PAGE_SIZE };
   } catch {
     return null;
   }
@@ -80,8 +81,9 @@ export default async function AuditLogPage({
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
 
-  const entries = await fetchAuditLog(installationId, offset);
-  const hasNext = Array.isArray(entries) && entries.length === PAGE_SIZE;
+  const result = await fetchAuditLog(installationId, offset);
+  const entries = result?.entries ?? null;
+  const hasNext = result?.hasNext ?? false;
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-6">
