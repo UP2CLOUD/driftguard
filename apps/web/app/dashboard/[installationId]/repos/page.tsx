@@ -194,9 +194,13 @@ export default async function ReposPage({
             {repos.map((repo: any) => {
               const last = lastAnalysisByRepo[repo.full_name];
               const riskScore = last?.risk_score ?? null;
+              // repo.last_scanned_at is more accurate for repos with old analyses
+              // outside the 30-item window we fetched
               const lastDate = last?.created_at
                 ? formatDate(last.created_at, prefs.locale)
-                : null;
+                : repo.last_scanned_at
+                  ? formatDate(repo.last_scanned_at, prefs.locale)
+                  : null;
               const isEnabled = repo.enabled !== false;
 
               return (

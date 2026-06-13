@@ -1,7 +1,7 @@
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.api.deps import require_internal_auth
@@ -126,15 +126,33 @@ async def list_org_repos(
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
-    result = await db.execute(select(Repository).where(Repository.org_id == org_id).order_by(Repository.full_name))
+    # Subquery: most recent analysis started_at and risk_score per repo
+    last_a_sq = (
+        select(
+            PullRequest.repo_id,
+            func.max(Analysis.started_at).label("last_scanned_at"),
+        )
+        .join(Analysis, Analysis.pr_id == PullRequest.id)
+        .group_by(PullRequest.repo_id)
+        .subquery()
+    )
+
+    stmt = (
+        select(Repository, last_a_sq.c.last_scanned_at)
+        .outerjoin(last_a_sq, last_a_sq.c.repo_id == Repository.id)
+        .where(Repository.org_id == org_id)
+        .order_by(Repository.full_name)
+    )
+    result = await db.execute(stmt)
     return [
         {
             "id": r.id,
             "full_name": r.full_name,
             "default_branch": r.default_branch,
             "enabled": r.enabled,
+            "last_scanned_at": last_scanned_at.isoformat() if last_scanned_at else None,
         }
-        for r in result.scalars()
+        for r, last_scanned_at in result.all()
     ]
 
 
