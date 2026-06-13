@@ -203,6 +203,62 @@ class TestMemoryList:
             _cleanup()
 
 
+class TestPolicyRateLimiting:
+    """Verify rate limiting is wired on mutation endpoints."""
+
+    def _exhaust_bucket(self, limit: int = 21) -> None:
+        """Pre-fill the testclient IP bucket to exceed per-minute limit."""
+        import time
+
+        from driftguard.core.rate_limit import _buckets
+
+        _buckets["testclient"] = [time.monotonic()] * limit
+
+    def _clear_bucket(self) -> None:
+        from driftguard.core.rate_limit import _buckets
+
+        _buckets.pop("testclient", None)
+
+    def test_create_policy_rate_limited(self):
+        self._exhaust_bucket()
+        _override(_mock_session(org=_org()))
+        try:
+            r = TestClient(app).post(
+                "/api/v1/policies?installation_id=999",
+                json={"name": "test", "rule_type": "block"},
+                headers=AUTH,
+            )
+            assert r.status_code == 429
+            assert "Retry-After" in r.headers
+        finally:
+            _cleanup()
+            self._clear_bucket()
+
+    def test_patch_policy_rate_limited(self):
+        self._exhaust_bucket()
+        _override(_mock_session(get_return=_rule()))
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/policies/rule-1",
+                json={"enabled": False},
+                headers=AUTH,
+            )
+            assert r.status_code == 429
+        finally:
+            _cleanup()
+            self._clear_bucket()
+
+    def test_delete_policy_rate_limited(self):
+        self._exhaust_bucket()
+        _override(_mock_session(get_return=_rule()))
+        try:
+            r = TestClient(app).delete("/api/v1/policies/rule-1", headers=AUTH)
+            assert r.status_code == 429
+        finally:
+            _cleanup()
+            self._clear_bucket()
+
+
 class TestMemoryStats:
     def test_no_org_returns_zero_stats(self):
         mock = _mock_session(org=None)

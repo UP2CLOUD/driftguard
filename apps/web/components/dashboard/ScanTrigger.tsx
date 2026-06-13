@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 
 export function ScanTrigger({ installationId }: { installationId: string }) {
   const [repo, setRepo] = useState("");
-  const [ref, setRef]   = useState("main");
-  const [status, setStatus] = useState<"idle"|"loading"|"done"|"error">("idle");
+  const [ref, setRef]   = useState("");
+  const [status, setStatus] = useState<"idle"|"loading"|"done"|"error"|"quota">("idle");
   const [msg, setMsg]   = useState("");
   const router = useRouter();
 
@@ -21,10 +21,16 @@ export function ScanTrigger({ installationId }: { installationId: string }) {
         body: JSON.stringify({
           installation_id: parseInt(installationId, 10),
           repo_full_name: repo.trim(),
-          ref: ref.trim() || "main",
+          // Empty = backend resolves the repository's default branch
+          ref: ref.trim() || undefined,
         }),
       });
       const data = await res.json();
+      if (res.status === 402) {
+        setStatus("quota");
+        setMsg(data.detail || "Monthly scan limit reached.");
+        return;
+      }
       if (!res.ok) throw new Error(data.detail || "Scan failed");
       setStatus("done");
       if (data.analysis_id) {
@@ -54,7 +60,7 @@ export function ScanTrigger({ installationId }: { installationId: string }) {
         <input
           value={ref}
           onChange={e => setRef(e.target.value)}
-          placeholder="branch / tag"
+          placeholder="default branch"
           className="w-28 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] focus:border-[color:var(--dg-electric)] focus:outline-none transition"
         />
         <button
@@ -65,10 +71,21 @@ export function ScanTrigger({ installationId }: { installationId: string }) {
           {status === "loading" ? "Scanning…" : "Run scan →"}
         </button>
       </div>
-      {msg && (
+      {msg && status !== "quota" && (
         <p className={`font-mono text-[11px] ${status === "error" ? "text-blocked" : "text-allowed"}`}>
           {status === "done" ? "✓" : "✗"} {msg}
         </p>
+      )}
+      {status === "quota" && (
+        <div className="rounded border border-blocked/20 bg-blocked/5 px-3 py-2.5">
+          <p className="font-mono text-[11px] text-blocked">✗ {msg}</p>
+          <a
+            href={`/dashboard/${installationId}/settings`}
+            className="font-mono text-[10px] text-[color:var(--dg-electric-bright)] underline underline-offset-2"
+          >
+            Manage plan →
+          </a>
+        </div>
       )}
     </div>
   );

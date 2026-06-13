@@ -6,11 +6,12 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
-from sqlalchemy import desc, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.core.db import get_db
-from driftguard.db.models import Organization, PolicyRule
+from driftguard.core.rate_limit import rate_limit
+from driftguard.db.models import AuditLog, Organization, PolicyRule
 
 router = APIRouter(prefix="/policies", tags=["policies"])
 
@@ -49,7 +50,7 @@ async def list_policies(
     if not org:
         return []
 
-    stmt = select(PolicyRule).where(PolicyRule.org_id == org.id).order_by(desc(PolicyRule.created_at))
+    stmt = select(PolicyRule).where(PolicyRule.org_id == org.id).order_by(PolicyRule.created_at.desc())
     if enabled_only:
         stmt = stmt.where(PolicyRule.enabled.is_(True))
 
@@ -62,6 +63,7 @@ async def create_policy(
     body: PolicyCreate,
     installation_id: int = Query(...),
     db: AsyncSession = Depends(get_db),
+    _rl: None = Depends(rate_limit(per_minute=20, per_hour=200)),
 ) -> dict:
     if body.rule_type not in VALID_RULE_TYPES:
         raise HTTPException(422, f"rule_type must be one of: {VALID_RULE_TYPES}")
@@ -83,6 +85,16 @@ async def create_policy(
         actions=body.actions,
     )
     db.add(rule)
+    await db.flush()
+    db.add(
+        AuditLog(
+            org_id=org.id,
+            actor="api",
+            action="policy.created",
+            target=rule.id,
+            payload={"name": rule.name, "rule_type": rule.rule_type, "severity": rule.severity},
+        )
+    )
     await db.commit()
     await db.refresh(rule)
     return _ser(rule)
@@ -93,6 +105,7 @@ async def patch_policy(
     rule_id: str,
     body: PolicyPatch,
     db: AsyncSession = Depends(get_db),
+    _rl: None = Depends(rate_limit(per_minute=20, per_hour=200)),
 ) -> dict:
     rule = await db.get(PolicyRule, rule_id)
     if not rule:
@@ -107,15 +120,31 @@ async def patch_policy(
             setattr(rule, field, val)
 
     rule.updated_at = datetime.now(UTC)
+    db.add(
+        AuditLog(
+            org_id=rule.org_id,
+            actor="api",
+            action="policy.updated",
+            target=rule.id,
+            payload=body.model_dump(exclude_none=True),
+        )
+    )
     await db.commit()
     return _ser(rule)
 
 
 @router.delete("/{rule_id}", status_code=204)
-async def delete_policy(rule_id: str, db: AsyncSession = Depends(get_db)) -> None:
+async def delete_policy(
+    rule_id: str,
+    db: AsyncSession = Depends(get_db),
+    _rl: None = Depends(rate_limit(per_minute=20, per_hour=200)),
+) -> None:
     rule = await db.get(PolicyRule, rule_id)
     if not rule:
         raise HTTPException(404, "policy rule not found")
+    db.add(
+        AuditLog(org_id=rule.org_id, actor="api", action="policy.deleted", target=rule_id, payload={"name": rule.name})
+    )
     await db.delete(rule)
     await db.commit()
 

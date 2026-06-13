@@ -95,13 +95,6 @@ spec:
               name: driftguard-api-secrets
               key: REDIS_URL
 
-        volumeMounts:
-        - name: model-cache
-          mountPath: /models
-          readOnly: true
-        - name: tmp-dir
-          mountPath: /tmp
-
         livenessProbe:
           httpGet: { path: /health, port: 8080 }
           initialDelaySeconds: 60
@@ -115,10 +108,17 @@ spec:
 
         securityContext:
           allowPrivilegeEscalation: false
-          capabilities: { drop: [ALL] }
           runAsNonRoot: true
           runAsUser: 1000
+          capabilities: { drop: [ALL] }
           readOnlyRootFilesystem: true
+
+        volumeMounts:
+        - name: model-cache
+          mountPath: /models
+          readOnly: true
+        - name: tmp-dir
+          mountPath: /tmp
 
       volumes:
       - name: model-cache
@@ -126,7 +126,8 @@ spec:
           medium: Memory
           sizeLimit: 2Gi
       - name: tmp-dir
-        emptyDir: {}
+        emptyDir:
+          sizeLimit: 512Mi
 ---
 apiVersion: v1
 kind: Service

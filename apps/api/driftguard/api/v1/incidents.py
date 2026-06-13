@@ -6,19 +6,25 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
-from sqlalchemy import desc, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.core.db import get_db
-from driftguard.db.models import DriftIncident, Organization
+from driftguard.db.models import AuditLog, DriftIncident, Organization
 
 router = APIRouter(prefix="/incidents", tags=["incidents"])
 
 VALID_STATUSES = {"open", "investigating", "resolved", "suppressed"}
 
 
+VALID_SEVERITIES = {"low", "medium", "high", "critical"}
+
+
 class IncidentPatch(BaseModel):
     status: str | None = None
+    severity: str | None = None
+    title: str | None = None
+    description: str | None = None
     root_cause: str | None = None
     suggested_fix: str | None = None
 
@@ -29,6 +35,7 @@ async def list_incidents(
     status: str | None = Query(None),
     severity: str | None = Query(None),
     limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
 ) -> list[dict]:
     org = (
@@ -40,8 +47,9 @@ async def list_incidents(
     stmt = (
         select(DriftIncident)
         .where(DriftIncident.org_id == org.id)
-        .order_by(desc(DriftIncident.last_seen_at))
+        .order_by(DriftIncident.last_seen_at.desc().nulls_last())
         .limit(limit)
+        .offset(offset)
     )
     if status:
         stmt = stmt.where(DriftIncident.status == status)
@@ -73,9 +81,28 @@ async def patch_incident(
     if body.status is not None:
         if body.status not in VALID_STATUSES:
             raise HTTPException(422, f"status must be one of: {VALID_STATUSES}")
+        prev_status = inc.status
         inc.status = body.status
         if body.status == "resolved" and not inc.resolved_at:
             inc.resolved_at = datetime.now(UTC)
+        if prev_status != body.status:
+            db.add(
+                AuditLog(
+                    org_id=inc.org_id,
+                    actor="api",
+                    action="incident.status_changed",
+                    target=incident_id,
+                    payload={"from": prev_status, "to": body.status, "title": inc.title},
+                )
+            )
+    if body.severity is not None:
+        if body.severity not in VALID_SEVERITIES:
+            raise HTTPException(422, f"severity must be one of: {VALID_SEVERITIES}")
+        inc.severity = body.severity
+    if body.title is not None:
+        inc.title = body.title
+    if body.description is not None:
+        inc.description = body.description
     if body.root_cause is not None:
         inc.root_cause = body.root_cause
     if body.suggested_fix is not None:

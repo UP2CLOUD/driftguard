@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
-from sqlalchemy import desc, func, select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.api.deps import require_internal_auth
@@ -32,7 +32,7 @@ async def list_memory(
             await db.execute(
                 select(IncidentEmbedding)
                 .where(IncidentEmbedding.org_id == org.id)
-                .order_by(desc(IncidentEmbedding.created_at))
+                .order_by(IncidentEmbedding.created_at.desc())
                 .limit(limit)
             )
         )

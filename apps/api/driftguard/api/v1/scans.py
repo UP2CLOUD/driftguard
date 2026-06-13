@@ -28,12 +28,30 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from driftguard.api.deps import require_internal_auth
 from driftguard.core.db import get_db
 from driftguard.core.logging import log
+from driftguard.core.rate_limit import rate_limit
 from driftguard.db.models import Analysis, AuditLog, Organization, PullRequest, Repository
 from driftguard.db.models import Finding as FindingModel
 from driftguard.services.analysis.ai_review import run_ai_review
+from driftguard.services.quota import try_consume_manual_scan_quota
 from driftguard.services.scanner.engine import ScanResult, scan_directory
 
 router = APIRouter(prefix="/scans", tags=["scans"])
+
+QUOTA_EXCEEDED_DETAIL = "Monthly scan limit reached. Upgrade your plan or wait for the next billing cycle."
+
+
+async def _enforce_scan_quota(db: AsyncSession, org: Organization) -> None:
+    """Consume one unit of monthly scan quota; raise 402 when exhausted.
+
+    Fails open on infrastructure errors, matching the webhook analysis path.
+    """
+    try:
+        allowed = await try_consume_manual_scan_quota(db, org)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("scan.quota_gate_failed", extra={"org_id": org.id, "error": str(exc)})
+        return
+    if not allowed:
+        raise HTTPException(status.HTTP_402_PAYMENT_REQUIRED, QUOTA_EXCEEDED_DETAIL)
 
 
 class ScanFindingOut(BaseModel):
@@ -77,7 +95,9 @@ class ScanResultOut(BaseModel):
 class TriggerScanRequest(BaseModel):
     installation_id: int
     repo_full_name: str
-    ref: str = "main"
+    # None = scan the repository's default branch (installation webhooks don't
+    # carry default_branch, so a hardcoded "main" 404s on master-default repos)
+    ref: str | None = None
 
 
 @router.post(
@@ -91,6 +111,7 @@ async def scan_upload(
     file: UploadFile = File(..., description="tar.gz archive of IaC files"),
     installation_id: int = Form(...),
     db: AsyncSession = Depends(get_db),
+    _rl: None = Depends(rate_limit(per_minute=5, per_hour=20)),
 ) -> ScanResultOut:
     """
     POST /api/v1/scans/upload
@@ -112,6 +133,8 @@ async def scan_upload(
 
     if not org:
         raise HTTPException(404, f"Installation {installation_id} not found")
+
+    await _enforce_scan_quota(db, org)
 
     content = await file.read()
     if len(content) > 50 * 1024 * 1024:  # 50MB limit
@@ -167,6 +190,7 @@ async def scan_upload(
 async def trigger_scan(
     body: TriggerScanRequest,
     db: AsyncSession = Depends(get_db),
+    _rl: None = Depends(rate_limit(per_minute=10, per_hour=50)),
 ) -> dict:
     """
     Enqueue a background scan of a GitHub repo.
@@ -181,7 +205,12 @@ async def trigger_scan(
     if not org:
         raise HTTPException(404, "Installation not found")
 
+    await _enforce_scan_quota(db, org)
+
     if settings.celery_enabled:
+        # Persist the quota consumption before handing off — the Celery branch
+        # never reaches a later commit in this request.
+        await db.commit()
         try:
             from driftguard.worker.tasks import run_manual_scan
 
@@ -193,7 +222,7 @@ async def trigger_scan(
             return {
                 "status": "queued",
                 "task_id": task.id,
-                "message": f"Scan queued for {body.repo_full_name}@{body.ref}",
+                "message": f"Scan queued for {body.repo_full_name}@{body.ref or 'default'}",
             }
         except Exception as exc:
             log.warning("scan.trigger.failed", extra={"error": str(exc)})
@@ -222,7 +251,7 @@ async def _run_scan_inprocess(
     org_id: str,
     installation_id: int,
     repo_full_name: str,
-    ref: str,
+    ref: str | None,
 ) -> dict:
     import io
     import tarfile
@@ -231,15 +260,16 @@ async def _run_scan_inprocess(
 
     import httpx
 
+    from driftguard.integrations.github import tarball_url
     from driftguard.services.scanner.engine import scan_directory
 
+    url = tarball_url(repo_full_name, ref)
     try:
-        from driftguard.integrations.github import installation_token, tarball_url
+        from driftguard.integrations.github import installation_token
 
         token = await installation_token(installation_id)
-        url = tarball_url(repo_full_name, ref)
     except Exception:
-        url = f"https://api.github.com/repos/{repo_full_name}/tarball/{ref}"
+        # No GitHub App configured — fall back to unauthenticated (public repos)
         token = None
 
     headers = {"Accept": "application/vnd.github+json"}
@@ -249,7 +279,9 @@ async def _run_scan_inprocess(
     async with httpx.AsyncClient(timeout=60, follow_redirects=True) as client:
         resp = await client.get(url, headers=headers)
         if resp.status_code == 404:
-            raise HTTPException(404, f"Repository {repo_full_name}@{ref} not found or not accessible")
+            raise HTTPException(
+                404, f"Repository {repo_full_name}@{ref or 'default branch'} not found or not accessible"
+            )
         resp.raise_for_status()
         archive = resp.content
 
@@ -262,12 +294,13 @@ async def _run_scan_inprocess(
         scan_root = subdirs[0] if len(subdirs) == 1 else root
         result = await scan_directory(scan_root)
 
+    ref_label = ref or "default"
     analysis_id = await _persist_scan(
         db=db,
         org_id=org_id,
         result=result,
-        source=f"{repo_full_name}@{ref}",
-        ref=ref,
+        source=f"{repo_full_name}@{ref_label}",
+        ref=ref_label,
     )
     return {
         "status": "completed",
@@ -275,7 +308,7 @@ async def _run_scan_inprocess(
         "analysis_id": analysis_id,
         "risk_score": result.risk_score,
         "findings": len(result.findings),
-        "message": f"Scan completed for {repo_full_name}@{ref}",
+        "message": f"Scan completed for {repo_full_name}@{ref_label}",
     }
 
 

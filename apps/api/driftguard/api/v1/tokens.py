@@ -10,7 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.core.db import get_db
-from driftguard.db.models import APIToken
+from driftguard.db.models import APIToken, AuditLog
 from driftguard.middleware.rbac import Principal, generate_api_token, require_role
 
 router = APIRouter(prefix="/tokens", tags=["tokens"])
@@ -67,6 +67,16 @@ async def create_token(
         created_by=principal.user_id,
     )
     db.add(token)
+    await db.flush()
+    db.add(
+        AuditLog(
+            org_id=principal.org_id,
+            actor=principal.user_id,
+            action="token.created",
+            target=token.id,
+            payload={"name": body.name, "role": body.role},
+        )
+    )
     await db.commit()
     await db.refresh(token)
 
@@ -121,4 +131,13 @@ async def revoke_token(
     if token is None:
         raise HTTPException(404, "Token not found")
     token.revoked = True
+    db.add(
+        AuditLog(
+            org_id=principal.org_id,
+            actor=principal.user_id,
+            action="token.revoked",
+            target=token_id,
+            payload={"name": token.name, "role": token.role},
+        )
+    )
     await db.commit()

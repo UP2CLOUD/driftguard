@@ -31,6 +31,22 @@ class Settings(BaseSettings):
             )
         return self
 
+    def missing_github_config(self) -> list[str]:
+        """Env var names of unset GitHub App settings.
+
+        Any one of these missing disables the core PR review flow: an empty
+        webhook secret rejects every delivery with 401, and missing App
+        credentials make installation token fetches fail.
+        """
+        missing = []
+        if not self.github_app_id:
+            missing.append("GITHUB_APP_ID")
+        if not self.github_app_private_key:
+            missing.append("GITHUB_APP_PRIVATE_KEY")
+        if not self.github_webhook_secret:
+            missing.append("GITHUB_WEBHOOK_SECRET")
+        return missing
+
     # ── LLM router ─────────────────────────────────────────────
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-sonnet-4-6"
@@ -78,6 +94,7 @@ class Settings(BaseSettings):
     # ── Plan limits ────────────────────────────────────────────────────────────
     free_repository_limit: int = 3
     premium_monthly_pr_limit: int = 50
+    free_monthly_scan_limit: int = 20  # manual scans (/scans/upload, /scans/trigger) for free orgs
 
     # ── App ────────────────────────────────────────────────────
     public_base_url: str = "http://localhost:3000"

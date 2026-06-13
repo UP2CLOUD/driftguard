@@ -237,9 +237,9 @@ jobs:
     - name: Wait for ArgoCD sync (optional)
       continue-on-error: true
       env:
-        KUBECONFIG_B64: ${{ secrets.KUBECONFIG }}
+        KUBECONFIG_DATA: ${{ secrets.KUBECONFIG }}
       run: |
-        echo "$KUBECONFIG_B64" | base64 -d > /tmp/kubeconfig
+        echo "$KUBECONFIG_DATA" | base64 -d > /tmp/kubeconfig
         kubectl --kubeconfig=/tmp/kubeconfig \
           -n driftguard-argocd \
           wait application/driftguard-api \

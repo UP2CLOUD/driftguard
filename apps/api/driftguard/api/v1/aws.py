@@ -92,13 +92,15 @@ async def verify_aws_connection(org_id: str, db: AsyncSession = Depends(get_db))
         return {"configured": False, "error": "No IAM role configured. Go to Settings → AWS Integration."}
 
     try:
-        from driftguard.integrations.aws import assume_role
+        import asyncio
 
-        creds = await __import__("asyncio").to_thread(assume_role, role_arn, f"driftguard-{org.github_installation_id}")
+        from driftguard.integrations.aws import validate_role
+
+        identity = await asyncio.to_thread(validate_role, role_arn)
         return {
             "configured": True,
             "valid": True,
-            "account_id": creds.get("AccountId"),
+            "account_id": identity["account_id"],
             "role_arn": role_arn,
         }
     except Exception as exc:

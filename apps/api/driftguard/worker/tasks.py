@@ -117,6 +117,9 @@ async def _store_embedding_async(analysis_id: str) -> None:
             default=None,
         )
 
+        risk = analysis.risk_score or 0
+        blast = "high" if risk >= 70 else "medium" if risk >= 40 else "low"
+
         ie = IncidentEmbedding(
             id=str(uuid.uuid4()),
             org_id=repo.org_id,
@@ -125,7 +128,8 @@ async def _store_embedding_async(analysis_id: str) -> None:
             pr_number=pr.github_pr_number,
             intent_text=text,
             severity=top_sev,
-            outcome="blocked" if analysis.risk_score and analysis.risk_score > 70 else "allowed",
+            outcome="blocked" if risk > 70 else "allowed",
+            blast_radius=blast,
         )
         session.add(ie)
         await session.flush()
@@ -149,9 +153,10 @@ def send_notification(*, analysis_id: str, repo_full_name: str, pr_number: int) 
 
 
 async def _send_notification_async(analysis_id: str, repo_full_name: str, pr_number: int) -> None:
+    from sqlalchemy import func, select
 
     from driftguard.core.db import SessionLocal
-    from driftguard.db.models import Analysis, Organization, PullRequest, Repository
+    from driftguard.db.models import Analysis, Finding, Organization, PullRequest, Repository
     from driftguard.services.email import send_review_complete
 
     async with SessionLocal() as session:
@@ -171,17 +176,11 @@ async def _send_notification_async(analysis_id: str, repo_full_name: str, pr_num
         if not org or not getattr(org, "contact_email", None):
             return
 
-        findings_count = len(
-            (
-                await session.execute(
-                    __import__("sqlalchemy")
-                    .select(__import__("driftguard.db.models", fromlist=["Finding"]).Finding)
-                    .where(__import__("driftguard.db.models", fromlist=["Finding"]).Finding.analysis_id == analysis_id)
-                )
+        findings_count = (
+            await session.execute(
+                select(func.count()).select_from(Finding).where(Finding.analysis_id == analysis_id)
             )
-            .scalars()
-            .all()
-        )
+        ).scalar_one()
 
         await send_review_complete(
             to=org.contact_email,
@@ -199,7 +198,7 @@ def run_manual_scan(
     *,
     installation_id: int,
     repo_full_name: str,
-    ref: str = "main",
+    ref: str | None = None,
 ) -> dict:
     """
     Download a GitHub repo tarball and run the static scanner on it.
@@ -234,15 +233,16 @@ def run_manual_scan(
             if not org:
                 return {"status": "error", "reason": "org_not_found"}
 
-            # Download tarball
+            # Download tarball (no ref = repository's default branch)
+            from driftguard.integrations.github import tarball_url
+
+            url = tarball_url(repo_full_name, ref)
             try:
-                from driftguard.integrations.github import installation_token, tarball_url
+                from driftguard.integrations.github import installation_token
 
                 token = await installation_token(installation_id)
-                url = tarball_url(repo_full_name, ref)
             except Exception:
-                # Fall back to public repo if no GitHub App configured
-                url = f"https://api.github.com/repos/{repo_full_name}/tarball/{ref}"
+                # Fall back to unauthenticated if no GitHub App configured
                 token = None
 
             headers = {"Accept": "application/vnd.github+json"}
@@ -269,12 +269,13 @@ def run_manual_scan(
 
                 result = await scan_directory(scan_root)
 
+            ref_label = ref or "default"
             analysis_id = await _persist_scan(
                 db=db,
                 org_id=org.id,
                 result=result,
-                source=f"{repo_full_name}@{ref}",
-                ref=ref,
+                source=f"{repo_full_name}@{ref_label}",
+                ref=ref_label,
             )
             return {
                 "status": "completed",

@@ -57,6 +57,14 @@ async def patch_repo(
         raise HTTPException(404, "Repository not found")
 
     if body.enabled is not None:
+        if body.enabled and not repo.enabled:
+            org = await db.get(Organization, repo.org_id)
+            if org is None:
+                raise HTTPException(404, "Organization not found")
+            try:
+                await assert_can_enable_repo(db, org)
+            except ValueError as exc:
+                raise HTTPException(402, str(exc)) from exc
         repo.enabled = body.enabled
 
     await db.commit()

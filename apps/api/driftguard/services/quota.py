@@ -54,32 +54,23 @@ async def get_monthly_pr_count(db: AsyncSession, org_id: str, month: str | None 
     return result.scalar_one_or_none() or 0
 
 
-async def try_consume_pr_quota(db: AsyncSession, org: Organization) -> bool:
-    """Atomically check + increment monthly PR count.
-
-    Returns True when the analysis is allowed, False when quota exceeded.
-    Free plan orgs always return True (their limit is repo count, not PR count).
-    """
-    if not is_premium(org):
-        return True
-
-    limit = settings.premium_monthly_pr_limit
+async def _try_consume_monthly(db: AsyncSession, org_id: str, limit: int) -> bool:
     month = _current_month()
 
     # Lock the row to prevent concurrent over-limit writes.
     result = await db.execute(
-        select(MonthlyUsage).where(MonthlyUsage.org_id == org.id, MonthlyUsage.month == month).with_for_update()
+        select(MonthlyUsage).where(MonthlyUsage.org_id == org_id, MonthlyUsage.month == month).with_for_update()
     )
     usage = result.scalar_one_or_none()
     if usage is None:
-        usage = MonthlyUsage(id=_uuid(), org_id=org.id, month=month, pr_count=0)
+        usage = MonthlyUsage(id=_uuid(), org_id=org_id, month=month, pr_count=0)
         db.add(usage)
         await db.flush()
 
     if usage.pr_count >= limit:
         log.info(
             "monthly_quota_exceeded",
-            org_id=org.id,
+            org_id=org_id,
             month=month,
             count=usage.pr_count,
             limit=limit,
@@ -89,6 +80,28 @@ async def try_consume_pr_quota(db: AsyncSession, org: Organization) -> bool:
     usage.pr_count += 1
     await db.flush()
     return True
+
+
+async def try_consume_pr_quota(db: AsyncSession, org: Organization) -> bool:
+    """Atomically check + increment monthly PR count.
+
+    Returns True when the analysis is allowed, False when quota exceeded.
+    Free plan orgs always return True (their limit is repo count, not PR count).
+    """
+    if not is_premium(org):
+        return True
+    return await _try_consume_monthly(db, org.id, settings.premium_monthly_pr_limit)
+
+
+async def try_consume_manual_scan_quota(db: AsyncSession, org: Organization) -> bool:
+    """Quota gate for manually triggered scans (/scans/upload, /scans/trigger).
+
+    Premium orgs draw from the same monthly pool as webhook PR reviews; free
+    orgs get a separate monthly allowance so manual scans can't bypass plan
+    limits entirely (their placeholder repos don't count toward the repo limit).
+    """
+    limit = settings.premium_monthly_pr_limit if is_premium(org) else settings.free_monthly_scan_limit
+    return await _try_consume_monthly(db, org.id, limit)
 
 
 async def try_record_scan_run(db: AsyncSession, org_id: str, repo_id: str, pr_number: int, head_sha: str) -> bool:

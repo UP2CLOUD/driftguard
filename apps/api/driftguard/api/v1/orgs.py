@@ -1,14 +1,14 @@
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import desc, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.api.deps import require_internal_auth
 from driftguard.core.config import settings
 from driftguard.core.db import get_db
 from driftguard.core.logging import log
-from driftguard.db.models import Analysis, Organization, PullRequest, Repository
+from driftguard.db.models import Analysis, AuditLog, Organization, PullRequest, Repository
 from driftguard.integrations.github import _app_jwt
 from driftguard.services.onboarding import upsert_installation
 
@@ -146,7 +146,7 @@ async def list_org_analyses(
         .join(PullRequest, Analysis.pr_id == PullRequest.id)
         .join(Repository, PullRequest.repo_id == Repository.id)
         .where(Repository.org_id == org_id)
-        .order_by(desc(Analysis.id))
+        .order_by(Analysis.started_at.desc().nulls_last())
         .limit(min(limit, 100))
         .offset(max(offset, 0))
     )
@@ -190,16 +190,35 @@ async def update_aws_settings(
         raise HTTPException(422, "invalid role ARN format")
 
     settings_patch = dict(org.settings or {})
-    if body.aws_role_arn is not None:
-        settings_patch["aws_role_arn"] = body.aws_role_arn
+
+    # Use model_fields_set to distinguish "not provided" (leave unchanged) from
+    # "explicitly set to null" (clear the key) for aws_role_arn.
+    if "aws_role_arn" in body.model_fields_set:
+        if body.aws_role_arn is None:
+            settings_patch.pop("aws_role_arn", None)
+        else:
+            settings_patch["aws_role_arn"] = body.aws_role_arn
+
     if body.state_bucket is not None:
         settings_patch["state_bucket"] = body.state_bucket
     settings_patch["state_key"] = body.state_key
 
     org.settings = settings_patch
+    db.add(
+        AuditLog(
+            org_id=org_id,
+            actor="api",
+            action="aws_settings.updated",
+            target=org_id,
+            payload={
+                "aws_role_arn_set": bool(settings_patch.get("aws_role_arn")),
+                "state_bucket": settings_patch.get("state_bucket"),
+            },
+        )
+    )
     await db.commit()
 
-    return {"status": "ok", "aws_role_arn": body.aws_role_arn}
+    return {"status": "ok", "aws_role_arn": settings_patch.get("aws_role_arn")}
 
 
 @router.get("/{org_id}/audit-log")
@@ -210,20 +229,18 @@ async def list_audit_log(
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
     """Return the last N audit records for an org. Used for DORA/NIS2 evidence export."""
-    from sqlalchemy import text
-
     rows = (
-        await db.execute(
-            text("""
-                SELECT id, actor, action, target, payload, created_at
-                FROM audit_log
-                WHERE org_id = :org_id
-                ORDER BY created_at DESC
-                LIMIT :limit
-            """),
-            {"org_id": org_id, "limit": min(limit, 500)},
+        (
+            await db.execute(
+                select(AuditLog)
+                .where(AuditLog.org_id == org_id)
+                .order_by(AuditLog.created_at.desc())
+                .limit(min(limit, 500))
+            )
         )
-    ).fetchall()
+        .scalars()
+        .all()
+    )
 
     return [
         {

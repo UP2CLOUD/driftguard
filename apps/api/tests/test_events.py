@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import json
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from pydantic import TypeAdapter
 
+from driftguard.events.publisher import publish
 from driftguard.events.schemas import (
     AnalysisCompletedEvent,
     ChangeAction,
@@ -126,3 +128,100 @@ class TestEventSchemas:
         )
         assert ev.has_destructive is True
         assert ev.event_type == "plan.parsed"
+
+
+# ── Publisher ─────────────────────────────────────────────────────────────────
+
+
+def _analysis_event(**kwargs) -> AnalysisCompletedEvent:
+    defaults = dict(
+        org_id="org-1",
+        analysis_id="an-1",
+        pr_id="pr-1",
+        pr_number=1,
+        repo_name="org/repo",
+        risk_score=50,
+        risk_level=Severity.MEDIUM,
+        blocked=False,
+        finding_count=2,
+        cost_delta_usd=None,
+        duration_ms=500,
+    )
+    defaults.update(kwargs)
+    return AnalysisCompletedEvent(**defaults)
+
+
+def _mock_redis():
+    # xadd/publish are synchronous pipeline command accumulators; only execute is awaited
+    pipe = MagicMock()
+    pipe.xadd = MagicMock()
+    pipe.publish = MagicMock()
+    pipe.execute = AsyncMock(return_value=[1, 1])
+    r = MagicMock()
+    r.pipeline = MagicMock(return_value=pipe)
+    return r, pipe
+
+
+class TestPublish:
+    @pytest.mark.asyncio
+    async def test_does_not_raise_when_redis_unavailable(self):
+        with patch("driftguard.events.publisher._get_redis", side_effect=Exception("no redis")):
+            await publish(_analysis_event())
+
+    @pytest.mark.asyncio
+    async def test_does_not_raise_on_pipeline_error(self):
+        r, pipe = _mock_redis()
+        pipe.execute = AsyncMock(side_effect=RuntimeError("connection dropped"))
+        with patch("driftguard.events.publisher._get_redis", return_value=r):
+            await publish(_analysis_event())
+
+    @pytest.mark.asyncio
+    async def test_publishes_to_org_stream(self):
+        r, pipe = _mock_redis()
+        with patch("driftguard.events.publisher._get_redis", return_value=r):
+            await publish(_analysis_event(org_id="org-x"))
+        pipe.xadd.assert_called_once()
+        stream_key = pipe.xadd.call_args[0][0]
+        assert "org-x" in stream_key
+
+    @pytest.mark.asyncio
+    async def test_publishes_to_pubsub_channel(self):
+        r, pipe = _mock_redis()
+        with patch("driftguard.events.publisher._get_redis", return_value=r):
+            await publish(_analysis_event(org_id="org-y"))
+        pipe.publish.assert_called_once()
+        pubsub_key = pipe.publish.call_args[0][0]
+        assert "org-y" in pubsub_key
+
+    @pytest.mark.asyncio
+    async def test_with_db_writes_audit_log(self):
+        r, pipe = _mock_redis()
+        mock_db = MagicMock()
+        mock_db.add = MagicMock()
+
+        with patch("driftguard.events.publisher._get_redis", return_value=r):
+            await publish(_analysis_event(), db=mock_db)
+
+        mock_db.add.assert_called_once()
+        audit_entry = mock_db.add.call_args[0][0]
+        assert audit_entry.org_id == "org-1"
+        assert "analysis.completed" in str(audit_entry.action)
+
+    @pytest.mark.asyncio
+    async def test_without_db_no_audit_log(self):
+        r, pipe = _mock_redis()
+        mock_db = MagicMock()
+
+        with patch("driftguard.events.publisher._get_redis", return_value=r):
+            await publish(_analysis_event(), db=None)
+
+        mock_db.add.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_audit_log_db_error_does_not_raise(self):
+        r, pipe = _mock_redis()
+        mock_db = MagicMock()
+        mock_db.add = MagicMock(side_effect=RuntimeError("DB full"))
+
+        with patch("driftguard.events.publisher._get_redis", return_value=r):
+            await publish(_analysis_event(), db=mock_db)

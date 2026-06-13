@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export function UploadScan({ installationId }: { installationId: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file,   setFile]   = useState<File|null>(null);
-  const [status, setStatus] = useState<"idle"|"loading"|"done"|"error">("idle");
+  const [status, setStatus] = useState<"idle"|"loading"|"done"|"error"|"quota">("idle");
   const [result, setResult] = useState<any>(null);
   const [err,    setErr]    = useState("");
   const router = useRouter();
@@ -24,6 +24,11 @@ export function UploadScan({ installationId }: { installationId: string }) {
         body: fd,
       });
       const data = await res.json();
+      if (res.status === 402) {
+        setStatus("quota");
+        setErr(data.detail || "Monthly scan limit reached.");
+        return;
+      }
       if (!res.ok) throw new Error(data.detail || "Upload failed");
       setResult(data);
       setStatus("done");
@@ -83,6 +88,18 @@ export function UploadScan({ installationId }: { installationId: string }) {
 
       {status === "error" && (
         <p className="font-mono text-[11px] text-blocked">✗ {err}</p>
+      )}
+
+      {status === "quota" && (
+        <div className="rounded border border-blocked/20 bg-blocked/5 px-3 py-2.5">
+          <p className="font-mono text-[11px] text-blocked">✗ {err}</p>
+          <a
+            href={`/dashboard/${installationId}/settings`}
+            className="font-mono text-[10px] text-[color:var(--dg-electric-bright)] underline underline-offset-2"
+          >
+            Manage plan →
+          </a>
+        </div>
       )}
     </div>
   );

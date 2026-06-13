@@ -40,14 +40,14 @@ async def overview(
             org = await _bootstrap_installation(db, installation_id)
 
         if not org:
-            return _empty_overview()
+            return _empty_overview(installation_id)
 
         return await _build_overview(org, installation_id, db)
     except Exception as exc:
         from driftguard.core.logging import log
 
         log.error("overview_failed", installation_id=installation_id, error=str(exc))
-        return _empty_overview()
+        return _empty_overview(installation_id)
 
 
 async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
@@ -140,7 +140,7 @@ async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
             .join(PullRequest, Analysis.pr_id == PullRequest.id)
             .join(Repository, PullRequest.repo_id == Repository.id)
             .where(Repository.org_id == org.id)
-            .order_by(Analysis.started_at.desc())
+            .order_by(Analysis.started_at.desc().nulls_last())
             .limit(5)
         )
     ).all()
@@ -182,9 +182,10 @@ async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
     }
 
 
-def _empty_overview() -> dict:
+def _empty_overview(installation_id: int | None = None) -> dict:
     return {
         "org_id": None,
+        "installation_id": installation_id,
         "plan": "free",
         "repos": 0,
         "analyses_7d": 0,
