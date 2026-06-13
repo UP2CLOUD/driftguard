@@ -31,9 +31,13 @@ export async function beGet<T>(
       ...(revalidate !== undefined ? { next: { revalidate } } : { cache: "no-store" }),
       signal: AbortSignal.timeout(timeout),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.warn(`[backend] ${res.status} ${res.statusText} — ${BASE}${path}`);
+      return null;
+    }
     return res.json() as Promise<T>;
-  } catch {
+  } catch (err) {
+    console.warn(`[backend] fetch failed — ${BASE}${path}`, err);
     return null;
   }
 }
