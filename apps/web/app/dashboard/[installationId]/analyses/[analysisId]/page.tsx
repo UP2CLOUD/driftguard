@@ -5,6 +5,7 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
+import { RescanButton } from "./RescanButton";
 
 async function fetchAnalysis(id: string) {
   return beGet<any>(`/api/v1/analyses/${id}`, { revalidate: 0, timeout: 15000 });
@@ -151,8 +152,15 @@ export default async function AnalysisPage({
             </p>
           )}
         </div>
-        {/* Risk badge */}
+        {/* Risk badge + actions */}
         <div className="flex items-center gap-3">
+          {data.repo_full_name && (
+            <RescanButton
+              installationId={installationId}
+              repoFullName={data.repo_full_name}
+              headSha={data.head_sha}
+            />
+          )}
           <div className="text-center">
             <div className={`font-mono text-3xl font-bold tabular-nums ${
               data.risk_score == null ? "text-[color:var(--dg-fg-muted)]" :
