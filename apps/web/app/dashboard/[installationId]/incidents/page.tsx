@@ -90,9 +90,10 @@ export default async function IncidentsPage({
         </h1>
       </div>
 
-      {/* Filter tabs — horizontally scrollable on mobile, touch-friendly tap targets */}
-      <div className="-mx-4 sm:mx-0 mb-5 sm:mb-6 border-b border-[color:var(--dg-border)]">
-        <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-hide px-4 sm:px-0">
+      {/* Filter tabs — horizontally scrollable on mobile with a swipe-fade hint,
+          touch-friendly 44px tap targets. */}
+      <div className="relative -mx-4 sm:mx-0 mb-5 sm:mb-6 border-b border-[color:var(--dg-border)]">
+        <div className="flex items-stretch gap-1 overflow-x-auto scrollbar-hide scroll-smooth px-4 sm:px-0">
           {tabs.map((tab) => {
             const isActive = tab.key === activeTab;
             const href =
@@ -104,18 +105,18 @@ export default async function IncidentsPage({
                 key={tab.key}
                 href={href}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex items-center gap-1.5 whitespace-nowrap shrink-0 px-3 sm:px-3 min-h-[40px] sm:min-h-0 sm:py-2 font-mono text-[12px] sm:text-[11px] uppercase tracking-wider border-b-2 transition -mb-px ${
+                className={`flex items-center gap-1.5 whitespace-nowrap shrink-0 px-3.5 sm:px-3 min-h-[44px] sm:min-h-0 sm:py-2 font-mono text-[12px] sm:text-[11px] uppercase tracking-wider border-b-2 transition -mb-px ${
                   isActive
                     ? "border-[color:var(--dg-electric)] text-[color:var(--dg-fg)]"
-                    : "border-transparent text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)]"
+                    : "border-transparent text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] active:text-[color:var(--dg-fg)]"
                 }`}
               >
                 {tab.label}
                 {tab.count > 0 && (
                   <span
-                    className={`rounded px-1 font-mono text-[10px] ${
+                    className={`rounded px-1 font-mono text-[10px] tabular-nums ${
                       isActive
-                        ? "bg-[color:var(--dg-surface-raised)] text-[color:var(--dg-fg)]"
+                        ? "bg-[color:var(--dg-electric)]/15 text-[color:var(--dg-fg)]"
                         : "bg-[color:var(--dg-surface)] text-[color:var(--dg-fg-subtle)]"
                     }`}
                   >
@@ -126,6 +127,11 @@ export default async function IncidentsPage({
             );
           })}
         </div>
+        {/* Right-edge fade: signals the tab row scrolls horizontally on mobile */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[color:var(--dg-canvas)] to-transparent sm:hidden"
+        />
       </div>
 
       {filtered.length === 0 ? (

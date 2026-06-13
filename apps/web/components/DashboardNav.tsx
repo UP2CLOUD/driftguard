@@ -71,8 +71,9 @@ export function DashboardNav({
               </span>
             </Link>
 
-            {/* Desktop nav items */}
-            <div className="hidden sm:flex items-center gap-0.5">
+            {/* Desktop nav items — 8 items need real width, so collapse to the
+                hamburger below lg rather than cramming them onto tablets. */}
+            <div className="hidden lg:flex items-center gap-0.5">
               {navItems.map((item) => {
                 const isActive =
                   item.href === base
@@ -106,25 +107,25 @@ export function DashboardNav({
           {/* Right */}
           <div className="flex items-center gap-2 sm:gap-3">
             {planLabel && (
-              <span className="hidden md:inline rounded border border-[color:var(--dg-border)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+              <span className="hidden lg:inline rounded border border-[color:var(--dg-border)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                 {planLabel}
               </span>
             )}
             <Link
               href="/docs"
-              className="hidden sm:inline font-mono text-[11px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
+              className="hidden lg:inline font-mono text-[11px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
             >
               {l("docs", "Docs")}
             </Link>
             {/* Command palette trigger */}
             <button
               onClick={() => setPaletteOpen(true)}
-              className="hidden sm:flex items-center gap-1.5 rounded border border-[color:var(--dg-border)] px-2 py-1 font-mono text-[10px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
+              className="hidden lg:flex items-center gap-1.5 rounded border border-[color:var(--dg-border)] px-2 py-1 font-mono text-[10px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
               aria-label="Open command palette"
             >
               <span>⌘K</span>
             </button>
-            <form action={signOutToHome} className="hidden sm:block">
+            <form action={signOutToHome} className="hidden lg:block">
               <button type="submit" className="dg-button dg-button-ghost text-[11px] py-1.5 gap-1.5">
                 <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round"
@@ -134,10 +135,10 @@ export function DashboardNav({
               </button>
             </form>
 
-            {/* Mobile hamburger */}
+            {/* Mobile / tablet hamburger */}
             <button
               onClick={() => setMenuOpen((v) => !v)}
-              className="sm:hidden flex flex-col items-center justify-center gap-[5px] w-8 h-8 rounded border border-[color:var(--dg-border)] hover:border-[color:var(--dg-electric)]/40 transition"
+              className="lg:hidden flex flex-col items-center justify-center gap-[5px] w-9 h-9 rounded border border-[color:var(--dg-border)] hover:border-[color:var(--dg-electric)]/40 transition"
               aria-label="Toggle menu"
               aria-expanded={menuOpen}
             >
@@ -148,9 +149,9 @@ export function DashboardNav({
           </div>
         </div>
 
-        {/* Mobile drawer */}
+        {/* Mobile / tablet drawer */}
         {menuOpen && (
-          <div className="sm:hidden border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-4 py-3">
+          <div className="lg:hidden border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-4 py-3">
             <div className="space-y-0.5 mb-4">
               {navItems.map((item) => {
                 const isActive =
