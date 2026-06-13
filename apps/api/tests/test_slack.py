@@ -28,8 +28,7 @@ class TestNoWebhookUrl:
 
     @pytest.mark.asyncio
     async def test_does_not_call_http_when_no_webhook(self):
-        with patch("driftguard.services.slack.settings") as s, \
-             patch("driftguard.services.slack.httpx") as mock_httpx:
+        with patch("driftguard.services.slack.settings") as s, patch("driftguard.services.slack.httpx") as mock_httpx:
             s.slack_webhook_url = ""
             await notify_incident(title="test", severity="high", repo="org/repo")
         mock_httpx.AsyncClient.assert_not_called()
@@ -51,8 +50,10 @@ class TestHttpSuccess:
         mock_client.__aexit__ = AsyncMock(return_value=False)
         mock_client.post = AsyncMock(return_value=self._mock_response())
 
-        with patch("driftguard.services.slack.settings") as s, \
-             patch("driftguard.services.slack.httpx.AsyncClient", return_value=mock_client):
+        with (
+            patch("driftguard.services.slack.settings") as s,
+            patch("driftguard.services.slack.httpx.AsyncClient", return_value=mock_client),
+        ):
             s.slack_webhook_url = "https://hooks.slack.com/test"
             result = await notify_incident(title="DB deleted", severity="critical", repo="org/repo")
         assert result is True
@@ -72,8 +73,10 @@ class TestHttpSuccess:
         mock_client.__aexit__ = AsyncMock(return_value=False)
         mock_client.post = fake_post
 
-        with patch("driftguard.services.slack.settings") as s, \
-             patch("driftguard.services.slack.httpx.AsyncClient", return_value=mock_client):
+        with (
+            patch("driftguard.services.slack.settings") as s,
+            patch("driftguard.services.slack.httpx.AsyncClient", return_value=mock_client),
+        ):
             s.slack_webhook_url = "https://hooks.slack.com/xyz"
             await notify_incident(title="test", severity="high", repo="org/repo")
 
@@ -87,8 +90,10 @@ class TestHttpSuccess:
         mock_client.__aexit__ = AsyncMock(return_value=False)
         mock_client.post = AsyncMock(side_effect=Exception("connection refused"))
 
-        with patch("driftguard.services.slack.settings") as s, \
-             patch("driftguard.services.slack.httpx.AsyncClient", return_value=mock_client):
+        with (
+            patch("driftguard.services.slack.settings") as s,
+            patch("driftguard.services.slack.httpx.AsyncClient", return_value=mock_client),
+        ):
             s.slack_webhook_url = "https://hooks.slack.com/test"
             result = await notify_incident(title="test", severity="high", repo="org/repo")
         assert result is False
@@ -98,9 +103,7 @@ class TestHttpSuccess:
 
 
 class TestPayloadStructure:
-    async def _capture_payload(
-        self, title="test", severity="high", repo="org/repo", **kwargs
-    ) -> dict:
+    async def _capture_payload(self, title="test", severity="high", repo="org/repo", **kwargs) -> dict:
         captured: dict = {}
 
         async def fake_post(url, *, json=None, **kw):
@@ -114,8 +117,10 @@ class TestPayloadStructure:
         mock_client.__aexit__ = AsyncMock(return_value=False)
         mock_client.post = fake_post
 
-        with patch("driftguard.services.slack.settings") as s, \
-             patch("driftguard.services.slack.httpx.AsyncClient", return_value=mock_client):
+        with (
+            patch("driftguard.services.slack.settings") as s,
+            patch("driftguard.services.slack.httpx.AsyncClient", return_value=mock_client),
+        ):
             s.slack_webhook_url = "https://hooks.slack.com/test"
             await notify_incident(title=title, severity=severity, repo=repo, **kwargs)
 
@@ -152,8 +157,7 @@ class TestPayloadStructure:
         for attachment in payload.get("attachments", []):
             for block in attachment.get("blocks", []):
                 for field in block.get("fields", []):
-                    assert isinstance(field.get("text", ""), str), \
-                        f"field 'text' should be str, got: {field}"
+                    assert isinstance(field.get("text", ""), str), f"field 'text' should be str, got: {field}"
 
     @pytest.mark.asyncio
     async def test_no_risk_score_uses_status_fallback(self):
@@ -162,8 +166,7 @@ class TestPayloadStructure:
         for attachment in payload.get("attachments", []):
             for block in attachment.get("blocks", []):
                 for field in block.get("fields", []):
-                    assert isinstance(field.get("text", ""), str), \
-                        f"field 'text' should be str, got: {field}"
+                    assert isinstance(field.get("text", ""), str), f"field 'text' should be str, got: {field}"
 
     @pytest.mark.asyncio
     async def test_risk_score_in_payload(self):

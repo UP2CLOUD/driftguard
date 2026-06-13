@@ -175,10 +175,7 @@ class TestIntentText:
         assert "public access" in result
 
     def test_truncates_to_first_five_findings(self):
-        findings = [
-            {"severity": "high", "resource": f"aws_s3_{i}", "message": f"issue {i}"}
-            for i in range(10)
-        ]
+        findings = [{"severity": "high", "resource": f"aws_s3_{i}", "message": f"issue {i}"} for i in range(10)]
         result = intent_text(findings, "summary")
         for i in range(5):
             assert f"aws_s3_{i}" in result

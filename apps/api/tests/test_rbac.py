@@ -76,9 +76,7 @@ class TestGenerateApiToken:
 class TestResolveApiToken:
     def _mock_db(self, token_row=None) -> AsyncMock:
         mock = AsyncMock()
-        mock.execute = AsyncMock(
-            return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=token_row))
-        )
+        mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=token_row)))
         return mock
 
     @pytest.mark.asyncio

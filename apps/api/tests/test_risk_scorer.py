@@ -235,19 +235,23 @@ class TestSensitiveAttributes:
 
     def test_sensitive_bonus_applied(self):
         normal = score([_change("aws_rds_instance", ChangeAction.UPDATE)])
-        sensitive = score([
-            _change("aws_rds_instance", ChangeAction.UPDATE, touches_sensitive=True, sensitive_paths=["password"])
-        ])
+        sensitive = score(
+            [_change("aws_rds_instance", ChangeAction.UPDATE, touches_sensitive=True, sensitive_paths=["password"])]
+        )
         assert sensitive.score > normal.score
 
     def test_high_risk_attr_change_adds_bonus(self):
         normal = score([_change("aws_rds_instance", ChangeAction.UPDATE)])
-        risky = score([_change(
-            "aws_rds_instance",
-            ChangeAction.UPDATE,
-            before={"deletion_protection": True, "other": "val"},
-            after={"deletion_protection": False, "other": "val"},
-        )])
+        risky = score(
+            [
+                _change(
+                    "aws_rds_instance",
+                    ChangeAction.UPDATE,
+                    before={"deletion_protection": True, "other": "val"},
+                    after={"deletion_protection": False, "other": "val"},
+                )
+            ]
+        )
         assert risky.score > normal.score
 
 
@@ -256,18 +260,26 @@ class TestSensitiveAttributes:
 
 class TestS3PublicAccessBlock:
     def test_removing_public_access_block_adds_large_bonus(self):
-        normal_update = score([_change(
-            "aws_s3_bucket_public_access_block",
-            ChangeAction.UPDATE,
-            before={"block_public_acls": True},
-            after={"block_public_acls": True},
-        )])
-        critical_update = score([_change(
-            "aws_s3_bucket_public_access_block",
-            ChangeAction.UPDATE,
-            before={"block_public_acls": True},
-            after={"block_public_acls": False},
-        )])
+        normal_update = score(
+            [
+                _change(
+                    "aws_s3_bucket_public_access_block",
+                    ChangeAction.UPDATE,
+                    before={"block_public_acls": True},
+                    after={"block_public_acls": True},
+                )
+            ]
+        )
+        critical_update = score(
+            [
+                _change(
+                    "aws_s3_bucket_public_access_block",
+                    ChangeAction.UPDATE,
+                    before={"block_public_acls": True},
+                    after={"block_public_acls": False},
+                )
+            ]
+        )
         assert critical_update.score > normal_update.score
 
 
@@ -276,26 +288,50 @@ class TestS3PublicAccessBlock:
 
 class TestProviderWeights:
     def test_random_provider_scores_zero(self):
-        result = score([_change(
-            "random_id",
-            ChangeAction.CREATE,
-            provider="registry.terraform.io/hashicorp/random",
-        )])
+        result = score(
+            [
+                _change(
+                    "random_id",
+                    ChangeAction.CREATE,
+                    provider="registry.terraform.io/hashicorp/random",
+                )
+            ]
+        )
         assert result.score == 0
 
     def test_null_provider_scores_zero(self):
-        result = score([_change(
-            "null_resource",
-            ChangeAction.CREATE,
-            provider="registry.terraform.io/hashicorp/null",
-        )])
+        result = score(
+            [
+                _change(
+                    "null_resource",
+                    ChangeAction.CREATE,
+                    provider="registry.terraform.io/hashicorp/null",
+                )
+            ]
+        )
         assert result.score == 0
 
     def test_kubernetes_has_lower_weight_than_aws(self):
-        aws = score([_change("aws_instance", ChangeAction.DELETE, is_destructive=True,
-                             provider="registry.terraform.io/hashicorp/aws")])
-        k8s = score([_change("kubernetes_deployment", ChangeAction.DELETE, is_destructive=True,
-                             provider="registry.terraform.io/hashicorp/kubernetes")])
+        aws = score(
+            [
+                _change(
+                    "aws_instance",
+                    ChangeAction.DELETE,
+                    is_destructive=True,
+                    provider="registry.terraform.io/hashicorp/aws",
+                )
+            ]
+        )
+        k8s = score(
+            [
+                _change(
+                    "kubernetes_deployment",
+                    ChangeAction.DELETE,
+                    is_destructive=True,
+                    provider="registry.terraform.io/hashicorp/kubernetes",
+                )
+            ]
+        )
         # The k8s deployment weight already differs — just confirm it's lower or equal than aws_instance
         # (aws_instance delete=30, k8s_deployment delete=25 × 0.8 = 20 → k8s < aws)
         assert k8s.score <= aws.score
@@ -307,21 +343,30 @@ class TestProviderWeights:
 class TestMultipleChanges:
     def test_multiple_changes_aggregate_score(self):
         single = score([_change("aws_s3_bucket", ChangeAction.DELETE, is_destructive=True)])
-        multi = score([
-            _change("aws_s3_bucket", ChangeAction.DELETE, is_destructive=True),
-            _change("aws_iam_role", ChangeAction.UPDATE),
-        ])
+        multi = score(
+            [
+                _change("aws_s3_bucket", ChangeAction.DELETE, is_destructive=True),
+                _change("aws_iam_role", ChangeAction.UPDATE),
+            ]
+        )
         assert multi.score >= single.score
 
     def test_score_capped_at_100(self):
-        many = score([
-            _change("aws_rds_cluster", ChangeAction.DELETE, is_destructive=True),
-            _change("aws_rds_instance", ChangeAction.DELETE, is_destructive=True),
-            _change("aws_s3_bucket", ChangeAction.DELETE, is_destructive=True,
-                    touches_sensitive=True, sensitive_paths=["password"]),
-            _change("aws_kms_key", ChangeAction.DELETE, is_destructive=True),
-            _change("aws_iam_policy", ChangeAction.DELETE, is_destructive=True),
-        ])
+        many = score(
+            [
+                _change("aws_rds_cluster", ChangeAction.DELETE, is_destructive=True),
+                _change("aws_rds_instance", ChangeAction.DELETE, is_destructive=True),
+                _change(
+                    "aws_s3_bucket",
+                    ChangeAction.DELETE,
+                    is_destructive=True,
+                    touches_sensitive=True,
+                    sensitive_paths=["password"],
+                ),
+                _change("aws_kms_key", ChangeAction.DELETE, is_destructive=True),
+                _change("aws_iam_policy", ChangeAction.DELETE, is_destructive=True),
+            ]
+        )
         assert many.score <= 100
 
     def test_total_changes_count_matches(self):

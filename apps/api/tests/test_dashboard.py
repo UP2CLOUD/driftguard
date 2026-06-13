@@ -181,15 +181,15 @@ class TestDashboardOverviewPopulated:
         mock.execute = AsyncMock(
             side_effect=[
                 _mk_scalar_none(org),
-                _mk_scalar(0),   # repo_count
-                _mk_scalar(0),   # analyses_7d
+                _mk_scalar(0),  # repo_count
+                _mk_scalar(0),  # analyses_7d
                 _mk_scalar(None),  # avg_risk → None
-                _mk_rows([]),    # severity_rows
-                _mk_scalar(0),   # open_incidents
-                _mk_scalar(0),   # critical_incidents
-                _mk_scalar(0),   # memory_count
-                _mk_scalars([]), # recent_events
-                _mk_rows([]),    # recent_analyses
+                _mk_rows([]),  # severity_rows
+                _mk_scalar(0),  # open_incidents
+                _mk_scalar(0),  # critical_incidents
+                _mk_scalar(0),  # memory_count
+                _mk_scalars([]),  # recent_events
+                _mk_rows([]),  # recent_analyses
             ]
         )
         mock.flush = AsyncMock()
