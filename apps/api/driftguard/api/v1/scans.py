@@ -251,6 +251,18 @@ async def trigger_scan(
     if not org:
         raise HTTPException(404, "Installation not found")
 
+    repo_row = (
+        (
+            await db.execute(
+                select(Repository).where(Repository.org_id == org.id, Repository.full_name == body.repo_full_name)
+            )
+        )
+        .scalars()
+        .first()
+    )
+    if repo_row is not None and not repo_row.enabled:
+        raise HTTPException(403, "Repository is disabled — enable it in the Repositories settings first")
+
     await _enforce_scan_quota(db, org)
 
     if settings.celery_enabled:
