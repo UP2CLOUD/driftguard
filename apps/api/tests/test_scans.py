@@ -131,6 +131,11 @@ class TestScanUpload:
                     new_callable=AsyncMock,
                     return_value=MagicMock(narrative="AI review unavailable."),
                 ),
+                patch(
+                    "driftguard.services.policy_engine.apply_policies",
+                    new_callable=AsyncMock,
+                    return_value=([], "pass"),
+                ),
             ):
                 r = TestClient(app).post(
                     "/api/v1/scans/upload",
