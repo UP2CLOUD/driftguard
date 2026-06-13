@@ -9,20 +9,20 @@ import { formatDate } from "@/lib/format-date";
 
 const PAGE_SIZE = 50;
 
-async function fetchOrgAnalyses(installationId: string, offset: number, status?: string) {
+async function fetchOrgAnalyses(installationId: string, offset: number, status?: string): Promise<{ rows: any[]; hasNext: boolean }> {
   const org = await beGet<{ id: string }>(
     `/api/v1/orgs/by-installation/${installationId}`,
     { revalidate: 10, timeout: 5000 },
   );
-  if (!org?.id) return [];
-  const qs = new URLSearchParams({ limit: String(PAGE_SIZE), offset: String(offset) });
+  if (!org?.id) return { rows: [], hasNext: false };
+  // Fetch one extra to detect whether a next page exists without a separate COUNT query.
+  const qs = new URLSearchParams({ limit: String(PAGE_SIZE + 1), offset: String(offset) });
   if (status) qs.set("status", status);
-  return (
-    (await beGet<any[]>(`/api/v1/orgs/${org.id}/analyses?${qs}`, {
-      revalidate: 10,
-      timeout: 8000,
-    })) ?? []
-  );
+  const raw = (await beGet<any[]>(`/api/v1/orgs/${org.id}/analyses?${qs}`, {
+    revalidate: 10,
+    timeout: 8000,
+  })) ?? [];
+  return { rows: raw.slice(0, PAGE_SIZE), hasNext: raw.length > PAGE_SIZE };
 }
 
 function riskColor(score: number | null) {
@@ -68,8 +68,7 @@ export default async function AnalysesPage({
   // When a status filter is active, fetch only that status from the server.
   // When showing "all", fetch unfiltered and derive per-status counts client-side.
   const activeFilter = filter && ["completed", "failed", "running"].includes(filter) ? filter : undefined;
-  const all = await fetchOrgAnalyses(installationId, offset, activeFilter);
-  const hasNext = all.length === PAGE_SIZE;
+  const { rows: all, hasNext } = await fetchOrgAnalyses(installationId, offset, activeFilter);
 
   const completed = activeFilter ? (activeFilter === "completed" ? all : []) : all.filter((a: any) => a.status === "completed");
   const failed = activeFilter ? (activeFilter === "failed" ? all : []) : all.filter((a: any) => a.status === "failed");
@@ -109,7 +108,7 @@ export default async function AnalysesPage({
         </h1>
         {all.length > 0 && !activeFilter && (
           <p className="mt-1 text-[13px] text-[color:var(--dg-fg-muted)]">
-            {all.length} on this page · {completed.length} completed · {failed.length} failed
+            {completed.length} completed · {failed.length} failed · {running.length} in progress
           </p>
         )}
       </div>

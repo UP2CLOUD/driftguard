@@ -41,6 +41,7 @@ async def list_analyses(
             "head_sha": p.head_sha,
             "repo_full_name": r.full_name,
             "started_at": a.started_at.isoformat() if a.started_at else None,
+            "finished_at": a.finished_at.isoformat() if a.finished_at else None,
             "created_at": a.started_at.isoformat() if a.started_at else None,
         }
         for a, p, r in result.all()
