@@ -174,7 +174,16 @@ async def scan_upload(
 
     duration_ms = int((time.monotonic() - started) * 1000)
 
-    # Persist to DB (with AI summary)
+    # Apply org policy rules before persisting
+    upload_policy_verdict = "pass"
+    try:
+        from driftguard.services.policy_engine import apply_policies
+
+        _, upload_policy_verdict = await apply_policies(db, installation_id, result.findings)  # type: ignore[arg-type]
+    except Exception as exc:
+        log.warning("scan.upload.policy_failed", extra={"error": str(exc)})
+
+    # Persist to DB (with AI summary and policy verdict)
     analysis_id = await _persist_scan(
         db=db,
         org_id=org.id,
@@ -182,6 +191,7 @@ async def scan_upload(
         source="manual_upload",
         ref=file.filename,
         ai_summary=ai_review.narrative,
+        policy_verdict=upload_policy_verdict,
     )
 
     resp = _to_response(result, duration_ms, analysis_id)
@@ -352,6 +362,15 @@ async def _run_scan_inprocess(
         scan_root = subdirs[0] if len(subdirs) == 1 else root
         result = await scan_directory(scan_root)
 
+    # Apply org policy rules to determine verdict
+    policy_verdict = "pass"
+    try:
+        from driftguard.services.policy_engine import apply_policies
+
+        _, policy_verdict = await apply_policies(db, installation_id, result.findings)  # type: ignore[arg-type]
+    except Exception as exc:
+        log.warning("scan.trigger.policy_failed", extra={"error": str(exc)})
+
     ref_label = ref or "default"
     analysis_id = await _persist_scan(
         db=db,
@@ -359,6 +378,7 @@ async def _run_scan_inprocess(
         result=result,
         source=f"{repo_full_name}@{ref_label}",
         ref=ref_label,
+        policy_verdict=policy_verdict,
     )
     return {
         "status": "completed",
@@ -444,6 +464,7 @@ async def _persist_scan(
     source: str,
     ref: str,
     ai_summary: str | None = None,
+    policy_verdict: str | None = None,
 ) -> str:
     """Persist scan results to DB. Returns analysis_id."""
     from datetime import datetime
@@ -490,6 +511,7 @@ async def _persist_scan(
         risk_score=result.risk_score,
         files_scanned=result.files_scanned,
         summary_md=ai_summary,
+        policy_verdict=policy_verdict,
     )
     db.add(analysis)
     await db.flush()
