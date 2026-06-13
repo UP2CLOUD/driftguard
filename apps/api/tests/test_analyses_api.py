@@ -156,6 +156,20 @@ class TestGetAnalysis:
             assert len(data["findings"]) == 1
             assert data["findings"][0]["severity"] == "high"
             assert data["findings"][0]["rule_id"] == "S3001"
+            # errors defaults to [] when scan_errors is None
+            assert data["errors"] == []
+        finally:
+            _cleanup()
+
+    def test_scan_errors_returned_when_present(self):
+        a = _analysis()
+        a.scan_errors = ["AI review unavailable: timeout", "Policy engine error: DB unreachable"]
+        _override(self._mock_get(analysis=a, pr=_pr(), repo=_repo()))
+        try:
+            r = TestClient(app).get("/api/v1/analyses/ana-1", headers=AUTH)
+            assert r.status_code == 200
+            data = r.json()
+            assert data["errors"] == ["AI review unavailable: timeout", "Policy engine error: DB unreachable"]
         finally:
             _cleanup()
 
