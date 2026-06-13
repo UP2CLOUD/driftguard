@@ -128,8 +128,10 @@ async def scan_upload(
 
     # Resolve org
     org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    ).scalar_one_or_none()
+        (await db.execute(select(Organization).where(Organization.github_installation_id == installation_id)))
+        .scalars()
+        .first()
+    )
 
     if not org:
         raise HTTPException(404, f"Installation {installation_id} not found")
@@ -200,8 +202,10 @@ async def trigger_scan(
     from driftguard.core.config import settings
 
     org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == body.installation_id))
-    ).scalar_one_or_none()
+        (await db.execute(select(Organization).where(Organization.github_installation_id == body.installation_id)))
+        .scalars()
+        .first()
+    )
     if not org:
         raise HTTPException(404, "Installation not found")
 
