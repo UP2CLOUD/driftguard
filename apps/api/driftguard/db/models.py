@@ -60,6 +60,7 @@ class Analysis(Base):
     risk_score: Mapped[int | None] = mapped_column(Integer)
     files_scanned: Mapped[int | None] = mapped_column(Integer)
     summary_md: Mapped[str | None] = mapped_column(Text)
+    scan_errors: Mapped[list | None] = mapped_column(JSON, nullable=True)
     contact_email: Mapped[str | None] = mapped_column(String(255))
 
 

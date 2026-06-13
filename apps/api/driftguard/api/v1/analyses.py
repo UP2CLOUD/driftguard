@@ -79,7 +79,7 @@ async def get_analysis(
         "critical": critical,
         "high": high,
         "duration_ms": duration_ms,
-        "errors": [],
+        "errors": a.scan_errors or [],
         "findings": [
             {
                 "type": f.type,

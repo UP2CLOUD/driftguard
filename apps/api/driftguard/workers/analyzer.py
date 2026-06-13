@@ -361,12 +361,12 @@ def _compute_risk(findings: list[Finding], plan: "TerraformPlan | None" = None) 
     return min(100, sum(weights.get(f.severity, 0) for f in findings))
 
 
-async def _run_static_scan(root: Path) -> tuple[list[Finding], int]:
+async def _run_static_scan(root: Path) -> tuple[list[Finding], int, str | None]:
     """Run the static IaC scanner on the repo root. No external tools required.
 
     Scans all .tf, K8s YAML, and .github/workflows files in the repo tree.
     Converts ScanFinding objects to Finding objects with compliance controls.
-    Returns (findings, files_scanned).
+    Returns (findings, files_scanned, error_message).
     """
     try:
         result = await asyncio.to_thread(scan_directory_sync, root)
@@ -378,10 +378,10 @@ async def _run_static_scan(root: Path) -> tuple[list[Finding], int]:
             gha=result.gha_files,
             findings=len(converted),
         )
-        return converted, result.files_scanned
+        return converted, result.files_scanned, None
     except Exception as exc:
         log.warning("static_scan_failed", error=str(exc))
-        return [], 0
+        return [], 0, f"Static scanner failed: {exc}"
 
 
 def _merge_findings(static: list[Finding], plan: list[Finding]) -> list[Finding]:
@@ -408,6 +408,7 @@ def _merge_findings(static: list[Finding], plan: list[Finding]) -> list[Finding]
 async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: int, head_sha: str) -> dict:
     started = time.monotonic()
     pr_ctx = {"repo": repo_full_name, "pr_number": pr_number, "head_sha": head_sha}
+    scan_errors: list[str] = []
 
     token = await installation_token(installation_id)
     repo_settings = await _load_repo_settings(repo_full_name)
@@ -431,7 +432,9 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
 
         # Static scan runs on every PR — catches K8s, GHA, and TF rule violations
         # without requiring a Terraform binary or AWS credentials.
-        static_findings, files_scanned = await _run_static_scan(root)
+        static_findings, files_scanned, _scan_err = await _run_static_scan(root)
+        if _scan_err:
+            scan_errors.append(_scan_err)
 
         if not tf_dirs and not static_findings:
             log.info("no_iac_files", repo=repo_full_name, pr=pr_number)
@@ -464,6 +467,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
             log.info("policy_applied", count=len(policy_findings), verdict=policy_verdict)
     except Exception as exc:
         log.warning("policy_apply_failed", error=str(exc))
+        scan_errors.append(f"Policy engine error: {exc}")
 
     # Semantic recall (arch step 02) — find similar past incidents
     recall_section = ""
@@ -498,6 +502,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         review_md = await ai_review(findings, pr_ctx)
     except Exception as exc:
         log.warning("ai_review_failed", error=str(exc))
+        scan_errors.append(f"AI review unavailable: {exc}")
         sev_counts = {}
         for f in findings:
             sev_counts[f.severity] = sev_counts.get(f.severity, 0) + 1
@@ -606,6 +611,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
             if _analysis_row:
                 _analysis_row.summary_md = review_md
                 _analysis_row.files_scanned = files_scanned
+                _analysis_row.scan_errors = scan_errors or None
                 _analysis_row.finished_at = datetime.now(UTC)
                 await _upd_db.commit()
     except Exception as exc:
