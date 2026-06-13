@@ -29,121 +29,224 @@ async def overview(
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> dict:
+    from driftguard.core.logging import log
+
+    # ── Resolve the org (tolerant of duplicate rows) ─────────────────────────
+    # Use .first() rather than scalar_one_or_none() so that a duplicate
+    # installation row never raises MultipleResultsFound — which would otherwise
+    # collapse a fully-installed org into the "not installed" empty overview.
+    org = None
     try:
         org = (
-            await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-        ).scalar_one_or_none()
+            (await db.execute(select(Organization).where(Organization.github_installation_id == installation_id)))
+            .scalars()
+            .first()
+        )
+    except Exception as exc:
+        log.error("overview_org_lookup_failed", installation_id=installation_id, error=str(exc))
 
-        if not org:
+    if not org:
+        try:
             from driftguard.api.v1.orgs import _bootstrap_installation
 
             org = await _bootstrap_installation(db, installation_id)
+        except Exception as exc:
+            log.error("overview_bootstrap_failed", installation_id=installation_id, error=str(exc))
 
-        if not org:
-            return _empty_overview(installation_id)
+    if not org:
+        # Genuinely no org for this installation — the app is not installed.
+        return _empty_overview(installation_id)
 
+    # ── Aggregate dashboard data ─────────────────────────────────────────────
+    # Once the org is resolved we ALWAYS return its real org_id, even if the
+    # aggregation below fails. Returning org_id=None here would make the
+    # dashboard render the "Install GitHub App" prompt for an installed org.
+    try:
         return await _build_overview(org, installation_id, db)
     except Exception as exc:
+        log.error("overview_build_failed", installation_id=installation_id, org_id=org.id, error=str(exc))
+        return _connected_overview(org, installation_id)
+
+
+async def _scalar_one(result_coro):
+    """Await an execute() coroutine and return its single scalar value."""
+    return (await result_coro).scalar_one()
+
+
+async def _all(result_coro):
+    """Await an execute() coroutine and return all rows."""
+    return (await result_coro).all()
+
+
+async def _scalars_all(result_coro):
+    """Await an execute() coroutine and return all scalar (ORM) rows."""
+    return (await result_coro).scalars().all()
+
+
+async def _safe(db: AsyncSession, coro_factory, default, *, label: str, org_id: str):
+    """Run one aggregate query in isolation.
+
+    A failing sub-query (e.g. a transient error or a column the live DB schema
+    is briefly missing mid-migration) returns its default instead of aborting
+    the whole overview. The session is rolled back so later queries can run.
+    """
+    try:
+        return await coro_factory()
+    except Exception as exc:
+        import contextlib
+
         from driftguard.core.logging import log
 
-        log.error("overview_failed", installation_id=installation_id, error=str(exc))
-        return _empty_overview(installation_id)
+        log.warning("overview_section_failed", section=label, org_id=org_id, error=str(exc))
+        with contextlib.suppress(Exception):
+            await db.rollback()
+        return default
 
 
 async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
+    from driftguard.db.models import IncidentEmbedding
+
     now = datetime.now(UTC)
     window_7d = now - timedelta(days=7)
     window_30d = now - timedelta(days=30)
 
     # ── Repos ────────────────────────────────────────────────────────────────
-    repo_count = (await db.execute(select(func.count()).where(Repository.org_id == org.id))).scalar_one()
+    repo_count = await _safe(
+        db,
+        lambda: _scalar_one(db.execute(select(func.count()).where(Repository.org_id == org.id))),
+        0,
+        label="repos",
+        org_id=org.id,
+    )
 
     # ── Analyses (7d) ────────────────────────────────────────────────────────
-    analyses_7d = (
-        await db.execute(
-            select(func.count())
-            .select_from(Analysis)
-            .join(PullRequest, Analysis.pr_id == PullRequest.id)
-            .join(Repository, PullRequest.repo_id == Repository.id)
-            .where(Repository.org_id == org.id, Analysis.started_at >= window_7d)
-        )
-    ).scalar_one()
+    analyses_7d = await _safe(
+        db,
+        lambda: _scalar_one(
+            db.execute(
+                select(func.count())
+                .select_from(Analysis)
+                .join(PullRequest, Analysis.pr_id == PullRequest.id)
+                .join(Repository, PullRequest.repo_id == Repository.id)
+                .where(Repository.org_id == org.id, Analysis.started_at >= window_7d)
+            )
+        ),
+        0,
+        label="analyses_7d",
+        org_id=org.id,
+    )
 
     # ── Avg risk (7d) ────────────────────────────────────────────────────────
-    avg_risk_row = (
-        await db.execute(
-            select(func.avg(Analysis.risk_score))
-            .select_from(Analysis)
-            .join(PullRequest, Analysis.pr_id == PullRequest.id)
-            .join(Repository, PullRequest.repo_id == Repository.id)
-            .where(Repository.org_id == org.id, Analysis.started_at >= window_7d)
-        )
-    ).scalar_one()
+    avg_risk_row = await _safe(
+        db,
+        lambda: _scalar_one(
+            db.execute(
+                select(func.avg(Analysis.risk_score))
+                .select_from(Analysis)
+                .join(PullRequest, Analysis.pr_id == PullRequest.id)
+                .join(Repository, PullRequest.repo_id == Repository.id)
+                .where(Repository.org_id == org.id, Analysis.started_at >= window_7d)
+            )
+        ),
+        None,
+        label="avg_risk_7d",
+        org_id=org.id,
+    )
     avg_risk = round(float(avg_risk_row), 1) if avg_risk_row else None
 
     # ── Findings by severity ────────────────────────────────────────────────
-    severity_rows = (
-        await db.execute(
-            select(Finding.severity, func.count())
-            .join(Analysis, Finding.analysis_id == Analysis.id)
-            .join(PullRequest, Analysis.pr_id == PullRequest.id)
-            .join(Repository, PullRequest.repo_id == Repository.id)
-            .where(Repository.org_id == org.id, Analysis.started_at >= window_30d)
-            .group_by(Finding.severity)
-        )
-    ).all()
+    severity_rows = await _safe(
+        db,
+        lambda: _all(
+            db.execute(
+                select(Finding.severity, func.count())
+                .join(Analysis, Finding.analysis_id == Analysis.id)
+                .join(PullRequest, Analysis.pr_id == PullRequest.id)
+                .join(Repository, PullRequest.repo_id == Repository.id)
+                .where(Repository.org_id == org.id, Analysis.started_at >= window_30d)
+                .group_by(Finding.severity)
+            )
+        ),
+        [],
+        label="severity_breakdown",
+        org_id=org.id,
+    )
     severity_breakdown = {row[0]: row[1] for row in severity_rows}
 
     # ── Drift incidents ──────────────────────────────────────────────────────
-    open_incidents = (
-        await db.execute(
-            select(func.count()).where(
-                DriftIncident.org_id == org.id,
-                DriftIncident.status == "open",
+    open_incidents = await _safe(
+        db,
+        lambda: _scalar_one(
+            db.execute(
+                select(func.count()).where(
+                    DriftIncident.org_id == org.id,
+                    DriftIncident.status == "open",
+                )
             )
-        )
-    ).scalar_one()
+        ),
+        0,
+        label="open_incidents",
+        org_id=org.id,
+    )
 
-    critical_incidents = (
-        await db.execute(
-            select(func.count()).where(
-                DriftIncident.org_id == org.id,
-                DriftIncident.status == "open",
-                DriftIncident.severity == "critical",
+    critical_incidents = await _safe(
+        db,
+        lambda: _scalar_one(
+            db.execute(
+                select(func.count()).where(
+                    DriftIncident.org_id == org.id,
+                    DriftIncident.status == "open",
+                    DriftIncident.severity == "critical",
+                )
             )
-        )
-    ).scalar_one()
+        ),
+        0,
+        label="critical_incidents",
+        org_id=org.id,
+    )
 
     # ── Memory entries ───────────────────────────────────────────────────────
-    from driftguard.db.models import IncidentEmbedding
-
-    memory_count = (await db.execute(select(func.count()).where(IncidentEmbedding.org_id == org.id))).scalar_one()
+    memory_count = await _safe(
+        db,
+        lambda: _scalar_one(db.execute(select(func.count()).where(IncidentEmbedding.org_id == org.id))),
+        0,
+        label="memory_entries",
+        org_id=org.id,
+    )
 
     # ── Recent events (last 10) ──────────────────────────────────────────────
-    recent_events = (
-        (
-            await db.execute(
+    recent_events = await _safe(
+        db,
+        lambda: _scalars_all(
+            db.execute(
                 select(RuntimeEvent)
                 .where(RuntimeEvent.org_id == org.id)
                 .order_by(RuntimeEvent.created_at.desc())
                 .limit(10)
             )
-        )
-        .scalars()
-        .all()
+        ),
+        [],
+        label="recent_events",
+        org_id=org.id,
     )
 
     # ── Recent analyses (last 5) ─────────────────────────────────────────────
-    recent_analyses_rows = (
-        await db.execute(
-            select(Analysis, PullRequest, Repository)
-            .join(PullRequest, Analysis.pr_id == PullRequest.id)
-            .join(Repository, PullRequest.repo_id == Repository.id)
-            .where(Repository.org_id == org.id)
-            .order_by(Analysis.started_at.desc().nulls_last())
-            .limit(5)
-        )
-    ).all()
+    recent_analyses_rows = await _safe(
+        db,
+        lambda: _all(
+            db.execute(
+                select(Analysis, PullRequest, Repository)
+                .join(PullRequest, Analysis.pr_id == PullRequest.id)
+                .join(Repository, PullRequest.repo_id == Repository.id)
+                .where(Repository.org_id == org.id)
+                .order_by(Analysis.started_at.desc().nulls_last())
+                .limit(5)
+            )
+        ),
+        [],
+        label="recent_analyses",
+        org_id=org.id,
+    )
 
     return {
         "org_id": org.id,
@@ -197,3 +300,15 @@ def _empty_overview(installation_id: int | None = None) -> dict:
         "recent_events": [],
         "recent_analyses": [],
     }
+
+
+def _connected_overview(org, installation_id: int | None = None) -> dict:
+    """Fallback when the org is known but data aggregation failed.
+
+    Preserves the real org_id so the dashboard renders the connected (empty)
+    state rather than the misleading "Install GitHub App" prompt.
+    """
+    overview = _empty_overview(installation_id)
+    overview["org_id"] = org.id
+    overview["plan"] = org.plan
+    return overview
