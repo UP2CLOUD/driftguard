@@ -361,11 +361,12 @@ def _compute_risk(findings: list[Finding], plan: "TerraformPlan | None" = None) 
     return min(100, sum(weights.get(f.severity, 0) for f in findings))
 
 
-async def _run_static_scan(root: Path) -> list[Finding]:
+async def _run_static_scan(root: Path) -> tuple[list[Finding], int]:
     """Run the static IaC scanner on the repo root. No external tools required.
 
     Scans all .tf, K8s YAML, and .github/workflows files in the repo tree.
     Converts ScanFinding objects to Finding objects with compliance controls.
+    Returns (findings, files_scanned).
     """
     try:
         result = await asyncio.to_thread(scan_directory_sync, root)
@@ -377,10 +378,10 @@ async def _run_static_scan(root: Path) -> list[Finding]:
             gha=result.gha_files,
             findings=len(converted),
         )
-        return converted
+        return converted, result.files_scanned
     except Exception as exc:
         log.warning("static_scan_failed", error=str(exc))
-        return []
+        return [], 0
 
 
 def _merge_findings(static: list[Finding], plan: list[Finding]) -> list[Finding]:
@@ -430,7 +431,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
 
         # Static scan runs on every PR — catches K8s, GHA, and TF rule violations
         # without requiring a Terraform binary or AWS credentials.
-        static_findings = await _run_static_scan(root)
+        static_findings, files_scanned = await _run_static_scan(root)
 
         if not tf_dirs and not static_findings:
             log.info("no_iac_files", repo=repo_full_name, pr=pr_number)
@@ -604,6 +605,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
             ).scalar_one_or_none()
             if _analysis_row:
                 _analysis_row.summary_md = review_md
+                _analysis_row.files_scanned = files_scanned
                 _analysis_row.finished_at = datetime.now(UTC)
                 await _upd_db.commit()
     except Exception as exc:
