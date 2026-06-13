@@ -3,11 +3,43 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+async function pollTask(
+  taskId: string,
+  installationId: string,
+  onStatus: (msg: string) => void,
+  router: ReturnType<typeof useRouter>,
+): Promise<void> {
+  for (let attempt = 0; attempt < 36; attempt++) {
+    await new Promise((r) => setTimeout(r, 5000));
+    try {
+      const res = await fetch(`/api/scan/tasks/${taskId}`);
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data.state === "completed" && data.analysis_id) {
+        onStatus("Scan complete — redirecting…");
+        router.push(`/dashboard/${installationId}/analyses/${data.analysis_id}`);
+        return;
+      }
+      if (data.state === "failed") {
+        onStatus("Scan failed on worker");
+        return;
+      }
+      if (data.state === "started") {
+        onStatus("Scan running…");
+      }
+    } catch {
+      // transient network error — keep polling
+    }
+  }
+  // 3 minutes elapsed — send to analyses list
+  router.push(`/dashboard/${installationId}/analyses`);
+}
+
 export function ScanTrigger({ installationId }: { installationId: string }) {
   const [repo, setRepo] = useState("");
-  const [ref, setRef]   = useState("");
-  const [status, setStatus] = useState<"idle"|"loading"|"done"|"error"|"quota">("idle");
-  const [msg, setMsg]   = useState("");
+  const [ref, setRef] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "polling" | "done" | "error" | "quota">("idle");
+  const [msg, setMsg] = useState("");
   const router = useRouter();
 
   async function trigger() {
@@ -21,7 +53,6 @@ export function ScanTrigger({ installationId }: { installationId: string }) {
         body: JSON.stringify({
           installation_id: parseInt(installationId, 10),
           repo_full_name: repo.trim(),
-          // Empty = backend resolves the repository's default branch
           ref: ref.trim() || undefined,
         }),
       });
@@ -32,14 +63,20 @@ export function ScanTrigger({ installationId }: { installationId: string }) {
         return;
       }
       if (!res.ok) throw new Error(data.detail || "Scan failed");
-      setStatus("done");
+
       if (data.analysis_id) {
-        // In-process scan completed — navigate directly to the analysis page
-        setMsg(`Scan complete — redirecting…`);
+        setStatus("done");
+        setMsg("Scan complete — redirecting…");
         setTimeout(() => router.push(`/dashboard/${installationId}/analyses/${data.analysis_id}`), 800);
+      } else if (data.task_id) {
+        setStatus("polling");
+        setMsg("Scan queued — waiting for worker…");
+        pollTask(data.task_id, installationId, setMsg, router).then(() => {
+          setStatus("done");
+        });
       } else {
-        // Celery queued — just refresh the list
-        setMsg(`Scan queued — task ${data.task_id?.slice(0,8) ?? "started"}`);
+        setStatus("done");
+        setMsg("Scan queued");
         setTimeout(() => router.refresh(), 2500);
       }
     } catch (e: any) {
@@ -48,32 +85,39 @@ export function ScanTrigger({ installationId }: { installationId: string }) {
     }
   }
 
+  const busy = status === "loading" || status === "polling";
+
   return (
     <div className="space-y-3">
       <input
         value={repo}
-        onChange={e => setRepo(e.target.value)}
+        onChange={(e) => setRepo(e.target.value)}
         placeholder="owner/repository"
-        className="w-full rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] focus:border-[color:var(--dg-electric)] focus:outline-none transition"
+        disabled={busy}
+        className="w-full rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] focus:border-[color:var(--dg-electric)] focus:outline-none transition disabled:opacity-50"
       />
       <div className="flex gap-2">
         <input
           value={ref}
-          onChange={e => setRef(e.target.value)}
+          onChange={(e) => setRef(e.target.value)}
           placeholder="default branch"
-          className="w-28 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] focus:border-[color:var(--dg-electric)] focus:outline-none transition"
+          disabled={busy}
+          className="w-28 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] focus:border-[color:var(--dg-electric)] focus:outline-none transition disabled:opacity-50"
         />
         <button
           onClick={trigger}
-          disabled={status === "loading" || !repo.trim()}
+          disabled={busy || !repo.trim()}
           className="flex-1 rounded bg-[color:var(--dg-electric)] px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-white hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition"
         >
-          {status === "loading" ? "Scanning…" : "Run scan →"}
+          {status === "loading" ? "Queuing…" : status === "polling" ? "Scanning…" : "Run scan →"}
         </button>
       </div>
       {msg && status !== "quota" && (
-        <p className={`font-mono text-[11px] ${status === "error" ? "text-blocked" : "text-allowed"}`}>
-          {status === "done" ? "✓" : "✗"} {msg}
+        <p className={`font-mono text-[11px] flex items-center gap-1.5 ${status === "error" ? "text-blocked" : status === "polling" ? "text-[color:var(--dg-electric-bright)]" : "text-allowed"}`}>
+          {status === "polling" && (
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--dg-electric-bright)] animate-pulse" />
+          )}
+          {msg}
         </p>
       )}
       {status === "quota" && (

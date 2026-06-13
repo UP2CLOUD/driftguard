@@ -189,6 +189,42 @@ async def scan_upload(
     return resp
 
 
+@router.get(
+    "/tasks/{task_id}",
+    summary="Poll Celery task status for a queued scan",
+)
+async def get_task_status(
+    task_id: str,
+    _auth: str = Depends(require_internal_auth),
+) -> dict:
+    """Return current state of a queued scan task.
+
+    Possible states: pending | started | completed | failed | unknown
+    When state == completed, analysis_id is included.
+    """
+    try:
+        from driftguard.worker.app import celery_app
+
+        result = celery_app.AsyncResult(task_id)
+        state = result.state  # PENDING, STARTED, SUCCESS, FAILURE, RETRY, REVOKED
+    except Exception as exc:
+        return {"state": "unknown", "error": str(exc)[:120]}
+
+    if state == "SUCCESS":
+        task_result = result.result or {}
+        return {
+            "state": "completed",
+            "analysis_id": task_result.get("analysis_id"),
+            "risk_score": task_result.get("risk_score"),
+            "findings": task_result.get("findings"),
+        }
+    if state in ("FAILURE", "REVOKED"):
+        return {"state": "failed", "error": str(result.result)[:120]}
+    if state == "STARTED":
+        return {"state": "started"}
+    return {"state": "pending"}
+
+
 @router.post(
     "/trigger",
     response_model=dict,
