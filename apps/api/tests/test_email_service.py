@@ -25,8 +25,7 @@ class TestSendDevMode:
 
     @pytest.mark.asyncio
     async def test_does_not_call_resend_without_api_key(self):
-        with patch("driftguard.services.email.settings") as s, \
-             patch("driftguard.services.email.log") as mock_log:
+        with patch("driftguard.services.email.settings") as s, patch("driftguard.services.email.log") as mock_log:
             s.resend_api_key = None
             await _send(to="user@example.com", subject="test", html="<p>hi</p>")
         mock_log.info.assert_called_once()
@@ -36,8 +35,7 @@ class TestSendDevMode:
         mock_resend = MagicMock()
         mock_resend.Emails.send = MagicMock()
 
-        with patch("driftguard.services.email.settings") as s, \
-             patch.dict("sys.modules", {"resend": mock_resend}):
+        with patch("driftguard.services.email.settings") as s, patch.dict("sys.modules", {"resend": mock_resend}):
             s.resend_api_key = "re_live_test"
             s.resend_from = "noreply@driftguard.io"
             await _send(to="dev@example.com", subject="Hello", html="<b>test</b>")
@@ -53,8 +51,7 @@ class TestSendDevMode:
         mock_resend = MagicMock()
         mock_resend.Emails.send = MagicMock(side_effect=RuntimeError("Resend down"))
 
-        with patch("driftguard.services.email.settings") as s, \
-             patch.dict("sys.modules", {"resend": mock_resend}):
+        with patch("driftguard.services.email.settings") as s, patch.dict("sys.modules", {"resend": mock_resend}):
             s.resend_api_key = "re_live_test"
             s.resend_from = "noreply@driftguard.io"
             await _send(to="u@x.com", subject="s", html="h")
@@ -86,8 +83,12 @@ class TestSendReviewComplete:
 
         with patch("driftguard.services.email._send", side_effect=fake_send):
             await send_review_complete(
-                to="u@x.com", repo="org/infra", pr_number=99,
-                risk_score=30, findings_count=1, analysis_url="https://x.com",
+                to="u@x.com",
+                repo="org/infra",
+                pr_number=99,
+                risk_score=30,
+                findings_count=1,
+                analysis_url="https://x.com",
             )
 
         assert "99" in captured["subject"]
@@ -101,8 +102,12 @@ class TestSendReviewComplete:
 
         with patch("driftguard.services.email._send", side_effect=fake_send):
             await send_review_complete(
-                to="u@x.com", repo="my-org/terraform", pr_number=1,
-                risk_score=10, findings_count=0, analysis_url="https://x.com",
+                to="u@x.com",
+                repo="my-org/terraform",
+                pr_number=1,
+                risk_score=10,
+                findings_count=0,
+                analysis_url="https://x.com",
             )
 
         assert "my-org/terraform" in captured["subject"]
@@ -116,8 +121,12 @@ class TestSendReviewComplete:
 
         with patch("driftguard.services.email._send", side_effect=fake_send):
             await send_review_complete(
-                to="u@x.com", repo="org/r", pr_number=1,
-                risk_score=85, findings_count=5, analysis_url="https://x.com",
+                to="u@x.com",
+                repo="org/r",
+                pr_number=1,
+                risk_score=85,
+                findings_count=5,
+                analysis_url="https://x.com",
             )
 
         assert "HIGH" in captured["html"]
@@ -131,8 +140,12 @@ class TestSendReviewComplete:
 
         with patch("driftguard.services.email._send", side_effect=fake_send):
             await send_review_complete(
-                to="u@x.com", repo="org/r", pr_number=1,
-                risk_score=20, findings_count=0, analysis_url="https://x.com",
+                to="u@x.com",
+                repo="org/r",
+                pr_number=1,
+                risk_score=20,
+                findings_count=0,
+                analysis_url="https://x.com",
             )
 
         assert "LOW" in captured["html"]
@@ -146,8 +159,11 @@ class TestSendReviewComplete:
 
         with patch("driftguard.services.email._send", side_effect=fake_send):
             await send_review_complete(
-                to="u@x.com", repo="org/r", pr_number=1,
-                risk_score=50, findings_count=2,
+                to="u@x.com",
+                repo="org/r",
+                pr_number=1,
+                risk_score=50,
+                findings_count=2,
                 analysis_url="https://app.driftguard.io/analyses/xyz",
             )
 
@@ -180,8 +196,11 @@ class TestSendPolicyViolation:
 
         with patch("driftguard.services.email._send", side_effect=fake_send):
             await send_policy_violation(
-                to="u@x.com", repo="org/r", pr_number=1,
-                resource="aws_kms_key.main", reason="KMS deletion blocked",
+                to="u@x.com",
+                repo="org/r",
+                pr_number=1,
+                resource="aws_kms_key.main",
+                reason="KMS deletion blocked",
                 analysis_url="https://x.com",
             )
 
@@ -196,8 +215,11 @@ class TestSendPolicyViolation:
 
         with patch("driftguard.services.email._send", side_effect=fake_send):
             await send_policy_violation(
-                to="u@x.com", repo="org/r", pr_number=1,
-                resource="res", reason="Production DB delete blocked",
+                to="u@x.com",
+                repo="org/r",
+                pr_number=1,
+                resource="res",
+                reason="Production DB delete blocked",
                 analysis_url="https://x.com",
             )
 

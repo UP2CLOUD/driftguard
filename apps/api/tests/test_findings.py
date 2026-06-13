@@ -158,10 +158,12 @@ class TestFromStaticScan:
         assert findings[0].controls == ()
 
     def test_multiple_findings(self):
-        findings = from_static_scan([
-            _sf(rule_id="TF001"),
-            _sf(rule_id="K8S001", category=Category.NETWORK),
-        ])
+        findings = from_static_scan(
+            [
+                _sf(rule_id="TF001"),
+                _sf(rule_id="K8S001", category=Category.NETWORK),
+            ]
+        )
         assert len(findings) == 2
         assert {f.rule_id for f in findings} == {"TF001", "K8S001"}
 
@@ -174,20 +176,40 @@ class TestAggregateCostCents:
         assert aggregate_cost_cents([]) == 0
 
     def test_non_cost_findings_excluded(self):
-        f = Finding(type="security", severity="high", resource="r", message="m",
-                    suggestion=None, controls=())
+        f = Finding(type="security", severity="high", resource="r", message="m", suggestion=None, controls=())
         assert aggregate_cost_cents([f]) == 0
 
     def test_cost_finding_with_cents_included(self):
-        f = Finding(type="cost", severity="medium", resource="r", message="m",
-                    suggestion=None, controls=(), extra={"cents": 500})
+        f = Finding(
+            type="cost",
+            severity="medium",
+            resource="r",
+            message="m",
+            suggestion=None,
+            controls=(),
+            extra={"cents": 500},
+        )
         assert aggregate_cost_cents([f]) == 500
 
     def test_mixed_types_only_cost_summed(self):
         findings = [
-            Finding(type="cost", severity="high", resource="r1", message="m",
-                    suggestion=None, controls=(), extra={"cents": 300}),
-            Finding(type="security", severity="high", resource="r2", message="m",
-                    suggestion=None, controls=(), extra={"cents": 999}),
+            Finding(
+                type="cost",
+                severity="high",
+                resource="r1",
+                message="m",
+                suggestion=None,
+                controls=(),
+                extra={"cents": 300},
+            ),
+            Finding(
+                type="security",
+                severity="high",
+                resource="r2",
+                message="m",
+                suggestion=None,
+                controls=(),
+                extra={"cents": 999},
+            ),
         ]
         assert aggregate_cost_cents(findings) == 300

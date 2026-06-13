@@ -383,9 +383,7 @@ async def test_new_delivery_is_processed(monkeypatch):
     monkeypatch.setattr(settings, "github_webhook_secret", "test-secret")
     # INSERT ... RETURNING yields the delivery id → freshly claimed
     mock_session = AsyncMock()
-    mock_session.execute = AsyncMock(
-        return_value=MagicMock(scalar_one_or_none=MagicMock(return_value="guid-new"))
-    )
+    mock_session.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value="guid-new")))
     mock_session.commit = AsyncMock()
     _db_override(mock_session)
     body, sig, event = _signed_post(_pr_payload(), "pull_request")

@@ -1,18 +1,18 @@
-"""010_analysis_files_scanned
+"""010a_analysis_files_scanned
 
 Add files_scanned to analyses table so the API can return the real
 count instead of a hardcoded zero.
 
-Revision ID: 010
-Revises: 009
+Revision ID: 010a
+Revises: 010
 Create Date: 2026-06-11
 """
 
 import sqlalchemy as sa
 from alembic import op
 
-revision = "010"
-down_revision = "009"
+revision = "010a"
+down_revision = "010"
 branch_labels = None
 depends_on = None
 

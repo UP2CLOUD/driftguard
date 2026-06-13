@@ -124,13 +124,13 @@ resource "aws_s3_bucket" "data" {
     async def test_insecure_tf_produces_findings(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             tf = Path(tmpdir) / "bad.tf"
-            tf.write_text('''
+            tf.write_text("""
 resource "aws_iam_policy" "admin" {
   policy = <<EOF
 {"Statement": [{"Effect": "Allow", "Action": "s3:*", "Resource": "*"}]}
 EOF
 }
-''')
+""")
             result = await scan_directory(Path(tmpdir))
             assert len(result.findings) > 0
 

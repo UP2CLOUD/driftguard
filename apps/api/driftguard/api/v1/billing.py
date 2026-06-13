@@ -21,6 +21,16 @@ from driftguard.services.quota import get_monthly_pr_count, is_premium
 router = APIRouter()
 
 
+def _free_plan_defaults() -> dict:
+    return {
+        "plan": "free",
+        "subscription_status": "free",
+        "is_premium": False,
+        "repos": {"active": 0, "limit": settings.free_repository_limit},
+        "monthly_pr_reviews": {"used": None, "limit": None},
+    }
+
+
 @router.get("/plan")
 async def get_plan(
     installation_id: int,
@@ -30,7 +40,7 @@ async def get_plan(
     result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
     org = result.scalar_one_or_none()
     if org is None:
-        raise HTTPException(404, "Organization not found")
+        return _free_plan_defaults()
 
     active_repos = (
         await db.execute(
