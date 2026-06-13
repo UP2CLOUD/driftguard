@@ -111,14 +111,14 @@ export default async function AnalysisPage({
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8">
       {/* Back */}
       <div className="flex items-center gap-4 mb-8">
-        <Link href={`/dashboard/${installationId}`}
+        <Link href={`/dashboard/${installationId}/analyses`}
           className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">
-          ← {t("nav.overview")}
+          ← {t("nav.analyses") ?? "Analyses"}
         </Link>
         <span className="text-[color:var(--dg-border)]">·</span>
-        <Link href={`/dashboard/${installationId}/repos`}
+        <Link href={`/dashboard/${installationId}`}
           className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">
-          {t("nav.repos")}
+          {t("nav.overview")}
         </Link>
       </div>
 

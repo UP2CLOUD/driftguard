@@ -41,7 +41,8 @@
     "docs": "Docs",
     "menuLabel": "Menu",
     "howItWorks": "▸ como funciona",
-    "auditLog": "Auditoria"
+    "auditLog": "Auditoria",
+    "analyses": "Análises"
   },
   "auth": {
     "goToDashboard": "Ir para o painel →",

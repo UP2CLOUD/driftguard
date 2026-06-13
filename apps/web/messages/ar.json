@@ -19,7 +19,8 @@
     "docs": "التوثيق",
     "menuLabel": "القائمة",
     "howItWorks": "▸ كيف يعمل",
-    "auditLog": "سجل التدقيق"
+    "auditLog": "سجل التدقيق",
+    "analyses": "التحليلات"
   },
   "auth": {
     "goToDashboard": "الانتقال إلى لوحة التحكم →",

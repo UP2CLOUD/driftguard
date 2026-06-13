@@ -41,6 +41,7 @@ export function DashboardNav({
   const navItems = [
     { label: l("overview", "Overview"),   href: base },
     { label: l("repos", "Repos"),         href: `${base}/repos` },
+    { label: l("analyses", "Analyses"),   href: `${base}/analyses` },
     { label: l("incidents", "Incidents"), href: `${base}/incidents`, badge: openIncidents > 0 ? openIncidents : 0 },
     { label: l("policies", "Policies"),   href: `${base}/policies` },
     { label: l("memory", "Memory"),       href: `${base}/memory` },

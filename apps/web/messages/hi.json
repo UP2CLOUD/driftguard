@@ -19,7 +19,8 @@
     "docs": "दस्तावेज़",
     "menuLabel": "मेनू",
     "howItWorks": "▸ कैसे काम करता है",
-    "auditLog": "ऑडिट लॉग"
+    "auditLog": "ऑडिट लॉग",
+    "analyses": "विश्लेषण"
   },
   "auth": {
     "goToDashboard": "डैशबोर्ड पर जाएँ →",
