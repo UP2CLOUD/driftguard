@@ -206,14 +206,23 @@ export default async function AnalysisPage({
         })}
       </div>
 
-      {/* Severity breakdown */}
-      {bySeverity.length > 0 && (
+      {/* Severity breakdown + policy verdict */}
+      {(bySeverity.length > 0 || data.policy_verdict) && (
         <div className="mb-6 flex flex-wrap gap-2">
           {bySeverity.map(({ s, count }) => (
             <span key={s} className={`rounded border px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest ${SEV_STYLE[s]}`}>
               {count} {s}
             </span>
           ))}
+          {data.policy_verdict && (
+            <span className={`rounded border px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest ${
+              data.policy_verdict === "block" ? "text-blocked border-blocked/30 bg-blocked/10" :
+              data.policy_verdict === "warn"  ? "text-warned border-warned/30 bg-warned/10" :
+              "text-allowed border-allowed/30 bg-allowed/10"
+            }`}>
+              policy: {data.policy_verdict}
+            </span>
+          )}
         </div>
       )}
 

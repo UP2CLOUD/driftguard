@@ -63,6 +63,7 @@ class Analysis(Base):
     summary_md: Mapped[str | None] = mapped_column(Text)
     scan_errors: Mapped[list | None] = mapped_column(JSON, nullable=True)
     contact_email: Mapped[str | None] = mapped_column(String(255))
+    policy_verdict: Mapped[str | None] = mapped_column(String(16))
 
 
 class Finding(Base):

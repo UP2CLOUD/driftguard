@@ -613,6 +613,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
                 _analysis_row.files_scanned = files_scanned
                 _analysis_row.scan_errors = scan_errors or None
                 _analysis_row.finished_at = datetime.now(UTC)
+                _analysis_row.policy_verdict = policy_verdict
                 await _upd_db.commit()
     except Exception as exc:
         log.warning("analysis_update_failed", error=str(exc))

@@ -81,6 +81,7 @@ async def get_analysis(
         "critical": critical,
         "high": high,
         "duration_ms": duration_ms,
+        "policy_verdict": a.policy_verdict,
         "errors": a.scan_errors or [],
         "findings": [
             {
