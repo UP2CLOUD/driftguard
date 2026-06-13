@@ -9,14 +9,16 @@ import { formatDate } from "@/lib/format-date";
 
 const PAGE_SIZE = 50;
 
-async function fetchOrgAnalyses(installationId: string, offset: number) {
+async function fetchOrgAnalyses(installationId: string, offset: number, status?: string) {
   const org = await beGet<{ id: string }>(
     `/api/v1/orgs/by-installation/${installationId}`,
     { revalidate: 10, timeout: 5000 },
   );
   if (!org?.id) return [];
+  const qs = new URLSearchParams({ limit: String(PAGE_SIZE), offset: String(offset) });
+  if (status) qs.set("status", status);
   return (
-    (await beGet<any[]>(`/api/v1/orgs/${org.id}/analyses?limit=${PAGE_SIZE}&offset=${offset}`, {
+    (await beGet<any[]>(`/api/v1/orgs/${org.id}/analyses?${qs}`, {
       revalidate: 10,
       timeout: 8000,
     })) ?? []
@@ -63,29 +65,30 @@ export default async function AnalysesPage({
   const msgs = await getMessages(prefs.locale);
   const t = createTranslator(msgs);
 
-  const all = await fetchOrgAnalyses(installationId, offset);
+  // When a status filter is active, fetch only that status from the server.
+  // When showing "all", fetch unfiltered and derive per-status counts client-side.
+  const activeFilter = filter && ["completed", "failed", "running"].includes(filter) ? filter : undefined;
+  const all = await fetchOrgAnalyses(installationId, offset, activeFilter);
   const hasNext = all.length === PAGE_SIZE;
 
-  const completed = all.filter((a: any) => a.status === "completed");
-  const failed = all.filter((a: any) => a.status === "failed");
-  const running = all.filter((a: any) => a.status === "running" || a.status === "pending");
+  const completed = activeFilter ? (activeFilter === "completed" ? all : []) : all.filter((a: any) => a.status === "completed");
+  const failed = activeFilter ? (activeFilter === "failed" ? all : []) : all.filter((a: any) => a.status === "failed");
+  const running = activeFilter ? (activeFilter === "running" ? all : []) : all.filter((a: any) => a.status === "running" || a.status === "pending");
 
-  const filtered =
-    filter === "completed"
-      ? completed
-      : filter === "failed"
-        ? failed
-        : filter === "running"
-          ? running
-          : all;
+  const filtered = activeFilter ? all : (
+    filter === "completed" ? completed :
+    filter === "failed" ? failed :
+    filter === "running" ? running :
+    all
+  );
 
   const activeTab = filter ?? "all";
 
   const tabs = [
-    { key: "all", label: "All", count: all.length },
-    { key: "completed", label: "Completed", count: completed.length },
-    { key: "failed", label: "Failed", count: failed.length },
-    { key: "running", label: "In progress", count: running.length },
+    { key: "all", label: "All", count: activeFilter ? null : all.length },
+    { key: "completed", label: "Completed", count: activeFilter === "completed" ? all.length : (activeFilter ? null : completed.length) },
+    { key: "failed", label: "Failed", count: activeFilter === "failed" ? all.length : (activeFilter ? null : failed.length) },
+    { key: "running", label: "In progress", count: activeFilter === "running" ? all.length : (activeFilter ? null : running.length) },
   ];
 
   const pageHref = (tab: string, p: number) => {
@@ -104,9 +107,9 @@ export default async function AnalysesPage({
         <h1 className="font-sans text-xl sm:text-2xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
           Analyses
         </h1>
-        {all.length > 0 && (
+        {all.length > 0 && !activeFilter && (
           <p className="mt-1 text-[13px] text-[color:var(--dg-fg-muted)]">
-            {all.length} total · {completed.length} completed · {failed.length} failed
+            {all.length} on this page · {completed.length} completed · {failed.length} failed
           </p>
         )}
       </div>
@@ -129,7 +132,7 @@ export default async function AnalysesPage({
                 }`}
               >
                 {tab.label}
-                {tab.count > 0 && (
+                {tab.count != null && tab.count > 0 && (
                   <span
                     className={`rounded px-1 font-mono text-[10px] ${
                       isActive

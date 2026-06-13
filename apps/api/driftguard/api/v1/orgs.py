@@ -161,6 +161,7 @@ async def list_org_analyses(
     org_id: str,
     limit: int = 20,
     offset: int = 0,
+    status: str | None = None,
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
@@ -173,6 +174,10 @@ async def list_org_analyses(
         .limit(min(limit, 100))
         .offset(max(offset, 0))
     )
+    if status == "running":
+        stmt = stmt.where(Analysis.status.in_(["running", "pending"]))
+    elif status:
+        stmt = stmt.where(Analysis.status == status)
     result = await db.execute(stmt)
     return [
         {
