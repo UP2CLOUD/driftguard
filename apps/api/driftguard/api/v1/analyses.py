@@ -34,6 +34,7 @@ async def list_analyses(
             "id": a.id,
             "status": a.status,
             "risk_score": a.risk_score,
+            "policy_verdict": a.policy_verdict,
             "cost_delta_cents": a.cost_delta_cents,
             "files_scanned": a.files_scanned or 0,
             "pr_number": p.github_pr_number,

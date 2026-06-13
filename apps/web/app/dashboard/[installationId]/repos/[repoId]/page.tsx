@@ -142,7 +142,14 @@ export default async function RepoPage({
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3 shrink-0">
+                <div className="flex items-center gap-2 shrink-0">
+                  {a.policy_verdict && a.policy_verdict !== "pass" && (
+                    <span className={`font-mono text-[9px] uppercase tracking-widest rounded px-1 py-0.5 ${
+                      a.policy_verdict === "block" ? "text-blocked bg-blocked/10" : "text-warned bg-warned/10"
+                    }`}>
+                      {a.policy_verdict}
+                    </span>
+                  )}
                   <span
                     className={`font-mono text-[10px] uppercase tracking-widest px-2 py-0.5 rounded border ${
                       a.status === "completed"
