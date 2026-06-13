@@ -18,6 +18,7 @@ router = APIRouter(prefix="/memory", tags=["memory"])
 async def list_memory(
     installation_id: int = Query(...),
     limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
@@ -42,6 +43,7 @@ async def list_memory(
                 .where(IncidentEmbedding.org_id == org.id)
                 .order_by(IncidentEmbedding.created_at.desc())
                 .limit(limit)
+                .offset(offset)
             )
         )
         .scalars()

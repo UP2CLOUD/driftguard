@@ -8,9 +8,11 @@ import { beGet } from "@/lib/backend";
 import { formatDate } from "@/lib/format-date";
 import { MemorySearch } from "./MemorySearch";
 
-async function fetchMemory(id: string) {
+const PAGE_SIZE = 20;
+
+async function fetchMemory(id: string, offset: number) {
   const [entries, stats] = await Promise.all([
-    beGet<any[]>(`/api/v1/memory?installation_id=${id}&limit=20`, { revalidate: 30, timeout: 3000 }),
+    beGet<any[]>(`/api/v1/memory?installation_id=${id}&limit=${PAGE_SIZE}&offset=${offset}`, { revalidate: 30, timeout: 3000 }),
     beGet<any>(`/api/v1/memory/stats?installation_id=${id}`, { revalidate: 30, timeout: 3000 }),
   ]);
   return {
@@ -41,18 +43,24 @@ const BLAST_COLOR: Record<string, string> = {
 
 export default async function MemoryPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ installationId: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
   const session = await auth();
   if (!session) redirect("/");
   const { installationId } = await params;
+  const { page: pageStr } = await searchParams;
+  const page = Math.max(1, parseInt(pageStr ?? "1", 10) || 1);
+  const offset = (page - 1) * PAGE_SIZE;
 
   const preferences = await getUserPreferences();
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
 
-  const { entries, stats } = await fetchMemory(installationId);
+  const { entries, stats } = await fetchMemory(installationId, offset);
+  const hasNext = entries.length === PAGE_SIZE;
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8">
@@ -95,7 +103,7 @@ export default async function MemoryPage({
         </div>
       )}
 
-      {entries.length === 0 ? (
+      {entries.length === 0 && page === 1 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
           <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">{t("memory.engineReady")}</div>
           <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
@@ -160,6 +168,30 @@ export default async function MemoryPage({
               </div>
             </Link>
           ))}
+        </div>
+      )}
+
+      {(page > 1 || hasNext) && (
+        <div className="flex items-center justify-between mt-4">
+          {page > 1 ? (
+            <Link
+              href={`?page=${page - 1}`}
+              className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+            >
+              ← Previous
+            </Link>
+          ) : <span />}
+          <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+            Page {page}
+          </span>
+          {hasNext ? (
+            <Link
+              href={`?page=${page + 1}`}
+              className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+            >
+              Next →
+            </Link>
+          ) : <span />}
         </div>
       )}
     </div>

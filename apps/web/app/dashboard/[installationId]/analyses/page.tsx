@@ -7,14 +7,16 @@ import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
 import { formatDate } from "@/lib/format-date";
 
-async function fetchOrgAnalyses(installationId: string) {
+const PAGE_SIZE = 50;
+
+async function fetchOrgAnalyses(installationId: string, offset: number) {
   const org = await beGet<{ id: string }>(
     `/api/v1/orgs/by-installation/${installationId}`,
     { revalidate: 10, timeout: 5000 },
   );
   if (!org?.id) return [];
   return (
-    (await beGet<any[]>(`/api/v1/orgs/${org.id}/analyses?limit=100`, {
+    (await beGet<any[]>(`/api/v1/orgs/${org.id}/analyses?limit=${PAGE_SIZE}&offset=${offset}`, {
       revalidate: 10,
       timeout: 8000,
     })) ?? []
@@ -47,19 +49,22 @@ export default async function AnalysesPage({
   searchParams,
 }: {
   params: Promise<{ installationId: string }>;
-  searchParams: Promise<{ filter?: string }>;
+  searchParams: Promise<{ filter?: string; page?: string }>;
 }) {
   const session = await auth();
   if (!session) redirect("/");
 
   const { installationId } = await params;
-  const { filter } = await searchParams;
+  const { filter, page: pageStr } = await searchParams;
+  const page = Math.max(1, parseInt(pageStr ?? "1", 10) || 1);
+  const offset = (page - 1) * PAGE_SIZE;
 
   const prefs = await getUserPreferences();
   const msgs = await getMessages(prefs.locale);
   const t = createTranslator(msgs);
 
-  const all = await fetchOrgAnalyses(installationId);
+  const all = await fetchOrgAnalyses(installationId, offset);
+  const hasNext = all.length === PAGE_SIZE;
 
   const completed = all.filter((a: any) => a.status === "completed");
   const failed = all.filter((a: any) => a.status === "failed");
@@ -83,6 +88,14 @@ export default async function AnalysesPage({
     { key: "running", label: "In progress", count: running.length },
   ];
 
+  const pageHref = (tab: string, p: number) => {
+    const params = new URLSearchParams();
+    if (tab !== "all") params.set("filter", tab);
+    if (p > 1) params.set("page", String(p));
+    const q = params.toString();
+    return q ? `?${q}` : "?";
+  };
+
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-6 sm:py-8">
       {/* Header */}
@@ -103,7 +116,7 @@ export default async function AnalysesPage({
         <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-hide px-4 sm:px-0">
           {tabs.map((tab) => {
             const isActive = tab.key === activeTab;
-            const href = tab.key === "all" ? "?" : `?filter=${tab.key}`;
+            const href = pageHref(tab.key, 1);
             return (
               <a
                 key={tab.key}
@@ -235,10 +248,28 @@ export default async function AnalysesPage({
             ))}
           </div>
 
-          {all.length >= 100 && (
-            <p className="mt-3 text-center font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-              Showing the 100 most recent analyses.
-            </p>
+          {(page > 1 || hasNext) && (
+            <div className="flex items-center justify-between mt-4">
+              {page > 1 ? (
+                <Link
+                  href={pageHref(activeTab, page - 1)}
+                  className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+                >
+                  ← Previous
+                </Link>
+              ) : <span />}
+              <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+                Page {page}
+              </span>
+              {hasNext ? (
+                <Link
+                  href={pageHref(activeTab, page + 1)}
+                  className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+                >
+                  Next →
+                </Link>
+              ) : <span />}
+            </div>
           )}
         </>
       )}
