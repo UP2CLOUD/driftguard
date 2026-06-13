@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ScanTrigger } from "@/components/dashboard/ScanTrigger";
 import { UploadScan } from "@/components/dashboard/UploadScan";
+import { RepoQuickScan } from "@/components/dashboard/RepoQuickScan";
 import { RepoToggle } from "@/components/RepoToggle";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
@@ -226,7 +227,7 @@ export default async function ReposPage({
                     {lastDate ?? t("repos.never")}
                   </div>
 
-                  {/* View latest */}
+                  {/* View latest / quick scan */}
                   <div className="hidden sm:flex items-center gap-2">
                     {last ? (
                       <Link
@@ -236,7 +237,10 @@ export default async function ReposPage({
                         {t("repos.viewLatest")}
                       </Link>
                     ) : (
-                      <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">—</span>
+                      <RepoQuickScan
+                        installationId={installationId}
+                        repoFullName={repo.full_name}
+                      />
                     )}
                   </div>
 
