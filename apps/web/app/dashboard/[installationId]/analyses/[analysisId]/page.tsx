@@ -141,10 +141,12 @@ export default async function AnalysisPage({
         {/* Risk badge */}
         <div className="flex items-center gap-3">
           <div className="text-center">
-            <div className="font-mono text-3xl font-bold" style={{
-              color: data.risk_score >= 70 ? "var(--blocked)" : data.risk_score >= 40 ? "var(--warned)" : "var(--allowed)"
-            }}>
-              {data.risk_score}
+            <div className={`font-mono text-3xl font-bold tabular-nums ${
+              data.risk_score == null ? "text-[color:var(--dg-fg-muted)]" :
+              data.risk_score >= 70  ? "text-blocked" :
+              data.risk_score >= 40  ? "text-warned"  : "text-allowed"
+            }`}>
+              {data.risk_score ?? "—"}
             </div>
             <div className="dg-label mt-0.5">{t("dashboard.riskScore")}</div>
           </div>
