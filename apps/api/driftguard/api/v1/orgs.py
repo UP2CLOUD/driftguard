@@ -204,6 +204,32 @@ async def update_notification_settings(
     return {"status": "ok", "contact_email": org.contact_email}
 
 
+@router.post("/{org_id}/notifications/test")
+async def test_notification_email(
+    org_id: str,
+    db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
+) -> dict:
+    """Send a test notification email to verify the contact_email is reachable."""
+    org = await db.get(Organization, org_id)
+    if not org:
+        raise HTTPException(404, "org not found")
+    if not org.contact_email:
+        raise HTTPException(400, "no contact_email configured")
+
+    from driftguard.services.email import send_review_complete
+
+    await send_review_complete(
+        to=org.contact_email,
+        repo="example/terraform-infra",
+        pr_number=42,
+        risk_score=75,
+        findings_count=3,
+        analysis_url=f"{settings.public_base_url.rstrip('/')}/dashboard",
+    )
+    return {"status": "ok", "sent_to": org.contact_email}
+
+
 class AwsSettingsUpdate(BaseModel):
     aws_role_arn: str | None = None
     state_bucket: str | None = None

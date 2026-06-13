@@ -672,3 +672,59 @@ class TestPatchOrgNotifications:
             assert org.contact_email is None
         finally:
             _cleanup()
+
+
+# ── POST /orgs/{org_id}/notifications/test ────────────────────────────────────
+
+
+class TestPostNotificationTest:
+    def test_requires_auth(self):
+        r = TestClient(app).post("/api/v1/orgs/org-1/notifications/test")
+        assert r.status_code == 401
+
+    def test_not_found_returns_404(self):
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=None)
+        _override(mock)
+        try:
+            r = TestClient(app).post("/api/v1/orgs/nonexistent/notifications/test", headers=AUTH)
+            assert r.status_code == 404
+        finally:
+            _cleanup()
+
+    def test_no_email_configured_returns_400(self):
+        org = _org()
+        org.contact_email = None
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=org)
+        _override(mock)
+        try:
+            r = TestClient(app).post("/api/v1/orgs/org-1/notifications/test", headers=AUTH)
+            assert r.status_code == 400
+            assert "contact_email" in r.json()["detail"]
+        finally:
+            _cleanup()
+
+    def test_sends_email_and_returns_200(self):
+        from unittest.mock import patch
+
+        org = _org()
+        org.contact_email = "team@example.com"
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=org)
+        _override(mock)
+        sent = []
+        with patch(
+            "driftguard.services.email.send_review_complete",
+            new=AsyncMock(side_effect=lambda **kw: sent.append(kw)),
+        ):
+            try:
+                r = TestClient(app).post("/api/v1/orgs/org-1/notifications/test", headers=AUTH)
+                assert r.status_code == 200
+                data = r.json()
+                assert data["status"] == "ok"
+                assert data["sent_to"] == "team@example.com"
+                assert len(sent) == 1
+                assert sent[0]["to"] == "team@example.com"
+            finally:
+                _cleanup()

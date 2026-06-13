@@ -806,6 +806,28 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         except Exception as _exc:
             log.debug("notification_dispatch_skipped", error=str(_exc))
 
+    # Policy violation notification — notify when a block rule is triggered.
+    if policy_verdict == "block" and analysis_id and policy_findings:
+        try:
+            block_finding = next(
+                (f for f in policy_findings if (f.extra or {}).get("rule_type") == "block"),
+                policy_findings[0],
+            )
+            from driftguard.worker.tasks import send_policy_violation_notification
+
+            send_policy_violation_notification.apply_async(
+                kwargs={
+                    "analysis_id": analysis_id,
+                    "repo_full_name": repo_full_name,
+                    "pr_number": pr_number,
+                    "resource": block_finding.resource or "policy violation",
+                    "reason": block_finding.message[:200],
+                },
+                queue="notifications",
+            )
+        except Exception as _exc:
+            log.debug("policy_violation_notification_skipped", error=str(_exc))
+
     return {
         "status": "ok",
         "analysis_id": analysis_id,

@@ -153,6 +153,51 @@ def send_notification(*, analysis_id: str, repo_full_name: str, pr_number: int) 
         log.warning("send_notification.failed", extra={"analysis_id": analysis_id})
 
 
+@celery_app.task(
+    name="driftguard.worker.tasks.send_policy_violation_notification",
+    queue="notifications",
+    max_retries=2,
+)
+def send_policy_violation_notification(
+    *, analysis_id: str, repo_full_name: str, pr_number: int, resource: str, reason: str
+) -> None:
+    try:
+        asyncio.run(_send_policy_violation_async(analysis_id, repo_full_name, pr_number, resource, reason))
+    except Exception:
+        log.warning("send_policy_violation_notification.failed", extra={"analysis_id": analysis_id})
+
+
+async def _send_policy_violation_async(
+    analysis_id: str, repo_full_name: str, pr_number: int, resource: str, reason: str
+) -> None:
+    from driftguard.core.db import SessionLocal
+    from driftguard.db.models import Analysis, Organization, PullRequest, Repository
+    from driftguard.services.email import send_policy_violation
+
+    async with SessionLocal() as session:
+        analysis = await session.get(Analysis, analysis_id)
+        if not analysis:
+            return
+        pr = await session.get(PullRequest, analysis.pr_id)
+        if not pr:
+            return
+        repo = await session.get(Repository, pr.repo_id)
+        if not repo:
+            return
+        org = await session.get(Organization, repo.org_id)
+        if not org or not getattr(org, "contact_email", None):
+            return
+
+        await send_policy_violation(
+            to=org.contact_email,
+            repo=repo_full_name,
+            pr_number=pr_number,
+            resource=resource,
+            reason=reason,
+            analysis_url=f"{settings.public_base_url.rstrip('/')}/dashboard/{org.github_installation_id}/analyses/{analysis_id}",
+        )
+
+
 async def _send_notification_async(analysis_id: str, repo_full_name: str, pr_number: int) -> None:
     from sqlalchemy import func, select
 
