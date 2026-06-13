@@ -41,8 +41,10 @@ async def list_incidents(
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
     org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    ).scalar_one_or_none()
+        (await db.execute(select(Organization).where(Organization.github_installation_id == installation_id)))
+        .scalars()
+        .first()
+    )
     if not org:
         return []
 

@@ -22,8 +22,10 @@ async def list_memory(
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
     org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    ).scalar_one_or_none()
+        (await db.execute(select(Organization).where(Organization.github_installation_id == installation_id)))
+        .scalars()
+        .first()
+    )
     if not org:
         return []
 
@@ -63,8 +65,10 @@ async def memory_stats(
     _auth: str = Depends(require_internal_auth),
 ) -> dict:
     org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    ).scalar_one_or_none()
+        (await db.execute(select(Organization).where(Organization.github_installation_id == installation_id)))
+        .scalars()
+        .first()
+    )
     if not org:
         return {"total": 0, "by_outcome": {}, "by_severity": {}}
 
@@ -108,8 +112,10 @@ async def recall(
 ) -> list[dict]:
     """Semantic similarity search over incident memory."""
     org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    ).scalar_one_or_none()
+        (await db.execute(select(Organization).where(Organization.github_installation_id == installation_id)))
+        .scalars()
+        .first()
+    )
     if not org:
         return []
 

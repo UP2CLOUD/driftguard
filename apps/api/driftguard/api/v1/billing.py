@@ -38,7 +38,7 @@ async def get_plan(
     _auth: str = Depends(require_internal_auth),
 ) -> dict:
     result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    org = result.scalar_one_or_none()
+    org = result.scalars().first()
     if org is None:
         return _free_plan_defaults()
 

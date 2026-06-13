@@ -96,7 +96,7 @@ async def get_org_by_installation(
 ) -> dict:
     try:
         result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-        org = result.scalar_one_or_none()
+        org = result.scalars().first()
     except Exception:
         org = None
 
