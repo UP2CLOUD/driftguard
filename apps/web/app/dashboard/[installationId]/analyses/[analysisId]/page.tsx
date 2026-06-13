@@ -5,6 +5,7 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
+import { formatCostDeltaCentsForUser } from "@/lib/currency/format";
 import { RescanButton } from "./RescanButton";
 
 async function fetchAnalysis(id: string) {
@@ -110,6 +111,10 @@ export default async function AnalysisPage({
     s, count: findings.filter((f: any) => f.severity === s).length,
   })).filter(x => x.count > 0);
 
+  const costDeltaDisplay = data.cost_delta_cents != null
+    ? await formatCostDeltaCentsForUser(data.cost_delta_cents, prefs.currency, prefs.locale)
+    : null;
+
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8">
       {/* Back */}
@@ -182,18 +187,23 @@ export default async function AnalysisPage({
       </div>
 
       {/* Stats bar */}
-      <div className="mb-8 grid grid-cols-2 sm:grid-cols-4 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)]">
+      <div className={`mb-8 grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] grid-cols-2 ${costDeltaDisplay ? "sm:grid-cols-5" : "sm:grid-cols-4"}`}>
         {[
           { label: t("dashboard.filesScanned"),  val: data.files_scanned },
           { label: t("dashboard.totalFindings"), val: findings.length },
           { label: t("dashboard.criticalHigh"),  val: (data.critical ?? 0) + (data.high ?? 0) },
           { label: t("dashboard.duration"),      val: data.duration_ms ? `${(data.duration_ms/1000).toFixed(1)}s` : "—" },
-        ].map(({ label, val }) => (
-          <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
-            <div className="dg-label mb-1">{label}</div>
-            <div className="font-mono text-xl font-bold text-[color:var(--dg-fg)]">{val}</div>
-          </div>
-        ))}
+          ...(costDeltaDisplay ? [{ label: t("dashboard.costDelta") ?? "Cost delta", val: costDeltaDisplay, cost: data.cost_delta_cents as number }] : []),
+        ].map(({ label, val, ...rest }) => {
+          const costCents = (rest as any).cost;
+          const costColor = costCents == null ? "" : costCents > 0 ? "text-blocked" : costCents < 0 ? "text-allowed" : "";
+          return (
+            <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
+              <div className="dg-label mb-1">{label}</div>
+              <div className={`font-mono text-xl font-bold ${costColor || "text-[color:var(--dg-fg)]"}`}>{val}</div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Severity breakdown */}
