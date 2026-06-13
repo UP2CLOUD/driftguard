@@ -128,7 +128,13 @@ async def scan_upload(
 
     # Resolve org
     org = (
-        (await db.execute(select(Organization).where(Organization.github_installation_id == installation_id)))
+        (
+            await db.execute(
+                select(Organization)
+                .where(Organization.github_installation_id == installation_id)
+                .order_by(Organization.created_at.desc())
+            )
+        )
         .scalars()
         .first()
     )

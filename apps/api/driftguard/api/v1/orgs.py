@@ -95,7 +95,11 @@ async def get_org_by_installation(
     _auth: str = Depends(require_internal_auth),
 ) -> dict:
     try:
-        result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
+        result = await db.execute(
+            select(Organization)
+            .where(Organization.github_installation_id == installation_id)
+            .order_by(Organization.created_at.desc())
+        )
         org = result.scalars().first()
     except Exception:
         org = None

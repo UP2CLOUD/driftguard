@@ -17,7 +17,10 @@ def _no_org_session():
     mock.execute = AsyncMock(
         return_value=MagicMock(
             scalar_one_or_none=MagicMock(return_value=None),
-            scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[]))),
+            scalars=MagicMock(return_value=MagicMock(
+                first=MagicMock(return_value=None),
+                all=MagicMock(return_value=[]),
+            )),
         )
     )
     mock.get = AsyncMock(return_value=None)
@@ -275,7 +278,9 @@ class TestGetOrgByInstallation:
     def test_returns_org_when_found(self):
         org = _org()
         mock = AsyncMock()
-        mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=org)))
+        mock.execute = AsyncMock(return_value=MagicMock(
+            scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org)))
+        ))
         _override(mock)
         try:
             r = TestClient(app).get("/api/v1/orgs/by-installation/42", headers=AUTH)
@@ -292,7 +297,9 @@ class TestGetOrgByInstallation:
 
         monkeypatch.setattr(settings, "github_app_id", None)
         mock = AsyncMock()
-        mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None)))
+        mock.execute = AsyncMock(return_value=MagicMock(
+            scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=None)))
+        ))
         _override(mock)
         try:
             r = TestClient(app).get("/api/v1/orgs/by-installation/9999", headers=AUTH)

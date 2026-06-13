@@ -44,7 +44,9 @@ def _make_tgz(files: dict[str, str] | None = None) -> bytes:
 
 def _mock_org_session(org=None) -> AsyncMock:
     mock = AsyncMock()
-    mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=org)))
+    mock.execute = AsyncMock(return_value=MagicMock(
+        scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org)))
+    ))
     mock.flush = AsyncMock()
     mock.commit = AsyncMock()
     mock.add = MagicMock()
@@ -109,7 +111,7 @@ class TestScanUpload:
 
         org = _org()
         # Three executes: org lookup + quota usage lookup + repo lookup (inside _persist_scan)
-        org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+        org_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
         no_row_result = MagicMock(scalar_one_or_none=MagicMock(return_value=None))
         mock_session = AsyncMock()
         mock_session.execute = AsyncMock(side_effect=[org_result, no_row_result, no_row_result])
@@ -249,7 +251,7 @@ class TestScanQuota:
     def test_upload_quota_gate_error_fails_open(self):
         """Quota infrastructure errors must not block scans (parity with webhook path)."""
         org = _org()
-        org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+        org_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
         no_row_result = MagicMock(scalar_one_or_none=MagicMock(return_value=None))
         mock_session = AsyncMock()
         mock_session.execute = AsyncMock(side_effect=[org_result, no_row_result, no_row_result])

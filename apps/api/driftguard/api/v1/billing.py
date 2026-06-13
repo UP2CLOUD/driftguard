@@ -37,7 +37,11 @@ async def get_plan(
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> dict:
-    result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
+    result = await db.execute(
+        select(Organization)
+        .where(Organization.github_installation_id == installation_id)
+        .order_by(Organization.created_at.desc())
+    )
     org = result.scalars().first()
     if org is None:
         return _free_plan_defaults()
