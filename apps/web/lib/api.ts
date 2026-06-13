@@ -17,6 +17,7 @@ export type Org = {
   has_stripe_customer: boolean;
   aws_role_arn?: string | null;
   aws_external_id?: string | null;
+  contact_email?: string | null;
 };
 
 export type Repo = {

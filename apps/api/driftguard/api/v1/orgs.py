@@ -116,6 +116,7 @@ async def get_org_by_installation(
         "has_stripe_customer": org.stripe_customer_id is not None,
         "aws_role_arn": (org.settings or {}).get("aws_role_arn"),
         "aws_external_id": f"driftguard-{org.github_installation_id}",
+        "contact_email": org.contact_email,
     }
 
 
@@ -170,6 +171,37 @@ async def list_org_analyses(
         }
         for a, p, r in result.all()
     ]
+
+
+class NotificationSettingsUpdate(BaseModel):
+    contact_email: str | None = None
+
+
+@router.patch("/{org_id}/notifications")
+async def update_notification_settings(
+    org_id: str,
+    body: NotificationSettingsUpdate,
+    db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
+) -> dict:
+    org = await db.get(Organization, org_id)
+    if not org:
+        raise HTTPException(404, "org not found")
+
+    if "contact_email" in body.model_fields_set:
+        org.contact_email = body.contact_email
+        db.add(
+            AuditLog(
+                org_id=org_id,
+                actor="api",
+                action="notification_settings.updated",
+                target=org_id,
+                payload={"contact_email_set": bool(body.contact_email)},
+            )
+        )
+        await db.commit()
+
+    return {"status": "ok", "contact_email": org.contact_email}
 
 
 class AwsSettingsUpdate(BaseModel):

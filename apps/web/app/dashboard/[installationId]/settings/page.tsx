@@ -4,6 +4,7 @@ import Link from "next/link";
 import { BillingActions } from "@/components/BillingActions";
 import { UserPreferencesSettings } from "@/components/UserPreferencesSettings";
 import { AwsIntegrationForm } from "@/components/AwsIntegrationForm";
+import { NotificationEmailForm } from "@/components/NotificationEmailForm";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { requireOrg } from "@/lib/org-server";
@@ -143,6 +144,19 @@ export default async function Settings({
       >
         <AwsIntegrationForm installationId={installationId} org={org} />
       </Section>
+
+      {/* ── Notifications ───────────────────────────────────────── */}
+      {org && (
+        <Section title="Notifications" description="Get an email alert when a PR scan finds critical issues.">
+          <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
+            <NotificationEmailForm
+              orgId={org.id}
+              installationId={installationId}
+              initialEmail={org.contact_email}
+            />
+          </div>
+        </Section>
+      )}
 
       {/* ── Billing ─────────────────────────────────────────────── */}
       {org && (
