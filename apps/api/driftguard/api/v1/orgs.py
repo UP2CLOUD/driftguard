@@ -166,6 +166,7 @@ async def list_org_analyses(
             "pr_number": p.github_pr_number,
             "head_sha": p.head_sha,
             "repo_full_name": r.full_name,
+            "policy_verdict": a.policy_verdict,
             "started_at": a.started_at.isoformat() if a.started_at else None,
             "created_at": a.started_at.isoformat() if a.started_at else None,
         }

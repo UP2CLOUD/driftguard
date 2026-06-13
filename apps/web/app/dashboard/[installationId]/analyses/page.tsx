@@ -206,13 +206,22 @@ export default async function AnalysesPage({
                       <span className="text-[color:var(--dg-fg-muted)]">#{a.pr_number}</span>
                     ) : null}
                   </p>
-                  <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
-                    {a.head_sha ? a.head_sha.slice(0, 7) : "manual"}
-                    {/* Mobile: show date + status inline */}
-                    <span className="sm:hidden">
-                      {a.created_at ? ` · ${formatDate(a.created_at, prefs.locale)}` : ""}
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+                      {a.head_sha ? a.head_sha.slice(0, 7) : "manual"}
+                      {/* Mobile: show date + status inline */}
+                      <span className="sm:hidden">
+                        {a.created_at ? ` · ${formatDate(a.created_at, prefs.locale)}` : ""}
+                      </span>
                     </span>
-                  </p>
+                    {a.policy_verdict && a.policy_verdict !== "pass" && (
+                      <span className={`font-mono text-[9px] uppercase tracking-widest rounded px-1 py-0.5 ${
+                        a.policy_verdict === "block" ? "text-blocked bg-blocked/10" : "text-warned bg-warned/10"
+                      }`}>
+                        {a.policy_verdict}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Status */}
