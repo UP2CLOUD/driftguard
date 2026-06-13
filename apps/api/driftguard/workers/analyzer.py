@@ -795,6 +795,17 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         risk_score=risk_score,
         analysis_id=analysis_id,
     )
+
+    # Fire-and-forget notification for high-risk analyses (risk >= 60).
+    # Only sends if the org has a contact_email configured; silently skips otherwise.
+    if risk_score >= 60 and analysis_id:
+        try:
+            from driftguard.worker.tasks import _send_notification_async
+
+            asyncio.create_task(_send_notification_async(analysis_id, repo_full_name, pr_number))
+        except Exception as _exc:
+            log.debug("notification_dispatch_skipped", error=str(_exc))
+
     return {
         "status": "ok",
         "analysis_id": analysis_id,

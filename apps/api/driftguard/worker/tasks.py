@@ -6,6 +6,7 @@ import asyncio
 
 from celery.utils.log import get_task_logger
 
+from driftguard.core.config import settings
 from driftguard.worker.app import celery_app
 
 log = get_task_logger(__name__)
@@ -186,7 +187,7 @@ async def _send_notification_async(analysis_id: str, repo_full_name: str, pr_num
             pr_number=pr_number,
             risk_score=analysis.risk_score,
             findings_count=findings_count,
-            analysis_url=f"https://driftguard.io/dashboard/{org.github_installation_id}/analyses/{analysis_id}",
+            analysis_url=f"{settings.public_base_url.rstrip('/')}/dashboard/{org.github_installation_id}/analyses/{analysis_id}",
         )
 
 
