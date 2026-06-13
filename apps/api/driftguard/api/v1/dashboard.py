@@ -295,6 +295,7 @@ async def _recent_analyses(db: AsyncSession, org_id: str) -> list[dict]:
             "id": a.id,
             "status": a.status,
             "risk_score": a.risk_score,
+            "policy_verdict": a.policy_verdict,
             "pr_number": p.github_pr_number,
             "head_sha": p.head_sha,
             "repo_full_name": r.full_name,

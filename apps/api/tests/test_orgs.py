@@ -447,7 +447,7 @@ class TestListOrgRepos:
 
     def test_returns_empty_list(self):
         mock = AsyncMock()
-        mock.execute = AsyncMock(return_value=MagicMock(scalars=MagicMock(return_value=[])))
+        mock.execute = AsyncMock(return_value=MagicMock(all=MagicMock(return_value=[])))
         _override(mock)
         try:
             r = TestClient(app).get("/api/v1/orgs/org-1/repos", headers=AUTH)
@@ -459,7 +459,9 @@ class TestListOrgRepos:
     def test_returns_repos_with_correct_shape(self):
         repos = [_repo_obj("r1", "acme/infra"), _repo_obj("r2", "acme/app")]
         mock = AsyncMock()
-        mock.execute = AsyncMock(return_value=MagicMock(scalars=MagicMock(return_value=repos)))
+        mock.execute = AsyncMock(
+            return_value=MagicMock(all=MagicMock(return_value=[(repos[0], None), (repos[1], None)]))
+        )
         _override(mock)
         try:
             r = TestClient(app).get("/api/v1/orgs/org-1/repos", headers=AUTH)
@@ -470,6 +472,7 @@ class TestListOrgRepos:
             assert data[0]["full_name"] == "acme/infra"
             assert data[0]["default_branch"] == "main"
             assert data[0]["enabled"] is True
+            assert data[0]["last_scanned_at"] is None
         finally:
             _cleanup()
 

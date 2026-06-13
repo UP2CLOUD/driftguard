@@ -103,7 +103,14 @@ export async function RecentAnalysesSection({
                     {formatDateTime(a.created_at, locale)}
                   </div>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
+                <div className="flex items-center gap-2 shrink-0">
+                  {a.policy_verdict && a.policy_verdict !== "pass" && (
+                    <span className={`font-mono text-[9px] uppercase tracking-widest rounded px-1 py-0.5 ${
+                      a.policy_verdict === "block" ? "text-blocked bg-blocked/10" : "text-warned bg-warned/10"
+                    }`}>
+                      {a.policy_verdict}
+                    </span>
+                  )}
                   <span className={`font-mono text-[13px] font-bold tabular-nums ${
                     (a.risk_score ?? 0) >= 70 ? "text-blocked" :
                     (a.risk_score ?? 0) >= 40 ? "text-warned" : "text-allowed"
