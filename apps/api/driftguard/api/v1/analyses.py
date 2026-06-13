@@ -35,9 +35,11 @@ async def list_analyses(
             "status": a.status,
             "risk_score": a.risk_score,
             "cost_delta_cents": a.cost_delta_cents,
+            "files_scanned": a.files_scanned or 0,
             "pr_number": p.github_pr_number,
             "head_sha": p.head_sha,
             "repo_full_name": r.full_name,
+            "started_at": a.started_at.isoformat() if a.started_at else None,
             "created_at": a.started_at.isoformat() if a.started_at else None,
         }
         for a, p, r in result.all()
