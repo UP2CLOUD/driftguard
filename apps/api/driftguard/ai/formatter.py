@@ -1,12 +1,13 @@
 from driftguard.ai.findings import Finding, aggregate_cost_cents
 from driftguard.compliance import summarize_frameworks
 
-FOOTER = (
-    "\n\n---\n"
-    "<sub>Reviewed by **Driftguard** · "
-    "[docs](https://driftguard-blue.vercel.app/docs) · "
-    "[feedback](https://driftguard-blue.vercel.app/feedback)</sub>"
-)
+
+def _footer() -> str:
+    from driftguard.core.config import settings
+
+    base = settings.public_base_url.rstrip("/")
+    return f"\n\n---\n<sub>Reviewed by **Driftguard** · [docs]({base}/docs) · [feedback]({base}/feedback)</sub>"
+
 
 _SEV_ICON = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🔵", "info": "⚪"}
 
@@ -199,4 +200,4 @@ def format_comment(*, findings: list[Finding], ai_review_md: str, summary_meta: 
             f" · sha `{sha}`{aws_note}</sub>\n"
         )
 
-    return header + "\n" + ai_block + findings_block + meta_block + FOOTER
+    return header + "\n" + ai_block + findings_block + meta_block + _footer()

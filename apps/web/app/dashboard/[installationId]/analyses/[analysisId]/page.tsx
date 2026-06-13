@@ -25,11 +25,13 @@ const CAT_ICON: Record<string, string> = {
 
 
 function AiMarkdown({ content }: { content: string }) {
-  // Simple inline markdown: **bold**, `code`, ## heading, - list, > blockquote
+  // Simple inline markdown: **bold**, `code`, ##/### heading, - list, > blockquote
   const lines = content.split("\n");
   return (
     <div>
       {lines.map((line, i) => {
+        if (line.startsWith("### "))
+          return <h3 key={i} className="font-sans text-[12px] font-semibold text-[color:var(--dg-fg)] mt-3 mb-1">{line.slice(4)}</h3>;
         if (line.startsWith("## "))
           return <h2 key={i}>{line.slice(3)}</h2>;
         if (line.startsWith("- [ ] "))
@@ -128,7 +130,18 @@ export default async function AnalysisPage({
           <div className="dg-label mb-1">{t("dashboard.scanResult")}</div>
           <h1 className="font-sans text-2xl font-semibold text-[color:var(--dg-fg)]">
             {data.repo_full_name
-              ? <><span className="text-[color:var(--dg-fg-muted)]">{data.repo_full_name}</span>{data.pr_number ? <span className="font-mono text-lg text-[color:var(--dg-fg-subtle)]">#{data.pr_number}</span> : null}</>
+              ? <>
+                  <span className="text-[color:var(--dg-fg-muted)]">{data.repo_full_name}</span>
+                  {data.pr_number
+                    ? <a
+                        href={`https://github.com/${data.repo_full_name}/pull/${data.pr_number}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-mono text-lg text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition ml-1"
+                        title="View PR on GitHub"
+                      >#{data.pr_number} ↗</a>
+                    : null}
+                </>
               : <>{t("dashboard.scanResult")} <span className="font-mono text-[color:var(--dg-fg-muted)] text-lg">{analysisId.slice(0,8)}</span></>
             }
           </h1>
