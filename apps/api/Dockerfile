@@ -58,5 +58,8 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
     CMD curl -fs http://localhost:8000/api/v1/health || exit 1
 
 EXPOSE 8000
-CMD ["uvicorn", "driftguard.main:app", "--host", "0.0.0.0", "--port", "8000", \
-     "--timeout-keep-alive", "75"]
+# Run DB migrations before starting the server (start.sh applies `alembic
+# upgrade head`, then exec's uvicorn). Previously the CMD invoked uvicorn
+# directly, so migrations never ran on deploy and the live schema drifted
+# behind the code.
+CMD ["./start.sh"]

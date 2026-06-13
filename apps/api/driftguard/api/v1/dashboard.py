@@ -57,15 +57,23 @@ async def overview(
         # Genuinely no org for this installation — the app is not installed.
         return _empty_overview(installation_id)
 
+    # Capture the org identity as plain values BEFORE running any aggregate
+    # query. A failing sub-query forces db.rollback() inside _safe(), and a
+    # rollback expires every ORM instance in the session — touching org_id or
+    # org_plan afterwards would trigger a refresh SELECT on the just-rolled-back
+    # session and raise, escaping this handler as a 500.
+    org_id = org.id
+    org_plan = org.plan
+
     # ── Aggregate dashboard data ─────────────────────────────────────────────
     # Once the org is resolved we ALWAYS return its real org_id, even if the
     # aggregation below fails. Returning org_id=None here would make the
     # dashboard render the "Install GitHub App" prompt for an installed org.
     try:
-        return await _build_overview(org, installation_id, db)
+        return await _build_overview(org_id, org_plan, installation_id, db)
     except Exception as exc:
-        log.error("overview_build_failed", installation_id=installation_id, org_id=org.id, error=str(exc))
-        return _connected_overview(org, installation_id)
+        log.error("overview_build_failed", installation_id=installation_id, org_id=org_id, error=str(exc))
+        return _connected_overview(org_id, org_plan, installation_id)
 
 
 async def _scalar_one(result_coro):
@@ -76,11 +84,6 @@ async def _scalar_one(result_coro):
 async def _all(result_coro):
     """Await an execute() coroutine and return all rows."""
     return (await result_coro).all()
-
-
-async def _scalars_all(result_coro):
-    """Await an execute() coroutine and return all scalar (ORM) rows."""
-    return (await result_coro).scalars().all()
 
 
 async def _safe(db: AsyncSession, coro_factory, default, *, label: str, org_id: str):
@@ -103,7 +106,7 @@ async def _safe(db: AsyncSession, coro_factory, default, *, label: str, org_id: 
         return default
 
 
-async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
+async def _build_overview(org_id: str, org_plan: str, installation_id: int, db: AsyncSession) -> dict:
     from driftguard.db.models import IncidentEmbedding
 
     now = datetime.now(UTC)
@@ -113,10 +116,10 @@ async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
     # ── Repos ────────────────────────────────────────────────────────────────
     repo_count = await _safe(
         db,
-        lambda: _scalar_one(db.execute(select(func.count()).where(Repository.org_id == org.id))),
+        lambda: _scalar_one(db.execute(select(func.count()).where(Repository.org_id == org_id))),
         0,
         label="repos",
-        org_id=org.id,
+        org_id=org_id,
     )
 
     # ── Analyses (7d) ────────────────────────────────────────────────────────
@@ -128,12 +131,12 @@ async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
                 .select_from(Analysis)
                 .join(PullRequest, Analysis.pr_id == PullRequest.id)
                 .join(Repository, PullRequest.repo_id == Repository.id)
-                .where(Repository.org_id == org.id, Analysis.started_at >= window_7d)
+                .where(Repository.org_id == org_id, Analysis.started_at >= window_7d)
             )
         ),
         0,
         label="analyses_7d",
-        org_id=org.id,
+        org_id=org_id,
     )
 
     # ── Avg risk (7d) ────────────────────────────────────────────────────────
@@ -145,12 +148,12 @@ async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
                 .select_from(Analysis)
                 .join(PullRequest, Analysis.pr_id == PullRequest.id)
                 .join(Repository, PullRequest.repo_id == Repository.id)
-                .where(Repository.org_id == org.id, Analysis.started_at >= window_7d)
+                .where(Repository.org_id == org_id, Analysis.started_at >= window_7d)
             )
         ),
         None,
         label="avg_risk_7d",
-        org_id=org.id,
+        org_id=org_id,
     )
     avg_risk = round(float(avg_risk_row), 1) if avg_risk_row else None
 
@@ -163,13 +166,13 @@ async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
                 .join(Analysis, Finding.analysis_id == Analysis.id)
                 .join(PullRequest, Analysis.pr_id == PullRequest.id)
                 .join(Repository, PullRequest.repo_id == Repository.id)
-                .where(Repository.org_id == org.id, Analysis.started_at >= window_30d)
+                .where(Repository.org_id == org_id, Analysis.started_at >= window_30d)
                 .group_by(Finding.severity)
             )
         ),
         [],
         label="severity_breakdown",
-        org_id=org.id,
+        org_id=org_id,
     )
     severity_breakdown = {row[0]: row[1] for row in severity_rows}
 
@@ -179,14 +182,14 @@ async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
         lambda: _scalar_one(
             db.execute(
                 select(func.count()).where(
-                    DriftIncident.org_id == org.id,
+                    DriftIncident.org_id == org_id,
                     DriftIncident.status == "open",
                 )
             )
         ),
         0,
         label="open_incidents",
-        org_id=org.id,
+        org_id=org_id,
     )
 
     critical_incidents = await _safe(
@@ -194,7 +197,7 @@ async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
         lambda: _scalar_one(
             db.execute(
                 select(func.count()).where(
-                    DriftIncident.org_id == org.id,
+                    DriftIncident.org_id == org_id,
                     DriftIncident.status == "open",
                     DriftIncident.severity == "critical",
                 )
@@ -202,56 +205,42 @@ async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
         ),
         0,
         label="critical_incidents",
-        org_id=org.id,
+        org_id=org_id,
     )
 
     # ── Memory entries ───────────────────────────────────────────────────────
     memory_count = await _safe(
         db,
-        lambda: _scalar_one(db.execute(select(func.count()).where(IncidentEmbedding.org_id == org.id))),
+        lambda: _scalar_one(db.execute(select(func.count()).where(IncidentEmbedding.org_id == org_id))),
         0,
         label="memory_entries",
-        org_id=org.id,
+        org_id=org_id,
     )
 
     # ── Recent events (last 10) ──────────────────────────────────────────────
+    # Serialize to plain dicts INSIDE _safe so a later section's rollback (which
+    # expires ORM instances) can never break these rows during response render.
     recent_events = await _safe(
         db,
-        lambda: _scalars_all(
-            db.execute(
-                select(RuntimeEvent)
-                .where(RuntimeEvent.org_id == org.id)
-                .order_by(RuntimeEvent.created_at.desc())
-                .limit(10)
-            )
-        ),
+        lambda: _recent_events(db, org_id),
         [],
         label="recent_events",
-        org_id=org.id,
+        org_id=org_id,
     )
 
     # ── Recent analyses (last 5) ─────────────────────────────────────────────
-    recent_analyses_rows = await _safe(
+    recent_analyses = await _safe(
         db,
-        lambda: _all(
-            db.execute(
-                select(Analysis, PullRequest, Repository)
-                .join(PullRequest, Analysis.pr_id == PullRequest.id)
-                .join(Repository, PullRequest.repo_id == Repository.id)
-                .where(Repository.org_id == org.id)
-                .order_by(Analysis.started_at.desc().nulls_last())
-                .limit(5)
-            )
-        ),
+        lambda: _recent_analyses(db, org_id),
         [],
         label="recent_analyses",
-        org_id=org.id,
+        org_id=org_id,
     )
 
     return {
-        "org_id": org.id,
+        "org_id": org_id,
         "installation_id": installation_id,
-        "plan": org.plan,
+        "plan": org_plan,
         "repos": repo_count,
         "analyses_7d": analyses_7d,
         "avg_risk_7d": avg_risk,
@@ -259,30 +248,60 @@ async def _build_overview(org, installation_id: int, db: AsyncSession) -> dict:
         "critical_incidents": critical_incidents,
         "memory_entries": memory_count,
         "severity_breakdown": severity_breakdown,
-        "recent_events": [
-            {
-                "id": e.id,
-                "event_type": e.event_type,
-                "severity": e.severity,
-                "source": e.source,
-                "message": e.message[:120],
-                "created_at": e.created_at.isoformat(),
-            }
-            for e in recent_events
-        ],
-        "recent_analyses": [
-            {
-                "id": a.id,
-                "status": a.status,
-                "risk_score": a.risk_score,
-                "pr_number": p.github_pr_number,
-                "head_sha": p.head_sha,
-                "repo_full_name": r.full_name,
-                "created_at": a.started_at.isoformat() if a.started_at else None,
-            }
-            for a, p, r in recent_analyses_rows
-        ],
+        "recent_events": recent_events,
+        "recent_analyses": recent_analyses,
     }
+
+
+async def _recent_events(db: AsyncSession, org_id: str) -> list[dict]:
+    rows = (
+        (
+            await db.execute(
+                select(RuntimeEvent)
+                .where(RuntimeEvent.org_id == org_id)
+                .order_by(RuntimeEvent.created_at.desc())
+                .limit(10)
+            )
+        )
+        .scalars()
+        .all()
+    )
+    return [
+        {
+            "id": e.id,
+            "event_type": e.event_type,
+            "severity": e.severity,
+            "source": e.source,
+            "message": e.message[:120] if e.message else "",
+            "created_at": e.created_at.isoformat() if e.created_at else None,
+        }
+        for e in rows
+    ]
+
+
+async def _recent_analyses(db: AsyncSession, org_id: str) -> list[dict]:
+    rows = (
+        await db.execute(
+            select(Analysis, PullRequest, Repository)
+            .join(PullRequest, Analysis.pr_id == PullRequest.id)
+            .join(Repository, PullRequest.repo_id == Repository.id)
+            .where(Repository.org_id == org_id)
+            .order_by(Analysis.started_at.desc().nulls_last())
+            .limit(5)
+        )
+    ).all()
+    return [
+        {
+            "id": a.id,
+            "status": a.status,
+            "risk_score": a.risk_score,
+            "pr_number": p.github_pr_number,
+            "head_sha": p.head_sha,
+            "repo_full_name": r.full_name,
+            "created_at": a.started_at.isoformat() if a.started_at else None,
+        }
+        for a, p, r in rows
+    ]
 
 
 def _empty_overview(installation_id: int | None = None) -> dict:
@@ -302,13 +321,13 @@ def _empty_overview(installation_id: int | None = None) -> dict:
     }
 
 
-def _connected_overview(org, installation_id: int | None = None) -> dict:
+def _connected_overview(org_id: str, org_plan: str, installation_id: int | None = None) -> dict:
     """Fallback when the org is known but data aggregation failed.
 
     Preserves the real org_id so the dashboard renders the connected (empty)
     state rather than the misleading "Install GitHub App" prompt.
     """
     overview = _empty_overview(installation_id)
-    overview["org_id"] = org.id
-    overview["plan"] = org.plan
+    overview["org_id"] = org_id
+    overview["plan"] = org_plan
     return overview
