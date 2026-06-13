@@ -259,6 +259,43 @@ class TestOrgAnalyses:
         finally:
             _cleanup()
 
+    def test_status_filter_accepted(self):
+        """?status=completed is forwarded to the query without error."""
+        mock = AsyncMock()
+        mock.execute = AsyncMock(return_value=MagicMock(all=MagicMock(return_value=[])))
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/org-1/analyses?status=completed", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json() == []
+        finally:
+            _cleanup()
+
+    def test_status_running_filter_accepted(self):
+        """?status=running matches running+pending analyses."""
+        mock = AsyncMock()
+        mock.execute = AsyncMock(return_value=MagicMock(all=MagicMock(return_value=[])))
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/org-1/analyses?status=running", headers=AUTH)
+            assert r.status_code == 200
+        finally:
+            _cleanup()
+
+    def test_policy_verdict_included_in_response(self):
+        row = _ana_row()
+        row[0].policy_verdict = "block"
+        mock = AsyncMock()
+        mock.execute = AsyncMock(return_value=MagicMock(all=MagicMock(return_value=[row])))
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/org-1/analyses", headers=AUTH)
+            assert r.status_code == 200
+            data = r.json()
+            assert data[0]["policy_verdict"] == "block"
+        finally:
+            _cleanup()
+
 
 # ── GET /orgs/by-installation/{installation_id} ───────────────────────────────
 
