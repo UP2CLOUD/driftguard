@@ -11,13 +11,16 @@ import { MemorySearch } from "./MemorySearch";
 const PAGE_SIZE = 20;
 
 async function fetchMemory(id: string, offset: number) {
-  const [entries, stats] = await Promise.all([
-    beGet<any[]>(`/api/v1/memory?installation_id=${id}&limit=${PAGE_SIZE}&offset=${offset}`, { revalidate: 30, timeout: 3000 }),
+  // Fetch one extra to detect next page without a COUNT query.
+  const [rawEntries, stats] = await Promise.all([
+    beGet<any[]>(`/api/v1/memory?installation_id=${id}&limit=${PAGE_SIZE + 1}&offset=${offset}`, { revalidate: 30, timeout: 3000 }),
     beGet<any>(`/api/v1/memory/stats?installation_id=${id}`, { revalidate: 30, timeout: 3000 }),
   ]);
+  const raw = rawEntries ?? [];
   return {
-    entries: entries ?? [],
-    stats:   stats   ?? { total: 0, by_outcome: {}, by_severity: {} },
+    entries: raw.slice(0, PAGE_SIZE),
+    hasNext: raw.length > PAGE_SIZE,
+    stats:   stats ?? { total: 0, by_outcome: {}, by_severity: {} },
   };
 }
 
@@ -59,8 +62,7 @@ export default async function MemoryPage({
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
 
-  const { entries, stats } = await fetchMemory(installationId, offset);
-  const hasNext = entries.length === PAGE_SIZE;
+  const { entries, hasNext, stats } = await fetchMemory(installationId, offset);
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8">
