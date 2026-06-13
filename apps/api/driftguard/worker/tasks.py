@@ -177,9 +177,7 @@ async def _send_notification_async(analysis_id: str, repo_full_name: str, pr_num
             return
 
         findings_count = (
-            await session.execute(
-                select(func.count()).select_from(Finding).where(Finding.analysis_id == analysis_id)
-            )
+            await session.execute(select(func.count()).select_from(Finding).where(Finding.analysis_id == analysis_id))
         ).scalar_one()
 
         await send_review_complete(

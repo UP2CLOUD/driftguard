@@ -9,8 +9,15 @@ from driftguard.workers.analyzer import _compute_risk, _merge_findings
 
 
 def _f(rule_id: str | None, resource: str = "r", severity: str = "high") -> Finding:
-    return Finding(type="security", severity=severity, resource=resource,
-                   message="x", suggestion=None, rule_id=rule_id, controls=())
+    return Finding(
+        type="security",
+        severity=severity,
+        resource=resource,
+        message="x",
+        suggestion=None,
+        rule_id=rule_id,
+        controls=(),
+    )
 
 
 def test_compute_risk_empty():

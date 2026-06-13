@@ -70,8 +70,7 @@ class TestFormatRecallSection:
         assert "<details>" in output
 
     def _recall(self, outcome: str, severity: str = "low") -> list[dict]:
-        return [{"repo": "x/y", "pr": 1, "similarity": 0.80, "outcome": outcome,
-                 "severity": severity, "summary": ""}]
+        return [{"repo": "x/y", "pr": 1, "similarity": 0.80, "outcome": outcome, "severity": severity, "summary": ""}]
 
     def test_approved_recall_uses_green_icon(self):
         assert "🟢" in format_recall_section(self._recall("approved"))
@@ -83,8 +82,9 @@ class TestFormatRecallSection:
         assert "⚪" in format_recall_section(self._recall("unknown_status"))
 
     def test_no_summary_skips_quote_line(self):
-        recalls = [{"repo": "x/y", "pr": 1, "similarity": 0.80, "outcome": "blocked",
-                    "severity": "high", "summary": ""}]
+        recalls = [
+            {"repo": "x/y", "pr": 1, "similarity": 0.80, "outcome": "blocked", "severity": "high", "summary": ""}
+        ]
         output = format_recall_section(recalls)
         assert "  > _" not in output  # no markdown blockquote line
 
@@ -230,9 +230,7 @@ class TestRecallSimilar:
     @pytest.mark.asyncio
     async def test_unknown_org_returns_empty(self):
         db = AsyncMock()
-        db.execute = AsyncMock(
-            return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None))
-        )
+        db.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None)))
         result = await recall_similar(db, installation_id=9999, findings=[_finding()])
         assert result == []
 
@@ -240,9 +238,7 @@ class TestRecallSimilar:
     async def test_pgvector_and_fallback_both_fail_returns_empty(self):
         org = _org()
         db = AsyncMock()
-        db.execute = AsyncMock(
-            return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=org))
-        )
+        db.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=org)))
         with patch("driftguard.services.memory_recall.embed", side_effect=RuntimeError("service down")):
             result = await recall_similar(db, installation_id=42, findings=[_finding()])
         assert result == []

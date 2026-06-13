@@ -513,10 +513,10 @@ async def test_downgrade_disables_excess_repos(db, stripe_prices, monkeypatch):
 
     # Only 2 repos should remain enabled
     active = (
-        await db.execute(
-            select(Repository).where(Repository.org_id == org.id, Repository.enabled.is_(True))
-        )
-    ).scalars().all()
+        (await db.execute(select(Repository).where(Repository.org_id == org.id, Repository.enabled.is_(True))))
+        .scalars()
+        .all()
+    )
     assert len(active) == 2
 
 
@@ -542,10 +542,10 @@ async def test_downgrade_within_limit_leaves_repos_untouched(db, stripe_prices, 
     )
 
     active = (
-        await db.execute(
-            select(Repository).where(Repository.org_id == org.id, Repository.enabled.is_(True))
-        )
-    ).scalars().all()
+        (await db.execute(select(Repository).where(Repository.org_id == org.id, Repository.enabled.is_(True))))
+        .scalars()
+        .all()
+    )
     assert len(active) == 2  # unchanged
 
 
@@ -577,8 +577,8 @@ async def test_updated_past_due_disables_excess_repos(db, stripe_prices, monkeyp
     )
 
     active = (
-        await db.execute(
-            select(Repository).where(Repository.org_id == org.id, Repository.enabled.is_(True))
-        )
-    ).scalars().all()
+        (await db.execute(select(Repository).where(Repository.org_id == org.id, Repository.enabled.is_(True))))
+        .scalars()
+        .all()
+    )
     assert len(active) == 1

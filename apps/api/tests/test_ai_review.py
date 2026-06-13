@@ -252,8 +252,10 @@ class TestRunAiReviewWithAnthropic:
         mock_client = AsyncMock()
         mock_client.messages.create = AsyncMock(return_value=mock_response)
 
-        with patch("driftguard.services.analysis.ai_review.settings") as mock_settings, \
-             patch("anthropic.AsyncAnthropic", return_value=mock_client):
+        with (
+            patch("driftguard.services.analysis.ai_review.settings") as mock_settings,
+            patch("anthropic.AsyncAnthropic", return_value=mock_client),
+        ):
             mock_settings.anthropic_api_key = "sk-ant-test"
             review = await run_ai_review(_result([_finding()]))
 
@@ -268,8 +270,10 @@ class TestRunAiReviewWithAnthropic:
         mock_client = AsyncMock()
         mock_client.messages.create = AsyncMock(side_effect=RuntimeError("API down"))
 
-        with patch("driftguard.services.analysis.ai_review.settings") as mock_settings, \
-             patch("anthropic.AsyncAnthropic", return_value=mock_client):
+        with (
+            patch("driftguard.services.analysis.ai_review.settings") as mock_settings,
+            patch("anthropic.AsyncAnthropic", return_value=mock_client),
+        ):
             mock_settings.anthropic_api_key = "sk-ant-test"
             mock_settings.gemini_api_key = None
             review = await run_ai_review(_result([_finding(rule_id="R99")]))
@@ -296,8 +300,10 @@ class TestRunAiReviewWithAnthropic:
         mock_client = AsyncMock()
         mock_client.messages.create = capture_create
 
-        with patch("driftguard.services.analysis.ai_review.settings") as mock_settings, \
-             patch("anthropic.AsyncAnthropic", return_value=mock_client):
+        with (
+            patch("driftguard.services.analysis.ai_review.settings") as mock_settings,
+            patch("anthropic.AsyncAnthropic", return_value=mock_client),
+        ):
             mock_settings.anthropic_api_key = "sk-ant-test"
             await run_ai_review(_result([_finding()]), context={"repo": "myorg/myrepo"})
 
