@@ -232,7 +232,16 @@ class TestScanQuota:
             _cleanup()
 
     def test_trigger_quota_exceeded_returns_402(self):
-        _override(_mock_org_session(org=_org()))
+        # trigger now makes two execute calls: org lookup then repo lookup
+        org = _org()
+        org_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
+        no_repo_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=None))))
+        mock_session = AsyncMock()
+        mock_session.execute = AsyncMock(side_effect=[org_result, no_repo_result])
+        mock_session.flush = AsyncMock()
+        mock_session.commit = AsyncMock()
+        mock_session.add = MagicMock()
+        _override(mock_session)
         try:
             with patch(
                 "driftguard.api.v1.scans.try_consume_manual_scan_quota",
