@@ -44,9 +44,9 @@ def _make_tgz(files: dict[str, str] | None = None) -> bytes:
 
 def _mock_org_session(org=None) -> AsyncMock:
     mock = AsyncMock()
-    mock.execute = AsyncMock(return_value=MagicMock(
-        scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org)))
-    ))
+    mock.execute = AsyncMock(
+        return_value=MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
+    )
     mock.flush = AsyncMock()
     mock.commit = AsyncMock()
     mock.add = MagicMock()
