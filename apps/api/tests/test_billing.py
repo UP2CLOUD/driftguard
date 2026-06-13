@@ -413,12 +413,20 @@ async def plan_api_db():
 
 @pytest.mark.asyncio
 async def test_get_plan_not_found(plan_api_db):
+    """Unknown installation returns free-plan defaults (200) instead of 404.
+
+    The dashboard calls this endpoint on every page load; a 404 would cause
+    silent null returns in the frontend. Returning safe defaults is better.
+    """
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         r = await client.get(
             "/api/v1/billing/plan?installation_id=99999",
             headers={"Authorization": "Bearer dev-only-change-me"},
         )
-    assert r.status_code == 404
+    assert r.status_code == 200
+    data = r.json()
+    assert data["plan"] == "free"
+    assert data["is_premium"] is False
 
 
 @pytest.mark.asyncio
