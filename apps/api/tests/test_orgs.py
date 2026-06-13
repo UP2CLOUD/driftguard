@@ -609,3 +609,66 @@ class TestGetOrgsByUser:
             assert item["account"]["login"] == "alice"
         finally:
             _cleanup()
+
+
+# ── PATCH /orgs/{org_id}/notifications ───────────────────────────────────────
+
+
+class TestPatchOrgNotifications:
+    def test_requires_auth(self):
+        r = TestClient(app).patch("/api/v1/orgs/org-1/notifications", json={"contact_email": "a@b.com"})
+        assert r.status_code == 401
+
+    def test_not_found_returns_404(self):
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=None)
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/orgs/nonexistent/notifications",
+                json={"contact_email": "a@b.com"},
+                headers=AUTH,
+            )
+            assert r.status_code == 404
+        finally:
+            _cleanup()
+
+    def test_sets_contact_email(self):
+        org = _org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=org)
+        mock.commit = AsyncMock()
+        mock.add = MagicMock()
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/orgs/org-1/notifications",
+                json={"contact_email": "team@example.com"},
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            assert r.json()["status"] == "ok"
+            assert r.json()["contact_email"] == "team@example.com"
+            assert org.contact_email == "team@example.com"
+        finally:
+            _cleanup()
+
+    def test_clears_contact_email_when_null(self):
+        org = _org()
+        org.contact_email = "old@example.com"
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=org)
+        mock.commit = AsyncMock()
+        mock.add = MagicMock()
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/orgs/org-1/notifications",
+                json={"contact_email": None},
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            assert r.json()["contact_email"] is None
+            assert org.contact_email is None
+        finally:
+            _cleanup()
