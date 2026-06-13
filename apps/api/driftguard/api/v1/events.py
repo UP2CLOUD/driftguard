@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from driftguard.api.deps import require_internal_auth
 from driftguard.core.db import get_db
 from driftguard.db.models import Organization, RuntimeEvent
 
@@ -20,6 +21,7 @@ async def list_events(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
     try:
         org = (

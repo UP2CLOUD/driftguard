@@ -18,7 +18,12 @@ def _empty_session():
         return_value=MagicMock(
             scalar_one_or_none=MagicMock(return_value=None),
             scalar_one=MagicMock(return_value=0),
-            scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[]))),
+            scalars=MagicMock(
+                return_value=MagicMock(
+                    all=MagicMock(return_value=[]),
+                    first=MagicMock(return_value=None),
+                )
+            ),
             all=MagicMock(return_value=[]),
             mappings=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[]))),
         )
@@ -83,8 +88,9 @@ def _mk_scalar(v):
     return MagicMock(scalar_one=MagicMock(return_value=v))
 
 
-def _mk_scalar_none(v):
-    return MagicMock(scalar_one_or_none=MagicMock(return_value=v))
+def _mk_org(org):
+    """Org lookup in overview() uses .scalars().first()."""
+    return MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
 
 
 def _mk_rows(rows):
@@ -121,7 +127,7 @@ class TestDashboardOverviewPopulated:
         # 10. recent_analyses (all → list of (analysis, pr, repo) tuples)
         mock.execute = AsyncMock(
             side_effect=[
-                _mk_scalar_none(org),
+                _mk_org(org),
                 _mk_scalar(3),
                 _mk_scalar(2),
                 _mk_scalar(55.0),
@@ -180,7 +186,7 @@ class TestDashboardOverviewPopulated:
         mock = AsyncMock()
         mock.execute = AsyncMock(
             side_effect=[
-                _mk_scalar_none(org),
+                _mk_org(org),
                 _mk_scalar(0),  # repo_count
                 _mk_scalar(0),  # analyses_7d
                 _mk_scalar(None),  # avg_risk → None
@@ -204,6 +210,47 @@ class TestDashboardOverviewPopulated:
             assert data["severity_breakdown"] == {}
             assert data["recent_events"] == []
             assert data["recent_analyses"] == []
+        finally:
+            _cleanup()
+
+    def test_org_id_preserved_when_aggregate_query_fails(self):
+        """A failing aggregate must not collapse an installed org to org_id=None.
+
+        Regression: a single failing sub-query used to fall through to the
+        empty overview (org_id=None), making the dashboard render the
+        "Install GitHub App" prompt for a fully-installed org.
+        """
+        org = Organization(id="org-3", github_installation_id=44, plan="team")
+        boom = MagicMock(scalar_one=MagicMock(side_effect=RuntimeError("column does not exist")))
+        mock = AsyncMock()
+        mock.execute = AsyncMock(
+            side_effect=[
+                _mk_org(org),
+                boom,  # repo_count blows up
+                _mk_scalar(0),  # analyses_7d
+                _mk_scalar(None),  # avg_risk
+                _mk_rows([]),  # severity_rows
+                _mk_scalar(0),  # open_incidents
+                _mk_scalar(0),  # critical_incidents
+                _mk_scalar(0),  # memory_count
+                _mk_scalars([]),  # recent_events
+                _mk_rows([]),  # recent_analyses
+            ]
+        )
+        mock.flush = AsyncMock()
+        mock.commit = AsyncMock()
+        mock.rollback = AsyncMock()
+        mock.add = MagicMock()
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/dashboard/overview?installation_id=44", headers=AUTH)
+            assert r.status_code == 200
+            data = r.json()
+            # Org is preserved despite the failing sub-query …
+            assert data["org_id"] == "org-3"
+            assert data["plan"] == "team"
+            # … and the failing section degrades to its default.
+            assert data["repos"] == 0
         finally:
             _cleanup()
 

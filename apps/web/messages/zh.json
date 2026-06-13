@@ -19,7 +19,8 @@
     "docs": "文档",
     "menuLabel": "菜单",
     "howItWorks": "▸ 工作原理",
-    "auditLog": "审计日志"
+    "auditLog": "审计日志",
+    "analyses": "分析"
   },
   "auth": {
     "goToDashboard": "前往控制台 →",

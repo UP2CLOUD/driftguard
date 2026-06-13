@@ -111,14 +111,14 @@ export default async function AnalysisPage({
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8">
       {/* Back */}
       <div className="flex items-center gap-4 mb-8">
-        <Link href={`/dashboard/${installationId}`}
+        <Link href={`/dashboard/${installationId}/analyses`}
           className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">
-          ← {t("nav.overview")}
+          ← {t("nav.analyses") ?? "Analyses"}
         </Link>
         <span className="text-[color:var(--dg-border)]">·</span>
-        <Link href={`/dashboard/${installationId}/repos`}
+        <Link href={`/dashboard/${installationId}`}
           className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">
-          {t("nav.repos")}
+          {t("nav.overview")}
         </Link>
       </div>
 
@@ -141,10 +141,12 @@ export default async function AnalysisPage({
         {/* Risk badge */}
         <div className="flex items-center gap-3">
           <div className="text-center">
-            <div className="font-mono text-3xl font-bold" style={{
-              color: data.risk_score >= 70 ? "var(--blocked)" : data.risk_score >= 40 ? "var(--warned)" : "var(--allowed)"
-            }}>
-              {data.risk_score}
+            <div className={`font-mono text-3xl font-bold tabular-nums ${
+              data.risk_score == null ? "text-[color:var(--dg-fg-muted)]" :
+              data.risk_score >= 70  ? "text-blocked" :
+              data.risk_score >= 40  ? "text-warned"  : "text-allowed"
+            }`}>
+              {data.risk_score ?? "—"}
             </div>
             <div className="dg-label mt-0.5">{t("dashboard.riskScore")}</div>
           </div>

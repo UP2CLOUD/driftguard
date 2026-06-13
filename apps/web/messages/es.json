@@ -19,7 +19,8 @@
     "docs": "Docs",
     "menuLabel": "Menú",
     "howItWorks": "▸ cómo funciona",
-    "auditLog": "Auditoría"
+    "auditLog": "Auditoría",
+    "analyses": "Análisis"
   },
   "auth": {
     "goToDashboard": "Ir al panel →",

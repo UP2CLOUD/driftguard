@@ -19,7 +19,8 @@
     "docs": "Docs",
     "menuLabel": "Menu",
     "howItWorks": "▸ how it works",
-    "auditLog": "Audit log"
+    "auditLog": "Audit log",
+    "analyses": "Analyses"
   },
   "auth": {
     "goToDashboard": "Go to Dashboard →",

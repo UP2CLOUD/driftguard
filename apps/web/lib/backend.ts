@@ -41,3 +41,28 @@ export async function beGet<T>(
     return null;
   }
 }
+
+/**
+ * Like beGet, but also returns the HTTP status code so callers can
+ * distinguish auth failures (401) from missing data from network errors (null).
+ */
+export async function beGetFull<T>(
+  path: string,
+  { timeout = 5000, revalidate }: { timeout?: number; revalidate?: number } = {},
+): Promise<{ data: T | null; status: number | null }> {
+  try {
+    const res = await fetch(`${BASE}${path}`, {
+      headers: authHeaders(),
+      ...(revalidate !== undefined ? { next: { revalidate } } : { cache: "no-store" }),
+      signal: AbortSignal.timeout(timeout),
+    });
+    if (!res.ok) {
+      console.warn(`[backend] ${res.status} ${res.statusText} — ${BASE}${path}`);
+      return { data: null, status: res.status };
+    }
+    return { data: (await res.json()) as T, status: res.status };
+  } catch (err) {
+    console.warn(`[backend] fetch failed — ${BASE}${path}`, err);
+    return { data: null, status: null };
+  }
+}

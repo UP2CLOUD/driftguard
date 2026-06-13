@@ -81,48 +81,51 @@ export default async function IncidentsPage({
   const activeTab = filter ?? "all";
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8">
+    <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-6 sm:py-8">
       {/* Header */}
-      <div className="mb-6">
-        <div className="dg-label mb-2">{t("incidents.eyebrow") ?? "Drift monitoring"}</div>
-        <h1 className="font-sans text-2xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
+      <div className="mb-5 sm:mb-6">
+        <div className="dg-label mb-1.5 sm:mb-2">{t("incidents.eyebrow") ?? "Drift monitoring"}</div>
+        <h1 className="font-sans text-xl sm:text-2xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
           {t("incidents.title") ?? "Incidents"}
         </h1>
       </div>
 
-      {/* Filter tabs */}
-      <div className="flex items-center gap-0.5 mb-6 border-b border-[color:var(--dg-border)]">
-        {tabs.map((tab) => {
-          const isActive = tab.key === activeTab;
-          const href =
-            tab.key === "all"
-              ? `?`
-              : `?filter=${tab.key}`;
-          return (
-            <a
-              key={tab.key}
-              href={href}
-              className={`flex items-center gap-1.5 px-3 py-2 font-mono text-[11px] uppercase tracking-wider border-b-2 transition -mb-px ${
-                isActive
-                  ? "border-[color:var(--dg-electric)] text-[color:var(--dg-fg)]"
-                  : "border-transparent text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)]"
-              }`}
-            >
-              {tab.label}
-              {tab.count > 0 && (
-                <span
-                  className={`rounded px-1 font-mono text-[10px] ${
-                    isActive
-                      ? "bg-[color:var(--dg-surface-raised)] text-[color:var(--dg-fg)]"
-                      : "bg-[color:var(--dg-surface)] text-[color:var(--dg-fg-subtle)]"
-                  }`}
-                >
-                  {tab.count}
-                </span>
-              )}
-            </a>
-          );
-        })}
+      {/* Filter tabs — horizontally scrollable on mobile, touch-friendly tap targets */}
+      <div className="-mx-4 sm:mx-0 mb-5 sm:mb-6 border-b border-[color:var(--dg-border)]">
+        <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-hide px-4 sm:px-0">
+          {tabs.map((tab) => {
+            const isActive = tab.key === activeTab;
+            const href =
+              tab.key === "all"
+                ? `?`
+                : `?filter=${tab.key}`;
+            return (
+              <a
+                key={tab.key}
+                href={href}
+                aria-current={isActive ? "page" : undefined}
+                className={`flex items-center gap-1.5 whitespace-nowrap shrink-0 px-3 sm:px-3 min-h-[40px] sm:min-h-0 sm:py-2 font-mono text-[12px] sm:text-[11px] uppercase tracking-wider border-b-2 transition -mb-px ${
+                  isActive
+                    ? "border-[color:var(--dg-electric)] text-[color:var(--dg-fg)]"
+                    : "border-transparent text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)]"
+                }`}
+              >
+                {tab.label}
+                {tab.count > 0 && (
+                  <span
+                    className={`rounded px-1 font-mono text-[10px] ${
+                      isActive
+                        ? "bg-[color:var(--dg-surface-raised)] text-[color:var(--dg-fg)]"
+                        : "bg-[color:var(--dg-surface)] text-[color:var(--dg-fg-subtle)]"
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                )}
+              </a>
+            );
+          })}
+        </div>
       </div>
 
       {filtered.length === 0 ? (
@@ -141,10 +144,10 @@ export default async function IncidentsPage({
             <Link
               key={inc.id}
               href={`/dashboard/${installationId}/incidents/${inc.id}`}
-              className="flex items-start gap-4 px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition"
+              className="flex items-start gap-3 sm:gap-4 px-4 py-4 sm:py-4 hover:bg-[color:var(--dg-surface-raised)] transition"
             >
               {/* Status dot */}
-              <div className="mt-2 shrink-0">
+              <div className="mt-1.5 sm:mt-2 shrink-0">
                 <span
                   className={`h-2 w-2 rounded-full inline-block ${STATUS_DOT[inc.status] ?? "bg-[color:var(--dg-fg-subtle)]"}`}
                 />
@@ -152,38 +155,38 @@ export default async function IncidentsPage({
 
               <div className="flex-1 min-w-0">
                 {/* Title row */}
-                <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                <div className="flex items-start gap-2 flex-wrap mb-2">
                   <span
                     className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest shrink-0 ${SEV[inc.severity] ?? ""}`}
                   >
                     {inc.severity}
                   </span>
-                  <span className="font-sans text-[13px] font-medium text-[color:var(--dg-fg)] truncate">
+                  <span className="font-sans text-[14px] sm:text-[13px] font-medium leading-snug text-[color:var(--dg-fg)] break-words min-w-0">
                     {inc.title}
                   </span>
                 </div>
 
                 {/* Description */}
                 {inc.description && (
-                  <p className="text-[12px] text-[color:var(--dg-fg-muted)] mb-2 line-clamp-2">
+                  <p className="text-[13px] sm:text-[12px] leading-relaxed text-[color:var(--dg-fg-muted)] mb-2.5 line-clamp-3 sm:line-clamp-2 break-words">
                     {inc.description}
                   </p>
                 )}
 
                 {/* Meta row */}
-                <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-x-3 gap-y-1.5 flex-wrap">
                   <span
-                    className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest ${STATUS_BADGE[inc.status] ?? ""}`}
+                    className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest shrink-0 ${STATUS_BADGE[inc.status] ?? ""}`}
                   >
                     {inc.status}
                   </span>
                   {inc.recurrence_count > 1 && (
-                    <span className="font-mono text-[10px] text-warned">
+                    <span className="font-mono text-[11px] sm:text-[10px] text-warned shrink-0">
                       {t("incidents.recurrenceBadge")?.replace("{n}", String(inc.recurrence_count)) ?? `↺ ${inc.recurrence_count}× recurrence`}
                     </span>
                   )}
                   {inc.last_seen_at && (
-                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+                    <span className="font-mono text-[11px] sm:text-[10px] text-[color:var(--dg-fg-subtle)] shrink-0">
                       {formatDate(inc.last_seen_at, preferences.locale)}
                     </span>
                   )}
@@ -191,11 +194,13 @@ export default async function IncidentsPage({
 
                 {/* Suggested fix */}
                 {inc.suggested_fix && (
-                  <div className="mt-3 rounded border border-allowed/20 bg-allowed/5 px-3 py-2">
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-allowed mr-2">
+                  <div className="mt-3 rounded border border-allowed/20 bg-allowed/5 px-3 py-2.5">
+                    <span className="block sm:inline font-mono text-[10px] uppercase tracking-widest text-allowed mb-1 sm:mb-0 sm:mr-2">
                       Suggested fix:
                     </span>
-                    <span className="font-mono text-[11px] text-allowed">{inc.suggested_fix}</span>
+                    <span className="font-mono text-[12px] sm:text-[11px] leading-relaxed text-allowed break-words [overflow-wrap:anywhere]">
+                      {inc.suggested_fix}
+                    </span>
                   </div>
                 )}
               </div>
