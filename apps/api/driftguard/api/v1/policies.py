@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from driftguard.api.deps import require_internal_auth
 from driftguard.core.db import get_db
 from driftguard.core.rate_limit import rate_limit
 from driftguard.db.models import AuditLog, Organization, PolicyRule
@@ -43,6 +44,7 @@ async def list_policies(
     installation_id: int = Query(...),
     enabled_only: bool = Query(False),
     db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
     org = (
         await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
@@ -63,6 +65,7 @@ async def create_policy(
     body: PolicyCreate,
     installation_id: int = Query(...),
     db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
     _rl: None = Depends(rate_limit(per_minute=20, per_hour=200)),
 ) -> dict:
     if body.rule_type not in VALID_RULE_TYPES:
@@ -105,6 +108,7 @@ async def patch_policy(
     rule_id: str,
     body: PolicyPatch,
     db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
     _rl: None = Depends(rate_limit(per_minute=20, per_hour=200)),
 ) -> dict:
     rule = await db.get(PolicyRule, rule_id)
@@ -137,6 +141,7 @@ async def patch_policy(
 async def delete_policy(
     rule_id: str,
     db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
     _rl: None = Depends(rate_limit(per_minute=20, per_hour=200)),
 ) -> None:
     rule = await db.get(PolicyRule, rule_id)

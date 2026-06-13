@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from driftguard.api.deps import require_internal_auth
 from driftguard.core.db import get_db
 from driftguard.db.models import AuditLog, DriftIncident, Organization
 
@@ -37,6 +38,7 @@ async def list_incidents(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
     org = (
         await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
@@ -61,7 +63,11 @@ async def list_incidents(
 
 
 @router.get("/{incident_id}")
-async def get_incident(incident_id: str, db: AsyncSession = Depends(get_db)) -> dict:
+async def get_incident(
+    incident_id: str,
+    db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
+) -> dict:
     inc = await db.get(DriftIncident, incident_id)
     if not inc:
         raise HTTPException(404, "incident not found")
@@ -73,6 +79,7 @@ async def patch_incident(
     incident_id: str,
     body: IncidentPatch,
     db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
 ) -> dict:
     inc = await db.get(DriftIncident, incident_id)
     if not inc:
