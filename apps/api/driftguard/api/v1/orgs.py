@@ -188,6 +188,7 @@ async def update_notification_settings(
     if not org:
         raise HTTPException(404, "org not found")
 
+    first_email = (not org.contact_email) and bool(body.contact_email)
     if "contact_email" in body.model_fields_set:
         org.contact_email = body.contact_email
         db.add(
@@ -200,6 +201,18 @@ async def update_notification_settings(
             )
         )
         await db.commit()
+
+    # Send welcome email on first-time email configuration
+    if first_email and body.contact_email:
+        try:
+            import asyncio
+
+            from driftguard.services.email import send_welcome
+
+            org_name = (org.settings or {}).get("account_login") or f"installation {org.github_installation_id}"
+            asyncio.create_task(send_welcome(to=body.contact_email, org_name=org_name))
+        except Exception:  # noqa: S110 — email is fire-and-forget
+            pass
 
     return {"status": "ok", "contact_email": org.contact_email}
 
