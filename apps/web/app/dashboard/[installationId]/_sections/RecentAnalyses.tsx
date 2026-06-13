@@ -38,7 +38,17 @@ export async function RecentAnalysesSection({
           <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
             {t("repos.recentAnalyses") ?? "Recent analyses"}
           </span>
-          <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{analyses7d} / 7d</span>
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{analyses7d} / 7d</span>
+            {recentAnalyses.length > 0 && (
+              <Link
+                href={`/dashboard/${installationId}/analyses`}
+                className="font-mono text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+              >
+                View all →
+              </Link>
+            )}
+          </div>
         </div>
         {recentAnalyses.length === 0 && !apiAvailable ? (
           <div className="px-6 py-10 text-center">
