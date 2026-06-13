@@ -21,6 +21,7 @@ class Organization(Base):
     # free | premium_active | premium_past_due | premium_canceled | premium_incomplete
     subscription_status: Mapped[str] = mapped_column(String(32), default="free")
     stripe_customer_id: Mapped[str | None] = mapped_column(String(64))
+    contact_email: Mapped[str | None] = mapped_column(String(255))
     settings: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
