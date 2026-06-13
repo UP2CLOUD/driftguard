@@ -61,8 +61,19 @@ export async function ReadinessChecklistSection({
     );
   }
 
-  const allDone = repos > 0 && analyses > 0 && memory > 0;
-  if (allDone) return null;
+  const allDone = repos > 0 && analyses > 0;
+  if (allDone) {
+    return (
+      <div className="rounded-md border border-allowed/30 bg-allowed/5 px-4 py-3 flex items-start gap-3">
+        <span className="mt-0.5 shrink-0 text-allowed text-[14px] leading-none">✓</span>
+        <div className="font-mono text-[12px] text-[color:var(--dg-fg-muted)] leading-relaxed">
+          <span className="font-bold text-allowed">Setup complete.</span>{" "}
+          {t("dashboard.readinessDone") ??
+            "DriftGuard is active. Open a Terraform pull request in a connected repository to trigger your next review."}
+        </div>
+      </div>
+    );
+  }
 
   const slug = process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-reviews";
   const installUrl = `https://github.com/apps/${slug}/installations/new`;
