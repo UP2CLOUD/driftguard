@@ -156,7 +156,7 @@ async def scan_upload(
             with tarfile.open(fileobj=io.BytesIO(content), mode="r:gz") as tf:
                 # Security: only extract safe paths
                 safe_members = [m for m in tf.getmembers() if not m.name.startswith("/") and ".." not in m.name]
-                tf.extractall(root, members=safe_members)  # noqa: S202
+                tf.extractall(root, members=safe_members, filter="data")  # noqa: S202
         except Exception as exc:
             raise HTTPException(400, f"Could not extract archive: {exc}") from exc
 
@@ -357,7 +357,7 @@ async def _run_scan_inprocess(
         root = Path(tmpdir)
         with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as tf:
             safe = [m for m in tf.getmembers() if not m.name.startswith("/") and ".." not in m.name]
-            tf.extractall(root, members=safe)  # noqa: S202
+            tf.extractall(root, members=safe, filter="data")  # noqa: S202
         subdirs = [d for d in root.iterdir() if d.is_dir()]
         scan_root = subdirs[0] if len(subdirs) == 1 else root
         result = await scan_directory(scan_root)
