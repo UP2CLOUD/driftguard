@@ -53,8 +53,16 @@ async def enqueue_pr_merged(payload: dict) -> None:
 
         async with SessionLocal() as db:
             org = (
-                await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-            ).scalar_one_or_none()
+                (
+                    await db.execute(
+                        select(Organization)
+                        .where(Organization.github_installation_id == installation_id)
+                        .order_by(Organization.created_at.desc())
+                    )
+                )
+                .scalars()
+                .first()
+            )
             if not org:
                 return
             rows = (
@@ -96,8 +104,16 @@ async def enqueue_pr_analysis(payload: dict) -> None:
 
         async with SessionLocal() as db:
             org = (
-                await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-            ).scalar_one_or_none()
+                (
+                    await db.execute(
+                        select(Organization)
+                        .where(Organization.github_installation_id == installation_id)
+                        .order_by(Organization.created_at.desc())
+                    )
+                )
+                .scalars()
+                .first()
+            )
 
             if org is None:
                 log.warning("analysis_no_org", installation_id=installation_id, repo=repo)
@@ -630,8 +646,16 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
 
         async with SessionLocal() as _mem_db:
             _org = (
-                await _mem_db.execute(select(_Org).where(_Org.github_installation_id == installation_id))
-            ).scalar_one_or_none()
+                (
+                    await _mem_db.execute(
+                        select(_Org)
+                        .where(_Org.github_installation_id == installation_id)
+                        .order_by(_Org.created_at.desc())
+                    )
+                )
+                .scalars()
+                .first()
+            )
             if _org:
                 await store_memory(
                     _mem_db,
@@ -658,8 +682,16 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
 
         async with SessionLocal() as _inc_db:
             _org_inc = (
-                await _inc_db.execute(select(_OrgInc).where(_OrgInc.github_installation_id == installation_id))
-            ).scalar_one_or_none()
+                (
+                    await _inc_db.execute(
+                        select(_OrgInc)
+                        .where(_OrgInc.github_installation_id == installation_id)
+                        .order_by(_OrgInc.created_at.desc())
+                    )
+                )
+                .scalars()
+                .first()
+            )
             if _org_inc:
                 _repo_inc = (
                     await _inc_db.execute(select(_RepoInc).where(_RepoInc.full_name == repo_full_name))
