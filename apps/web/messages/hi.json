@@ -289,7 +289,21 @@
     "repoLimitReached": "रेपो सीमा पहुँच गई। किसी अन्य को अक्षम करें या अपग्रेड करें।",
     "planLimitReached": "प्लान सीमा पहुँच गई। अधिक रेपो जोड़ने के लिए अपग्रेड करें।",
     "toggleFailed": "रेपो को {action} करने में विफल।",
-    "networkError": "नेटवर्क त्रुटि। पुनः प्रयास करें।"
+    "networkError": "नेटवर्क त्रुटि। पुनः प्रयास करें।",
+    "scanPlaceholder": "मालिक/रेपोज़िटरी",
+    "scanBranchPlaceholder": "डिफ़ॉल्ट ब्रांच",
+    "scanRunBtn": "स्कैन चलाएं →",
+    "scanQueuing": "कतार में…",
+    "scanScanning": "स्कैन हो रहा है…",
+    "scanComplete": "स्कैन पूर्ण — रीडायरेक्ट हो रहा है…",
+    "scanFailedWorker": "Worker पर स्कैन विफल",
+    "scanQueuedWaiting": "स्कैन कतार में — Worker का इंतज़ार…",
+    "scanQuotaExceeded": "मासिक स्कैन सीमा पहुँच गई।",
+    "managePlan": "प्लान प्रबंधित करें →",
+    "uploadScanBtn": "अपलोड और स्कैन करें →",
+    "uploadClickToSelect": "चुनने के लिए क्लिक करें",
+    "uploadRedirecting": "परिणामों पर जा रहे हैं…",
+    "uploadResult": "स्कोर {score}/100 · {n} खोज"
   },
   "landing": {
     "ctaTitle": "अपने क्लाउड पर नियंत्रण वापस पाएं।",

@@ -300,7 +300,21 @@ export default async function ReposPage({
             <p className="text-[12px] text-[color:var(--dg-fg-subtle)] mb-4">
               {t("repos.scanGithubDesc") ?? "Scan any public or connected GitHub repository by name."}
             </p>
-            <ScanTrigger installationId={installationId} />
+            <ScanTrigger
+              installationId={installationId}
+              labels={{
+                placeholder:    t("repos.scanPlaceholder")    ?? "owner/repository",
+                branchPlaceholder: t("repos.scanBranchPlaceholder") ?? "default branch",
+                runBtn:         t("repos.scanRunBtn")         ?? "Run scan →",
+                queuing:        t("repos.scanQueuing")        ?? "Queuing…",
+                scanning:       t("repos.scanScanning")       ?? "Scanning…",
+                complete:       t("repos.scanComplete")       ?? "Scan complete — redirecting…",
+                failedWorker:   t("repos.scanFailedWorker")   ?? "Scan failed on worker",
+                queuedWaiting:  t("repos.scanQueuedWaiting")  ?? "Scan queued — waiting for worker…",
+                quotaExceeded:  t("repos.scanQuotaExceeded")  ?? "Monthly scan limit reached.",
+                managePlan:     t("repos.managePlan")         ?? "Manage plan →",
+              }}
+            />
           </div>
 
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
@@ -315,7 +329,18 @@ export default async function ReposPage({
             <p className="text-[12px] text-[color:var(--dg-fg-subtle)] mb-4">
               {t("repos.uploadFilesDesc") ?? "Upload a .tar.gz of Terraform, Kubernetes, or GitHub Actions files."}
             </p>
-            <UploadScan installationId={installationId} />
+            <UploadScan
+              installationId={installationId}
+              labels={{
+                uploadScanBtn:  t("repos.uploadScanBtn")      ?? "Upload & scan →",
+                scanning:       t("repos.scanScanning")       ?? "Scanning…",
+                clickToSelect:  t("repos.uploadClickToSelect") ?? "Click to select",
+                redirecting:    t("repos.uploadRedirecting")  ?? "Redirecting to results…",
+                uploadResult:   t("repos.uploadResult")       ?? "Score {score}/100 · {n} findings",
+                quotaExceeded:  t("repos.scanQuotaExceeded")  ?? "Monthly scan limit reached.",
+                managePlan:     t("repos.managePlan")         ?? "Manage plan →",
+              }}
+            />
           </div>
         </div>
       </section>

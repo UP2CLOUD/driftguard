@@ -289,7 +289,21 @@
     "repoLimitReached": "Límite de repos alcanzado. Desactiva otro o actualiza el plan.",
     "planLimitReached": "Límite del plan alcanzado. Actualiza para agregar más repositorios.",
     "toggleFailed": "Error al {action} el repositorio.",
-    "networkError": "Error de red. Inténtalo de nuevo."
+    "networkError": "Error de red. Inténtalo de nuevo.",
+    "scanPlaceholder": "propietario/repositorio",
+    "scanBranchPlaceholder": "rama principal",
+    "scanRunBtn": "Ejecutar análisis →",
+    "scanQueuing": "En cola…",
+    "scanScanning": "Analizando…",
+    "scanComplete": "Análisis completo — redirigiendo…",
+    "scanFailedWorker": "El análisis falló en el worker",
+    "scanQueuedWaiting": "Análisis en cola — esperando worker…",
+    "scanQuotaExceeded": "Límite mensual de análisis alcanzado.",
+    "managePlan": "Gestionar plan →",
+    "uploadScanBtn": "Subir y analizar →",
+    "uploadClickToSelect": "Haz clic para seleccionar",
+    "uploadRedirecting": "Redirigiendo a resultados…",
+    "uploadResult": "Puntuación {score}/100 · {n} hallazgos"
   },
   "landing": {
     "ctaTitle": "Recupera el control de tu cloud.",

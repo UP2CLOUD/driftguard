@@ -238,7 +238,21 @@
     "repoLimitReached": "Repo limit reached. Disable another repo or upgrade.",
     "planLimitReached": "Plan limit reached. Upgrade to add more repositories.",
     "toggleFailed": "Failed to {action} repository.",
-    "networkError": "Network error. Try again."
+    "networkError": "Network error. Try again.",
+    "scanPlaceholder": "owner/repository",
+    "scanBranchPlaceholder": "default branch",
+    "scanRunBtn": "Run scan →",
+    "scanQueuing": "Queuing…",
+    "scanScanning": "Scanning…",
+    "scanComplete": "Scan complete — redirecting…",
+    "scanFailedWorker": "Scan failed on worker",
+    "scanQueuedWaiting": "Scan queued — waiting for worker…",
+    "scanQuotaExceeded": "Monthly scan limit reached.",
+    "managePlan": "Manage plan →",
+    "uploadScanBtn": "Upload & scan →",
+    "uploadClickToSelect": "Click to select",
+    "uploadRedirecting": "Redirecting to results…",
+    "uploadResult": "Score {score}/100 · {n} findings"
   },
   "settings": {
     "title": "Settings",

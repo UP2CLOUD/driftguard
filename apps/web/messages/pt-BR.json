@@ -237,7 +237,21 @@
     "repoLimitReached": "Limite de repos atingido. Desative outro ou faça upgrade.",
     "planLimitReached": "Limite do plano atingido. Faça upgrade para adicionar mais repositórios.",
     "toggleFailed": "Falha ao {action} repositório.",
-    "networkError": "Erro de rede. Tente novamente."
+    "networkError": "Erro de rede. Tente novamente.",
+    "scanPlaceholder": "proprietário/repositório",
+    "scanBranchPlaceholder": "branch padrão",
+    "scanRunBtn": "Executar scan →",
+    "scanQueuing": "Na fila…",
+    "scanScanning": "Analisando…",
+    "scanComplete": "Scan concluído — redirecionando…",
+    "scanFailedWorker": "Scan falhou no worker",
+    "scanQueuedWaiting": "Scan na fila — aguardando worker…",
+    "scanQuotaExceeded": "Limite mensal de scans atingido.",
+    "managePlan": "Gerenciar plano →",
+    "uploadScanBtn": "Enviar e analisar →",
+    "uploadClickToSelect": "Clique para selecionar",
+    "uploadRedirecting": "Redirecionando para resultados…",
+    "uploadResult": "Pontuação {score}/100 · {n} achados"
   },
   "settings": {
     "title": "Configurações",

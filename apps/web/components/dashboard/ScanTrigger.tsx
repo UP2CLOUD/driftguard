@@ -3,11 +3,25 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+type Labels = {
+  placeholder?: string;
+  branchPlaceholder?: string;
+  runBtn?: string;
+  queuing?: string;
+  scanning?: string;
+  complete?: string;
+  failedWorker?: string;
+  queuedWaiting?: string;
+  quotaExceeded?: string;
+  managePlan?: string;
+};
+
 async function pollTask(
   taskId: string,
   installationId: string,
   onStatus: (msg: string) => void,
   router: ReturnType<typeof useRouter>,
+  labels: Labels,
 ): Promise<void> {
   for (let attempt = 0; attempt < 36; attempt++) {
     await new Promise((r) => setTimeout(r, 5000));
@@ -16,16 +30,16 @@ async function pollTask(
       if (!res.ok) continue;
       const data = await res.json();
       if (data.state === "completed" && data.analysis_id) {
-        onStatus("Scan complete — redirecting…");
+        onStatus(labels.complete ?? "Scan complete — redirecting…");
         router.push(`/dashboard/${installationId}/analyses/${data.analysis_id}`);
         return;
       }
       if (data.state === "failed") {
-        onStatus("Scan failed on worker");
+        onStatus(labels.failedWorker ?? "Scan failed on worker");
         return;
       }
       if (data.state === "started") {
-        onStatus("Scan running…");
+        onStatus(labels.scanning ?? "Scanning…");
       }
     } catch {
       // transient network error — keep polling
@@ -35,7 +49,13 @@ async function pollTask(
   router.push(`/dashboard/${installationId}/analyses`);
 }
 
-export function ScanTrigger({ installationId }: { installationId: string }) {
+export function ScanTrigger({
+  installationId,
+  labels,
+}: {
+  installationId: string;
+  labels?: Labels;
+}) {
   const [repo, setRepo] = useState("");
   const [ref, setRef] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "polling" | "done" | "error" | "quota">("idle");
@@ -59,24 +79,24 @@ export function ScanTrigger({ installationId }: { installationId: string }) {
       const data = await res.json();
       if (res.status === 402) {
         setStatus("quota");
-        setMsg(data.detail || "Monthly scan limit reached.");
+        setMsg(data.detail || (labels?.quotaExceeded ?? "Monthly scan limit reached."));
         return;
       }
       if (!res.ok) throw new Error(data.detail || "Scan failed");
 
       if (data.analysis_id) {
         setStatus("done");
-        setMsg("Scan complete — redirecting…");
+        setMsg(labels?.complete ?? "Scan complete — redirecting…");
         setTimeout(() => router.push(`/dashboard/${installationId}/analyses/${data.analysis_id}`), 800);
       } else if (data.task_id) {
         setStatus("polling");
-        setMsg("Scan queued — waiting for worker…");
-        pollTask(data.task_id, installationId, setMsg, router).then(() => {
+        setMsg(labels?.queuedWaiting ?? "Scan queued — waiting for worker…");
+        pollTask(data.task_id, installationId, setMsg, router, labels ?? {}).then(() => {
           setStatus("done");
         });
       } else {
         setStatus("done");
-        setMsg("Scan queued");
+        setMsg(labels?.complete ?? "Scan complete");
         setTimeout(() => router.refresh(), 2500);
       }
     } catch (e: any) {
@@ -92,7 +112,7 @@ export function ScanTrigger({ installationId }: { installationId: string }) {
       <input
         value={repo}
         onChange={(e) => setRepo(e.target.value)}
-        placeholder="owner/repository"
+        placeholder={labels?.placeholder ?? "owner/repository"}
         disabled={busy}
         className="w-full rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] focus:border-[color:var(--dg-electric)] focus:outline-none transition disabled:opacity-50"
       />
@@ -100,7 +120,7 @@ export function ScanTrigger({ installationId }: { installationId: string }) {
         <input
           value={ref}
           onChange={(e) => setRef(e.target.value)}
-          placeholder="default branch"
+          placeholder={labels?.branchPlaceholder ?? "default branch"}
           disabled={busy}
           className="w-28 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] focus:border-[color:var(--dg-electric)] focus:outline-none transition disabled:opacity-50"
         />
@@ -109,7 +129,11 @@ export function ScanTrigger({ installationId }: { installationId: string }) {
           disabled={busy || !repo.trim()}
           className="flex-1 rounded bg-[color:var(--dg-electric)] px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-white hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition"
         >
-          {status === "loading" ? "Queuing…" : status === "polling" ? "Scanning…" : "Run scan →"}
+          {status === "loading"
+            ? (labels?.queuing ?? "Queuing…")
+            : status === "polling"
+              ? (labels?.scanning ?? "Scanning…")
+              : (labels?.runBtn ?? "Run scan →")}
         </button>
       </div>
       {msg && status !== "quota" && (
@@ -127,7 +151,7 @@ export function ScanTrigger({ installationId }: { installationId: string }) {
             href={`/dashboard/${installationId}/settings`}
             className="font-mono text-[10px] text-[color:var(--dg-electric-bright)] underline underline-offset-2"
           >
-            Manage plan →
+            {labels?.managePlan ?? "Manage plan →"}
           </a>
         </div>
       )}

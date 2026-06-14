@@ -289,7 +289,21 @@
     "repoLimitReached": "تم الوصول لحد المستودعات. عطّل مستودعاً آخر أو قم بالترقية.",
     "planLimitReached": "تم الوصول لحد الخطة. قم بالترقية لإضافة مزيد من المستودعات.",
     "toggleFailed": "فشل في {action} المستودع.",
-    "networkError": "خطأ في الشبكة. حاول مرة أخرى."
+    "networkError": "خطأ في الشبكة. حاول مرة أخرى.",
+    "scanPlaceholder": "المالك/المستودع",
+    "scanBranchPlaceholder": "الفرع الافتراضي",
+    "scanRunBtn": "تشغيل الفحص ←",
+    "scanQueuing": "في الانتظار…",
+    "scanScanning": "جارٍ الفحص…",
+    "scanComplete": "اكتمل الفحص — جارٍ التوجيه…",
+    "scanFailedWorker": "فشل الفحص في Worker",
+    "scanQueuedWaiting": "الفحص في الانتظار — ننتظر Worker…",
+    "scanQuotaExceeded": "تم الوصول للحد الشهري للفحوصات.",
+    "managePlan": "إدارة الخطة ←",
+    "uploadScanBtn": "رفع وفحص ←",
+    "uploadClickToSelect": "انقر للاختيار",
+    "uploadRedirecting": "جارٍ التوجيه للنتائج…",
+    "uploadResult": "النتيجة {score}/100 · {n} نتيجة"
   },
   "landing": {
     "ctaTitle": "استعد السيطرة على بنيتك السحابية.",

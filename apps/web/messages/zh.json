@@ -289,7 +289,21 @@
     "repoLimitReached": "已达仓库上限。请禁用一个仓库或升级计划。",
     "planLimitReached": "已达计划上限。请升级以添加更多仓库。",
     "toggleFailed": "{action}仓库失败。",
-    "networkError": "网络错误，请重试。"
+    "networkError": "网络错误，请重试。",
+    "scanPlaceholder": "所有者/仓库名",
+    "scanBranchPlaceholder": "默认分支",
+    "scanRunBtn": "运行扫描 →",
+    "scanQueuing": "排队中…",
+    "scanScanning": "扫描中…",
+    "scanComplete": "扫描完成 — 正在跳转…",
+    "scanFailedWorker": "Worker 执行扫描失败",
+    "scanQueuedWaiting": "扫描已排队 — 等待 Worker…",
+    "scanQuotaExceeded": "已达每月扫描上限。",
+    "managePlan": "管理计划 →",
+    "uploadScanBtn": "上传并扫描 →",
+    "uploadClickToSelect": "点击选择文件",
+    "uploadRedirecting": "正在跳转到结果…",
+    "uploadResult": "得分 {score}/100 · {n} 个发现"
   },
   "landing": {
     "ctaTitle": "重新掌控您的云基础设施。",
