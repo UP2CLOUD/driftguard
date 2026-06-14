@@ -10,6 +10,7 @@ on:
     paths:
       - "apps/web/**"
       - ".github/workflows/ci-web.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
