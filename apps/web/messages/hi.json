@@ -65,7 +65,7 @@
     "scanner": "इन्फ्रास्ट्रक्चर स्कैनर",
     "repos": "रेपो",
     "recentScans": "हाल के स्कैन",
-    "noScansYet": "अभी तक कोई स्कैन नहीं।",
+    "noScansYet": "अभी कोई स्कैन नहीं",
     "noScansDesc": "परिणाम देखने के लिए ऊपर पहला स्कैन चलाएं।",
     "repository": "रेपोजिटरी",
     "status": "स्थिति",
@@ -134,7 +134,10 @@
     "prLimitReached": "मासिक PR समीक्षा सीमा पहुंच गई ({used}/{limit})। समीक्षाएं अगले बिलिंग चक्र में फिर से शुरू होंगी।",
     "prReviewsRemaining": "इस महीने {remaining} PR समीक्षाएं शेष हैं।",
     "managePlan": "योजना प्रबंधित करें",
-    "upgrade": "अपग्रेड"
+    "upgrade": "अपग्रेड",
+    "costDelta": "लागत परिवर्तन",
+    "recentScansCount": "कुल {n}",
+    "noScansTrigger": "पहला विश्लेषण शुरू करने के लिए ऊपर मैन्युअल स्कैन चलाएं या Terraform PR खोलें।"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -270,7 +273,17 @@
     "scanGithubRepo": "GitHub रिपोजिटरी",
     "scanGithubDesc": "नाम से किसी भी सार्वजनिक या कनेक्टेड GitHub रिपोजिटरी को स्कैन करें।",
     "uploadFiles": "फ़ाइलें अपलोड करें",
-    "uploadFilesDesc": "Terraform, Kubernetes, या GitHub Actions फ़ाइलों का .tar.gz अपलोड करें।"
+    "uploadFilesDesc": "Terraform, Kubernetes, या GitHub Actions फ़ाइलों का .tar.gz अपलोड करें।",
+    "tableHeaderLastAnalyzed": "अंतिम विश्लेषण",
+    "tableHeaderStatus": "स्थिति",
+    "tableHeaderActive": "सक्रिय",
+    "noScansYet": "अभी कोई स्कैन नहीं",
+    "noScansTrigger": "पहला विश्लेषण शुरू करने के लिए ऊपर मैन्युअल स्कैन चलाएं या Terraform PR खोलें।",
+    "quickScan": "स्कैन →",
+    "quickScanQueuing": "कतार में…",
+    "quickScanScanning": "स्कैन हो रहा है…",
+    "quickScanDone": "पूर्ण ✓",
+    "quickScanFailed": "विफल ✗"
   },
   "landing": {
     "ctaTitle": "अपने क्लाउड पर नियंत्रण वापस पाएं।",

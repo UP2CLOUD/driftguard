@@ -109,7 +109,7 @@ export default async function ReposPage({
             rel="noreferrer"
             className="rounded border border-[color:var(--dg-border)] px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
           >
-            + Add repo
+            {t("repos.addRepo") ?? "+ Add repo"}
           </a>
         )}
       </div>
@@ -184,11 +184,11 @@ export default async function ReposPage({
           <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
             {/* Header */}
             <div className="hidden sm:grid grid-cols-[1fr_80px_100px_100px_90px] gap-4 bg-[color:var(--dg-surface)] px-4 py-2">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Repository</span>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Risk</span>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Last analyzed</span>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Status</span>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Active</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.title") ?? "Repository"}</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.riskHeader") ?? "Risk"}</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.tableHeaderLastAnalyzed") ?? "Last analyzed"}</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.tableHeaderStatus") ?? "Status"}</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.tableHeaderActive") ?? "Active"}</span>
             </div>
 
             {repos.map((repo: any) => {
@@ -244,6 +244,13 @@ export default async function ReposPage({
                       <RepoQuickScan
                         installationId={installationId}
                         repoFullName={repo.full_name}
+                        labels={{
+                          scan:     t("repos.quickScan")         ?? "scan →",
+                          queuing:  t("repos.quickScanQueuing")  ?? "queuing…",
+                          scanning: t("repos.quickScanScanning") ?? "scanning…",
+                          done:     t("repos.quickScanDone")     ?? "done ✓",
+                          failed:   t("repos.quickScanFailed")   ?? "failed ✗",
+                        }}
                       />
                     )}
                   </div>
@@ -311,14 +318,18 @@ export default async function ReposPage({
           <h2 className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
             {t("dashboard.recentScans") ?? "Recent scans"}
           </h2>
-          <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{recentAnalyses.length} total</span>
+          <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+            {(t("dashboard.recentScansCount") ?? "{n} total").replace("{n}", String(recentAnalyses.length))}
+          </span>
         </div>
 
         {recentAnalyses.length === 0 ? (
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-10 text-center">
-            <p className="text-[13px] text-[color:var(--dg-fg-muted)] mb-1">No scans yet</p>
+            <p className="text-[13px] text-[color:var(--dg-fg-muted)] mb-1">
+              {t("dashboard.noScansYet") ?? "No scans yet"}
+            </p>
             <p className="text-[11px] text-[color:var(--dg-fg-subtle)]">
-              Run a manual scan above or open a Terraform PR to trigger the first analysis.
+              {t("dashboard.noScansTrigger") ?? "Run a manual scan above or open a Terraform PR to trigger the first analysis."}
             </p>
           </div>
         ) : (

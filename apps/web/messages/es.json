@@ -65,7 +65,7 @@
     "scanner": "Escáner de infraestructura",
     "repos": "Repositorios",
     "recentScans": "Scans recientes",
-    "noScansYet": "Sin scans todavía.",
+    "noScansYet": "Sin análisis aún",
     "noScansDesc": "Ejecuta tu primer scan arriba para ver los resultados aquí.",
     "repository": "Repositorio",
     "status": "Estado",
@@ -134,7 +134,10 @@
     "prLimitReached": "Límite mensual de revisiones de PR alcanzado ({used}/{limit}). Las revisiones se reanudan en el próximo ciclo de facturación.",
     "prReviewsRemaining": "{remaining} revisiones de PR restantes este mes.",
     "managePlan": "Gestionar plan",
-    "upgrade": "Actualizar"
+    "upgrade": "Actualizar",
+    "costDelta": "Variación de costo",
+    "recentScansCount": "{n} total",
+    "noScansTrigger": "Ejecuta un análisis manual arriba o abre un PR de Terraform para activar el primer análisis."
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -270,7 +273,17 @@
     "scanGithubRepo": "Repositorio GitHub",
     "scanGithubDesc": "Escanee cualquier repositorio de GitHub público o conectado por nombre.",
     "uploadFiles": "Subir archivos",
-    "uploadFilesDesc": "Suba un .tar.gz de archivos Terraform, Kubernetes o GitHub Actions."
+    "uploadFilesDesc": "Suba un .tar.gz de archivos Terraform, Kubernetes o GitHub Actions.",
+    "tableHeaderLastAnalyzed": "Último análisis",
+    "tableHeaderStatus": "Estado",
+    "tableHeaderActive": "Activo",
+    "noScansYet": "Sin análisis aún",
+    "noScansTrigger": "Ejecuta un análisis manual arriba o abre un PR de Terraform para activar el primer análisis.",
+    "quickScan": "analizar →",
+    "quickScanQueuing": "en cola…",
+    "quickScanScanning": "analizando…",
+    "quickScanDone": "listo ✓",
+    "quickScanFailed": "fallido ✗"
   },
   "landing": {
     "ctaTitle": "Recupera el control de tu cloud.",

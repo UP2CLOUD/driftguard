@@ -6,9 +6,17 @@ import { useRouter } from "next/navigation";
 export function RepoQuickScan({
   installationId,
   repoFullName,
+  labels,
 }: {
   installationId: string;
   repoFullName: string;
+  labels?: {
+    scan?: string;
+    queuing?: string;
+    scanning?: string;
+    done?: string;
+    failed?: string;
+  };
 }) {
   const [status, setStatus] = useState<"idle" | "scanning" | "polling" | "done" | "error">("idle");
   const router = useRouter();
@@ -71,7 +79,7 @@ export function RepoQuickScan({
   if (status === "scanning") {
     return (
       <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] animate-pulse">
-        queuing…
+        {labels?.queuing ?? "queuing…"}
       </span>
     );
   }
@@ -79,15 +87,15 @@ export function RepoQuickScan({
     return (
       <span className="font-mono text-[10px] text-[color:var(--dg-electric-bright)] flex items-center gap-1">
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--dg-electric-bright)] animate-pulse" />
-        scanning…
+        {labels?.scanning ?? "scanning…"}
       </span>
     );
   }
   if (status === "done") {
-    return <span className="font-mono text-[10px] text-allowed">done ✓</span>;
+    return <span className="font-mono text-[10px] text-allowed">{labels?.done ?? "done ✓"}</span>;
   }
   if (status === "error") {
-    return <span className="font-mono text-[10px] text-blocked">failed ✗</span>;
+    return <span className="font-mono text-[10px] text-blocked">{labels?.failed ?? "failed ✗"}</span>;
   }
 
   return (
@@ -95,7 +103,7 @@ export function RepoQuickScan({
       onClick={scan}
       className="font-mono text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
     >
-      scan →
+      {labels?.scan ?? "scan →"}
     </button>
   );
 }

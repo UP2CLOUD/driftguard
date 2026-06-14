@@ -134,7 +134,11 @@
     "prLimitReached": "Monthly PR review limit reached ({used}/{limit}). Reviews resume next billing cycle.",
     "prReviewsRemaining": "{remaining} PR reviews remaining this month.",
     "managePlan": "Manage plan",
-    "upgrade": "Upgrade"
+    "upgrade": "Upgrade",
+    "costDelta": "Cost delta",
+    "recentScansCount": "{n} total",
+    "noScansYet": "No scans yet",
+    "noScansTrigger": "Run a manual scan above or open a Terraform PR to trigger the first analysis."
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -218,7 +222,17 @@
     "scanGithubRepo": "GitHub repository",
     "scanGithubDesc": "Scan any public or connected GitHub repository by name.",
     "uploadFiles": "Upload files",
-    "uploadFilesDesc": "Upload a .tar.gz of Terraform, Kubernetes, or GitHub Actions files."
+    "uploadFilesDesc": "Upload a .tar.gz of Terraform, Kubernetes, or GitHub Actions files.",
+    "tableHeaderLastAnalyzed": "Last analyzed",
+    "tableHeaderStatus": "Status",
+    "tableHeaderActive": "Active",
+    "noScansYet": "No scans yet",
+    "noScansTrigger": "Run a manual scan above or open a Terraform PR to trigger the first analysis.",
+    "quickScan": "scan →",
+    "quickScanQueuing": "queuing…",
+    "quickScanScanning": "scanning…",
+    "quickScanDone": "done ✓",
+    "quickScanFailed": "failed ✗"
   },
   "settings": {
     "title": "Settings",

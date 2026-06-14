@@ -65,7 +65,7 @@
     "scanner": "ماسح البنية التحتية",
     "repos": "المستودعات",
     "recentScans": "الفحوصات الأخيرة",
-    "noScansYet": "لا فحوصات بعد.",
+    "noScansYet": "لا فحوصات بعد",
     "noScansDesc": "شغّل فحصك الأول أعلاه لرؤية النتائج هنا.",
     "repository": "المستودع",
     "status": "الحالة",
@@ -134,7 +134,10 @@
     "prLimitReached": "تم الوصول للحد الشهري لمراجعات PR ({used}/{limit}). تستأنف المراجعات في دورة الفوترة التالية.",
     "prReviewsRemaining": "{remaining} مراجعة PR متبقية هذا الشهر.",
     "managePlan": "إدارة الخطة",
-    "upgrade": "الترقية"
+    "upgrade": "الترقية",
+    "costDelta": "تغيّر التكلفة",
+    "recentScansCount": "الإجمالي: {n}",
+    "noScansTrigger": "قم بتشغيل فحص يدوي أعلاه أو افتح Terraform PR لتشغيل أول تحليل."
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -270,7 +273,17 @@
     "scanGithubRepo": "مستودع GitHub",
     "scanGithubDesc": "افحص أي مستودع GitHub عام أو متصل بالاسم.",
     "uploadFiles": "رفع الملفات",
-    "uploadFilesDesc": "ارفع ملف .tar.gz يحتوي على ملفات Terraform أو Kubernetes أو GitHub Actions."
+    "uploadFilesDesc": "ارفع ملف .tar.gz يحتوي على ملفات Terraform أو Kubernetes أو GitHub Actions.",
+    "tableHeaderLastAnalyzed": "آخر تحليل",
+    "tableHeaderStatus": "الحالة",
+    "tableHeaderActive": "نشط",
+    "noScansYet": "لا فحوصات بعد",
+    "noScansTrigger": "قم بتشغيل فحص يدوي أعلاه أو افتح Terraform PR لتشغيل أول تحليل.",
+    "quickScan": "فحص ←",
+    "quickScanQueuing": "في الانتظار…",
+    "quickScanScanning": "جارٍ الفحص…",
+    "quickScanDone": "اكتمل ✓",
+    "quickScanFailed": "فشل ✗"
   },
   "landing": {
     "ctaTitle": "استعد السيطرة على بنيتك السحابية.",

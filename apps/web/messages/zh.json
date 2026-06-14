@@ -65,7 +65,7 @@
     "scanner": "基础设施扫描器",
     "repos": "仓库",
     "recentScans": "最近扫描",
-    "noScansYet": "暂无扫描。",
+    "noScansYet": "暂无扫描",
     "noScansDesc": "在上方运行你的第一次扫描以在此查看结果。",
     "repository": "仓库",
     "status": "状态",
@@ -134,7 +134,10 @@
     "prLimitReached": "每月 PR 审查限额已达上限 ({used}/{limit})。审查将在下个结算周期恢复。",
     "prReviewsRemaining": "本月剩余 {remaining} 次 PR 审查。",
     "managePlan": "管理计划",
-    "upgrade": "升级"
+    "upgrade": "升级",
+    "costDelta": "成本变化",
+    "recentScansCount": "共 {n} 条",
+    "noScansTrigger": "在上方运行手动扫描，或打开 Terraform PR 以触发首次分析。"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -270,7 +273,17 @@
     "scanGithubRepo": "GitHub 仓库",
     "scanGithubDesc": "通过名称扫描任何公共或已连接的 GitHub 仓库。",
     "uploadFiles": "上传文件",
-    "uploadFilesDesc": "上传 Terraform、Kubernetes 或 GitHub Actions 文件的 .tar.gz 压缩包。"
+    "uploadFilesDesc": "上传 Terraform、Kubernetes 或 GitHub Actions 文件的 .tar.gz 压缩包。",
+    "tableHeaderLastAnalyzed": "最近分析",
+    "tableHeaderStatus": "状态",
+    "tableHeaderActive": "启用",
+    "noScansYet": "暂无扫描",
+    "noScansTrigger": "在上方运行手动扫描，或打开 Terraform PR 以触发首次分析。",
+    "quickScan": "扫描 →",
+    "quickScanQueuing": "排队中…",
+    "quickScanScanning": "扫描中…",
+    "quickScanDone": "完成 ✓",
+    "quickScanFailed": "失败 ✗"
   },
   "landing": {
     "ctaTitle": "重新掌控您的云基础设施。",

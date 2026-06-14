@@ -87,7 +87,7 @@
     "scanner": "Scanner de infraestrutura",
     "repos": "Repositórios",
     "recentScans": "Scans recentes",
-    "noScansYet": "Sem scans ainda.",
+    "noScansYet": "Nenhum scan ainda",
     "noScansDesc": "Executa o teu primeiro scan acima para ver os resultados aqui.",
     "repository": "Repositório",
     "status": "Estado",
@@ -156,7 +156,10 @@
     "prLimitReached": "Limite mensal de revisões de PR atingido ({used}/{limit}). As revisões são retomadas no próximo ciclo de cobrança.",
     "prReviewsRemaining": "{remaining} revisões de PR restantes neste mês.",
     "managePlan": "Gerenciar plano",
-    "upgrade": "Atualizar"
+    "upgrade": "Atualizar",
+    "costDelta": "Variação de custo",
+    "recentScansCount": "{n} total",
+    "noScansTrigger": "Execute um scan manual acima ou abra um PR Terraform para acionar o primeiro análise."
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -218,7 +221,17 @@
     "scanGithubRepo": "Repositório GitHub",
     "scanGithubDesc": "Escaneie qualquer repositório GitHub público ou conectado pelo nome.",
     "uploadFiles": "Enviar arquivos",
-    "uploadFilesDesc": "Envie um .tar.gz de arquivos Terraform, Kubernetes ou GitHub Actions."
+    "uploadFilesDesc": "Envie um .tar.gz de arquivos Terraform, Kubernetes ou GitHub Actions.",
+    "tableHeaderLastAnalyzed": "Último análise",
+    "tableHeaderStatus": "Status",
+    "tableHeaderActive": "Ativo",
+    "noScansYet": "Nenhum scan ainda",
+    "noScansTrigger": "Execute um scan manual acima ou abra um PR Terraform para acionar o primeiro análise.",
+    "quickScan": "analisar →",
+    "quickScanQueuing": "enfileirando…",
+    "quickScanScanning": "analisando…",
+    "quickScanDone": "concluído ✓",
+    "quickScanFailed": "falhou ✗"
   },
   "settings": {
     "title": "Configurações",
