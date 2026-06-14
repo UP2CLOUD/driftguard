@@ -1166,5 +1166,29 @@
     "time": "时间",
     "payload": "载荷",
     "noMatch": "没有符合此过滤条件的事件。"
+  },
+  "analyses": {
+    "eyebrow": "基础设施扫描器",
+    "title": "分析",
+    "statusSummary": "{completed} 已完成 · {failed} 失败 · {inProgress} 进行中",
+    "tabAll": "全部",
+    "tabCompleted": "已完成",
+    "tabFailed": "失败",
+    "tabRunning": "进行中",
+    "noTitle": "暂无分析",
+    "noBody": "当 Terraform PR 开启时，分析会自动创建。",
+    "noBodySub": "您也可以从存储库页面触发手动扫描。",
+    "goToRepos": "前往存储库 →",
+    "noMatchFilter": "没有匹配此过滤器的分析。",
+    "colRisk": "风险",
+    "colRepo": "存储库 / PR",
+    "colStatus": "状态",
+    "colFiles": "文件",
+    "colDate": "日期",
+    "manual": "手动",
+    "filesScanned": "{n} 个文件",
+    "previous": "← 上一页",
+    "next": "下一页 →",
+    "page": "第 {n} 页"
   }
 }

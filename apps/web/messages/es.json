@@ -1166,5 +1166,29 @@
     "time": "hora",
     "payload": "payload",
     "noMatch": "Ningún evento coincide con este filtro."
+  },
+  "analyses": {
+    "eyebrow": "Escáner de infraestructura",
+    "title": "Análisis",
+    "statusSummary": "{completed} completados · {failed} fallidos · {inProgress} en progreso",
+    "tabAll": "Todos",
+    "tabCompleted": "Completados",
+    "tabFailed": "Fallidos",
+    "tabRunning": "En progreso",
+    "noTitle": "Sin análisis aún",
+    "noBody": "Los análisis se crean automáticamente cuando se abre un PR de Terraform.",
+    "noBodySub": "También puedes activar un escaneo manual desde la página de Repositorios.",
+    "goToRepos": "Ir a Repositorios →",
+    "noMatchFilter": "No hay análisis que coincidan con este filtro.",
+    "colRisk": "Riesgo",
+    "colRepo": "Repositorio / PR",
+    "colStatus": "Estado",
+    "colFiles": "Archivos",
+    "colDate": "Fecha",
+    "manual": "manual",
+    "filesScanned": "{n} archivos",
+    "previous": "← Anterior",
+    "next": "Siguiente →",
+    "page": "Página {n}"
   }
 }

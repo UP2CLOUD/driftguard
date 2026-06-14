@@ -1166,5 +1166,29 @@
     "time": "time",
     "payload": "payload",
     "noMatch": "No events match this filter."
+  },
+  "analyses": {
+    "eyebrow": "Infrastructure scanner",
+    "title": "Analyses",
+    "statusSummary": "{completed} completed · {failed} failed · {inProgress} in progress",
+    "tabAll": "All",
+    "tabCompleted": "Completed",
+    "tabFailed": "Failed",
+    "tabRunning": "In progress",
+    "noTitle": "No analyses yet",
+    "noBody": "Analyses are created automatically when a Terraform PR is opened.",
+    "noBodySub": "You can also trigger a manual scan from the Repositories page.",
+    "goToRepos": "Go to Repositories →",
+    "noMatchFilter": "No analyses match this filter.",
+    "colRisk": "Risk",
+    "colRepo": "Repository / PR",
+    "colStatus": "Status",
+    "colFiles": "Files",
+    "colDate": "Date",
+    "manual": "manual",
+    "filesScanned": "{n} files",
+    "previous": "← Previous",
+    "next": "Next →",
+    "page": "Page {n}"
   }
 }

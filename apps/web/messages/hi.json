@@ -1166,5 +1166,29 @@
     "time": "समय",
     "payload": "पेलोड",
     "noMatch": "इस फ़िल्टर से कोई इवेंट मेल नहीं खाता।"
+  },
+  "analyses": {
+    "eyebrow": "इंफ्रास्ट्रक्चर स्कैनर",
+    "title": "विश्लेषण",
+    "statusSummary": "{completed} पूर्ण · {failed} विफल · {inProgress} प्रगति में",
+    "tabAll": "सभी",
+    "tabCompleted": "पूर्ण",
+    "tabFailed": "विफल",
+    "tabRunning": "प्रगति में",
+    "noTitle": "अभी तक कोई विश्लेषण नहीं",
+    "noBody": "Terraform PR खुलने पर विश्लेषण स्वचालित रूप से बनाए जाते हैं।",
+    "noBodySub": "आप रिपोजिटरी पेज से मैन्युअल स्कैन भी ट्रिगर कर सकते हैं।",
+    "goToRepos": "रिपोजिटरी पर जाएं →",
+    "noMatchFilter": "इस फ़िल्टर से मेल खाने वाला कोई विश्लेषण नहीं।",
+    "colRisk": "जोखिम",
+    "colRepo": "रिपोजिटरी / PR",
+    "colStatus": "स्थिति",
+    "colFiles": "फ़ाइलें",
+    "colDate": "तारीख",
+    "manual": "मैन्युअल",
+    "filesScanned": "{n} फ़ाइलें",
+    "previous": "← पिछला",
+    "next": "अगला →",
+    "page": "पृष्ठ {n}"
   }
 }

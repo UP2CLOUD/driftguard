@@ -84,10 +84,10 @@ export default async function AnalysesPage({
   const activeTab = filter ?? "all";
 
   const tabs = [
-    { key: "all", label: "All", count: activeFilter ? null : all.length },
-    { key: "completed", label: "Completed", count: activeFilter === "completed" ? all.length : (activeFilter ? null : completed.length) },
-    { key: "failed", label: "Failed", count: activeFilter === "failed" ? all.length : (activeFilter ? null : failed.length) },
-    { key: "running", label: "In progress", count: activeFilter === "running" ? all.length : (activeFilter ? null : running.length) },
+    { key: "all", label: t("analyses.tabAll") ?? "All", count: activeFilter ? null : all.length },
+    { key: "completed", label: t("analyses.tabCompleted") ?? "Completed", count: activeFilter === "completed" ? all.length : (activeFilter ? null : completed.length) },
+    { key: "failed", label: t("analyses.tabFailed") ?? "Failed", count: activeFilter === "failed" ? all.length : (activeFilter ? null : failed.length) },
+    { key: "running", label: t("analyses.tabRunning") ?? "In progress", count: activeFilter === "running" ? all.length : (activeFilter ? null : running.length) },
   ];
 
   const pageHref = (tab: string, p: number) => {
@@ -102,13 +102,16 @@ export default async function AnalysesPage({
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-6 sm:py-8">
       {/* Header */}
       <div className="mb-5 sm:mb-6">
-        <div className="dg-label mb-1.5">Infrastructure scanner</div>
+        <div className="dg-label mb-1.5">{t("analyses.eyebrow") ?? "Infrastructure scanner"}</div>
         <h1 className="font-sans text-xl sm:text-2xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
-          Analyses
+          {t("analyses.title") ?? "Analyses"}
         </h1>
         {all.length > 0 && !activeFilter && (
           <p className="mt-1 text-[13px] text-[color:var(--dg-fg-muted)]">
-            {completed.length} completed · {failed.length} failed · {running.length} in progress
+            {(t("analyses.statusSummary") ?? "{completed} completed · {failed} failed · {inProgress} in progress")
+              .replace("{completed}", String(completed.length))
+              .replace("{failed}", String(failed.length))
+              .replace("{inProgress}", String(running.length))}
           </p>
         )}
       </div>
@@ -154,24 +157,24 @@ export default async function AnalysesPage({
           {all.length === 0 ? (
             <>
               <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                No analyses yet
+                {t("analyses.noTitle") ?? "No analyses yet"}
               </div>
               <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
-                Analyses are created automatically when a Terraform PR is opened.
+                {t("analyses.noBody") ?? "Analyses are created automatically when a Terraform PR is opened."}
               </p>
               <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto leading-relaxed mb-5">
-                You can also trigger a manual scan from the Repositories page.
+                {t("analyses.noBodySub") ?? "You can also trigger a manual scan from the Repositories page."}
               </p>
               <Link
                 href={`/dashboard/${installationId}/repos`}
                 className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
               >
-                Go to Repositories →
+                {t("analyses.goToRepos") ?? "Go to Repositories →"}
               </Link>
             </>
           ) : (
             <p className="text-[13px] text-[color:var(--dg-fg-muted)]">
-              No analyses match this filter.
+              {t("analyses.noMatchFilter") ?? "No analyses match this filter."}
             </p>
           )}
         </div>
@@ -179,11 +182,11 @@ export default async function AnalysesPage({
         <>
           {/* Table header — desktop only */}
           <div className="hidden sm:grid grid-cols-[44px_1fr_90px_100px_110px] gap-4 bg-[color:var(--dg-surface)] border border-b-0 border-[color:var(--dg-border)] rounded-t-md px-4 py-2">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Risk</span>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Repository / PR</span>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Status</span>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Files</span>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Date</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colRisk") ?? "Risk"}</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colRepo") ?? "Repository / PR"}</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colStatus") ?? "Status"}</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colFiles") ?? "Files"}</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colDate") ?? "Date"}</span>
           </div>
 
           <div className="rounded-md sm:rounded-t-none border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
@@ -210,7 +213,7 @@ export default async function AnalysesPage({
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-                      {a.head_sha ? a.head_sha.slice(0, 7) : "manual"}
+                      {a.head_sha ? a.head_sha.slice(0, 7) : (t("analyses.manual") ?? "manual")}
                       {/* Mobile: show date + status inline */}
                       <span className="sm:hidden">
                         {a.created_at ? ` · ${formatDate(a.created_at, prefs.locale)}` : ""}
@@ -237,7 +240,7 @@ export default async function AnalysesPage({
 
                 {/* Files scanned */}
                 <div className="hidden sm:block font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">
-                  {a.files_scanned != null ? `${a.files_scanned} files` : "—"}
+                  {a.files_scanned != null ? (t("analyses.filesScanned") ?? "{n} files").replace("{n}", String(a.files_scanned)) : "—"}
                 </div>
 
                 {/* Date */}
@@ -266,18 +269,18 @@ export default async function AnalysesPage({
                   href={pageHref(activeTab, page - 1)}
                   className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
                 >
-                  ← Previous
+                  {t("analyses.previous") ?? "← Previous"}
                 </Link>
               ) : <span />}
               <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-                Page {page}
+                {(t("analyses.page") ?? "Page {n}").replace("{n}", String(page))}
               </span>
               {hasNext ? (
                 <Link
                   href={pageHref(activeTab, page + 1)}
                   className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
                 >
-                  Next →
+                  {t("analyses.next") ?? "Next →"}
                 </Link>
               ) : <span />}
             </div>

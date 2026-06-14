@@ -1166,5 +1166,29 @@
     "time": "الوقت",
     "payload": "البيانات",
     "noMatch": "لا توجد أحداث تطابق هذا الفلتر."
+  },
+  "analyses": {
+    "eyebrow": "ماسح البنية التحتية",
+    "title": "التحليلات",
+    "statusSummary": "{completed} مكتملة · {failed} فاشلة · {inProgress} قيد التنفيذ",
+    "tabAll": "الكل",
+    "tabCompleted": "مكتملة",
+    "tabFailed": "فاشلة",
+    "tabRunning": "قيد التنفيذ",
+    "noTitle": "لا تحليلات بعد",
+    "noBody": "يتم إنشاء التحليلات تلقائياً عند فتح PR Terraform.",
+    "noBodySub": "يمكنك أيضاً تشغيل فحص يدوي من صفحة المستودعات.",
+    "goToRepos": "انتقل إلى المستودعات →",
+    "noMatchFilter": "لا تحليلات تطابق هذا الفلتر.",
+    "colRisk": "المخاطر",
+    "colRepo": "المستودع / PR",
+    "colStatus": "الحالة",
+    "colFiles": "الملفات",
+    "colDate": "التاريخ",
+    "manual": "يدوي",
+    "filesScanned": "{n} ملفات",
+    "previous": "← السابق",
+    "next": "التالي →",
+    "page": "صفحة {n}"
   }
 }
