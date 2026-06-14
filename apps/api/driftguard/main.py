@@ -45,7 +45,7 @@ async def lifespan(app: FastAPI):
 
         async with SessionLocal() as session:
             result = await session.execute(select(Organization).where(Organization.github_installation_id == 999))
-            if not result.scalar_one_or_none():
+            if not result.scalars().first():
                 org = Organization(
                     github_installation_id=999,
                     plan="pro",

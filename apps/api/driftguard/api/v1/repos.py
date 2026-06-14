@@ -24,10 +24,17 @@ async def list_repos(
 ) -> list[dict]:
     if installation_id is not None:
         # Return all repos (enabled + disabled) for the given org.
-        org_result = await db.execute(
-            select(Organization).where(Organization.github_installation_id == installation_id)
+        org = (
+            (
+                await db.execute(
+                    select(Organization)
+                    .where(Organization.github_installation_id == installation_id)
+                    .order_by(Organization.created_at.desc())
+                )
+            )
+            .scalars()
+            .first()
         )
-        org = org_result.scalar_one_or_none()
         if org is None:
             return []
         result = await db.execute(select(Repository).where(Repository.org_id == org.id))
