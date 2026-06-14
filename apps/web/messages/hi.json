@@ -224,7 +224,15 @@
     "planTeamDetail": "50 PR समीक्षाएं/माह · स्मृति · अनुपालन",
     "planTeamUsage": "इस महीने {used}/{limit} PR समीक्षाएं",
     "planEnterprise": "एंटरप्राइज़",
-    "planEnterpriseDetail": "स्व-होस्टेड · SSO · SLA · कस्टम नीति"
+    "planEnterpriseDetail": "स्व-होस्टेड · SSO · SLA · कस्टम नीति",
+    "notifEmailPlaceholder": "team@yourcompany.com",
+    "notifSaving": "सहेजा जा रहा है…",
+    "notifSave": "सहेजें",
+    "notifSaved": "सहेजा गया।",
+    "notifAlertDesc": "जब PR स्कैन में ≥ 60 जोखिम या कोई ब्लॉक नियम सक्रिय होता है तो DriftGuard अलर्ट भेजता है। अक्षम करने के लिए खाली छोड़ें।",
+    "notifSending": "भेजा जा रहा है…",
+    "notifSendTest": "टेस्ट ईमेल भेजें",
+    "notifTestSent": "{email} को टेस्ट भेजा गया"
   },
   "installApp": {
     "title": "GitHub App इंस्टॉल करें",

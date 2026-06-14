@@ -317,7 +317,15 @@
     "planTeamDetail": "50 revisões de PR/mês · memória · conformidade",
     "planTeamUsage": "{used}/{limit} revisões de PR este mês",
     "planEnterprise": "Empresa",
-    "planEnterpriseDetail": "Auto-hospedado · SSO · SLA · política personalizada"
+    "planEnterpriseDetail": "Auto-hospedado · SSO · SLA · política personalizada",
+    "notifEmailPlaceholder": "equipe@suaempresa.com",
+    "notifSaving": "salvando…",
+    "notifSave": "Salvar",
+    "notifSaved": "Salvo.",
+    "notifAlertDesc": "DriftGuard envia um alerta quando um scan de PR pontua ≥ 60 de risco ou uma regra de bloqueio é acionada. Deixe em branco para desativar.",
+    "notifSending": "enviando…",
+    "notifSendTest": "Enviar e-mail de teste",
+    "notifTestSent": "Teste enviado para {email}"
   },
   "installApp": {
     "title": "Instalar o GitHub App",

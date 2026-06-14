@@ -318,7 +318,15 @@
     "planTeamDetail": "50 PR reviews/mo · memory · compliance",
     "planTeamUsage": "{used}/{limit} PR reviews this month",
     "planEnterprise": "Enterprise",
-    "planEnterpriseDetail": "Self-hosted · SSO · SLA · custom policy"
+    "planEnterpriseDetail": "Self-hosted · SSO · SLA · custom policy",
+    "notifEmailPlaceholder": "team@yourcompany.com",
+    "notifSaving": "saving…",
+    "notifSave": "Save",
+    "notifSaved": "Saved.",
+    "notifAlertDesc": "DriftGuard sends an alert when a PR scan scores ≥ 60 risk or a policy block rule fires. Leave blank to disable.",
+    "notifSending": "sending…",
+    "notifSendTest": "Send test email",
+    "notifTestSent": "Test sent to {email}"
   },
   "installApp": {
     "title": "Install the GitHub App",

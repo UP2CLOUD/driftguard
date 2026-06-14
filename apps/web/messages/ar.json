@@ -224,7 +224,15 @@
     "planTeamDetail": "50 مراجعة PR/شهر · ذاكرة · امتثال",
     "planTeamUsage": "{used}/{limit} مراجعة PR هذا الشهر",
     "planEnterprise": "مؤسسة",
-    "planEnterpriseDetail": "استضافة ذاتية · SSO · SLA · سياسة مخصصة"
+    "planEnterpriseDetail": "استضافة ذاتية · SSO · SLA · سياسة مخصصة",
+    "notifEmailPlaceholder": "team@yourcompany.com",
+    "notifSaving": "جارٍ الحفظ…",
+    "notifSave": "حفظ",
+    "notifSaved": "تم الحفظ.",
+    "notifAlertDesc": "يرسل DriftGuard تنبيهاً عندما يسجّل فحص PR ≥ 60 خطراً أو تُفعَّل قاعدة حظر. اتركه فارغاً للتعطيل.",
+    "notifSending": "جارٍ الإرسال…",
+    "notifSendTest": "إرسال بريد تجريبي",
+    "notifTestSent": "تم إرسال الاختبار إلى {email}"
   },
   "installApp": {
     "title": "تثبيت تطبيق GitHub",

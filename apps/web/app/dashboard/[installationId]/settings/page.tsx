@@ -153,6 +153,16 @@ export default async function Settings({
               orgId={org.id}
               installationId={installationId}
               initialEmail={org.contact_email}
+              labels={{
+                placeholder: t("settings.notifEmailPlaceholder") ?? "team@yourcompany.com",
+                save:        t("settings.notifSave")             ?? "Save",
+                saving:      t("settings.notifSaving")           ?? "saving…",
+                saved:       t("settings.notifSaved")            ?? "Saved.",
+                alertDesc:   t("settings.notifAlertDesc")        ?? "DriftGuard sends an alert when a PR scan scores ≥ 60 risk or a policy block rule fires. Leave blank to disable.",
+                sendTest:    t("settings.notifSendTest")         ?? "Send test email",
+                sending:     t("settings.notifSending")          ?? "sending…",
+                testSent:    t("settings.notifTestSent")         ?? "Test sent to {email}",
+              }}
             />
           </div>
         </Section>

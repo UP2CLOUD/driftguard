@@ -224,7 +224,15 @@
     "planTeamDetail": "50 次 PR 审查/月 · 记忆 · 合规",
     "planTeamUsage": "本月已用 {used}/{limit} 次 PR 审查",
     "planEnterprise": "企业",
-    "planEnterpriseDetail": "自托管 · SSO · SLA · 自定义策略"
+    "planEnterpriseDetail": "自托管 · SSO · SLA · 自定义策略",
+    "notifEmailPlaceholder": "team@yourcompany.com",
+    "notifSaving": "保存中…",
+    "notifSave": "保存",
+    "notifSaved": "已保存。",
+    "notifAlertDesc": "当 PR 扫描风险评分 ≥ 60 或触发封锁策略时，DriftGuard 将发送提醒。留空可禁用。",
+    "notifSending": "发送中…",
+    "notifSendTest": "发送测试邮件",
+    "notifTestSent": "测试邮件已发送至 {email}"
   },
   "installApp": {
     "title": "安装 GitHub 应用",
