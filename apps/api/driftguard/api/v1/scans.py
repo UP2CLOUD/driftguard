@@ -29,7 +29,7 @@ from driftguard.api.deps import require_internal_auth
 from driftguard.core.db import get_db
 from driftguard.core.logging import log
 from driftguard.core.rate_limit import rate_limit
-from driftguard.db.models import Analysis, AuditLog, Organization, PullRequest, Repository
+from driftguard.db.models import Analysis, AuditLog, Organization, PullRequest, Repository, RuntimeEvent
 from driftguard.db.models import Finding as FindingModel
 from driftguard.services.analysis.ai_review import run_ai_review
 from driftguard.services.quota import try_consume_manual_scan_quota
@@ -542,6 +542,26 @@ async def _persist_scan(
             action="scan.completed",
             target=source,
             payload={"risk_score": result.risk_score, "findings": len(result.findings), "source": source},
+        )
+    )
+
+    # RuntimeEvent so manual scans appear in the dashboard event feed
+    _sev = "critical" if result.risk_score >= 70 else "warn" if result.risk_score >= 40 else "info"
+    _crit_high = result.critical + result.high
+    _n = len(result.findings)
+    _msg = f"Manual scan completed — risk {result.risk_score}/100, {_n} {'finding' if _n == 1 else 'findings'}"
+    if _crit_high:
+        _msg += f", {_crit_high} critical/high"
+    db.add(
+        RuntimeEvent(
+            org_id=org_id,
+            repo_id=repo.id,
+            analysis_id=analysis.id,
+            event_type="scan.completed",
+            severity=_sev,
+            source="manual",
+            message=_msg,
+            metadata_={"risk_score": result.risk_score, "findings": len(result.findings), "source": source},
         )
     )
 

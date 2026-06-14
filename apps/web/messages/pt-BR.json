@@ -682,7 +682,9 @@
     "tooShort": "Digite pelo menos 3 caracteres.",
     "searchError": "Falha na busca — a API ou o serviço de embeddings pode estar indisponível.",
     "similarity": "similaridade",
-    "searchHint": "busca semântica sobre incidentes passados — o mesmo recall que o revisor de IA usa em cada PR"
+    "searchHint": "busca semântica sobre incidentes passados — o mesmo recall que o revisor de IA usa em cada PR",
+    "engineReady": "Motor de memória pronto",
+    "merged": "fundido"
   },
   "docs": {
     "eyebrow": "Documentação",

@@ -660,7 +660,9 @@
     "tooShort": "Escribe al menos 3 caracteres.",
     "searchError": "La búsqueda falló — la API o el servicio de embeddings puede no estar disponible.",
     "similarity": "similitud",
-    "searchHint": "búsqueda semántica sobre incidentes pasados — el mismo recall que el revisor de IA usa en cada PR"
+    "searchHint": "búsqueda semántica sobre incidentes pasados — el mismo recall que el revisor de IA usa en cada PR",
+    "engineReady": "Motor de memoria listo",
+    "merged": "fusionado"
   },
   "docs": {
     "eyebrow": "Documentación",

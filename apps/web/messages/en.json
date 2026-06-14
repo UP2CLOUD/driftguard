@@ -682,7 +682,9 @@
     "tooShort": "Type at least 3 characters.",
     "searchError": "Search failed — the API or embedding service may be unavailable.",
     "similarity": "match",
-    "searchHint": "semantic search over past incidents — the same recall the AI reviewer uses on every PR"
+    "searchHint": "semantic search over past incidents — the same recall the AI reviewer uses on every PR",
+    "engineReady": "Memory engine ready",
+    "merged": "merged"
   },
   "docs": {
     "eyebrow": "Documentation",

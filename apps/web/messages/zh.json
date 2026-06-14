@@ -660,7 +660,9 @@
     "tooShort": "请至少输入 3 个字符。",
     "searchError": "搜索失败 — API 或嵌入服务可能不可用。",
     "similarity": "相似度",
-    "searchHint": "对历史事件的语义搜索 — 与 AI 审查器在每个 PR 上使用的召回相同"
+    "searchHint": "对历史事件的语义搜索 — 与 AI 审查器在每个 PR 上使用的召回相同",
+    "engineReady": "记忆引擎就绪",
+    "merged": "已合并"
   },
   "docs": {
     "eyebrow": "文档",
