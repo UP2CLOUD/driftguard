@@ -19,7 +19,8 @@
     "delete": "Eliminar",
     "copy": "Copiar",
     "copied": "Copiado!",
-    "openInNew": "Abrir em nova aba"
+    "openInNew": "Abrir em nova aba",
+    "getStarted": "Começar"
   },
   "nav": {
     "features": "Recursos",

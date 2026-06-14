@@ -1203,7 +1203,8 @@
     "delete": "删除",
     "copy": "复制",
     "copied": "已复制！",
-    "openInNew": "在新标签页打开"
+    "openInNew": "在新标签页打开",
+    "getStarted": "快速开始"
   },
   "findings": {
     "critical": "严重",

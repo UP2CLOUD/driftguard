@@ -1203,7 +1203,8 @@
     "delete": "हटाएं",
     "copy": "कॉपी करें",
     "copied": "कॉपी हो गया!",
-    "openInNew": "नए टैब में खोलें"
+    "openInNew": "नए टैब में खोलें",
+    "getStarted": "शुरू करें"
   },
   "findings": {
     "critical": "गंभीर",

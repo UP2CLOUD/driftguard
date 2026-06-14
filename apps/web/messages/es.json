@@ -1203,7 +1203,8 @@
     "delete": "Eliminar",
     "copy": "Copiar",
     "copied": "¡Copiado!",
-    "openInNew": "Abrir en nueva pestaña"
+    "openInNew": "Abrir en nueva pestaña",
+    "getStarted": "Empezar"
   },
   "findings": {
     "critical": "Crítico",

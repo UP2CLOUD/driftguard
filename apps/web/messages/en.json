@@ -77,7 +77,7 @@
     "scanner": "Infrastructure scanner",
     "repos": "Repositories",
     "recentScans": "Recent scans",
-    "noScansYet": "No scans yet.",
+    "noScansYet": "No scans yet",
     "noScansDesc": "Run your first scan above to see findings here.",
     "repository": "Repository",
     "status": "Status",
@@ -149,7 +149,6 @@
     "upgrade": "Upgrade",
     "costDelta": "Cost delta",
     "recentScansCount": "{n} total",
-    "noScansYet": "No scans yet",
     "noScansTrigger": "Run a manual scan above or open a Terraform PR to trigger the first analysis."
   },
   "waitlist": {
@@ -178,7 +177,8 @@
     "delete": "Delete",
     "copy": "Copy",
     "copied": "Copied!",
-    "openInNew": "Open in new tab"
+    "openInNew": "Open in new tab",
+    "getStarted": "Get started"
   },
   "footer": {
     "privacy": "Privacy",

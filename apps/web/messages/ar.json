@@ -1203,7 +1203,8 @@
     "delete": "حذف",
     "copy": "نسخ",
     "copied": "تم النسخ!",
-    "openInNew": "فتح في تبويب جديد"
+    "openInNew": "فتح في تبويب جديد",
+    "getStarted": "ابدأ"
   },
   "findings": {
     "critical": "حرج",
