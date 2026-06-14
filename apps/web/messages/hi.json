@@ -741,7 +741,19 @@
     "presetWarnExposure": "सार्वजनिक एक्सपोज़र पर चेतावनी",
     "presetWarnExposureDesc": "सार्वजनिक एक्सपोज़र पैटर्न मिलने पर चेतावनी दें।",
     "presetBlockIam": "IAM वाइल्डकार्ड ब्लॉक करें",
-    "presetBlockIamDesc": "वाइल्डकार्ड क्रियाओं वाली IAM नीतियों को ब्लॉक करें।"
+    "presetBlockIamDesc": "वाइल्डकार्ड क्रियाओं वाली IAM नीतियों को ब्लॉक करें।",
+    "exampleBlockCritical": "महत्वपूर्ण सुरक्षा निष्कर्षों को ब्लॉक करें",
+    "exampleBlockCriticalDesc": "किसी भी महत्वपूर्ण-गंभीरता वाले निष्कर्ष का पता चलने पर मर्ज को ब्लॉक करता है।",
+    "exampleWarnExposure": "सार्वजनिक एक्सपोज़र पर चेतावनी",
+    "exampleWarnExposureDesc": "सार्वजनिक एक्सपोज़र पैटर्न से मेल खाने वाले संसाधन बदलने पर चेतावनी देता है।",
+    "exampleRequireEncryption": "संग्रहण के लिए एन्क्रिप्शन आवश्यक करें",
+    "exampleRequireEncryptionDesc": "अनएन्क्रिप्टेड S3 बकेट या RDS इंस्टेंस को ब्लॉक करता है।",
+    "exampleAlertIam": "IAM वाइल्डकार्ड अनुमतियों पर अलर्ट",
+    "exampleAlertIamDesc": "वाइल्डकार्ड क्रियाओं वाली IAM नीतियां मिलने पर टीम को सूचित करता है।",
+    "condSeverityDesc": "ट्रिगर करने की न्यूनतम गंभीरता",
+    "condResourcePatternDesc": "संसाधन पते के विरुद्ध मिलाया गया रेजेक्स",
+    "condMessageContainsDesc": "निष्कर्ष संदेश में मिलाई गई सबस्ट्रिंग",
+    "condRuleIdPrefixDesc": "नियम ID के विरुद्ध मिलाया गया उपसर्ग"
   },
   "memory": {
     "title": "परिचालन स्मृति",

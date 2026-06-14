@@ -741,7 +741,19 @@
     "presetWarnExposure": "警告公开暴露",
     "presetWarnExposureDesc": "检测到公开暴露模式时发出警告。",
     "presetBlockIam": "阻止 IAM 通配符",
-    "presetBlockIamDesc": "阻止具有通配符操作的 IAM 策略。"
+    "presetBlockIamDesc": "阻止具有通配符操作的 IAM 策略。",
+    "exampleBlockCritical": "阻止关键安全发现",
+    "exampleBlockCriticalDesc": "检测到任何关键严重性发现时阻止合并。",
+    "exampleWarnExposure": "对公开暴露发出警告",
+    "exampleWarnExposureDesc": "当匹配公开暴露模式的资源发生更改时发出警告。",
+    "exampleRequireEncryption": "要求存储加密",
+    "exampleRequireEncryptionDesc": "阻止未加密的 S3 存储桶或 RDS 实例。",
+    "exampleAlertIam": "对 IAM 通配符权限发出警报",
+    "exampleAlertIamDesc": "检测到具有通配符操作的 IAM 策略时提醒团队。",
+    "condSeverityDesc": "触发的最低严重性",
+    "condResourcePatternDesc": "与资源地址匹配的正则表达式",
+    "condMessageContainsDesc": "在发现消息中匹配的子字符串",
+    "condRuleIdPrefixDesc": "与规则 ID 匹配的前缀"
   },
   "memory": {
     "title": "运行记忆",

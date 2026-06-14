@@ -763,7 +763,19 @@
     "presetWarnExposure": "Advertir sobre exposição pública",
     "presetWarnExposureDesc": "Advertir quando padrões de exposição pública forem detectados.",
     "presetBlockIam": "Bloquear curingas IAM",
-    "presetBlockIamDesc": "Bloquear políticas IAM com ações curinga."
+    "presetBlockIamDesc": "Bloquear políticas IAM com ações curinga.",
+    "exampleBlockCritical": "Bloquear descobertas críticas de segurança",
+    "exampleBlockCriticalDesc": "Bloqueia o merge quando qualquer descoberta de severidade crítica é detectada.",
+    "exampleWarnExposure": "Avisar sobre exposição pública",
+    "exampleWarnExposureDesc": "Avisa quando recursos que correspondem a padrões de exposição pública são alterados.",
+    "exampleRequireEncryption": "Exigir criptografia para armazenamento",
+    "exampleRequireEncryptionDesc": "Bloqueia buckets S3 ou instâncias RDS não criptografados.",
+    "exampleAlertIam": "Alertar sobre permissões curinga em IAM",
+    "exampleAlertIamDesc": "Alerta a equipe quando políticas IAM com ações curinga são detectadas.",
+    "condSeverityDesc": "Severidade mínima para acionar",
+    "condResourcePatternDesc": "Regex comparado contra o endereço do recurso",
+    "condMessageContainsDesc": "Substring comparada na mensagem da descoberta",
+    "condRuleIdPrefixDesc": "Prefixo comparado contra o ID da regra"
   },
   "memory": {
     "title": "Memória operacional",

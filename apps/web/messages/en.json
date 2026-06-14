@@ -764,7 +764,19 @@
     "presetWarnExposure": "Warn on public exposure",
     "presetWarnExposureDesc": "Warn when public exposure patterns are detected.",
     "presetBlockIam": "Block IAM wildcards",
-    "presetBlockIamDesc": "Block IAM policies with wildcard actions."
+    "presetBlockIamDesc": "Block IAM policies with wildcard actions.",
+    "exampleBlockCritical": "Block critical security findings",
+    "exampleBlockCriticalDesc": "Blocks merge when any critical-severity finding is detected.",
+    "exampleWarnExposure": "Warn on public exposure",
+    "exampleWarnExposureDesc": "Warns when resources matching public exposure patterns are changed.",
+    "exampleRequireEncryption": "Require encryption for storage",
+    "exampleRequireEncryptionDesc": "Blocks unencrypted S3 buckets or RDS instances.",
+    "exampleAlertIam": "Alert on IAM wildcard permissions",
+    "exampleAlertIamDesc": "Alerts team when IAM policies with wildcard actions are detected.",
+    "condSeverityDesc": "Minimum severity to trigger",
+    "condResourcePatternDesc": "Regex matched against resource address",
+    "condMessageContainsDesc": "Substring matched in finding message",
+    "condRuleIdPrefixDesc": "Prefix matched against rule ID"
   },
   "memory": {
     "title": "Operational memory",

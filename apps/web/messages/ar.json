@@ -741,7 +741,19 @@
     "presetWarnExposure": "تحذير من التعرض العام",
     "presetWarnExposureDesc": "تحذير عند اكتشاف أنماط التعرض العام.",
     "presetBlockIam": "حظر أحرف IAM البديلة",
-    "presetBlockIamDesc": "حظر سياسات IAM ذات الإجراءات البديلة."
+    "presetBlockIamDesc": "حظر سياسات IAM ذات الإجراءات البديلة.",
+    "exampleBlockCritical": "حظر النتائج الأمنية الحرجة",
+    "exampleBlockCriticalDesc": "يحظر الدمج عند اكتشاف أي نتيجة ذات خطورة حرجة.",
+    "exampleWarnExposure": "تحذير من التعرض العام",
+    "exampleWarnExposureDesc": "يحذر عند تغيير الموارد المطابقة لأنماط التعرض العام.",
+    "exampleRequireEncryption": "طلب تشفير للتخزين",
+    "exampleRequireEncryptionDesc": "يحظر دلاء S3 أو مثيلات RDS غير المشفرة.",
+    "exampleAlertIam": "تنبيه بشأن أذونات IAM البديلة",
+    "exampleAlertIamDesc": "ينبه الفريق عند اكتشاف سياسات IAM بإجراءات بديلة.",
+    "condSeverityDesc": "الحد الأدنى للخطورة للتفعيل",
+    "condResourcePatternDesc": "تعبير نمطي مقارن بعنوان المورد",
+    "condMessageContainsDesc": "سلسلة فرعية مقارنة في رسالة النتيجة",
+    "condRuleIdPrefixDesc": "بادئة مقارنة بمعرف القاعدة"
   },
   "memory": {
     "title": "الذاكرة التشغيلية",

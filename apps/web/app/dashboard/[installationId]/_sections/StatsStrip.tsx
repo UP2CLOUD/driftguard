@@ -41,7 +41,7 @@ export async function StatsStripSection({
       label: t("repos.statsRepos") ?? "Repos",
       value: repoValue,
       color: repoColor,
-      hint: repos === 0 ? "Connect GitHub" : null,
+      hint: repos === 0 ? (t("dashboard.statsHintConnectGitHub") ?? "Connect GitHub") : null,
     },
     {
       label: t("repos.statsAnalyses") ?? "Analyses 7d",

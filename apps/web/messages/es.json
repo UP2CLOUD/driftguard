@@ -741,7 +741,19 @@
     "presetWarnExposure": "Advertir sobre exposición pública",
     "presetWarnExposureDesc": "Advertir cuando se detectan patrones de exposición pública.",
     "presetBlockIam": "Bloquear comodines IAM",
-    "presetBlockIamDesc": "Bloquear políticas IAM con acciones comodín."
+    "presetBlockIamDesc": "Bloquear políticas IAM con acciones comodín.",
+    "exampleBlockCritical": "Bloquear hallazgos de seguridad críticos",
+    "exampleBlockCriticalDesc": "Bloquea la fusión cuando se detecta cualquier hallazgo de severidad crítica.",
+    "exampleWarnExposure": "Advertir sobre exposición pública",
+    "exampleWarnExposureDesc": "Advierte cuando se cambian recursos que coinciden con patrones de exposición pública.",
+    "exampleRequireEncryption": "Requerir cifrado para almacenamiento",
+    "exampleRequireEncryptionDesc": "Bloquea buckets S3 o instancias RDS sin cifrar.",
+    "exampleAlertIam": "Alertar sobre permisos comodín en IAM",
+    "exampleAlertIamDesc": "Alerta al equipo cuando se detectan políticas IAM con acciones comodín.",
+    "condSeverityDesc": "Severidad mínima para activar",
+    "condResourcePatternDesc": "Regex comparado contra la dirección del recurso",
+    "condMessageContainsDesc": "Subcadena comparada en el mensaje del hallazgo",
+    "condRuleIdPrefixDesc": "Prefijo comparado contra el ID de la regla"
   },
   "memory": {
     "title": "Memoria operacional",
