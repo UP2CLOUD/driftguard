@@ -238,3 +238,138 @@ def test_ingest_missing_message_rejected():
         assert r.status_code == 422
     finally:
         _cleanup()
+
+
+def test_ingest_policy_rule_matched_increments_count():
+    """A policy rule whose conditions match the event must have match_count incremented."""
+    from driftguard.db.models import PolicyRule
+
+    org = Organization(id="org-1", github_installation_id=123, plan="free")
+    rule = PolicyRule(
+        id="rule-1",
+        org_id="org-1",
+        name="Block drift",
+        rule_type="block",
+        severity="high",
+        enabled=True,
+        conditions={"event_type": "drift_detected"},
+        match_count=0,
+    )
+
+    org_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
+    policy_result = MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[rule]))))
+
+    mock = AsyncMock()
+    mock.execute = AsyncMock(side_effect=[org_result, policy_result])
+    mock.flush = AsyncMock()
+    mock.commit = AsyncMock()
+    mock.add = MagicMock()
+
+    async def _override():
+        yield mock
+
+    app.dependency_overrides[get_db] = _override
+    try:
+        r = TestClient(app).post(
+            "/api/v1/ingest/event",
+            json={
+                "installation_id": 123,
+                "event_type": "drift_detected",
+                "severity": "info",
+                "message": "Drift detected in module",
+            },
+        )
+        assert r.status_code == 200
+        assert rule.match_count == 1
+    finally:
+        _cleanup()
+
+
+def test_ingest_policy_rule_not_matched_on_wrong_event_type():
+    """A rule whose event_type condition doesn't match must not be counted."""
+    from driftguard.db.models import PolicyRule
+
+    org = Organization(id="org-1", github_installation_id=123, plan="free")
+    rule = PolicyRule(
+        id="rule-1",
+        org_id="org-1",
+        name="Watch S3 events",
+        rule_type="warn",
+        severity="medium",
+        enabled=True,
+        conditions={"event_type": "drift_detected"},
+        match_count=0,
+    )
+
+    org_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
+    policy_result = MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[rule]))))
+
+    mock = AsyncMock()
+    mock.execute = AsyncMock(side_effect=[org_result, policy_result])
+    mock.flush = AsyncMock()
+    mock.commit = AsyncMock()
+    mock.add = MagicMock()
+
+    async def _override():
+        yield mock
+
+    app.dependency_overrides[get_db] = _override
+    try:
+        r = TestClient(app).post(
+            "/api/v1/ingest/event",
+            json={
+                "installation_id": 123,
+                "event_type": "pr_opened",  # different from rule's event_type
+                "severity": "info",
+                "message": "PR opened with changes",
+            },
+        )
+        assert r.status_code == 200
+        assert rule.match_count == 0  # rule did NOT match
+    finally:
+        _cleanup()
+
+
+def test_ingest_policy_rule_message_contains_filter():
+    """message_contains condition must do case-insensitive substring match."""
+    from driftguard.db.models import PolicyRule
+
+    org = Organization(id="org-1", github_installation_id=123, plan="free")
+    rule = PolicyRule(
+        id="rule-1",
+        org_id="org-1",
+        name="Watch S3 rules",
+        rule_type="warn",
+        severity="medium",
+        enabled=True,
+        conditions={"message_contains": "s3"},
+        match_count=0,
+    )
+
+    org_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
+    policy_result = MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[rule]))))
+
+    mock = AsyncMock()
+    mock.execute = AsyncMock(side_effect=[org_result, policy_result])
+    mock.flush = AsyncMock()
+    mock.commit = AsyncMock()
+    mock.add = MagicMock()
+
+    async def _override():
+        yield mock
+
+    app.dependency_overrides[get_db] = _override
+    try:
+        r = TestClient(app).post(
+            "/api/v1/ingest/event",
+            json={
+                "installation_id": 123,
+                "event_type": "drift_detected",
+                "severity": "info",
+                "message": "Public access removed from S3 bucket",
+            },
+        )
+        assert r.status_code == 200
+        assert rule.match_count == 1  # "s3" found in message (case-insensitive)
+    finally:
+        _cleanup()
