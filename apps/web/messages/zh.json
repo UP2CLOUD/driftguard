@@ -246,6 +246,7 @@
     "notifSendTest": "发送测试邮件",
     "notifTestSent": "测试邮件已发送至 {email}",
     "billingUnavailable": "此实例未启用在线计费。",
+    "checkoutSuccess": "付款已完成——您的计划已升级。这里的显示可能需要片刻时间更新。",
     "resources": "资源与支持",
     "resourcesDesc": "文档、API 参考以及获取帮助的方式。",
     "resourceDocs": "文档",

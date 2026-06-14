@@ -79,6 +79,7 @@ class CheckoutRequest(BaseModel):
     org_id: str
     plan: str
     email: str | None = None
+    installation_id: str | None = None
 
 
 @router.post("/checkout")
@@ -101,7 +102,12 @@ async def checkout(
     except StripeError as exc:
         raise HTTPException(502, stripe_error_message(exc)) from exc
 
-    url = create_checkout_session(customer_id=customer_id, price_id=price_id, org_id=org.id)
+    url = create_checkout_session(
+        customer_id=customer_id,
+        price_id=price_id,
+        org_id=org.id,
+        installation_id=req.installation_id,
+    )
     return {"url": url}
 
 

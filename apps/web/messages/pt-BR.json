@@ -340,6 +340,7 @@
     "notifSendTest": "Enviar e-mail de teste",
     "notifTestSent": "Teste enviado para {email}",
     "billingUnavailable": "O pagamento online não está ativado nesta instância.",
+    "checkoutSuccess": "Pagamento concluído — seu plano foi atualizado. Pode levar um momento para refletir aqui.",
     "resources": "Recursos e suporte",
     "resourcesDesc": "Documentação, referência da API e formas de obter ajuda.",
     "resourceDocs": "Documentação",

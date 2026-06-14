@@ -340,6 +340,7 @@
     "notifSendTest": "Send test email",
     "notifTestSent": "Test sent to {email}",
     "billingUnavailable": "Online billing is not enabled for this instance.",
+    "checkoutSuccess": "Payment complete — your plan has been upgraded. It may take a moment to reflect here.",
     "resources": "Resources & support",
     "resourcesDesc": "Documentation, API reference, and ways to get help.",
     "resourceDocs": "Documentation",

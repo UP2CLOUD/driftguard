@@ -378,6 +378,52 @@ async def test_checkout_creates_session(billing_api_db, monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_checkout_with_installation_id_sets_return_urls(billing_api_db, monkeypatch):
+    """When installation_id is provided, success/cancel URLs include the settings path."""
+    monkeypatch.setattr(settings, "stripe_api_key", "sk_test_fake")
+    monkeypatch.setattr(settings, "stripe_price_pro", "price_pro_xyz")
+    monkeypatch.setattr(settings, "public_base_url", "https://app.driftguard.io")
+    org_id = billing_api_db
+    fake_session = MagicMock(url="https://checkout.stripe.com/pay/cs_test_iid")
+    with patch("driftguard.services.billing.stripe") as mock_stripe:
+        mock_stripe.Customer.create.return_value = MagicMock(id="cus_iid")
+        mock_stripe.checkout.Session.create.return_value = fake_session
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            r = await client.post(
+                "/api/v1/billing/checkout",
+                json={"org_id": org_id, "plan": "pro", "installation_id": "123456"},
+                headers={"Authorization": "Bearer dev-only-change-me"},
+            )
+    assert r.status_code == 200
+    call_kwargs = mock_stripe.checkout.Session.create.call_args.kwargs
+    assert call_kwargs["success_url"] == "https://app.driftguard.io/dashboard/123456/settings?checkout=success"
+    assert call_kwargs["cancel_url"] == "https://app.driftguard.io/dashboard/123456/settings?checkout=cancelled"
+
+
+@pytest.mark.asyncio
+async def test_checkout_without_installation_id_uses_fallback_urls(billing_api_db, monkeypatch):
+    """Without installation_id, success/cancel URLs fall back to /dashboard root."""
+    monkeypatch.setattr(settings, "stripe_api_key", "sk_test_fake")
+    monkeypatch.setattr(settings, "stripe_price_pro", "price_pro_xyz")
+    monkeypatch.setattr(settings, "public_base_url", "https://app.driftguard.io")
+    org_id = billing_api_db
+    fake_session = MagicMock(url="https://checkout.stripe.com/pay/cs_test_no_iid")
+    with patch("driftguard.services.billing.stripe") as mock_stripe:
+        mock_stripe.Customer.create.return_value = MagicMock(id="cus_no_iid")
+        mock_stripe.checkout.Session.create.return_value = fake_session
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            r = await client.post(
+                "/api/v1/billing/checkout",
+                json={"org_id": org_id, "plan": "pro"},
+                headers={"Authorization": "Bearer dev-only-change-me"},
+            )
+    assert r.status_code == 200
+    call_kwargs = mock_stripe.checkout.Session.create.call_args.kwargs
+    assert call_kwargs["success_url"] == "https://app.driftguard.io/dashboard?checkout=success"
+    assert call_kwargs["cancel_url"] == "https://app.driftguard.io/dashboard?checkout=cancelled"
+
+
+@pytest.mark.asyncio
 async def test_checkout_requires_auth(billing_api_db):
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         r = await client.post("/api/v1/billing/checkout", json={"org_id": "x", "plan": "pro"})

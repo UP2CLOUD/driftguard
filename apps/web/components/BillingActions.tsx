@@ -96,15 +96,12 @@ export function BillingActions({
           </button>
         )}
         {plan === "team" && (
-          <button
-            onClick={() => upgrade("enterprise")}
-            disabled={loading !== null}
-            className="dg-button dg-button-ghost text-[12px] disabled:opacity-40"
+          <a
+            href="mailto:sales@driftguard.io"
+            className="dg-button dg-button-ghost text-[12px]"
           >
-            {loading === "enterprise"
-              ? (t("settings.redirecting") ?? "Redirecting…")
-              : (t("settings.upgradeToEnterprise") ?? "Upgrade to Enterprise →")}
-          </button>
+            {t("settings.upgradeToEnterprise") ?? "Upgrade to Enterprise →"}
+          </a>
         )}
         {hasCustomer && (
           <button

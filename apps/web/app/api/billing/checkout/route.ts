@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const url = await internalStartCheckout(orgId, plan);
+    const url = await internalStartCheckout(orgId, plan, installationId);
     return NextResponse.json({ url });
   } catch (err: unknown) {
     if (err instanceof ApiError) {

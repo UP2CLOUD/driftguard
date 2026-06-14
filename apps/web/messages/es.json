@@ -246,6 +246,7 @@
     "notifSendTest": "Enviar email de prueba",
     "notifTestSent": "Prueba enviada a {email}",
     "billingUnavailable": "La facturación en línea no está habilitada para esta instancia.",
+    "checkoutSuccess": "Pago completado — tu plan ha sido actualizado. Puede tardar un momento en reflejarse aquí.",
     "resources": "Recursos y soporte",
     "resourcesDesc": "Documentación, referencia de la API y formas de obtener ayuda.",
     "resourceDocs": "Documentación",
