@@ -350,6 +350,52 @@ jobs:
     assert_passes("GHA006", content)
 
 
+def test_gha006_secret_in_with_block_passes():
+    """token: in actions/checkout with: block is not a run: step — must not fire GHA006."""
+    content = """\
+on: push
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@a81bbbf8298c0fa03ea29cdc473d45769f953675
+        with:
+          repository: myorg/myrepo
+          token: ${{ secrets.GITOPS_PAT }}
+          path: gitops
+      - name: Update manifest
+        env:
+          DEPLOY_SHA: ${{ github.sha }}
+        run: echo "$DEPLOY_SHA"
+"""
+    assert_passes("GHA006", content)
+
+
+def test_gha006_secret_in_env_block_passes():
+    """Secret reference in a step-level env: block (not run:) must not fire GHA006."""
+    content = """\
+on: push
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait
+        continue-on-error: true
+        env:
+          KUBECONFIG_DATA: ${{ secrets.KUBECONFIG }}
+        run: |
+          echo "$KUBECONFIG_DATA" | base64 -d > /tmp/kubeconfig
+          kubectl version
+"""
+    assert_passes("GHA006", content)
+
+
 # ── GHA008: Untrusted event data in if: condition ─────────────────────────────
 
 

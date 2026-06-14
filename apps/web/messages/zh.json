@@ -115,6 +115,7 @@
     "readinessCtaConnect": "连接",
     "readinessCtaScan": "扫描",
     "readinessCtaViewMemory": "查看记忆",
+    "readinessDone": "DriftGuard 已激活。在已连接的仓库中打开 Terraform Pull Request 以触发下一次审查。",
     "openCount": "{n} 个开放",
     "statsHintConnectGitHub": "连接 GitHub",
     "statsHintOpenPr": "创建 PR",
@@ -207,7 +208,12 @@
     "manageBilling": "管理账单 →",
     "contactBilling": "联系账单 →",
     "redirecting": "跳转中…",
-    "openingPortal": "打开中…"
+    "openingPortal": "打开中…",
+    "notifications": "通知",
+    "notificationsDesc": "当 PR 扫描发现严重问题时，通过电子邮件接收警报。",
+    "activeRepositories": "活跃仓库",
+    "atRepoLimit": "已达仓库上限。请禁用一个仓库或升级计划以添加更多。",
+    "prReviewsThisMonth": "本月 PR 审查"
   },
   "installApp": {
     "title": "安装 GitHub 应用",
@@ -1203,6 +1209,10 @@
     "filesScanned": "{n} 个文件",
     "previous": "← 上一页",
     "next": "下一页 →",
-    "page": "第 {n} 页"
+    "page": "第 {n} 页",
+    "queuing": "排队中…",
+    "scanning": "扫描中…",
+    "scanError": "失败 — 请重试",
+    "rescan": "↺ 重新扫描"
   }
 }

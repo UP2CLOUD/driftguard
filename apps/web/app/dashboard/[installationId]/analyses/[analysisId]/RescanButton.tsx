@@ -7,10 +7,12 @@ export function RescanButton({
   installationId,
   repoFullName,
   headSha,
+  labels,
 }: {
   installationId: string;
   repoFullName: string;
   headSha?: string | null;
+  labels?: { queuing?: string; scanning?: string; error?: string; rescan?: string };
 }) {
   const [status, setStatus] = useState<"idle" | "scanning" | "polling" | "done" | "error">("idle");
   const router = useRouter();
@@ -73,7 +75,7 @@ export function RescanButton({
   if (status === "scanning") {
     return (
       <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] animate-pulse">
-        queuing…
+        {labels?.queuing ?? "queuing…"}
       </span>
     );
   }
@@ -81,14 +83,14 @@ export function RescanButton({
     return (
       <span className="font-mono text-[10px] text-[color:var(--dg-electric-bright)] flex items-center gap-1">
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--dg-electric-bright)] animate-pulse" />
-        scanning…
+        {labels?.scanning ?? "scanning…"}
       </span>
     );
   }
   if (status === "error") {
     return (
       <span className="font-mono text-[10px] text-blocked">
-        failed — try again
+        {labels?.error ?? "failed — try again"}
       </span>
     );
   }
@@ -98,7 +100,7 @@ export function RescanButton({
       onClick={rescan}
       className="inline-flex items-center gap-1.5 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-1.5 font-mono text-[11px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/50 transition"
     >
-      ↺ Re-run scan
+      {labels?.rescan ?? "↺ Re-run scan"}
     </button>
   );
 }

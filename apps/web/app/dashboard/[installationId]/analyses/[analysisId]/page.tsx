@@ -164,6 +164,12 @@ export default async function AnalysisPage({
               installationId={installationId}
               repoFullName={data.repo_full_name}
               headSha={data.head_sha}
+              labels={{
+                queuing:  t("analyses.queuing")  ?? "queuing…",
+                scanning: t("analyses.scanning") ?? "scanning…",
+                error:    t("analyses.scanError") ?? "failed — try again",
+                rescan:   t("analyses.rescan")   ?? "↺ Re-run scan",
+              }}
             />
           )}
           <div className="text-center">

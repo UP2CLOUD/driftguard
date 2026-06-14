@@ -115,6 +115,7 @@
     "readinessCtaConnect": "कनेक्ट करें",
     "readinessCtaScan": "स्कैन करें",
     "readinessCtaViewMemory": "स्मृति देखें",
+    "readinessDone": "DriftGuard सक्रिय है। अगली समीक्षा ट्रिगर करने के लिए किसी कनेक्टेड रिपॉजिटरी में Terraform पुल रिक्वेस्ट खोलें।",
     "openCount": "{n} खुला",
     "statsHintConnectGitHub": "GitHub कनेक्ट करें",
     "statsHintOpenPr": "PR खोलें",
@@ -207,7 +208,12 @@
     "manageBilling": "बिलिंग प्रबंधित करें →",
     "contactBilling": "बिलिंग से संपर्क करें →",
     "redirecting": "रीडायरेक्ट हो रहा है…",
-    "openingPortal": "खुल रहा है…"
+    "openingPortal": "खुल रहा है…",
+    "notifications": "सूचनाएं",
+    "notificationsDesc": "जब PR स्कैन में गंभीर समस्याएं मिलें तो ईमेल अलर्ट प्राप्त करें।",
+    "activeRepositories": "सक्रिय रिपॉजिटरी",
+    "atRepoLimit": "रिपॉजिटरी सीमा पर। अधिक जोड़ने के लिए एक को अक्षम करें या अपग्रेड करें।",
+    "prReviewsThisMonth": "इस महीने PR समीक्षाएं"
   },
   "installApp": {
     "title": "GitHub App इंस्टॉल करें",
@@ -1203,6 +1209,10 @@
     "filesScanned": "{n} फ़ाइलें",
     "previous": "← पिछला",
     "next": "अगला →",
-    "page": "पृष्ठ {n}"
+    "page": "पृष्ठ {n}",
+    "queuing": "कतार में…",
+    "scanning": "स्कैन हो रहा है…",
+    "scanError": "विफल — पुनः प्रयास करें",
+    "rescan": "↺ पुनः स्कैन करें"
   }
 }

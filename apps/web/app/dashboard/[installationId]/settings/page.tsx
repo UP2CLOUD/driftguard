@@ -147,7 +147,7 @@ export default async function Settings({
 
       {/* ── Notifications ───────────────────────────────────────── */}
       {org && (
-        <Section title="Notifications" description="Get an email alert when a PR scan finds critical issues.">
+        <Section title={t("settings.notifications") ?? "Notifications"} description={t("settings.notificationsDesc") ?? "Get an email alert when a PR scan finds critical issues."}>
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
             <NotificationEmailForm
               orgId={org.id}
@@ -200,7 +200,7 @@ export default async function Settings({
             <div className="mb-4 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                  Active repositories
+                  {t("settings.activeRepositories") ?? "Active repositories"}
                 </span>
                 <span className={`font-mono text-[11px] font-semibold ${planData.repos.active >= planData.repos.limit ? "text-warned" : "text-[color:var(--dg-fg)]"}`}>
                   {planData.repos.active} / {planData.repos.limit}
@@ -214,7 +214,7 @@ export default async function Settings({
               </div>
               {planData.repos.active >= planData.repos.limit && (
                 <p className="mt-2 font-mono text-[10px] text-warned">
-                  At repo limit. Disable a repository or upgrade to add more.
+                  {t("settings.atRepoLimit") ?? "At repo limit. Disable a repository or upgrade to add more."}
                 </p>
               )}
             </div>
@@ -225,7 +225,7 @@ export default async function Settings({
             <div className="mb-4 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                  PR reviews this month
+                  {t("settings.prReviewsThisMonth") ?? "PR reviews this month"}
                 </span>
                 <span className={`font-mono text-[11px] font-semibold ${planData.monthly_pr_reviews.used >= planData.monthly_pr_reviews.limit ? "text-blocked" : planData.monthly_pr_reviews.used / planData.monthly_pr_reviews.limit >= 0.8 ? "text-warned" : "text-[color:var(--dg-fg)]"}`}>
                   {planData.monthly_pr_reviews.used} / {planData.monthly_pr_reviews.limit}

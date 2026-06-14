@@ -115,6 +115,7 @@
     "readinessCtaConnect": "توصيل",
     "readinessCtaScan": "فحص",
     "readinessCtaViewMemory": "عرض الذاكرة",
+    "readinessDone": "DriftGuard نشط. افتح طلب سحب Terraform في مستودع متصل لتشغيل المراجعة التالية.",
     "openCount": "{n} مفتوح",
     "statsHintConnectGitHub": "ربط GitHub",
     "statsHintOpenPr": "فتح PR",
@@ -207,7 +208,12 @@
     "manageBilling": "إدارة الفواتير →",
     "contactBilling": "التواصل بشأن الفواتير →",
     "redirecting": "جارٍ التحويل…",
-    "openingPortal": "جارٍ الفتح…"
+    "openingPortal": "جارٍ الفتح…",
+    "notifications": "الإشعارات",
+    "notificationsDesc": "احصل على تنبيه بالبريد الإلكتروني عندما يكتشف فحص PR مشاكل حرجة.",
+    "activeRepositories": "المستودعات النشطة",
+    "atRepoLimit": "تم الوصول لحد المستودعات. عطّل مستودعاً أو قم بالترقية لإضافة المزيد.",
+    "prReviewsThisMonth": "مراجعات PR هذا الشهر"
   },
   "installApp": {
     "title": "تثبيت تطبيق GitHub",
@@ -1203,6 +1209,10 @@
     "filesScanned": "{n} ملفات",
     "previous": "← السابق",
     "next": "التالي →",
-    "page": "صفحة {n}"
+    "page": "صفحة {n}",
+    "queuing": "في قائمة الانتظار…",
+    "scanning": "جارٍ الفحص…",
+    "scanError": "فشل — أعد المحاولة",
+    "rescan": "↺ إعادة الفحص"
   }
 }

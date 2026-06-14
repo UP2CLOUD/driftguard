@@ -137,6 +137,7 @@
     "readinessCtaConnect": "Conectar",
     "readinessCtaScan": "Analisar",
     "readinessCtaViewMemory": "Ver memória",
+    "readinessDone": "DriftGuard está ativo. Abra um pull request do Terraform em um repositório conectado para acionar sua próxima revisão.",
     "openCount": "{n} aberto(s)",
     "statsHintConnectGitHub": "Conectar GitHub",
     "statsHintOpenPr": "Abrir um PR",
@@ -270,7 +271,12 @@
     "manageBilling": "Gerenciar cobrança →",
     "contactBilling": "Contatar cobrança →",
     "redirecting": "Redirecionando…",
-    "openingPortal": "Abrindo…"
+    "openingPortal": "Abrindo…",
+    "notifications": "Notificações",
+    "notificationsDesc": "Receba um alerta por e-mail quando uma análise de PR encontrar problemas críticos.",
+    "activeRepositories": "Repositórios ativos",
+    "atRepoLimit": "Limite de repositórios atingido. Desative um repositório ou faça upgrade para adicionar mais.",
+    "prReviewsThisMonth": "Revisões de PR este mês"
   },
   "installApp": {
     "title": "Instalar o GitHub App",
@@ -1203,6 +1209,10 @@
     "filesScanned": "{n} arquivos",
     "previous": "← Anterior",
     "next": "Próximo →",
-    "page": "Página {n}"
+    "page": "Página {n}",
+    "queuing": "na fila…",
+    "scanning": "escaneando…",
+    "scanError": "falhou — tente novamente",
+    "rescan": "↺ Re-executar análise"
   }
 }
