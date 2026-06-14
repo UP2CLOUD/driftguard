@@ -108,6 +108,7 @@ class TestListEventsWithOrg:
                 "message",
                 "metadata",
                 "repo_id",
+                "analysis_id",
                 "created_at",
             }
         finally:
