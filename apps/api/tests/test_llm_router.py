@@ -31,7 +31,7 @@ class TestLlmComplete:
     @pytest.mark.asyncio
     async def test_successful_claude_call_returns_text(self, monkeypatch):
         """Happy path: Claude returns a successful response."""
-        from driftguard.ai.llm_router import _get_anthropic, llm_complete
+        from driftguard.ai.llm_router import llm_complete
 
         fake_client = AsyncMock()
         fake_client.messages.create = AsyncMock(return_value=_claude_response("Security looks fine."))
