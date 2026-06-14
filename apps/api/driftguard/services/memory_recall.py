@@ -84,11 +84,13 @@ async def recall_similar(
         return []
 
     org = (
-        (await db.execute(
-            select(Organization)
-            .where(Organization.github_installation_id == installation_id)
-            .order_by(Organization.created_at.desc())
-        ))
+        (
+            await db.execute(
+                select(Organization)
+                .where(Organization.github_installation_id == installation_id)
+                .order_by(Organization.created_at.desc())
+            )
+        )
         .scalars()
         .first()
     )

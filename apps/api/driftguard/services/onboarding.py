@@ -14,11 +14,13 @@ async def upsert_installation(
 ) -> Organization:
     """Idempotent. Called on `installation.created` and `installation_repositories` events."""
     org = (
-        (await db.execute(
-            select(Organization)
-            .where(Organization.github_installation_id == installation_id)
-            .order_by(Organization.created_at.desc())
-        ))
+        (
+            await db.execute(
+                select(Organization)
+                .where(Organization.github_installation_id == installation_id)
+                .order_by(Organization.created_at.desc())
+            )
+        )
         .scalars()
         .first()
     )
@@ -87,11 +89,13 @@ async def upsert_installation(
 async def remove_installation(db: AsyncSession, *, installation_id: int) -> None:
     """Soft-disable. Don't delete history."""
     org = (
-        (await db.execute(
-            select(Organization)
-            .where(Organization.github_installation_id == installation_id)
-            .order_by(Organization.created_at.desc())
-        ))
+        (
+            await db.execute(
+                select(Organization)
+                .where(Organization.github_installation_id == installation_id)
+                .order_by(Organization.created_at.desc())
+            )
+        )
         .scalars()
         .first()
     )
@@ -108,11 +112,13 @@ async def remove_installation(db: AsyncSession, *, installation_id: int) -> None
 
 async def remove_repositories(db: AsyncSession, *, installation_id: int, repo_ids: list[int]) -> None:
     org = (
-        (await db.execute(
-            select(Organization)
-            .where(Organization.github_installation_id == installation_id)
-            .order_by(Organization.created_at.desc())
-        ))
+        (
+            await db.execute(
+                select(Organization)
+                .where(Organization.github_installation_id == installation_id)
+                .order_by(Organization.created_at.desc())
+            )
+        )
         .scalars()
         .first()
     )

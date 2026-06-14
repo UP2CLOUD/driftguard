@@ -118,11 +118,13 @@ async def ingest_event(
 ) -> IngestEventResponse:
     # 1. Resolve org — reject unknown installations to prevent data injection
     org = (
-        (await db.execute(
-            select(Organization)
-            .where(Organization.github_installation_id == body.installation_id)
-            .order_by(Organization.created_at.desc())
-        ))
+        (
+            await db.execute(
+                select(Organization)
+                .where(Organization.github_installation_id == body.installation_id)
+                .order_by(Organization.created_at.desc())
+            )
+        )
         .scalars()
         .first()
     )
