@@ -213,7 +213,15 @@
     "notificationsDesc": "Recibe una alerta por correo cuando un análisis de PR detecte problemas críticos.",
     "activeRepositories": "Repositorios activos",
     "atRepoLimit": "Límite de repositorios alcanzado. Desactiva uno o actualiza tu plan para añadir más.",
-    "prReviewsThisMonth": "Revisiones de PR este mes"
+    "prReviewsThisMonth": "Revisiones de PR este mes",
+    "planFree": "Gratuito",
+    "planFreeDetail": "Hasta 3 repositorios · revisiones de PR ilimitadas",
+    "planFreeUsage": "{active}/{limit} repos activos",
+    "planTeam": "Equipo",
+    "planTeamDetail": "50 revisiones de PR/mes · memoria · cumplimiento",
+    "planTeamUsage": "{used}/{limit} revisiones de PR este mes",
+    "planEnterprise": "Empresa",
+    "planEnterpriseDetail": "Autohospedado · SSO · SLA · política personalizada"
   },
   "installApp": {
     "title": "Instalar la GitHub App",
@@ -663,7 +671,8 @@
     "creating": "Creating…",
     "createPolicy": "Create policy",
     "exampleRules": "Reglas de ejemplo",
-    "conditionsRef": "Referencia de condiciones"
+    "conditionsRef": "Referencia de condiciones",
+    "docLink": "Leer documentación de políticas →"
   },
   "memory": {
     "title": "Memoria operacional",

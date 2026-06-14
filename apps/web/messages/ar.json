@@ -213,7 +213,15 @@
     "notificationsDesc": "احصل على تنبيه بالبريد الإلكتروني عندما يكتشف فحص PR مشاكل حرجة.",
     "activeRepositories": "المستودعات النشطة",
     "atRepoLimit": "تم الوصول لحد المستودعات. عطّل مستودعاً أو قم بالترقية لإضافة المزيد.",
-    "prReviewsThisMonth": "مراجعات PR هذا الشهر"
+    "prReviewsThisMonth": "مراجعات PR هذا الشهر",
+    "planFree": "مجاني",
+    "planFreeDetail": "حتى 3 مستودعات · مراجعات PR غير محدودة",
+    "planFreeUsage": "{active}/{limit} مستودع نشط",
+    "planTeam": "فريق",
+    "planTeamDetail": "50 مراجعة PR/شهر · ذاكرة · امتثال",
+    "planTeamUsage": "{used}/{limit} مراجعة PR هذا الشهر",
+    "planEnterprise": "مؤسسة",
+    "planEnterpriseDetail": "استضافة ذاتية · SSO · SLA · سياسة مخصصة"
   },
   "installApp": {
     "title": "تثبيت تطبيق GitHub",
@@ -663,7 +671,8 @@
     "creating": "Creating…",
     "createPolicy": "Create policy",
     "exampleRules": "قواعد مثال",
-    "conditionsRef": "مرجع الشروط"
+    "conditionsRef": "مرجع الشروط",
+    "docLink": "اقرأ توثيق السياسات →"
   },
   "memory": {
     "title": "الذاكرة التشغيلية",

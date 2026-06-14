@@ -163,33 +163,37 @@ export default async function Settings({
         <Section title={t("settings.billingTitle")} description={t("settings.billingDesc")}>
           <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] sm:grid-cols-3 mb-4">
             <PlanCard
-              name="Free"
+              name={t("settings.planFree") ?? "Free"}
               price="€0"
               detail={
                 planData && !planData.is_premium
-                  ? `${planData.repos.active}/${planData.repos.limit ?? 3} repos active`
-                  : `Up to 3 repos · unlimited PR reviews`
+                  ? (t("settings.planFreeUsage") ?? "{active}/{limit} repos active")
+                      .replace("{active}", String(planData.repos.active))
+                      .replace("{limit}", String(planData.repos.limit ?? 3))
+                  : (t("settings.planFreeDetail") ?? "Up to 3 repos · unlimited PR reviews")
               }
               current={org.plan === "free" || (!planData?.is_premium && org.plan !== "team" && org.plan !== "enterprise")}
               activeLabel={t("settings.active")}
             />
             <PlanCard
-              name="Team"
+              name={t("settings.planTeam") ?? "Team"}
               price="€29"
               period="/repo/mo"
               detail={
                 planData?.is_premium
-                  ? `${planData.monthly_pr_reviews.used ?? 0}/${planData.monthly_pr_reviews.limit ?? 50} PR reviews this month`
-                  : `50 PR reviews/mo · memory · compliance`
+                  ? (t("settings.planTeamUsage") ?? "{used}/{limit} PR reviews this month")
+                      .replace("{used}", String(planData.monthly_pr_reviews.used ?? 0))
+                      .replace("{limit}", String(planData.monthly_pr_reviews.limit ?? 50))
+                  : (t("settings.planTeamDetail") ?? "50 PR reviews/mo · memory · compliance")
               }
               current={org.plan === "team"}
               activeLabel={t("settings.active")}
               highlighted
             />
             <PlanCard
-              name="Enterprise"
+              name={t("settings.planEnterprise") ?? "Enterprise"}
               price="—"
-              detail="Self-hosted · SSO · SLA · custom policy"
+              detail={t("settings.planEnterpriseDetail") ?? "Self-hosted · SSO · SLA · custom policy"}
               current={org.plan === "enterprise"}
               activeLabel={t("settings.active")}
             />

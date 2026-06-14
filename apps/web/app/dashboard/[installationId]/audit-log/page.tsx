@@ -162,18 +162,18 @@ export default async function AuditLogPage({
                   href={`?page=${page - 1}`}
                   className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
                 >
-                  ← Previous
+                  {t("analyses.previous") ?? "← Previous"}
                 </Link>
               ) : <span />}
               <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-                Page {page}
+                {(t("analyses.page") ?? "Page {n}").replace("{n}", String(page))}
               </span>
               {hasNext ? (
                 <Link
                   href={`?page=${page + 1}`}
                   className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
                 >
-                  Next →
+                  {t("analyses.next") ?? "Next →"}
                 </Link>
               ) : <span />}
             </div>

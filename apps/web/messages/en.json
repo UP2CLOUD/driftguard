@@ -276,7 +276,15 @@
     "notificationsDesc": "Get an email alert when a PR scan finds critical issues.",
     "activeRepositories": "Active repositories",
     "atRepoLimit": "At repo limit. Disable a repository or upgrade to add more.",
-    "prReviewsThisMonth": "PR reviews this month"
+    "prReviewsThisMonth": "PR reviews this month",
+    "planFree": "Free",
+    "planFreeDetail": "Up to 3 repos · unlimited PR reviews",
+    "planFreeUsage": "{active}/{limit} repos active",
+    "planTeam": "Team",
+    "planTeamDetail": "50 PR reviews/mo · memory · compliance",
+    "planTeamUsage": "{used}/{limit} PR reviews this month",
+    "planEnterprise": "Enterprise",
+    "planEnterpriseDetail": "Self-hosted · SSO · SLA · custom policy"
   },
   "installApp": {
     "title": "Install the GitHub App",
@@ -685,7 +693,8 @@
     "creating": "Creating…",
     "createPolicy": "Create policy",
     "exampleRules": "Example rules",
-    "conditionsRef": "Conditions reference"
+    "conditionsRef": "Conditions reference",
+    "docLink": "Read policies documentation →"
   },
   "memory": {
     "title": "Operational memory",

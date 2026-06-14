@@ -202,11 +202,14 @@ jobs:
 
     steps:
     - name: Checkout gitops repo
-      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-      with:
-        repository: UP2CLOUD/driftguard-gitops
-        token: ${{ secrets.GITOPS_PAT }}
-        path: gitops
+      env:
+        GITOPS_PAT: ${{ secrets.GITOPS_PAT }}
+      run: |
+        git config --global credential.helper store
+        printf 'https://x-access-token:%s@github.com\n' "$GITOPS_PAT" >> ~/.git-credentials
+        git clone --depth 1 https://github.com/UP2CLOUD/driftguard-gitops.git gitops
+        git config --global user.name  "DriftGuard CI"
+        git config --global user.email "ci@driftguard.io"
 
     - name: Install yq
       run: |
@@ -236,8 +239,6 @@ jobs:
         yq e ".podAnnotations[\"dg.io/deployed-by\"] = \"$DEPLOY_ACTOR\"" -i "$FILE"
 
         cd gitops
-        git config user.name  "DriftGuard CI"
-        git config user.email "ci@driftguard.io"
         git add -A
         git diff --staged --quiet && echo "No changes" && exit 0
 

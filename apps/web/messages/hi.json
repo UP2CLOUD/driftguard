@@ -213,7 +213,15 @@
     "notificationsDesc": "जब PR स्कैन में गंभीर समस्याएं मिलें तो ईमेल अलर्ट प्राप्त करें।",
     "activeRepositories": "सक्रिय रिपॉजिटरी",
     "atRepoLimit": "रिपॉजिटरी सीमा पर। अधिक जोड़ने के लिए एक को अक्षम करें या अपग्रेड करें।",
-    "prReviewsThisMonth": "इस महीने PR समीक्षाएं"
+    "prReviewsThisMonth": "इस महीने PR समीक्षाएं",
+    "planFree": "निःशुल्क",
+    "planFreeDetail": "3 रिपॉजिटरी तक · असीमित PR समीक्षाएं",
+    "planFreeUsage": "{active}/{limit} repos सक्रिय",
+    "planTeam": "टीम",
+    "planTeamDetail": "50 PR समीक्षाएं/माह · स्मृति · अनुपालन",
+    "planTeamUsage": "इस महीने {used}/{limit} PR समीक्षाएं",
+    "planEnterprise": "एंटरप्राइज़",
+    "planEnterpriseDetail": "स्व-होस्टेड · SSO · SLA · कस्टम नीति"
   },
   "installApp": {
     "title": "GitHub App इंस्टॉल करें",
@@ -663,7 +671,8 @@
     "creating": "Creating…",
     "createPolicy": "Create policy",
     "exampleRules": "उदाहरण नियम",
-    "conditionsRef": "शर्तें संदर्भ"
+    "conditionsRef": "शर्तें संदर्भ",
+    "docLink": "नीति दस्तावेज़ पढ़ें →"
   },
   "memory": {
     "title": "परिचालन स्मृति",

@@ -103,7 +103,7 @@ export default async function PoliciesPage({
                 href="/docs/policies"
                 className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
               >
-                Read policies documentation →
+                {t("policies.docLink") ?? "Read policies documentation →"}
               </a>
             </div>
           ) : (
