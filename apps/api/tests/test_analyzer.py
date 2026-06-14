@@ -130,3 +130,45 @@ class TestMergeFindings:
         static = [_f("TF001", "r1"), _f("K8S001", "r2"), _f("GHA001", "r3")]
         result = _merge_findings(static, [])
         assert len(result) == 3
+
+
+# ── _compute_risk with plan ────────────────────────────────────────────────────
+
+
+def test_compute_risk_uses_plan_scorer_when_plan_has_changes():
+    """When a TerraformPlan with changes is provided, score_plan() is used instead of finding weights."""
+    from driftguard.services.terraform.plan_parser import parse_plan
+
+    raw = {
+        "format_version": "1.2",
+        "resource_changes": [
+            {
+                "address": "aws_rds_cluster.prod",
+                "type": "aws_rds_cluster",
+                "name": "prod",
+                "provider_config_key": "registry.terraform.io/hashicorp/aws",
+                "change": {
+                    "actions": ["delete"],
+                    "before": {"id": "prod"},
+                    "after": None,
+                    "after_unknown": {},
+                },
+            }
+        ],
+    }
+    plan = parse_plan(raw)
+    assert plan.changes  # guard: plan must have changes
+    score = _compute_risk([], plan)
+    # Deleting an RDS cluster is high-risk → score should be well above finding-fallback
+    assert score >= 70
+
+
+def test_compute_risk_plan_with_no_changes_falls_back_to_findings():
+    """When plan.changes is empty, falls back to finding-severity weighted sum."""
+    from driftguard.services.terraform.plan_parser import parse_plan
+
+    plan = parse_plan({"format_version": "1.2", "resource_changes": []})
+    assert plan.changes == []
+    findings = [_f(None, "r", "critical")]
+    score = _compute_risk(findings, plan)
+    assert score == 40  # critical weight = 40
