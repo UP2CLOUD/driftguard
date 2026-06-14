@@ -80,10 +80,12 @@ class TestListRepos:
         mock = AsyncMock()
         org_result = MagicMock(
             scalar_one_or_none=MagicMock(return_value=None),
-            scalars=MagicMock(return_value=MagicMock(
-                first=MagicMock(return_value=None),
-                all=MagicMock(return_value=[]),
-            )),
+            scalars=MagicMock(
+                return_value=MagicMock(
+                    first=MagicMock(return_value=None),
+                    all=MagicMock(return_value=[]),
+                )
+            ),
         )
         mock.execute = AsyncMock(return_value=org_result)
         _override(mock)
@@ -101,10 +103,12 @@ class TestListRepos:
         mock = AsyncMock()
         org_result = MagicMock(
             scalar_one_or_none=MagicMock(return_value=org),
-            scalars=MagicMock(return_value=MagicMock(
-                first=MagicMock(return_value=org),
-                all=MagicMock(return_value=[]),
-            )),
+            scalars=MagicMock(
+                return_value=MagicMock(
+                    first=MagicMock(return_value=org),
+                    all=MagicMock(return_value=[]),
+                )
+            ),
         )
         repo_result = MagicMock(scalars=MagicMock(return_value=repos))
         mock.execute = AsyncMock(side_effect=[org_result, repo_result])
