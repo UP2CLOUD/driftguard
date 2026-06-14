@@ -13,8 +13,15 @@ async def upsert_installation(
     account: dict | None = None,
 ) -> Organization:
     """Idempotent. Called on `installation.created` and `installation_repositories` events."""
-    result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    org = result.scalar_one_or_none()
+    org = (
+        (await db.execute(
+            select(Organization)
+            .where(Organization.github_installation_id == installation_id)
+            .order_by(Organization.created_at.desc())
+        ))
+        .scalars()
+        .first()
+    )
 
     is_new = org is None
     if is_new:
@@ -79,8 +86,15 @@ async def upsert_installation(
 
 async def remove_installation(db: AsyncSession, *, installation_id: int) -> None:
     """Soft-disable. Don't delete history."""
-    result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    org = result.scalar_one_or_none()
+    org = (
+        (await db.execute(
+            select(Organization)
+            .where(Organization.github_installation_id == installation_id)
+            .order_by(Organization.created_at.desc())
+        ))
+        .scalars()
+        .first()
+    )
     if org is None:
         return
 
@@ -93,8 +107,15 @@ async def remove_installation(db: AsyncSession, *, installation_id: int) -> None
 
 
 async def remove_repositories(db: AsyncSession, *, installation_id: int, repo_ids: list[int]) -> None:
-    result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    org = result.scalar_one_or_none()
+    org = (
+        (await db.execute(
+            select(Organization)
+            .where(Organization.github_installation_id == installation_id)
+            .order_by(Organization.created_at.desc())
+        ))
+        .scalars()
+        .first()
+    )
     if org is None:
         return
 

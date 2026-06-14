@@ -117,10 +117,15 @@ async def ingest_event(
     _rl: None = Depends(rate_limit(per_minute=30, per_hour=500)),
 ) -> IngestEventResponse:
     # 1. Resolve org — reject unknown installations to prevent data injection
-    org_result = await db.execute(
-        select(Organization).where(Organization.github_installation_id == body.installation_id)
+    org = (
+        (await db.execute(
+            select(Organization)
+            .where(Organization.github_installation_id == body.installation_id)
+            .order_by(Organization.created_at.desc())
+        ))
+        .scalars()
+        .first()
     )
-    org = org_result.scalar_one_or_none()
     if not org:
         from fastapi import HTTPException
 
