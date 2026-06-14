@@ -641,7 +641,9 @@
     "severityLabel": "Severity",
     "descriptionLabel": "Description",
     "creating": "Creating…",
-    "createPolicy": "Create policy"
+    "createPolicy": "Create policy",
+    "exampleRules": "قواعد مثال",
+    "conditionsRef": "مرجع الشروط"
   },
   "memory": {
     "title": "الذاكرة التشغيلية",
@@ -662,7 +664,11 @@
     "similarity": "تطابق",
     "searchHint": "بحث دلالي في الحوادث السابقة — نفس الاسترجاع الذي يستخدمه مراجع الذكاء الاصطناعي في كل PR",
     "engineReady": "محرك الذاكرة جاهز",
-    "merged": "مدمج"
+    "merged": "مدمج",
+    "sev_critical": "حرج",
+    "sev_high": "عالي",
+    "sev_medium": "متوسط",
+    "sev_low": "منخفض"
   },
   "docs": {
     "eyebrow": "التوثيق",

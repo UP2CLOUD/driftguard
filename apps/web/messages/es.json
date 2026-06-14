@@ -641,7 +641,9 @@
     "severityLabel": "Severity",
     "descriptionLabel": "Description",
     "creating": "Creating…",
-    "createPolicy": "Create policy"
+    "createPolicy": "Create policy",
+    "exampleRules": "Reglas de ejemplo",
+    "conditionsRef": "Referencia de condiciones"
   },
   "memory": {
     "title": "Memoria operacional",
@@ -662,7 +664,11 @@
     "similarity": "similitud",
     "searchHint": "búsqueda semántica sobre incidentes pasados — el mismo recall que el revisor de IA usa en cada PR",
     "engineReady": "Motor de memoria listo",
-    "merged": "fusionado"
+    "merged": "fusionado",
+    "sev_critical": "Crítico",
+    "sev_high": "Alto",
+    "sev_medium": "Medio",
+    "sev_low": "Bajo"
   },
   "docs": {
     "eyebrow": "Documentación",

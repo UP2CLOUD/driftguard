@@ -44,6 +44,13 @@ const BLAST_COLOR: Record<string, string> = {
   low:    "text-[color:var(--dg-fg-subtle)]",
 };
 
+const SEV_COLOR: Record<string, string> = {
+  critical: "text-blocked",
+  high:     "text-[color:var(--dg-severity-high)]",
+  medium:   "text-warned",
+  low:      "text-[color:var(--dg-fg-subtle)]",
+};
+
 export default async function MemoryPage({
   params,
   searchParams,
@@ -91,17 +98,29 @@ export default async function MemoryPage({
       />
 
       {stats.total > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] mb-6">
-          <div className="bg-[color:var(--dg-canvas)] px-4 py-4">
-            <div className="dg-label mb-1">{t("memory.total")}</div>
-            <div className="font-mono text-2xl font-bold text-[color:var(--dg-fg)]">{stats.total}</div>
-          </div>
-          {Object.entries(stats.by_outcome as Record<string, number>).map(([k, v]) => (
-            <div key={k} className="bg-[color:var(--dg-canvas)] px-4 py-4">
-              <div className="dg-label mb-1">{t(`memory.${k}` as any) ?? k}</div>
-              <div className={`font-mono text-2xl font-bold ${OUT_COLOR[k] ?? "text-[color:var(--dg-fg)]"}`}>{v}</div>
+        <div className="space-y-px mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-[color:var(--dg-border)] rounded-t-md overflow-hidden border border-b-0 border-[color:var(--dg-border)]">
+            <div className="bg-[color:var(--dg-canvas)] px-4 py-4">
+              <div className="dg-label mb-1">{t("memory.total")}</div>
+              <div className="font-mono text-2xl font-bold text-[color:var(--dg-fg)]">{stats.total}</div>
             </div>
-          ))}
+            {Object.entries(stats.by_outcome as Record<string, number>).map(([k, v]) => (
+              <div key={k} className="bg-[color:var(--dg-canvas)] px-4 py-4">
+                <div className="dg-label mb-1">{t(`memory.${k}` as any) ?? k}</div>
+                <div className={`font-mono text-2xl font-bold ${OUT_COLOR[k] ?? "text-[color:var(--dg-fg)]"}`}>{v}</div>
+              </div>
+            ))}
+          </div>
+          {Object.keys(stats.by_severity ?? {}).length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-[color:var(--dg-border)] rounded-b-md overflow-hidden border border-t-0 border-[color:var(--dg-border)]">
+              {Object.entries(stats.by_severity as Record<string, number>).map(([k, v]) => (
+                <div key={k} className="bg-[color:var(--dg-surface)] px-4 py-3">
+                  <div className="dg-label mb-1">{t(`memory.sev_${k}` as any) ?? k}</div>
+                  <div className={`font-mono text-lg font-bold ${SEV_COLOR[k] ?? "text-[color:var(--dg-fg)]"}`}>{v}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

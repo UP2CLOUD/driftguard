@@ -663,7 +663,9 @@
     "severityLabel": "Severity",
     "descriptionLabel": "Description",
     "creating": "Creating…",
-    "createPolicy": "Create policy"
+    "createPolicy": "Create policy",
+    "exampleRules": "Example rules",
+    "conditionsRef": "Conditions reference"
   },
   "memory": {
     "title": "Operational memory",
@@ -684,7 +686,11 @@
     "similarity": "match",
     "searchHint": "semantic search over past incidents — the same recall the AI reviewer uses on every PR",
     "engineReady": "Memory engine ready",
-    "merged": "merged"
+    "merged": "merged",
+    "sev_critical": "Critical",
+    "sev_high": "High",
+    "sev_medium": "Medium",
+    "sev_low": "Low"
   },
   "docs": {
     "eyebrow": "Documentation",

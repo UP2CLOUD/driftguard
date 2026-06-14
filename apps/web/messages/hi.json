@@ -641,7 +641,9 @@
     "severityLabel": "Severity",
     "descriptionLabel": "Description",
     "creating": "Creating…",
-    "createPolicy": "Create policy"
+    "createPolicy": "Create policy",
+    "exampleRules": "उदाहरण नियम",
+    "conditionsRef": "शर्तें संदर्भ"
   },
   "memory": {
     "title": "परिचालन स्मृति",
@@ -662,7 +664,11 @@
     "similarity": "समानता",
     "searchHint": "पिछली घटनाओं पर सिमेंटिक खोज — वही रिकॉल जो AI समीक्षक हर PR पर उपयोग करता है",
     "engineReady": "मेमोरी इंजन तैयार",
-    "merged": "मर्ज किया"
+    "merged": "मर्ज किया",
+    "sev_critical": "गंभीर",
+    "sev_high": "उच्च",
+    "sev_medium": "मध्यम",
+    "sev_low": "निम्न"
   },
   "docs": {
     "eyebrow": "दस्तावेज़",

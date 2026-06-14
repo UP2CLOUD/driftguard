@@ -641,7 +641,9 @@
     "severityLabel": "Severity",
     "descriptionLabel": "Description",
     "creating": "Creating…",
-    "createPolicy": "Create policy"
+    "createPolicy": "Create policy",
+    "exampleRules": "示例规则",
+    "conditionsRef": "条件参考"
   },
   "memory": {
     "title": "运行记忆",
@@ -662,7 +664,11 @@
     "similarity": "相似度",
     "searchHint": "对历史事件的语义搜索 — 与 AI 审查器在每个 PR 上使用的召回相同",
     "engineReady": "记忆引擎就绪",
-    "merged": "已合并"
+    "merged": "已合并",
+    "sev_critical": "严重",
+    "sev_high": "高",
+    "sev_medium": "中",
+    "sev_low": "低"
   },
   "docs": {
     "eyebrow": "文档",

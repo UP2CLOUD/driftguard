@@ -1,5 +1,5 @@
 import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -159,9 +159,9 @@ async def list_org_repos(
 @router.get("/{org_id}/analyses")
 async def list_org_analyses(
     org_id: str,
-    limit: int = 20,
-    offset: int = 0,
-    status: str | None = None,
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    status: str | None = Query(None),
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
@@ -171,8 +171,8 @@ async def list_org_analyses(
         .join(Repository, PullRequest.repo_id == Repository.id)
         .where(Repository.org_id == org_id)
         .order_by(Analysis.started_at.desc().nulls_last())
-        .limit(min(limit, 100))
-        .offset(max(offset, 0))
+        .limit(limit)
+        .offset(offset)
     )
     if status == "running":
         stmt = stmt.where(Analysis.status.in_(["running", "pending"]))
