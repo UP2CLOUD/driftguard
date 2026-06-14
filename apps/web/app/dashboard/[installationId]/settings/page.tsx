@@ -2,6 +2,7 @@ import { type Locale } from "@/i18n/config";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BillingActions } from "@/components/BillingActions";
+import { CopyField } from "@/components/CopyField";
 import { UserPreferencesSettings } from "@/components/UserPreferencesSettings";
 import { AwsIntegrationForm } from "@/components/AwsIntegrationForm";
 import { NotificationEmailForm } from "@/components/NotificationEmailForm";
@@ -90,16 +91,15 @@ export default async function Settings({
             </span>
           </div>
           <Row label={t("settings.githubApp")} value={process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-reviews"} mono />
-          <Row label={t("settings.githubInstallationRow")} value={installationId} mono />
-          <Row
-            label={t("settings.webhookUrl")}
-            value={
-              process.env.NEXT_PUBLIC_API_URL
-                ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1/webhooks/github`
-                : "— set NEXT_PUBLIC_API_URL —"
-            }
-            mono
-          />
+          <CopyField label={t("settings.githubInstallationRow")} value={installationId} />
+          {process.env.NEXT_PUBLIC_API_URL ? (
+            <CopyField
+              label={t("settings.webhookUrl")}
+              value={`${process.env.NEXT_PUBLIC_API_URL}/api/v1/webhooks/github`}
+            />
+          ) : (
+            <Row label={t("settings.webhookUrl")} value="— set NEXT_PUBLIC_API_URL —" mono />
+          )}
           <Row label={t("settings.webhookEvents")} value="pull_request · installation · installation_repositories" mono />
           <div className="px-4 py-3 flex items-center justify-between">
             <span className="text-[12px] text-[color:var(--dg-fg-muted)]">{t("settings.manageInstallation")}</span>
@@ -266,14 +266,46 @@ export default async function Settings({
       {/* ── Workspace info ───────────────────────────────────────── */}
       <Section title={t("settings.workspaceTitle")} description={t("settings.workspaceDesc")}>
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
-          <Row label={t("settings.installationId")} value={installationId} mono />
+          <CopyField label={t("settings.installationId")} value={installationId} />
           {org && (
             <>
-              <Row label={t("settings.organisationId")} value={org.id} mono />
+              <CopyField label={t("settings.organisationId")} value={org.id} />
               <Row label={t("settings.plan")} value={org.plan} />
               <Row label={t("settings.stripeCustomer")} value={org.has_stripe_customer ? t("settings.stripeActive") : "—"} />
             </>
           )}
+        </div>
+      </Section>
+
+      {/* ── Resources & support ─────────────────────────────────── */}
+      <Section title={t("settings.resources")} description={t("settings.resourcesDesc")}>
+        <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] sm:grid-cols-2">
+          <ResourceCard
+            title={t("settings.resourceDocs")}
+            description={t("settings.resourceDocsDesc")}
+            href="/docs"
+            cta={t("settings.resourceOpen")}
+          />
+          <ResourceCard
+            title={t("settings.resourceApi")}
+            description={t("settings.resourceApiDesc")}
+            href="/docs/api"
+            cta={t("settings.resourceOpen")}
+          />
+          <ResourceCard
+            title={t("settings.resourceCli")}
+            description={t("settings.resourceCliDesc")}
+            href="https://github.com/UP2CLOUD/driftguard/tree/main/apps/cli"
+            cta={t("settings.resourceOpen")}
+            external
+          />
+          <ResourceCard
+            title={t("settings.resourceSupport")}
+            description={t("settings.resourceSupportDesc")}
+            href="mailto:support@driftguard.io"
+            cta={t("settings.resourceOpen")}
+            external
+          />
         </div>
       </Section>
 
@@ -325,6 +357,29 @@ function Section({
       </div>
       {children}
     </section>
+  );
+}
+
+function ResourceCard({
+  title, description, href, cta, external,
+}: {
+  title: string; description: string; href: string; cta: string; external?: boolean;
+}) {
+  const externalProps = external ? { target: "_blank", rel: "noreferrer" } : {};
+  return (
+    <a
+      href={href}
+      {...externalProps}
+      className="group flex flex-col gap-1.5 bg-[color:var(--dg-canvas)] p-5 transition hover:bg-[color:var(--dg-surface)]"
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[13px] font-semibold text-[color:var(--dg-fg)]">{title}</span>
+        <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] transition group-hover:text-[color:var(--dg-electric)]">
+          {cta}
+        </span>
+      </div>
+      <p className="text-[12px] text-[color:var(--dg-fg-muted)]">{description}</p>
+    </a>
   );
 }
 
