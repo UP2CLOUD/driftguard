@@ -51,3 +51,62 @@ async def test_ws_router_mounted():
     """ws/events endpoint is reachable (route exists)."""
     routes = [r.path for r in app.routes]
     assert any("ws/events" in p for p in routes), f"ws/events not in routes: {routes}"
+
+
+class TestConnectionManager:
+    """Unit tests for the in-process connection tracker."""
+
+    def _make_ws(self):
+        from unittest.mock import MagicMock
+
+        return MagicMock()
+
+    def test_count_unknown_org_returns_zero(self):
+        from driftguard.api.v1.ws import _ConnectionManager
+
+        mgr = _ConnectionManager()
+        assert mgr.count("nonexistent") == 0
+
+    def test_register_increments_count(self):
+        from driftguard.api.v1.ws import _ConnectionManager
+
+        mgr = _ConnectionManager()
+        ws = self._make_ws()
+        mgr.register("org-1", ws)
+        assert mgr.count("org-1") == 1
+
+    def test_register_two_sockets_same_org(self):
+        from driftguard.api.v1.ws import _ConnectionManager
+
+        mgr = _ConnectionManager()
+        ws1, ws2 = self._make_ws(), self._make_ws()
+        mgr.register("org-1", ws1)
+        mgr.register("org-1", ws2)
+        assert mgr.count("org-1") == 2
+
+    def test_unregister_removes_socket(self):
+        from driftguard.api.v1.ws import _ConnectionManager
+
+        mgr = _ConnectionManager()
+        ws = self._make_ws()
+        mgr.register("org-1", ws)
+        mgr.unregister("org-1", ws)
+        assert mgr.count("org-1") == 0
+
+    def test_unregister_unknown_org_is_noop(self):
+        from driftguard.api.v1.ws import _ConnectionManager
+
+        mgr = _ConnectionManager()
+        ws = self._make_ws()
+        mgr.unregister("nonexistent", ws)  # must not raise
+        assert mgr.count("nonexistent") == 0
+
+    def test_unregister_one_of_two_sockets(self):
+        from driftguard.api.v1.ws import _ConnectionManager
+
+        mgr = _ConnectionManager()
+        ws1, ws2 = self._make_ws(), self._make_ws()
+        mgr.register("org-1", ws1)
+        mgr.register("org-1", ws2)
+        mgr.unregister("org-1", ws1)
+        assert mgr.count("org-1") == 1
