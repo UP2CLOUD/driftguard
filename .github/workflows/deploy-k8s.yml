@@ -127,7 +127,8 @@ jobs:
         workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
         service_account: ${{ vars.GCP_DEPLOYER_SA }}
 
-    - run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
+    - name: Configure Docker for Artifact Registry
+      run: gcloud auth configure-docker "$REGISTRY" --quiet
 
     - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
@@ -180,9 +181,12 @@ jobs:
     - name: Sign image (Cosign keyless)
       uses: sigstore/cosign-installer@f713795cb21599bc4e5c4b58cbad1da852d7eeb9 # v3
 
-    - run: |
+    - name: Sign image (keyless)
+      env:
+        IMAGE_DIGEST: ${{ steps.push.outputs.digest }}
+      run: |
         cosign sign --yes \
-          ${{ env.REGISTRY }}/${{ env.PROJECT }}/api/driftguard-api@${{ steps.push.outputs.digest }}
+          "$REGISTRY/$PROJECT/api/driftguard-api@$IMAGE_DIGEST"
 
   # ── 3. Deploy via GitOps → ArgoCD ─────────────────────────────────────────
   deploy:

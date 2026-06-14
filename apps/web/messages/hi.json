@@ -125,7 +125,15 @@
     "planBadge": "{plan} प्लान",
     "demoActive": "डेमो डेटा — वास्तविक डेटा के लिए GitHub कनेक्ट करें",
     "exitDemo": "डेमो से बाहर निकलें",
-    "viewDemo": "डेमो डेटा देखें"
+    "viewDemo": "डेमो डेटा देखें",
+    "prReviews": "PR समीक्षाएं",
+    "limitReached": "सीमा पहुंच गई",
+    "nearLimit": "सीमा के करीब",
+    "freePlanRepoLimit": "निःशुल्क योजना: {active}/{limit} रेपो सक्रिय। अधिक जोड़ने के लिए एक अक्षम करें या अपग्रेड करें।",
+    "prLimitReached": "मासिक PR समीक्षा सीमा पहुंच गई ({used}/{limit})। समीक्षाएं अगले बिलिंग चक्र में फिर से शुरू होंगी।",
+    "prReviewsRemaining": "इस महीने {remaining} PR समीक्षाएं शेष हैं।",
+    "managePlan": "योजना प्रबंधित करें",
+    "upgrade": "अपग्रेड"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -242,7 +250,13 @@
     "installAppDesc": "DriftGuard हर Terraform pull request की समीक्षा करता है — मर्ज से पहले सुरक्षा गलत कॉन्फ़िगरेशन, लागत विचलन और नीति उल्लंघन का पता लगाता है।",
     "installGithubApp": "GitHub App इंस्टॉल करें →",
     "scanFallback": "स्कैन",
-    "manualScanLabel": "मैनुअल"
+    "manualScanLabel": "मैनुअल",
+    "freePlanQuota": "निःशुल्क योजना — {limit} सक्रिय रेपो शामिल",
+    "manualScanHeading": "मैन्युअल स्कैन",
+    "scanGithubRepo": "GitHub रिपोजिटरी",
+    "scanGithubDesc": "नाम से किसी भी सार्वजनिक या कनेक्टेड GitHub रिपोजिटरी को स्कैन करें।",
+    "uploadFiles": "फ़ाइलें अपलोड करें",
+    "uploadFilesDesc": "Terraform, Kubernetes, या GitHub Actions फ़ाइलों का .tar.gz अपलोड करें।"
   },
   "landing": {
     "ctaTitle": "अपने क्लाउड पर नियंत्रण वापस पाएं।",

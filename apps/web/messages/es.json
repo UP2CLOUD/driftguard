@@ -125,7 +125,15 @@
     "planBadge": "{plan} plan",
     "demoActive": "Telemetría de demo — conecta GitHub para ver datos reales",
     "exitDemo": "Salir de demo",
-    "viewDemo": "Ver telemetría de demo"
+    "viewDemo": "Ver telemetría de demo",
+    "prReviews": "Revisiones de PR",
+    "limitReached": "Límite alcanzado",
+    "nearLimit": "Cerca del límite",
+    "freePlanRepoLimit": "Plan gratuito: {active}/{limit} repos activos. Deshabilite uno o actualice para agregar más.",
+    "prLimitReached": "Límite mensual de revisiones de PR alcanzado ({used}/{limit}). Las revisiones se reanudan en el próximo ciclo de facturación.",
+    "prReviewsRemaining": "{remaining} revisiones de PR restantes este mes.",
+    "managePlan": "Gestionar plan",
+    "upgrade": "Actualizar"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -242,7 +250,13 @@
     "installAppDesc": "DriftGuard revisa cada pull request de Terraform — detectando errores de seguridad, desvío de costos y violaciones de política antes del merge.",
     "installGithubApp": "Instalar GitHub App →",
     "scanFallback": "Scan",
-    "manualScanLabel": "manual"
+    "manualScanLabel": "manual",
+    "freePlanQuota": "Plan gratuito — {limit} repos activos incluidos",
+    "manualScanHeading": "Escaneo manual",
+    "scanGithubRepo": "Repositorio GitHub",
+    "scanGithubDesc": "Escanee cualquier repositorio de GitHub público o conectado por nombre.",
+    "uploadFiles": "Subir archivos",
+    "uploadFilesDesc": "Suba un .tar.gz de archivos Terraform, Kubernetes o GitHub Actions."
   },
   "landing": {
     "ctaTitle": "Recupera el control de tu cloud.",

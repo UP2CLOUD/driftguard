@@ -125,7 +125,15 @@
     "planBadge": "{plan} 计划",
     "demoActive": "演示数据 — 连接 GitHub 以查看真实数据",
     "exitDemo": "退出演示",
-    "viewDemo": "查看演示数据"
+    "viewDemo": "查看演示数据",
+    "prReviews": "PR 审查",
+    "limitReached": "已达限额",
+    "nearLimit": "接近限额",
+    "freePlanRepoLimit": "免费计划：{active}/{limit} 个活跃仓库。禁用一个或升级以添加更多。",
+    "prLimitReached": "每月 PR 审查限额已达上限 ({used}/{limit})。审查将在下个结算周期恢复。",
+    "prReviewsRemaining": "本月剩余 {remaining} 次 PR 审查。",
+    "managePlan": "管理计划",
+    "upgrade": "升级"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -242,7 +250,13 @@
     "installAppDesc": "DriftGuard 审查每个 Terraform pull request — 在合并前检测安全错误配置、成本偏移和策略违规。",
     "installGithubApp": "安装 GitHub App →",
     "scanFallback": "扫描",
-    "manualScanLabel": "手动"
+    "manualScanLabel": "手动",
+    "freePlanQuota": "免费计划 — 包含 {limit} 个活跃仓库",
+    "manualScanHeading": "手动扫描",
+    "scanGithubRepo": "GitHub 仓库",
+    "scanGithubDesc": "通过名称扫描任何公共或已连接的 GitHub 仓库。",
+    "uploadFiles": "上传文件",
+    "uploadFilesDesc": "上传 Terraform、Kubernetes 或 GitHub Actions 文件的 .tar.gz 压缩包。"
   },
   "landing": {
     "ctaTitle": "重新掌控您的云基础设施。",

@@ -125,7 +125,15 @@
     "planBadge": "{plan} plan",
     "demoActive": "Demo telemetry — connect GitHub to see real data",
     "exitDemo": "Exit demo",
-    "viewDemo": "View demo telemetry"
+    "viewDemo": "View demo telemetry",
+    "prReviews": "PR reviews",
+    "limitReached": "Limit reached",
+    "nearLimit": "Near limit",
+    "freePlanRepoLimit": "Free plan: {active}/{limit} repos active. Disable one or upgrade to add more.",
+    "prLimitReached": "Monthly PR review limit reached ({used}/{limit}). Reviews resume next billing cycle.",
+    "prReviewsRemaining": "{remaining} PR reviews remaining this month.",
+    "managePlan": "Manage plan",
+    "upgrade": "Upgrade"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -203,7 +211,13 @@
     "installAppDesc": "DriftGuard reviews every Terraform pull request — detecting security misconfigs, cost drift, and policy violations before merge.",
     "installGithubApp": "Install GitHub App →",
     "scanFallback": "Scan",
-    "manualScanLabel": "manual"
+    "manualScanLabel": "manual",
+    "freePlanQuota": "Free plan — {limit} active repos included",
+    "manualScanHeading": "Manual scan",
+    "scanGithubRepo": "GitHub repository",
+    "scanGithubDesc": "Scan any public or connected GitHub repository by name.",
+    "uploadFiles": "Upload files",
+    "uploadFilesDesc": "Upload a .tar.gz of Terraform, Kubernetes, or GitHub Actions files."
   },
   "settings": {
     "title": "Settings",

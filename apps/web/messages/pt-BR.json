@@ -147,7 +147,15 @@
     "planBadge": "{plan} plano",
     "demoActive": "Dados de demonstração — conecte o GitHub para ver dados reais",
     "exitDemo": "Sair da demo",
-    "viewDemo": "Ver telemetria de demo"
+    "viewDemo": "Ver telemetria de demo",
+    "prReviews": "Revisões de PR",
+    "limitReached": "Limite atingido",
+    "nearLimit": "Perto do limite",
+    "freePlanRepoLimit": "Plano gratuito: {active}/{limit} repos ativos. Desative um ou atualize para adicionar mais.",
+    "prLimitReached": "Limite mensal de revisões de PR atingido ({used}/{limit}). As revisões são retomadas no próximo ciclo de cobrança.",
+    "prReviewsRemaining": "{remaining} revisões de PR restantes neste mês.",
+    "managePlan": "Gerenciar plano",
+    "upgrade": "Atualizar"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -203,7 +211,13 @@
     "installAppDesc": "O DriftGuard revisa cada pull request Terraform — detectando erros de segurança, desvio de custos e violações de política antes do merge.",
     "installGithubApp": "Instalar GitHub App →",
     "scanFallback": "Scan",
-    "manualScanLabel": "manual"
+    "manualScanLabel": "manual",
+    "freePlanQuota": "Plano gratuito — {limit} repos ativos incluídos",
+    "manualScanHeading": "Varredura manual",
+    "scanGithubRepo": "Repositório GitHub",
+    "scanGithubDesc": "Escaneie qualquer repositório GitHub público ou conectado pelo nome.",
+    "uploadFiles": "Enviar arquivos",
+    "uploadFilesDesc": "Envie um .tar.gz de arquivos Terraform, Kubernetes ou GitHub Actions."
   },
   "settings": {
     "title": "Configurações",

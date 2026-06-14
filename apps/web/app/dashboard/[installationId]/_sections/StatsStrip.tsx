@@ -79,10 +79,10 @@ export async function StatsStripSection({
   if (isPremium && prUsed != null && prLimit != null) {
     const pct = prUsed / prLimit;
     cells.push({
-      label: "PR reviews",
+      label: t("dashboard.prReviews") ?? "PR reviews",
       value: `${prUsed}/${prLimit}`,
       color: pct >= 1 ? "text-blocked" : pct >= 0.8 ? "text-warned" : "",
-      hint: pct >= 1 ? "Limit reached" : pct >= 0.8 ? "Near limit" : null,
+      hint: pct >= 1 ? (t("dashboard.limitReached") ?? "Limit reached") : pct >= 0.8 ? (t("dashboard.nearLimit") ?? "Near limit") : null,
     });
   }
 
@@ -104,14 +104,15 @@ export async function StatsStripSection({
       {!isPremium && repoLimit != null && activeRepos >= repoLimit && (
         <div className="flex items-center justify-between px-4 py-2 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
           <span>
-            Free plan: {activeRepos}/{repoLimit} repos active.
-            {" "}Disable one or upgrade to add more.
+            {(t("dashboard.freePlanRepoLimit") ?? "Free plan: {active}/{limit} repos active. Disable one or upgrade to add more.")
+              .replace("{active}", String(activeRepos))
+              .replace("{limit}", String(repoLimit))}
           </span>
           <Link
             href={`/dashboard/${installationId}/settings?intent=upgrade`}
             className="text-[color:var(--dg-fg)] underline underline-offset-2 hover:opacity-70 transition-opacity"
           >
-            Upgrade
+            {t("dashboard.upgrade") ?? "Upgrade"}
           </Link>
         </div>
       )}
@@ -121,15 +122,18 @@ export async function StatsStripSection({
         <div className="flex items-center justify-between px-4 py-2 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
           <span>
             {prUsed >= prLimit
-              ? `Monthly PR review limit reached (${prUsed}/${prLimit}). Reviews resume next billing cycle.`
-              : `${prLimit - prUsed} PR reviews remaining this month.`}
+              ? (t("dashboard.prLimitReached") ?? "Monthly PR review limit reached ({used}/{limit}). Reviews resume next billing cycle.")
+                  .replace("{used}", String(prUsed))
+                  .replace("{limit}", String(prLimit))
+              : (t("dashboard.prReviewsRemaining") ?? "{remaining} PR reviews remaining this month.")
+                  .replace("{remaining}", String(prLimit - prUsed))}
           </span>
           {prUsed >= prLimit && (
             <Link
               href={`/dashboard/${installationId}/settings`}
               className="text-[color:var(--dg-fg)] underline underline-offset-2 hover:opacity-70 transition-opacity"
             >
-              Manage plan
+              {t("dashboard.managePlan") ?? "Manage plan"}
             </Link>
           )}
         </div>

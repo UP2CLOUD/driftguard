@@ -125,7 +125,15 @@
     "planBadge": "خطة {plan}",
     "demoActive": "بيانات تجريبية — اربط GitHub لرؤية بيانات حقيقية",
     "exitDemo": "الخروج من العرض التجريبي",
-    "viewDemo": "عرض البيانات التجريبية"
+    "viewDemo": "عرض البيانات التجريبية",
+    "prReviews": "مراجعات PR",
+    "limitReached": "تم الوصول للحد",
+    "nearLimit": "قريب من الحد",
+    "freePlanRepoLimit": "الخطة المجانية: {active}/{limit} مستودع نشط. قم بتعطيل أحدها أو الترقية لإضافة المزيد.",
+    "prLimitReached": "تم الوصول للحد الشهري لمراجعات PR ({used}/{limit}). تستأنف المراجعات في دورة الفوترة التالية.",
+    "prReviewsRemaining": "{remaining} مراجعة PR متبقية هذا الشهر.",
+    "managePlan": "إدارة الخطة",
+    "upgrade": "الترقية"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -242,7 +250,13 @@
     "installAppDesc": "يراجع DriftGuard كل طلب سحب Terraform — يكتشف الأخطاء الأمنية وانحراف التكاليف وانتهاكات السياسة قبل الدمج.",
     "installGithubApp": "تثبيت تطبيق GitHub →",
     "scanFallback": "فحص",
-    "manualScanLabel": "يدوي"
+    "manualScanLabel": "يدوي",
+    "freePlanQuota": "الخطة المجانية — {limit} مستودع نشط مضمّن",
+    "manualScanHeading": "فحص يدوي",
+    "scanGithubRepo": "مستودع GitHub",
+    "scanGithubDesc": "افحص أي مستودع GitHub عام أو متصل بالاسم.",
+    "uploadFiles": "رفع الملفات",
+    "uploadFilesDesc": "ارفع ملف .tar.gz يحتوي على ملفات Terraform أو Kubernetes أو GitHub Actions."
   },
   "landing": {
     "ctaTitle": "استعد السيطرة على بنيتك السحابية.",
