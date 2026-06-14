@@ -54,7 +54,12 @@ def _mock_session(org=None, rules=None, get_return=None):
     mock.execute = AsyncMock(
         return_value=MagicMock(
             scalar_one_or_none=MagicMock(return_value=org),
-            scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=rules or []))),
+            scalars=MagicMock(
+                return_value=MagicMock(
+                    first=MagicMock(return_value=org),
+                    all=MagicMock(return_value=rules or []),
+                )
+            ),
         )
     )
     mock.get = AsyncMock(return_value=get_return)

@@ -43,10 +43,11 @@ def _cleanup() -> None:
 
 def _mock_session(org=None, events: list | None = None) -> AsyncMock:
     mock = AsyncMock()
-
-    org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+    org_result = MagicMock(
+        scalar_one_or_none=MagicMock(return_value=org),
+        scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org), all=MagicMock(return_value=[]))),
+    )
     events_result = MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=events or []))))
-
     mock.execute = AsyncMock(side_effect=[org_result, events_result])
     return mock
 

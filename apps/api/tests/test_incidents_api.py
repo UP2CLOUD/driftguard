@@ -53,7 +53,10 @@ def _cleanup() -> None:
 def _mock_list(org=None, incidents: list | None = None) -> AsyncMock:
     """Mock for GET /incidents (two execute calls: org lookup + incident list)."""
     mock = AsyncMock()
-    org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+    org_result = MagicMock(
+        scalar_one_or_none=MagicMock(return_value=org),
+        scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org), all=MagicMock(return_value=[]))),
+    )
     rows_result = MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=incidents or []))))
     mock.execute = AsyncMock(side_effect=[org_result, rows_result])
     return mock
