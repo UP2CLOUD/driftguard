@@ -433,21 +433,27 @@ async def get_scan(
         for f in findings_rows
     ]
 
+    duration_ms = (
+        int((analysis.finished_at - analysis.started_at).total_seconds() * 1000)
+        if analysis.finished_at and analysis.started_at
+        else 0
+    )
+
     return ScanResultOut(
         scan_id=analysis.id,
         status=analysis.status,
         risk_score=analysis.risk_score or 0,
         files_scanned=analysis.files_scanned or 0,
-        tf_files=0,
-        k8s_files=0,
-        gha_files=0,
+        tf_files=analysis.tf_files or 0,
+        k8s_files=analysis.k8s_files or 0,
+        gha_files=analysis.gha_files or 0,
         critical=sum(1 for f in findings_out if f.severity == "critical"),
         high=sum(1 for f in findings_out if f.severity == "high"),
         medium=sum(1 for f in findings_out if f.severity == "medium"),
         low=sum(1 for f in findings_out if f.severity == "low"),
         findings=findings_out,
-        errors=[],
-        duration_ms=0,
+        errors=analysis.scan_errors or [],
+        duration_ms=duration_ms,
         analysis_id=analysis_id,
         ai_summary=analysis.summary_md,
         repo_full_name=repo.full_name if repo else None,
@@ -510,6 +516,10 @@ async def _persist_scan(
         finished_at=now,
         risk_score=result.risk_score,
         files_scanned=result.files_scanned,
+        tf_files=result.tf_files,
+        k8s_files=result.k8s_files,
+        gha_files=result.gha_files,
+        scan_errors=result.errors or None,
         summary_md=ai_summary,
         policy_verdict=policy_verdict,
     )

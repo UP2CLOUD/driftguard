@@ -361,12 +361,12 @@ def _compute_risk(findings: list[Finding], plan: "TerraformPlan | None" = None) 
     return min(100, sum(weights.get(f.severity, 0) for f in findings))
 
 
-async def _run_static_scan(root: Path) -> tuple[list[Finding], int, str | None]:
+async def _run_static_scan(root: Path) -> tuple[list[Finding], int, int, int, int, str | None]:
     """Run the static IaC scanner on the repo root. No external tools required.
 
     Scans all .tf, K8s YAML, and .github/workflows files in the repo tree.
     Converts ScanFinding objects to Finding objects with compliance controls.
-    Returns (findings, files_scanned, error_message).
+    Returns (findings, files_scanned, tf_files, k8s_files, gha_files, error_message).
     """
     try:
         result = await asyncio.to_thread(scan_directory_sync, root)
@@ -378,10 +378,10 @@ async def _run_static_scan(root: Path) -> tuple[list[Finding], int, str | None]:
             gha=result.gha_files,
             findings=len(converted),
         )
-        return converted, result.files_scanned, None
+        return converted, result.files_scanned, result.tf_files, result.k8s_files, result.gha_files, None
     except Exception as exc:
         log.warning("static_scan_failed", error=str(exc))
-        return [], 0, f"Static scanner failed: {exc}"
+        return [], 0, 0, 0, 0, f"Static scanner failed: {exc}"
 
 
 def _merge_findings(static: list[Finding], plan: list[Finding]) -> list[Finding]:
@@ -432,7 +432,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
 
         # Static scan runs on every PR — catches K8s, GHA, and TF rule violations
         # without requiring a Terraform binary or AWS credentials.
-        static_findings, files_scanned, _scan_err = await _run_static_scan(root)
+        static_findings, files_scanned, tf_files, k8s_files, gha_files, _scan_err = await _run_static_scan(root)
         if _scan_err:
             scan_errors.append(_scan_err)
 
@@ -611,6 +611,9 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
             if _analysis_row:
                 _analysis_row.summary_md = review_md
                 _analysis_row.files_scanned = files_scanned
+                _analysis_row.tf_files = tf_files
+                _analysis_row.k8s_files = k8s_files
+                _analysis_row.gha_files = gha_files
                 _analysis_row.scan_errors = scan_errors or None
                 _analysis_row.finished_at = datetime.now(UTC)
                 _analysis_row.policy_verdict = policy_verdict
