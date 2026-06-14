@@ -169,17 +169,23 @@ async def ingest_event(
         window_start = datetime.now(UTC) - timedelta(hours=RECURRENCE_WINDOW_HOURS)
 
         existing = (
-            await db.execute(
-                select(DriftIncident).where(
-                    and_(
-                        DriftIncident.org_id == org.id,
-                        DriftIncident.fingerprint == fp,
-                        DriftIncident.status != "resolved",
-                        DriftIncident.last_seen_at >= window_start,
+            (
+                await db.execute(
+                    select(DriftIncident)
+                    .where(
+                        and_(
+                            DriftIncident.org_id == org.id,
+                            DriftIncident.fingerprint == fp,
+                            DriftIncident.status != "resolved",
+                            DriftIncident.last_seen_at >= window_start,
+                        )
                     )
+                    .order_by(DriftIncident.last_seen_at.desc())
                 )
             )
-        ).scalar_one_or_none()
+            .scalars()
+            .first()
+        )
 
         if existing:
             # Update recurrence

@@ -12,8 +12,14 @@ AUTH = {"Authorization": "Bearer dev-only-change-me"}
 
 _ORG = Organization(id="org-1", github_installation_id=123, plan="free")
 
-_ORG_RESULT = MagicMock(scalar_one_or_none=MagicMock(return_value=_ORG))
-_NONE_RESULT = MagicMock(scalar_one_or_none=MagicMock(return_value=None))
+_ORG_RESULT = MagicMock(
+    scalar_one_or_none=MagicMock(return_value=_ORG),
+    scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=_ORG), all=MagicMock(return_value=[_ORG]))),
+)
+_NONE_RESULT = MagicMock(
+    scalar_one_or_none=MagicMock(return_value=None),
+    scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=None), all=MagicMock(return_value=[]))),
+)
 
 
 def _db_session():
@@ -154,9 +160,15 @@ def test_ingest_recurrence_matched_existing():
         last_seen_at=__import__("datetime").datetime.now(__import__("datetime").timezone.utc),
     )
     mock = AsyncMock()
-    org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+    org_result = MagicMock(
+        scalar_one_or_none=MagicMock(return_value=org),
+        scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))),
+    )
     # No repo_full_name → no repo lookup; incident dedup lookup → existing incident; policy lookup → empty
-    incident_result = MagicMock(scalar_one_or_none=MagicMock(return_value=existing))
+    incident_result = MagicMock(
+        scalar_one_or_none=MagicMock(return_value=existing),
+        scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=existing))),
+    )
     policy_result = MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[]))))
     mock.execute = AsyncMock(side_effect=[org_result, incident_result, policy_result])
     mock.flush = AsyncMock()
