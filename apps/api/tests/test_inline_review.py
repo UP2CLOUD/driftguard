@@ -4,6 +4,8 @@ from driftguard.ai.findings import Finding
 from driftguard.services.inline_review import (
     MAX_INLINE_COMMENTS,
     DiffFile,
+    _comment_body,
+    _is_skippable,
     build_inline_review,
     inline_comments_payload,
     parse_pr_files,
@@ -241,3 +243,78 @@ def test_payload_structure():
     assert "DriftGuard finding:" in p["body"]
     assert "IAM wildcard" in p["body"]
     assert "Use specific ARNs" in p["body"]
+
+
+# ── _comment_body ─────────────────────────────────────────────────────────────
+
+
+class TestCommentBody:
+    def test_title_used_when_present(self):
+        f = make_finding(title="IAM wildcard", message="Overly permissive", rule_id="TF001")
+        body = _comment_body(f)
+        assert "IAM wildcard" in body
+
+    def test_message_truncated_as_title_when_title_none(self):
+        long_msg = "x" * 80
+        f = make_finding(title=None, message=long_msg, rule_id="TF001")
+        body = _comment_body(f)
+        # Title should be message[:60] — 60 chars
+        assert "x" * 60 in body
+        assert "x" * 61 not in body.split("**Suggested fix:**")[0].split("DriftGuard finding:")[1][:70]
+
+    def test_resource_prepended_to_explanation_when_not_in_message(self):
+        f = make_finding(resource="aws_s3_bucket.logs", message="public access enabled", rule_id="TF001")
+        body = _comment_body(f)
+        assert "`aws_s3_bucket.logs`:" in body
+
+    def test_resource_not_duplicated_when_already_in_message(self):
+        f = make_finding(resource="aws_s3_bucket.logs", message="aws_s3_bucket.logs is public", rule_id="TF001")
+        body = _comment_body(f)
+        # Resource already in message — should not add prefix
+        assert body.count("aws_s3_bucket.logs") >= 1
+
+    def test_suggestion_included_in_body(self):
+        f = make_finding(suggestion="Add ACL block", rule_id="TF001")
+        body = _comment_body(f)
+        assert "Add ACL block" in body
+
+    def test_default_suggestion_used_when_none(self):
+        f = make_finding(suggestion=None, rule_id="TF001")
+        body = _comment_body(f)
+        assert "secure defaults" in body or "least-privilege" in body
+
+    def test_rule_id_note_appended(self):
+        f = make_finding(rule_id="CKV_AWS_57")
+        body = _comment_body(f)
+        assert "CKV_AWS_57" in body
+
+    def test_no_rule_id_note_when_none(self):
+        f = make_finding(rule_id=None)
+        body = _comment_body(f)
+        assert "Rule:" not in body
+
+
+# ── _is_skippable ─────────────────────────────────────────────────────────────
+
+
+class TestIsSkippable:
+    def test_lock_file_skippable(self):
+        assert _is_skippable("package-lock.json") is True
+
+    def test_yarn_lock_skippable(self):
+        assert _is_skippable("yarn.lock") is True
+
+    def test_node_modules_skippable(self):
+        assert _is_skippable("node_modules/lodash/index.js") is True
+
+    def test_vendor_directory_skippable(self):
+        assert _is_skippable("vendor/github.com/aws/aws-sdk-go/service.go") is True
+
+    def test_regular_tf_file_not_skippable(self):
+        assert _is_skippable("main.tf") is False
+
+    def test_regular_yaml_not_skippable(self):
+        assert _is_skippable("k8s/deployment.yaml") is False
+
+    def test_github_workflow_not_skippable(self):
+        assert _is_skippable(".github/workflows/ci.yml") is False
