@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 # ── checkov.scan ──────────────────────────────────────────────────────────────
 
 
@@ -62,8 +64,6 @@ class TestCheckovScan:
 
 class TestInfracostCostBreakdown:
     def test_nonzero_returncode_raises_runtime_error(self):
-        import pytest
-
         from driftguard.integrations.infracost import cost_breakdown
 
         result = MagicMock()
@@ -88,8 +88,6 @@ class TestInfracostCostBreakdown:
 
 class TestInfracostCostDiff:
     def test_nonzero_returncode_raises_runtime_error(self):
-        import pytest
-
         from driftguard.integrations.infracost import cost_diff
 
         result = MagicMock()
@@ -139,8 +137,6 @@ class TestPathEnv:
 
 class TestBinary:
     def test_raises_when_neither_binary_found(self):
-        import pytest
-
         from driftguard.integrations.terraform import TerraformError, _binary
 
         with patch("shutil.which", return_value=None):
@@ -173,8 +169,6 @@ class TestAnalyzeDirectory:
             return returncode, out, err
 
         return _run
-
-    import pytest
 
     @pytest.mark.asyncio
     async def test_returns_none_when_init_fails(self, monkeypatch):
