@@ -151,7 +151,7 @@ async def recall(
             (
                 await db.execute(
                     text("""
-                SELECT id, repo_full_name, pr_number, intent_text, severity, outcome,
+                SELECT id, analysis_id, repo_full_name, pr_number, intent_text, severity, outcome,
                        1 - (embedding_vec <=> :vec::vector) AS similarity
                 FROM incident_embeddings
                 WHERE org_id = :org_id

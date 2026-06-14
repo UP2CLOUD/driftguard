@@ -94,6 +94,7 @@ export default async function MemoryPage({
           error: t("memory.searchError") ?? "Search failed — the API or embedding service may be unavailable.",
           similarity: t("memory.similarity") ?? "match",
           hint: t("memory.searchHint") ?? "semantic search over past incidents — the same recall the AI reviewer uses on every PR",
+          viewAnalysis: t("memory.viewAnalysis") ?? "View analysis →",
         }}
       />
 

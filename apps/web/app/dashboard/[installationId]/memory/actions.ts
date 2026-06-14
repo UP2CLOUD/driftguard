@@ -5,6 +5,7 @@ import { BACKEND_URL, authHeaders } from "@/lib/backend";
 
 export type RecallHit = {
   id: string;
+  analysis_id: string | null;
   repo_full_name: string;
   pr_number: number;
   intent_text: string | null;
