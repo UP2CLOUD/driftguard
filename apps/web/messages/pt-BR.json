@@ -231,7 +231,13 @@
     "quickScanQueuing": "enfileirando…",
     "quickScanScanning": "analisando…",
     "quickScanDone": "concluído ✓",
-    "quickScanFailed": "falhou ✗"
+    "quickScanFailed": "falhou ✗",
+    "enable": "Ativar",
+    "disable": "Desativar",
+    "repoLimitReached": "Limite de repos atingido. Desative outro ou faça upgrade.",
+    "planLimitReached": "Limite do plano atingido. Faça upgrade para adicionar mais repositórios.",
+    "toggleFailed": "Falha ao {action} repositório.",
+    "networkError": "Erro de rede. Tente novamente."
   },
   "settings": {
     "title": "Configurações",

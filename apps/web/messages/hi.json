@@ -283,7 +283,13 @@
     "quickScanQueuing": "कतार में…",
     "quickScanScanning": "स्कैन हो रहा है…",
     "quickScanDone": "पूर्ण ✓",
-    "quickScanFailed": "विफल ✗"
+    "quickScanFailed": "विफल ✗",
+    "enable": "सक्षम करें",
+    "disable": "अक्षम करें",
+    "repoLimitReached": "रेपो सीमा पहुँच गई। किसी अन्य को अक्षम करें या अपग्रेड करें।",
+    "planLimitReached": "प्लान सीमा पहुँच गई। अधिक रेपो जोड़ने के लिए अपग्रेड करें।",
+    "toggleFailed": "रेपो को {action} करने में विफल।",
+    "networkError": "नेटवर्क त्रुटि। पुनः प्रयास करें।"
   },
   "landing": {
     "ctaTitle": "अपने क्लाउड पर नियंत्रण वापस पाएं।",

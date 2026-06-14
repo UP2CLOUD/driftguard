@@ -262,6 +262,14 @@ export default async function ReposPage({
                         repoId={repo.id}
                         initialEnabled={isEnabled}
                         atFreeLimit={!!atFreeLimit && !isEnabled}
+                        labels={{
+                          enable:           t("repos.enable")           ?? "Enable",
+                          disable:          t("repos.disable")          ?? "Disable",
+                          repoLimitReached: t("repos.repoLimitReached") ?? "Repo limit reached. Disable another repo or upgrade.",
+                          planLimitReached: t("repos.planLimitReached") ?? "Plan limit reached. Upgrade to add more repositories.",
+                          toggleFailed:     t("repos.toggleFailed")     ?? "Failed to {action} repository.",
+                          networkError:     t("repos.networkError")     ?? "Network error. Try again.",
+                        }}
                       />
                     ) : (
                       <span className="h-1.5 w-1.5 rounded-full bg-allowed" />

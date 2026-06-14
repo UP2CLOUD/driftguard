@@ -6,10 +6,19 @@ export function RepoToggle({
   repoId,
   initialEnabled,
   atFreeLimit,
+  labels,
 }: {
   repoId: string;
   initialEnabled: boolean;
   atFreeLimit: boolean;
+  labels?: {
+    enable?: string;
+    disable?: string;
+    repoLimitReached?: string;
+    planLimitReached?: string;
+    toggleFailed?: string;
+    networkError?: string;
+  };
 }) {
   const [enabled, setEnabled] = useState(initialEnabled);
   const [loading, setLoading] = useState(false);
@@ -20,7 +29,7 @@ export function RepoToggle({
     const action = enabled ? "disable" : "enable";
 
     if (!enabled && atFreeLimit) {
-      setError("Repo limit reached. Disable another repo or upgrade.");
+      setError(labels?.repoLimitReached ?? "Repo limit reached. Disable another repo or upgrade.");
       return;
     }
 
@@ -31,15 +40,15 @@ export function RepoToggle({
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         if (res.status === 402) {
-          setError(body.detail ?? body.error ?? "Plan limit reached. Upgrade to add more repositories.");
+          setError(body.detail ?? body.error ?? (labels?.planLimitReached ?? "Plan limit reached. Upgrade to add more repositories."));
         } else {
-          setError(body.detail ?? body.error ?? `Failed to ${action} repository.`);
+          setError(body.detail ?? body.error ?? (labels?.toggleFailed ?? "Failed to {action} repository.").replace("{action}", action));
         }
         return;
       }
       setEnabled(!enabled);
     } catch {
-      setError("Network error. Try again.");
+      setError(labels?.networkError ?? "Network error. Try again.");
     } finally {
       setLoading(false);
     }
@@ -56,7 +65,7 @@ export function RepoToggle({
             : "text-[color:var(--dg-electric)] border-[color:var(--dg-electric)]/30 hover:bg-[color:var(--dg-electric)]/5"
         }`}
       >
-        {loading ? "…" : enabled ? "Disable" : "Enable"}
+        {loading ? "…" : enabled ? (labels?.disable ?? "Disable") : (labels?.enable ?? "Enable")}
       </button>
       {error && (
         <p className="font-mono text-[10px] text-warned text-right max-w-[160px] leading-tight">{error}</p>

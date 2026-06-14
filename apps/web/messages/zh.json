@@ -283,7 +283,13 @@
     "quickScanQueuing": "排队中…",
     "quickScanScanning": "扫描中…",
     "quickScanDone": "完成 ✓",
-    "quickScanFailed": "失败 ✗"
+    "quickScanFailed": "失败 ✗",
+    "enable": "启用",
+    "disable": "禁用",
+    "repoLimitReached": "已达仓库上限。请禁用一个仓库或升级计划。",
+    "planLimitReached": "已达计划上限。请升级以添加更多仓库。",
+    "toggleFailed": "{action}仓库失败。",
+    "networkError": "网络错误，请重试。"
   },
   "landing": {
     "ctaTitle": "重新掌控您的云基础设施。",

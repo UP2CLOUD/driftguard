@@ -283,7 +283,13 @@
     "quickScanQueuing": "en cola…",
     "quickScanScanning": "analizando…",
     "quickScanDone": "listo ✓",
-    "quickScanFailed": "fallido ✗"
+    "quickScanFailed": "fallido ✗",
+    "enable": "Activar",
+    "disable": "Desactivar",
+    "repoLimitReached": "Límite de repos alcanzado. Desactiva otro o actualiza el plan.",
+    "planLimitReached": "Límite del plan alcanzado. Actualiza para agregar más repositorios.",
+    "toggleFailed": "Error al {action} el repositorio.",
+    "networkError": "Error de red. Inténtalo de nuevo."
   },
   "landing": {
     "ctaTitle": "Recupera el control de tu cloud.",

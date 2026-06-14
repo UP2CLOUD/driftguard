@@ -283,7 +283,13 @@
     "quickScanQueuing": "في الانتظار…",
     "quickScanScanning": "جارٍ الفحص…",
     "quickScanDone": "اكتمل ✓",
-    "quickScanFailed": "فشل ✗"
+    "quickScanFailed": "فشل ✗",
+    "enable": "تفعيل",
+    "disable": "تعطيل",
+    "repoLimitReached": "تم الوصول لحد المستودعات. عطّل مستودعاً آخر أو قم بالترقية.",
+    "planLimitReached": "تم الوصول لحد الخطة. قم بالترقية لإضافة مزيد من المستودعات.",
+    "toggleFailed": "فشل في {action} المستودع.",
+    "networkError": "خطأ في الشبكة. حاول مرة أخرى."
   },
   "landing": {
     "ctaTitle": "استعد السيطرة على بنيتك السحابية.",

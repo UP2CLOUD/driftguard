@@ -232,7 +232,13 @@
     "quickScanQueuing": "queuing…",
     "quickScanScanning": "scanning…",
     "quickScanDone": "done ✓",
-    "quickScanFailed": "failed ✗"
+    "quickScanFailed": "failed ✗",
+    "enable": "Enable",
+    "disable": "Disable",
+    "repoLimitReached": "Repo limit reached. Disable another repo or upgrade.",
+    "planLimitReached": "Plan limit reached. Upgrade to add more repositories.",
+    "toggleFailed": "Failed to {action} repository.",
+    "networkError": "Network error. Try again."
   },
   "settings": {
     "title": "Settings",
