@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ScanTrigger } from "@/components/dashboard/ScanTrigger";
 import { UploadScan } from "@/components/dashboard/UploadScan";
+import { RepoQuickScan } from "@/components/dashboard/RepoQuickScan";
 import { RepoToggle } from "@/components/RepoToggle";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
@@ -108,7 +109,7 @@ export default async function ReposPage({
             rel="noreferrer"
             className="rounded border border-[color:var(--dg-border)] px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
           >
-            + Add repo
+            {t("repos.addRepo") ?? "+ Add repo"}
           </a>
         )}
       </div>
@@ -131,7 +132,7 @@ export default async function ReposPage({
           <div className="mb-4 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
             <div className="flex items-center justify-between mb-1.5">
               <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-                Free plan — {planData.repos.limit} active repos included
+                {(t("repos.freePlanQuota") ?? "Free plan — {limit} active repos included").replace("{limit}", String(planData.repos.limit))}
               </span>
               {atFreeLimit && (
                 <Link
@@ -183,19 +184,23 @@ export default async function ReposPage({
           <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
             {/* Header */}
             <div className="hidden sm:grid grid-cols-[1fr_80px_100px_100px_90px] gap-4 bg-[color:var(--dg-surface)] px-4 py-2">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Repository</span>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Risk</span>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Last analyzed</span>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Status</span>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">Active</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.title") ?? "Repository"}</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.riskHeader") ?? "Risk"}</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.tableHeaderLastAnalyzed") ?? "Last analyzed"}</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.tableHeaderStatus") ?? "Status"}</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.tableHeaderActive") ?? "Active"}</span>
             </div>
 
             {repos.map((repo: any) => {
               const last = lastAnalysisByRepo[repo.full_name];
               const riskScore = last?.risk_score ?? null;
+              // repo.last_scanned_at is more accurate for repos with old analyses
+              // outside the 30-item window we fetched
               const lastDate = last?.created_at
                 ? formatDate(last.created_at, prefs.locale)
-                : null;
+                : repo.last_scanned_at
+                  ? formatDate(repo.last_scanned_at, prefs.locale)
+                  : null;
               const isEnabled = repo.enabled !== false;
 
               return (
@@ -226,7 +231,7 @@ export default async function ReposPage({
                     {lastDate ?? t("repos.never")}
                   </div>
 
-                  {/* View latest */}
+                  {/* View latest / quick scan */}
                   <div className="hidden sm:flex items-center gap-2">
                     {last ? (
                       <Link
@@ -236,7 +241,17 @@ export default async function ReposPage({
                         {t("repos.viewLatest")}
                       </Link>
                     ) : (
-                      <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">—</span>
+                      <RepoQuickScan
+                        installationId={installationId}
+                        repoFullName={repo.full_name}
+                        labels={{
+                          scan:     t("repos.quickScan")         ?? "scan →",
+                          queuing:  t("repos.quickScanQueuing")  ?? "queuing…",
+                          scanning: t("repos.quickScanScanning") ?? "scanning…",
+                          done:     t("repos.quickScanDone")     ?? "done ✓",
+                          failed:   t("repos.quickScanFailed")   ?? "failed ✗",
+                        }}
+                      />
                     )}
                   </div>
 
@@ -247,6 +262,14 @@ export default async function ReposPage({
                         repoId={repo.id}
                         initialEnabled={isEnabled}
                         atFreeLimit={!!atFreeLimit && !isEnabled}
+                        labels={{
+                          enable:           t("repos.enable")           ?? "Enable",
+                          disable:          t("repos.disable")          ?? "Disable",
+                          repoLimitReached: t("repos.repoLimitReached") ?? "Repo limit reached. Disable another repo or upgrade.",
+                          planLimitReached: t("repos.planLimitReached") ?? "Plan limit reached. Upgrade to add more repositories.",
+                          toggleFailed:     t("repos.toggleFailed")     ?? "Failed to {action} repository.",
+                          networkError:     t("repos.networkError")     ?? "Network error. Try again.",
+                        }}
                       />
                     ) : (
                       <span className="h-1.5 w-1.5 rounded-full bg-allowed" />
@@ -262,7 +285,7 @@ export default async function ReposPage({
       {/* Manual scan */}
       <section>
         <h2 className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-3">
-          Manual scan
+          {t("repos.manualScanHeading") ?? "Manual scan"}
         </h2>
         <div className="grid gap-6 md:grid-cols-2">
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
@@ -271,13 +294,27 @@ export default async function ReposPage({
                 <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.745 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd"/>
               </svg>
               <span className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-muted)]">
-                GitHub repository
+                {t("repos.scanGithubRepo") ?? "GitHub repository"}
               </span>
             </div>
             <p className="text-[12px] text-[color:var(--dg-fg-subtle)] mb-4">
-              Scan any public or connected GitHub repository by name.
+              {t("repos.scanGithubDesc") ?? "Scan any public or connected GitHub repository by name."}
             </p>
-            <ScanTrigger installationId={installationId} />
+            <ScanTrigger
+              installationId={installationId}
+              labels={{
+                placeholder:    t("repos.scanPlaceholder")    ?? "owner/repository",
+                branchPlaceholder: t("repos.scanBranchPlaceholder") ?? "default branch",
+                runBtn:         t("repos.scanRunBtn")         ?? "Run scan →",
+                queuing:        t("repos.scanQueuing")        ?? "Queuing…",
+                scanning:       t("repos.scanScanning")       ?? "Scanning…",
+                complete:       t("repos.scanComplete")       ?? "Scan complete — redirecting…",
+                failedWorker:   t("repos.scanFailedWorker")   ?? "Scan failed on worker",
+                queuedWaiting:  t("repos.scanQueuedWaiting")  ?? "Scan queued — waiting for worker…",
+                quotaExceeded:  t("repos.scanQuotaExceeded")  ?? "Monthly scan limit reached.",
+                managePlan:     t("repos.managePlan")         ?? "Manage plan →",
+              }}
+            />
           </div>
 
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
@@ -286,13 +323,24 @@ export default async function ReposPage({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
               </svg>
               <span className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-muted)]">
-                Upload files
+                {t("repos.uploadFiles") ?? "Upload files"}
               </span>
             </div>
             <p className="text-[12px] text-[color:var(--dg-fg-subtle)] mb-4">
-              Upload a <code className="font-mono text-[color:var(--dg-electric-bright)]">.tar.gz</code> of Terraform, Kubernetes, or GitHub Actions files.
+              {t("repos.uploadFilesDesc") ?? "Upload a .tar.gz of Terraform, Kubernetes, or GitHub Actions files."}
             </p>
-            <UploadScan installationId={installationId} />
+            <UploadScan
+              installationId={installationId}
+              labels={{
+                uploadScanBtn:  t("repos.uploadScanBtn")      ?? "Upload & scan →",
+                scanning:       t("repos.scanScanning")       ?? "Scanning…",
+                clickToSelect:  t("repos.uploadClickToSelect") ?? "Click to select",
+                redirecting:    t("repos.uploadRedirecting")  ?? "Redirecting to results…",
+                uploadResult:   t("repos.uploadResult")       ?? "Score {score}/100 · {n} findings",
+                quotaExceeded:  t("repos.scanQuotaExceeded")  ?? "Monthly scan limit reached.",
+                managePlan:     t("repos.managePlan")         ?? "Manage plan →",
+              }}
+            />
           </div>
         </div>
       </section>
@@ -303,14 +351,18 @@ export default async function ReposPage({
           <h2 className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
             {t("dashboard.recentScans") ?? "Recent scans"}
           </h2>
-          <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{recentAnalyses.length} total</span>
+          <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+            {(t("dashboard.recentScansCount") ?? "{n} total").replace("{n}", String(recentAnalyses.length))}
+          </span>
         </div>
 
         {recentAnalyses.length === 0 ? (
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-10 text-center">
-            <p className="text-[13px] text-[color:var(--dg-fg-muted)] mb-1">No scans yet</p>
+            <p className="text-[13px] text-[color:var(--dg-fg-muted)] mb-1">
+              {t("dashboard.noScansYet") ?? "No scans yet"}
+            </p>
             <p className="text-[11px] text-[color:var(--dg-fg-subtle)]">
-              Run a manual scan above or open a Terraform PR to trigger the first analysis.
+              {t("dashboard.noScansTrigger") ?? "Run a manual scan above or open a Terraform PR to trigger the first analysis."}
             </p>
           </div>
         ) : (

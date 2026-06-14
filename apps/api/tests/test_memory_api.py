@@ -48,7 +48,7 @@ def _cleanup() -> None:
 def _mock_list(org=None, embeddings: list | None = None) -> AsyncMock:
     """Mock for GET /memory — two execute calls: org lookup + embeddings list."""
     mock = AsyncMock()
-    org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+    org_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
     rows_result = MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=embeddings or []))))
     mock.execute = AsyncMock(side_effect=[org_result, rows_result])
     return mock
@@ -57,7 +57,7 @@ def _mock_list(org=None, embeddings: list | None = None) -> AsyncMock:
 def _mock_stats(org=None, total=0, outcome_rows=None, sev_rows=None) -> AsyncMock:
     """Mock for GET /memory/stats — four execute calls: org + count + outcome + severity."""
     mock = AsyncMock()
-    org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+    org_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
     count_result = MagicMock(scalar_one=MagicMock(return_value=total))
     outcome_result = MagicMock(all=MagicMock(return_value=outcome_rows or []))
     sev_result = MagicMock(all=MagicMock(return_value=sev_rows or []))
@@ -124,7 +124,9 @@ class TestListMemory:
 class TestMemoryStats:
     def test_no_org_returns_zero_stats(self):
         mock = AsyncMock()
-        mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None)))
+        mock.execute = AsyncMock(
+            return_value=MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=None))))
+        )
         _override(mock)
         try:
             r = TestClient(app).get("/api/v1/memory/stats?installation_id=9999", headers=AUTH)
@@ -172,7 +174,9 @@ class TestMemoryStats:
 class TestMemoryRecall:
     def test_no_org_returns_empty(self):
         mock = AsyncMock()
-        mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None)))
+        mock.execute = AsyncMock(
+            return_value=MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=None))))
+        )
         _override(mock)
         try:
             r = TestClient(app).post(

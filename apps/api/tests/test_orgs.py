@@ -17,7 +17,12 @@ def _no_org_session():
     mock.execute = AsyncMock(
         return_value=MagicMock(
             scalar_one_or_none=MagicMock(return_value=None),
-            scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[]))),
+            scalars=MagicMock(
+                return_value=MagicMock(
+                    first=MagicMock(return_value=None),
+                    all=MagicMock(return_value=[]),
+                )
+            ),
         )
     )
     mock.get = AsyncMock(return_value=None)
@@ -254,6 +259,43 @@ class TestOrgAnalyses:
         finally:
             _cleanup()
 
+    def test_status_filter_accepted(self):
+        """?status=completed is forwarded to the query without error."""
+        mock = AsyncMock()
+        mock.execute = AsyncMock(return_value=MagicMock(all=MagicMock(return_value=[])))
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/org-1/analyses?status=completed", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json() == []
+        finally:
+            _cleanup()
+
+    def test_status_running_filter_accepted(self):
+        """?status=running matches running+pending analyses."""
+        mock = AsyncMock()
+        mock.execute = AsyncMock(return_value=MagicMock(all=MagicMock(return_value=[])))
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/org-1/analyses?status=running", headers=AUTH)
+            assert r.status_code == 200
+        finally:
+            _cleanup()
+
+    def test_policy_verdict_included_in_response(self):
+        row = _ana_row()
+        row[0].policy_verdict = "block"
+        mock = AsyncMock()
+        mock.execute = AsyncMock(return_value=MagicMock(all=MagicMock(return_value=[row])))
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/org-1/analyses", headers=AUTH)
+            assert r.status_code == 200
+            data = r.json()
+            assert data[0]["policy_verdict"] == "block"
+        finally:
+            _cleanup()
+
 
 # ── GET /orgs/by-installation/{installation_id} ───────────────────────────────
 
@@ -275,7 +317,9 @@ class TestGetOrgByInstallation:
     def test_returns_org_when_found(self):
         org = _org()
         mock = AsyncMock()
-        mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=org)))
+        mock.execute = AsyncMock(
+            return_value=MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
+        )
         _override(mock)
         try:
             r = TestClient(app).get("/api/v1/orgs/by-installation/42", headers=AUTH)
@@ -292,7 +336,9 @@ class TestGetOrgByInstallation:
 
         monkeypatch.setattr(settings, "github_app_id", None)
         mock = AsyncMock()
-        mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None)))
+        mock.execute = AsyncMock(
+            return_value=MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=None))))
+        )
         _override(mock)
         try:
             r = TestClient(app).get("/api/v1/orgs/by-installation/9999", headers=AUTH)
@@ -438,7 +484,7 @@ class TestListOrgRepos:
 
     def test_returns_empty_list(self):
         mock = AsyncMock()
-        mock.execute = AsyncMock(return_value=MagicMock(scalars=MagicMock(return_value=[])))
+        mock.execute = AsyncMock(return_value=MagicMock(all=MagicMock(return_value=[])))
         _override(mock)
         try:
             r = TestClient(app).get("/api/v1/orgs/org-1/repos", headers=AUTH)
@@ -450,7 +496,9 @@ class TestListOrgRepos:
     def test_returns_repos_with_correct_shape(self):
         repos = [_repo_obj("r1", "acme/infra"), _repo_obj("r2", "acme/app")]
         mock = AsyncMock()
-        mock.execute = AsyncMock(return_value=MagicMock(scalars=MagicMock(return_value=repos)))
+        mock.execute = AsyncMock(
+            return_value=MagicMock(all=MagicMock(return_value=[(repos[0], None), (repos[1], None)]))
+        )
         _override(mock)
         try:
             r = TestClient(app).get("/api/v1/orgs/org-1/repos", headers=AUTH)
@@ -461,6 +509,7 @@ class TestListOrgRepos:
             assert data[0]["full_name"] == "acme/infra"
             assert data[0]["default_branch"] == "main"
             assert data[0]["enabled"] is True
+            assert data[0]["last_scanned_at"] is None
         finally:
             _cleanup()
 
@@ -600,3 +649,122 @@ class TestGetOrgsByUser:
             assert item["account"]["login"] == "alice"
         finally:
             _cleanup()
+
+
+# ── PATCH /orgs/{org_id}/notifications ───────────────────────────────────────
+
+
+class TestPatchOrgNotifications:
+    def test_requires_auth(self):
+        r = TestClient(app).patch("/api/v1/orgs/org-1/notifications", json={"contact_email": "a@b.com"})
+        assert r.status_code == 401
+
+    def test_not_found_returns_404(self):
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=None)
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/orgs/nonexistent/notifications",
+                json={"contact_email": "a@b.com"},
+                headers=AUTH,
+            )
+            assert r.status_code == 404
+        finally:
+            _cleanup()
+
+    def test_sets_contact_email(self):
+        org = _org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=org)
+        mock.commit = AsyncMock()
+        mock.add = MagicMock()
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/orgs/org-1/notifications",
+                json={"contact_email": "team@example.com"},
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            assert r.json()["status"] == "ok"
+            assert r.json()["contact_email"] == "team@example.com"
+            assert org.contact_email == "team@example.com"
+        finally:
+            _cleanup()
+
+    def test_clears_contact_email_when_null(self):
+        org = _org()
+        org.contact_email = "old@example.com"
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=org)
+        mock.commit = AsyncMock()
+        mock.add = MagicMock()
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/orgs/org-1/notifications",
+                json={"contact_email": None},
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            assert r.json()["contact_email"] is None
+            assert org.contact_email is None
+        finally:
+            _cleanup()
+
+
+# ── POST /orgs/{org_id}/notifications/test ────────────────────────────────────
+
+
+class TestPostNotificationTest:
+    def test_requires_auth(self):
+        r = TestClient(app).post("/api/v1/orgs/org-1/notifications/test")
+        assert r.status_code == 401
+
+    def test_not_found_returns_404(self):
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=None)
+        _override(mock)
+        try:
+            r = TestClient(app).post("/api/v1/orgs/nonexistent/notifications/test", headers=AUTH)
+            assert r.status_code == 404
+        finally:
+            _cleanup()
+
+    def test_no_email_configured_returns_400(self):
+        org = _org()
+        org.contact_email = None
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=org)
+        _override(mock)
+        try:
+            r = TestClient(app).post("/api/v1/orgs/org-1/notifications/test", headers=AUTH)
+            assert r.status_code == 400
+            assert "contact_email" in r.json()["detail"]
+        finally:
+            _cleanup()
+
+    def test_sends_email_and_returns_200(self):
+        from unittest.mock import patch
+
+        org = _org()
+        org.contact_email = "team@example.com"
+        mock = AsyncMock()
+        mock.get = AsyncMock(return_value=org)
+        _override(mock)
+        sent = []
+        with patch(
+            "driftguard.services.email.send_review_complete",
+            new=AsyncMock(side_effect=lambda **kw: sent.append(kw)),
+        ):
+            try:
+                r = TestClient(app).post("/api/v1/orgs/org-1/notifications/test", headers=AUTH)
+                assert r.status_code == 200
+                data = r.json()
+                assert data["status"] == "ok"
+                assert data["sent_to"] == "team@example.com"
+                assert len(sent) == 1
+                assert sent[0]["to"] == "team@example.com"
+            finally:
+                _cleanup()

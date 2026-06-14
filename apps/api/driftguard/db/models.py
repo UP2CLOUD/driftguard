@@ -21,6 +21,7 @@ class Organization(Base):
     # free | premium_active | premium_past_due | premium_canceled | premium_incomplete
     subscription_status: Mapped[str] = mapped_column(String(32), default="free")
     stripe_customer_id: Mapped[str | None] = mapped_column(String(64))
+    contact_email: Mapped[str | None] = mapped_column(String(255))
     settings: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
@@ -59,9 +60,13 @@ class Analysis(Base):
     cost_delta_cents: Mapped[int | None] = mapped_column(Integer)
     risk_score: Mapped[int | None] = mapped_column(Integer)
     files_scanned: Mapped[int | None] = mapped_column(Integer)
+    tf_files: Mapped[int | None] = mapped_column(Integer)
+    k8s_files: Mapped[int | None] = mapped_column(Integer)
+    gha_files: Mapped[int | None] = mapped_column(Integer)
     summary_md: Mapped[str | None] = mapped_column(Text)
     scan_errors: Mapped[list | None] = mapped_column(JSON, nullable=True)
     contact_email: Mapped[str | None] = mapped_column(String(255))
+    policy_verdict: Mapped[str | None] = mapped_column(String(16))
 
 
 class Finding(Base):

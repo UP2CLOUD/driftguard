@@ -19,8 +19,8 @@ export function AwsIntegrationForm({
   const t = useT();
   const externalId = org?.aws_external_id ?? `driftguard-${installationId}`;
   const [roleArn, setRoleArn] = useState(org?.aws_role_arn ?? "");
-  const [stateBucket, setStateBucket] = useState("");
-  const [stateKey, setStateKey] = useState("terraform.tfstate");
+  const [stateBucket, setStateBucket] = useState(org?.aws_state_bucket ?? "");
+  const [stateKey, setStateKey] = useState(org?.aws_state_key ?? "terraform.tfstate");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");

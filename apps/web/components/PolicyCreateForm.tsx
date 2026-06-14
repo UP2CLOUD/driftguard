@@ -4,37 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useT } from "@/components/I18nProvider";
 
-const RULE_TYPES = [
-  { value: "block", label: "Block", desc: "Prevents merge when matched" },
-  { value: "warn", label: "Warn", desc: "Adds warning to PR comment" },
-  { value: "alert", label: "Alert", desc: "Notifies reviewers" },
-];
-
 const SEVERITIES = ["critical", "high", "medium", "low"];
-
-const PRESETS = [
-  {
-    name: "Block critical findings",
-    rule_type: "block",
-    severity: "critical",
-    conditions: { severity: "critical" },
-    description: "Block merge when any critical-severity finding is detected.",
-  },
-  {
-    name: "Warn on public exposure",
-    rule_type: "warn",
-    severity: "high",
-    conditions: { resource_pattern: "aws_s3_bucket_public|aws_security_group" },
-    description: "Warn when public exposure patterns are detected.",
-  },
-  {
-    name: "Block IAM wildcards",
-    rule_type: "block",
-    severity: "high",
-    conditions: { message_contains: "wildcard", rule_id_prefix: "IAM" },
-    description: "Block IAM policies with wildcard actions.",
-  },
-];
 
 export function PolicyCreateForm({ installationId }: { installationId: string }) {
   const router = useRouter();
@@ -42,6 +12,39 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const ruleTypes = [
+    { value: "block", label: t("policies.ruleBlockLabel") ?? "Block", desc: t("policies.ruleBlockDesc") ?? "Prevents merge when matched" },
+    { value: "warn",  label: t("policies.ruleWarnLabel")  ?? "Warn",  desc: t("policies.ruleWarnDesc")  ?? "Adds warning to PR comment" },
+    { value: "alert", label: t("policies.ruleAlertLabel") ?? "Alert", desc: t("policies.ruleAlertDesc") ?? "Notifies reviewers" },
+  ];
+
+  const presets = [
+    {
+      id: "block-critical",
+      name: t("policies.presetBlockCritical") ?? "Block critical findings",
+      rule_type: "block",
+      severity: "critical",
+      conditions: { severity: "critical" },
+      description: t("policies.presetBlockCriticalDesc") ?? "Block merge when any critical-severity finding is detected.",
+    },
+    {
+      id: "warn-exposure",
+      name: t("policies.presetWarnExposure") ?? "Warn on public exposure",
+      rule_type: "warn",
+      severity: "high",
+      conditions: { resource_pattern: "aws_s3_bucket_public|aws_security_group" },
+      description: t("policies.presetWarnExposureDesc") ?? "Warn when public exposure patterns are detected.",
+    },
+    {
+      id: "block-iam",
+      name: t("policies.presetBlockIam") ?? "Block IAM wildcards",
+      rule_type: "block",
+      severity: "high",
+      conditions: { message_contains: "wildcard", rule_id_prefix: "IAM" },
+      description: t("policies.presetBlockIamDesc") ?? "Block IAM policies with wildcard actions.",
+    },
+  ];
 
   const [form, setForm] = useState({
     name: "",
@@ -54,7 +57,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
   const [condKey, setCondKey] = useState("");
   const [condVal, setCondVal] = useState("");
 
-  function applyPreset(preset: (typeof PRESETS)[0]) {
+  function applyPreset(preset: (typeof presets)[0]) {
     setForm({
       name: preset.name,
       rule_type: preset.rule_type,
@@ -81,7 +84,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.name.trim()) { setError("Name required"); return; }
+    if (!form.name.trim()) { setError(t("policies.nameRequired") ?? "Name required"); return; }
     setLoading(true);
     setError("");
     try {
@@ -100,7 +103,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        throw new Error(d.detail || d.error || "Failed to create policy");
+        throw new Error(d.detail || d.error || (t("policies.createFailed") ?? "Failed to create policy"));
       }
       setOpen(false);
       setForm({ name: "", rule_type: "block", severity: "high", description: "", conditions: {} });
@@ -141,9 +144,9 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
       <div className="px-4 pt-4">
         <p className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-2">{t("policies.quickPresets")}</p>
         <div className="flex flex-wrap gap-2 mb-4">
-          {PRESETS.map((p) => (
+          {presets.map((p) => (
             <button
-              key={p.name}
+              key={p.id}
               onClick={() => applyPreset(p)}
               className="rounded border border-[color:var(--dg-border)] px-2.5 py-1 font-mono text-[10px] text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
             >
@@ -162,7 +165,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
           <input
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-            placeholder="Block critical findings"
+            placeholder={t("policies.namePlaceholder") ?? "Policy name"}
             className="w-full rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] focus:border-[color:var(--dg-electric)] focus:outline-none transition"
           />
         </div>
@@ -178,7 +181,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
               onChange={(e) => setForm((f) => ({ ...f, rule_type: e.target.value }))}
               className="w-full rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] focus:border-[color:var(--dg-electric)] focus:outline-none transition"
             >
-              {RULE_TYPES.map((r) => (
+              {ruleTypes.map((r) => (
                 <option key={r.value} value={r.value}>{r.label} — {r.desc}</option>
               ))}
             </select>
@@ -205,7 +208,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
           <input
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            placeholder="Optional description"
+            placeholder={t("policies.descriptionPlaceholder") ?? "Description (optional)"}
             className="w-full rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] focus:border-[color:var(--dg-electric)] focus:outline-none transition"
           />
         </div>
@@ -233,13 +236,13 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
             <input
               value={condKey}
               onChange={(e) => setCondKey(e.target.value)}
-              placeholder="severity"
+              placeholder={t("policies.condKeyPlaceholder") ?? "severity"}
               className="flex-1 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-2 py-1.5 font-mono text-[11px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] focus:border-[color:var(--dg-electric)] focus:outline-none transition"
             />
             <input
               value={condVal}
               onChange={(e) => setCondVal(e.target.value)}
-              placeholder="critical"
+              placeholder={t("policies.condValPlaceholder") ?? "critical"}
               className="flex-1 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-2 py-1.5 font-mono text-[11px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] focus:border-[color:var(--dg-electric)] focus:outline-none transition"
             />
             <button

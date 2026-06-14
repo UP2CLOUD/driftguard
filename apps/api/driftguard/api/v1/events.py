@@ -25,8 +25,16 @@ async def list_events(
 ) -> list[dict]:
     try:
         org = (
-            await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-        ).scalar_one_or_none()
+            (
+                await db.execute(
+                    select(Organization)
+                    .where(Organization.github_installation_id == installation_id)
+                    .order_by(Organization.created_at.desc())
+                )
+            )
+            .scalars()
+            .first()
+        )
     except Exception:
         return []
     if not org:
@@ -54,6 +62,7 @@ async def list_events(
             "message": r.message,
             "metadata": r.metadata_,
             "repo_id": r.repo_id,
+            "analysis_id": r.analysis_id,
             "created_at": r.created_at.isoformat() if r.created_at else None,
         }
         for r in rows

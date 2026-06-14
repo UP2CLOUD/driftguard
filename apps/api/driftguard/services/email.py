@@ -6,6 +6,8 @@ Dev: prints to stdout if RESEND_API_KEY not set.
 
 from __future__ import annotations
 
+import asyncio
+
 import structlog
 
 from driftguard.core.config import settings
@@ -121,14 +123,13 @@ async def _send(*, to: str, subject: str, html: str) -> None:
         import resend
 
         resend.api_key = settings.resend_api_key
-        resend.Emails.send(
-            {
-                "from": settings.resend_from,
-                "to": [to],
-                "subject": subject,
-                "html": html,
-            }
-        )
+        payload = {
+            "from": settings.resend_from,
+            "to": [to],
+            "subject": subject,
+            "html": html,
+        }
+        await asyncio.to_thread(resend.Emails.send, payload)
         log.info("email.sent", to=to, subject=subject)
     except Exception as exc:
         log.error("email.send.failed", to=to, error=str(exc))

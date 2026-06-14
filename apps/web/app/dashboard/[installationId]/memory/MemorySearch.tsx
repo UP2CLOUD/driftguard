@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { recallMemory, type RecallHit } from "./actions";
 
 type Labels = Record<
   | "placeholder" | "search" | "searching" | "noResults" | "tooShort"
-  | "error" | "similarity" | "hint",
+  | "error" | "similarity" | "hint" | "viewAnalysis",
   string
 >;
 
@@ -109,6 +110,14 @@ export function MemorySearch({
                     <p className="text-[12px] text-[color:var(--dg-fg-muted)] line-clamp-2">
                       {h.intent_text}
                     </p>
+                  )}
+                  {h.analysis_id && (
+                    <Link
+                      href={`/dashboard/${installationId}/analyses/${h.analysis_id}`}
+                      className="mt-1 inline-block font-mono text-[10px] text-[color:var(--dg-electric-bright)] hover:underline"
+                    >
+                      {L.viewAnalysis}
+                    </Link>
                   )}
                 </div>
               );

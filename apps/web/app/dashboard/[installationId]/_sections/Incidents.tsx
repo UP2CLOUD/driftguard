@@ -41,11 +41,19 @@ export async function IncidentsSection({
         <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
           {t("dashboard.driftIncidents") ?? "Drift incidents"}
         </span>
-        {openInc > 0 && (
-          <span className="font-mono text-[10px] rounded border border-blocked/30 bg-blocked/10 text-blocked px-1.5 py-0.5">
-            {openInc} open
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {openInc > 0 && (
+            <span className="font-mono text-[10px] rounded border border-blocked/30 bg-blocked/10 text-blocked px-1.5 py-0.5">
+              {openInc} open
+            </span>
+          )}
+          <Link
+            href={`/dashboard/${installationId}/incidents`}
+            className="font-mono text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+          >
+            View all →
+          </Link>
+        </div>
       </div>
       <div className="divide-y divide-[color:var(--dg-border)]">
         {incidents.map((inc: any) => (

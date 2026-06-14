@@ -29,7 +29,7 @@ from driftguard.api.deps import require_internal_auth
 from driftguard.core.db import get_db
 from driftguard.core.logging import log
 from driftguard.core.rate_limit import rate_limit
-from driftguard.db.models import Analysis, AuditLog, Organization, PullRequest, Repository
+from driftguard.db.models import Analysis, AuditLog, Organization, PullRequest, Repository, RuntimeEvent
 from driftguard.db.models import Finding as FindingModel
 from driftguard.services.analysis.ai_review import run_ai_review
 from driftguard.services.quota import try_consume_manual_scan_quota
@@ -128,8 +128,16 @@ async def scan_upload(
 
     # Resolve org
     org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    ).scalar_one_or_none()
+        (
+            await db.execute(
+                select(Organization)
+                .where(Organization.github_installation_id == installation_id)
+                .order_by(Organization.created_at.desc())
+            )
+        )
+        .scalars()
+        .first()
+    )
 
     if not org:
         raise HTTPException(404, f"Installation {installation_id} not found")
@@ -166,7 +174,16 @@ async def scan_upload(
 
     duration_ms = int((time.monotonic() - started) * 1000)
 
-    # Persist to DB (with AI summary)
+    # Apply org policy rules before persisting
+    upload_policy_verdict = "pass"
+    try:
+        from driftguard.services.policy_engine import apply_policies
+
+        _, upload_policy_verdict = await apply_policies(db, installation_id, result.findings)  # type: ignore[arg-type]
+    except Exception as exc:
+        log.warning("scan.upload.policy_failed", extra={"error": str(exc)})
+
+    # Persist to DB (with AI summary and policy verdict)
     analysis_id = await _persist_scan(
         db=db,
         org_id=org.id,
@@ -174,11 +191,48 @@ async def scan_upload(
         source="manual_upload",
         ref=file.filename,
         ai_summary=ai_review.narrative,
+        policy_verdict=upload_policy_verdict,
     )
 
     resp = _to_response(result, duration_ms, analysis_id)
     resp.ai_summary = ai_review.narrative
     return resp
+
+
+@router.get(
+    "/tasks/{task_id}",
+    summary="Poll Celery task status for a queued scan",
+)
+async def get_task_status(
+    task_id: str,
+    _auth: str = Depends(require_internal_auth),
+) -> dict:
+    """Return current state of a queued scan task.
+
+    Possible states: pending | started | completed | failed | unknown
+    When state == completed, analysis_id is included.
+    """
+    try:
+        from driftguard.worker.app import celery_app
+
+        result = celery_app.AsyncResult(task_id)
+        state = result.state  # PENDING, STARTED, SUCCESS, FAILURE, RETRY, REVOKED
+    except Exception as exc:
+        return {"state": "unknown", "error": str(exc)[:120]}
+
+    if state == "SUCCESS":
+        task_result = result.result or {}
+        return {
+            "state": "completed",
+            "analysis_id": task_result.get("analysis_id"),
+            "risk_score": task_result.get("risk_score"),
+            "findings": task_result.get("findings"),
+        }
+    if state in ("FAILURE", "REVOKED"):
+        return {"state": "failed", "error": str(result.result)[:120]}
+    if state == "STARTED":
+        return {"state": "started"}
+    return {"state": "pending"}
 
 
 @router.post(
@@ -200,10 +254,24 @@ async def trigger_scan(
     from driftguard.core.config import settings
 
     org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == body.installation_id))
-    ).scalar_one_or_none()
+        (await db.execute(select(Organization).where(Organization.github_installation_id == body.installation_id)))
+        .scalars()
+        .first()
+    )
     if not org:
         raise HTTPException(404, "Installation not found")
+
+    repo_row = (
+        (
+            await db.execute(
+                select(Repository).where(Repository.org_id == org.id, Repository.full_name == body.repo_full_name)
+            )
+        )
+        .scalars()
+        .first()
+    )
+    if repo_row is not None and not repo_row.enabled:
+        raise HTTPException(403, "Repository is disabled — enable it in the Repositories settings first")
 
     await _enforce_scan_quota(db, org)
 
@@ -294,6 +362,15 @@ async def _run_scan_inprocess(
         scan_root = subdirs[0] if len(subdirs) == 1 else root
         result = await scan_directory(scan_root)
 
+    # Apply org policy rules to determine verdict
+    policy_verdict = "pass"
+    try:
+        from driftguard.services.policy_engine import apply_policies
+
+        _, policy_verdict = await apply_policies(db, installation_id, result.findings)  # type: ignore[arg-type]
+    except Exception as exc:
+        log.warning("scan.trigger.policy_failed", extra={"error": str(exc)})
+
     ref_label = ref or "default"
     analysis_id = await _persist_scan(
         db=db,
@@ -301,6 +378,7 @@ async def _run_scan_inprocess(
         result=result,
         source=f"{repo_full_name}@{ref_label}",
         ref=ref_label,
+        policy_verdict=policy_verdict,
     )
     return {
         "status": "completed",
@@ -355,21 +433,27 @@ async def get_scan(
         for f in findings_rows
     ]
 
+    duration_ms = (
+        int((analysis.finished_at - analysis.started_at).total_seconds() * 1000)
+        if analysis.finished_at and analysis.started_at
+        else 0
+    )
+
     return ScanResultOut(
         scan_id=analysis.id,
         status=analysis.status,
         risk_score=analysis.risk_score or 0,
         files_scanned=analysis.files_scanned or 0,
-        tf_files=0,
-        k8s_files=0,
-        gha_files=0,
+        tf_files=analysis.tf_files or 0,
+        k8s_files=analysis.k8s_files or 0,
+        gha_files=analysis.gha_files or 0,
         critical=sum(1 for f in findings_out if f.severity == "critical"),
         high=sum(1 for f in findings_out if f.severity == "high"),
         medium=sum(1 for f in findings_out if f.severity == "medium"),
         low=sum(1 for f in findings_out if f.severity == "low"),
         findings=findings_out,
-        errors=[],
-        duration_ms=0,
+        errors=analysis.scan_errors or [],
+        duration_ms=duration_ms,
         analysis_id=analysis_id,
         ai_summary=analysis.summary_md,
         repo_full_name=repo.full_name if repo else None,
@@ -386,6 +470,7 @@ async def _persist_scan(
     source: str,
     ref: str,
     ai_summary: str | None = None,
+    policy_verdict: str | None = None,
 ) -> str:
     """Persist scan results to DB. Returns analysis_id."""
     from datetime import datetime
@@ -431,7 +516,12 @@ async def _persist_scan(
         finished_at=now,
         risk_score=result.risk_score,
         files_scanned=result.files_scanned,
+        tf_files=result.tf_files,
+        k8s_files=result.k8s_files,
+        gha_files=result.gha_files,
+        scan_errors=result.errors or None,
         summary_md=ai_summary,
+        policy_verdict=policy_verdict,
     )
     db.add(analysis)
     await db.flush()
@@ -462,6 +552,26 @@ async def _persist_scan(
             action="scan.completed",
             target=source,
             payload={"risk_score": result.risk_score, "findings": len(result.findings), "source": source},
+        )
+    )
+
+    # RuntimeEvent so manual scans appear in the dashboard event feed
+    _sev = "critical" if result.risk_score >= 70 else "warn" if result.risk_score >= 40 else "info"
+    _crit_high = result.critical + result.high
+    _n = len(result.findings)
+    _msg = f"Manual scan completed — risk {result.risk_score}/100, {_n} {'finding' if _n == 1 else 'findings'}"
+    if _crit_high:
+        _msg += f", {_crit_high} critical/high"
+    db.add(
+        RuntimeEvent(
+            org_id=org_id,
+            repo_id=repo.id,
+            analysis_id=analysis.id,
+            event_type="scan.completed",
+            severity=_sev,
+            source="manual",
+            message=_msg,
+            metadata_={"risk_score": result.risk_score, "findings": len(result.findings), "source": source},
         )
     )
 

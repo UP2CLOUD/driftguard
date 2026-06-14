@@ -18,12 +18,21 @@ router = APIRouter(prefix="/memory", tags=["memory"])
 async def list_memory(
     installation_id: int = Query(...),
     limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
     org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    ).scalar_one_or_none()
+        (
+            await db.execute(
+                select(Organization)
+                .where(Organization.github_installation_id == installation_id)
+                .order_by(Organization.created_at.desc())
+            )
+        )
+        .scalars()
+        .first()
+    )
     if not org:
         return []
 
@@ -34,6 +43,7 @@ async def list_memory(
                 .where(IncidentEmbedding.org_id == org.id)
                 .order_by(IncidentEmbedding.created_at.desc())
                 .limit(limit)
+                .offset(offset)
             )
         )
         .scalars()
@@ -63,8 +73,16 @@ async def memory_stats(
     _auth: str = Depends(require_internal_auth),
 ) -> dict:
     org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    ).scalar_one_or_none()
+        (
+            await db.execute(
+                select(Organization)
+                .where(Organization.github_installation_id == installation_id)
+                .order_by(Organization.created_at.desc())
+            )
+        )
+        .scalars()
+        .first()
+    )
     if not org:
         return {"total": 0, "by_outcome": {}, "by_severity": {}}
 
@@ -108,8 +126,16 @@ async def recall(
 ) -> list[dict]:
     """Semantic similarity search over incident memory."""
     org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    ).scalar_one_or_none()
+        (
+            await db.execute(
+                select(Organization)
+                .where(Organization.github_installation_id == installation_id)
+                .order_by(Organization.created_at.desc())
+            )
+        )
+        .scalars()
+        .first()
+    )
     if not org:
         return []
 
@@ -125,7 +151,7 @@ async def recall(
             (
                 await db.execute(
                     text("""
-                SELECT id, repo_full_name, pr_number, intent_text, severity, outcome,
+                SELECT id, analysis_id, repo_full_name, pr_number, intent_text, severity, outcome,
                        1 - (embedding_vec <=> :vec::vector) AS similarity
                 FROM incident_embeddings
                 WHERE org_id = :org_id

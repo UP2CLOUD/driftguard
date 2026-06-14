@@ -16,7 +16,7 @@ const LAST_INSTALLATION_COOKIE = "dg_installation";
 export default async function DashboardRoot({
   searchParams,
 }: {
-  searchParams: Promise<{ installation_id?: string; setup_action?: string }>;
+  searchParams: Promise<{ installation_id?: string; setup_action?: string; setup_error?: string }>;
 }) {
   const session = await auth();
   if (!session) redirect("/");
@@ -27,6 +27,8 @@ export default async function DashboardRoot({
 
   // GitHub posts installation_id after the user installs / re-selects repos
   const sp = await searchParams;
+  const setupError = sp.setup_error ?? null;
+
   if (sp.installation_id) {
     redirect(`/dashboard/${sp.installation_id}`);
   }
@@ -74,6 +76,17 @@ export default async function DashboardRoot({
       {/* Content */}
       <div className="flex-1 flex items-center justify-center p-6 dg-grid dg-vignette relative">
         <div className="dg-grain absolute inset-0" />
+        {setupError && (
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 w-full max-w-md px-4">
+            <div className="rounded-md border border-warned/30 bg-warned/5 px-4 py-3 flex items-start gap-3">
+              <span className="mt-0.5 shrink-0 text-warned">⚠</span>
+              <div className="font-mono text-[12px] text-warned leading-relaxed">
+                <span className="font-bold">GitHub App install failed.</span>{" "}
+                {decodeURIComponent(setupError)}
+              </div>
+            </div>
+          </div>
+        )}
         {installations.length === 0 ? (
           <div className="relative max-w-md w-full rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-8 text-center">
             <div className="mx-auto mb-5 inline-flex h-12 w-12 items-center justify-center rounded-md border border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/10">

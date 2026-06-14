@@ -78,7 +78,15 @@ class TestListRepos:
     def test_installation_id_filter_unknown_org_returns_empty(self):
         """installation_id with no matching org → empty list, not 404."""
         mock = AsyncMock()
-        org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=None))
+        org_result = MagicMock(
+            scalar_one_or_none=MagicMock(return_value=None),
+            scalars=MagicMock(
+                return_value=MagicMock(
+                    first=MagicMock(return_value=None),
+                    all=MagicMock(return_value=[]),
+                )
+            ),
+        )
         mock.execute = AsyncMock(return_value=org_result)
         _override(mock)
         try:
@@ -93,7 +101,15 @@ class TestListRepos:
         org = Organization(id="org-1", github_installation_id=42, plan="free")
         repos = [_repo("r1", enabled=True), _repo("r2", enabled=False)]
         mock = AsyncMock()
-        org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+        org_result = MagicMock(
+            scalar_one_or_none=MagicMock(return_value=org),
+            scalars=MagicMock(
+                return_value=MagicMock(
+                    first=MagicMock(return_value=org),
+                    all=MagicMock(return_value=[]),
+                )
+            ),
+        )
         repo_result = MagicMock(scalars=MagicMock(return_value=repos))
         mock.execute = AsyncMock(side_effect=[org_result, repo_result])
         _override(mock)

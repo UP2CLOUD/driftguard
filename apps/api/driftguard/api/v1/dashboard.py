@@ -273,6 +273,7 @@ async def _recent_events(db: AsyncSession, org_id: str) -> list[dict]:
             "severity": e.severity,
             "source": e.source,
             "message": e.message[:120] if e.message else "",
+            "analysis_id": e.analysis_id,
             "created_at": e.created_at.isoformat() if e.created_at else None,
         }
         for e in rows
@@ -295,6 +296,7 @@ async def _recent_analyses(db: AsyncSession, org_id: str) -> list[dict]:
             "id": a.id,
             "status": a.status,
             "risk_score": a.risk_score,
+            "policy_verdict": a.policy_verdict,
             "pr_number": p.github_pr_number,
             "head_sha": p.head_sha,
             "repo_full_name": r.full_name,

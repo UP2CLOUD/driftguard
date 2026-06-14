@@ -53,8 +53,16 @@ async def enqueue_pr_merged(payload: dict) -> None:
 
         async with SessionLocal() as db:
             org = (
-                await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-            ).scalar_one_or_none()
+                (
+                    await db.execute(
+                        select(Organization)
+                        .where(Organization.github_installation_id == installation_id)
+                        .order_by(Organization.created_at.desc())
+                    )
+                )
+                .scalars()
+                .first()
+            )
             if not org:
                 return
             rows = (
@@ -96,8 +104,16 @@ async def enqueue_pr_analysis(payload: dict) -> None:
 
         async with SessionLocal() as db:
             org = (
-                await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-            ).scalar_one_or_none()
+                (
+                    await db.execute(
+                        select(Organization)
+                        .where(Organization.github_installation_id == installation_id)
+                        .order_by(Organization.created_at.desc())
+                    )
+                )
+                .scalars()
+                .first()
+            )
 
             if org is None:
                 log.warning("analysis_no_org", installation_id=installation_id, repo=repo)
@@ -361,12 +377,12 @@ def _compute_risk(findings: list[Finding], plan: "TerraformPlan | None" = None) 
     return min(100, sum(weights.get(f.severity, 0) for f in findings))
 
 
-async def _run_static_scan(root: Path) -> tuple[list[Finding], int, str | None]:
+async def _run_static_scan(root: Path) -> tuple[list[Finding], int, int, int, int, str | None]:
     """Run the static IaC scanner on the repo root. No external tools required.
 
     Scans all .tf, K8s YAML, and .github/workflows files in the repo tree.
     Converts ScanFinding objects to Finding objects with compliance controls.
-    Returns (findings, files_scanned, error_message).
+    Returns (findings, files_scanned, tf_files, k8s_files, gha_files, error_message).
     """
     try:
         result = await asyncio.to_thread(scan_directory_sync, root)
@@ -378,10 +394,10 @@ async def _run_static_scan(root: Path) -> tuple[list[Finding], int, str | None]:
             gha=result.gha_files,
             findings=len(converted),
         )
-        return converted, result.files_scanned, None
+        return converted, result.files_scanned, result.tf_files, result.k8s_files, result.gha_files, None
     except Exception as exc:
         log.warning("static_scan_failed", error=str(exc))
-        return [], 0, f"Static scanner failed: {exc}"
+        return [], 0, 0, 0, 0, f"Static scanner failed: {exc}"
 
 
 def _merge_findings(static: list[Finding], plan: list[Finding]) -> list[Finding]:
@@ -432,7 +448,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
 
         # Static scan runs on every PR — catches K8s, GHA, and TF rule violations
         # without requiring a Terraform binary or AWS credentials.
-        static_findings, files_scanned, _scan_err = await _run_static_scan(root)
+        static_findings, files_scanned, tf_files, k8s_files, gha_files, _scan_err = await _run_static_scan(root)
         if _scan_err:
             scan_errors.append(_scan_err)
 
@@ -611,8 +627,12 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
             if _analysis_row:
                 _analysis_row.summary_md = review_md
                 _analysis_row.files_scanned = files_scanned
+                _analysis_row.tf_files = tf_files
+                _analysis_row.k8s_files = k8s_files
+                _analysis_row.gha_files = gha_files
                 _analysis_row.scan_errors = scan_errors or None
                 _analysis_row.finished_at = datetime.now(UTC)
+                _analysis_row.policy_verdict = policy_verdict
                 await _upd_db.commit()
     except Exception as exc:
         log.warning("analysis_update_failed", error=str(exc))
@@ -626,8 +646,16 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
 
         async with SessionLocal() as _mem_db:
             _org = (
-                await _mem_db.execute(select(_Org).where(_Org.github_installation_id == installation_id))
-            ).scalar_one_or_none()
+                (
+                    await _mem_db.execute(
+                        select(_Org)
+                        .where(_Org.github_installation_id == installation_id)
+                        .order_by(_Org.created_at.desc())
+                    )
+                )
+                .scalars()
+                .first()
+            )
             if _org:
                 await store_memory(
                     _mem_db,
@@ -654,8 +682,16 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
 
         async with SessionLocal() as _inc_db:
             _org_inc = (
-                await _inc_db.execute(select(_OrgInc).where(_OrgInc.github_installation_id == installation_id))
-            ).scalar_one_or_none()
+                (
+                    await _inc_db.execute(
+                        select(_OrgInc)
+                        .where(_OrgInc.github_installation_id == installation_id)
+                        .order_by(_OrgInc.created_at.desc())
+                    )
+                )
+                .scalars()
+                .first()
+            )
             if _org_inc:
                 _repo_inc = (
                     await _inc_db.execute(select(_RepoInc).where(_RepoInc.full_name == repo_full_name))
@@ -795,6 +831,39 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         risk_score=risk_score,
         analysis_id=analysis_id,
     )
+
+    # Fire-and-forget notification for high-risk analyses (risk >= 60).
+    # Only sends if the org has a contact_email configured; silently skips otherwise.
+    if risk_score >= 60 and analysis_id:
+        try:
+            from driftguard.worker.tasks import _send_notification_async
+
+            asyncio.create_task(_send_notification_async(analysis_id, repo_full_name, pr_number))
+        except Exception as _exc:
+            log.debug("notification_dispatch_skipped", error=str(_exc))
+
+    # Policy violation notification — notify when a block rule is triggered.
+    if policy_verdict == "block" and analysis_id and policy_findings:
+        try:
+            block_finding = next(
+                (f for f in policy_findings if (f.extra or {}).get("rule_type") == "block"),
+                policy_findings[0],
+            )
+            from driftguard.worker.tasks import send_policy_violation_notification
+
+            send_policy_violation_notification.apply_async(
+                kwargs={
+                    "analysis_id": analysis_id,
+                    "repo_full_name": repo_full_name,
+                    "pr_number": pr_number,
+                    "resource": block_finding.resource or "policy violation",
+                    "reason": block_finding.message[:200],
+                },
+                queue="notifications",
+            )
+        except Exception as _exc:
+            log.debug("policy_violation_notification_skipped", error=str(_exc))
+
     return {
         "status": "ok",
         "analysis_id": analysis_id,

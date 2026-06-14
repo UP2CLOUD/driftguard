@@ -5,6 +5,8 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
+import { formatCostDeltaCentsForUser } from "@/lib/currency/format";
+import { RescanButton } from "./RescanButton";
 
 async function fetchAnalysis(id: string) {
   return beGet<any>(`/api/v1/analyses/${id}`, { revalidate: 0, timeout: 15000 });
@@ -25,11 +27,13 @@ const CAT_ICON: Record<string, string> = {
 
 
 function AiMarkdown({ content }: { content: string }) {
-  // Simple inline markdown: **bold**, `code`, ## heading, - list, > blockquote
+  // Simple inline markdown: **bold**, `code`, ##/### heading, - list, > blockquote
   const lines = content.split("\n");
   return (
     <div>
       {lines.map((line, i) => {
+        if (line.startsWith("### "))
+          return <h3 key={i} className="font-sans text-[12px] font-semibold text-[color:var(--dg-fg)] mt-3 mb-1">{line.slice(4)}</h3>;
         if (line.startsWith("## "))
           return <h2 key={i}>{line.slice(3)}</h2>;
         if (line.startsWith("- [ ] "))
@@ -107,6 +111,10 @@ export default async function AnalysisPage({
     s, count: findings.filter((f: any) => f.severity === s).length,
   })).filter(x => x.count > 0);
 
+  const costDeltaDisplay = data.cost_delta_cents != null
+    ? await formatCostDeltaCentsForUser(data.cost_delta_cents, prefs.currency, prefs.locale)
+    : null;
+
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8">
       {/* Back */}
@@ -128,7 +136,18 @@ export default async function AnalysisPage({
           <div className="dg-label mb-1">{t("dashboard.scanResult")}</div>
           <h1 className="font-sans text-2xl font-semibold text-[color:var(--dg-fg)]">
             {data.repo_full_name
-              ? <><span className="text-[color:var(--dg-fg-muted)]">{data.repo_full_name}</span>{data.pr_number ? <span className="font-mono text-lg text-[color:var(--dg-fg-subtle)]">#{data.pr_number}</span> : null}</>
+              ? <>
+                  <span className="text-[color:var(--dg-fg-muted)]">{data.repo_full_name}</span>
+                  {data.pr_number
+                    ? <a
+                        href={`https://github.com/${data.repo_full_name}/pull/${data.pr_number}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-mono text-lg text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition ml-1"
+                        title="View PR on GitHub"
+                      >#{data.pr_number} ↗</a>
+                    : null}
+                </>
               : <>{t("dashboard.scanResult")} <span className="font-mono text-[color:var(--dg-fg-muted)] text-lg">{analysisId.slice(0,8)}</span></>
             }
           </h1>
@@ -138,8 +157,21 @@ export default async function AnalysisPage({
             </p>
           )}
         </div>
-        {/* Risk badge */}
+        {/* Risk badge + actions */}
         <div className="flex items-center gap-3">
+          {data.repo_full_name && (
+            <RescanButton
+              installationId={installationId}
+              repoFullName={data.repo_full_name}
+              headSha={data.head_sha}
+              labels={{
+                queuing:  t("analyses.queuing")  ?? "queuing…",
+                scanning: t("analyses.scanning") ?? "scanning…",
+                error:    t("analyses.scanError") ?? "failed — try again",
+                rescan:   t("analyses.rescan")   ?? "↺ Re-run scan",
+              }}
+            />
+          )}
           <div className="text-center">
             <div className={`font-mono text-3xl font-bold tabular-nums ${
               data.risk_score == null ? "text-[color:var(--dg-fg-muted)]" :
@@ -161,28 +193,42 @@ export default async function AnalysisPage({
       </div>
 
       {/* Stats bar */}
-      <div className="mb-8 grid grid-cols-2 sm:grid-cols-4 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)]">
+      <div className={`mb-8 grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] grid-cols-2 ${costDeltaDisplay ? "sm:grid-cols-5" : "sm:grid-cols-4"}`}>
         {[
           { label: t("dashboard.filesScanned"),  val: data.files_scanned },
           { label: t("dashboard.totalFindings"), val: findings.length },
           { label: t("dashboard.criticalHigh"),  val: (data.critical ?? 0) + (data.high ?? 0) },
           { label: t("dashboard.duration"),      val: data.duration_ms ? `${(data.duration_ms/1000).toFixed(1)}s` : "—" },
-        ].map(({ label, val }) => (
-          <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
-            <div className="dg-label mb-1">{label}</div>
-            <div className="font-mono text-xl font-bold text-[color:var(--dg-fg)]">{val}</div>
-          </div>
-        ))}
+          ...(costDeltaDisplay ? [{ label: t("dashboard.costDelta") ?? "Cost delta", val: costDeltaDisplay, cost: data.cost_delta_cents as number }] : []),
+        ].map(({ label, val, ...rest }) => {
+          const costCents = (rest as any).cost;
+          const costColor = costCents == null ? "" : costCents > 0 ? "text-blocked" : costCents < 0 ? "text-allowed" : "";
+          return (
+            <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
+              <div className="dg-label mb-1">{label}</div>
+              <div className={`font-mono text-xl font-bold ${costColor || "text-[color:var(--dg-fg)]"}`}>{val}</div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Severity breakdown */}
-      {bySeverity.length > 0 && (
+      {/* Severity breakdown + policy verdict */}
+      {(bySeverity.length > 0 || data.policy_verdict) && (
         <div className="mb-6 flex flex-wrap gap-2">
           {bySeverity.map(({ s, count }) => (
             <span key={s} className={`rounded border px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest ${SEV_STYLE[s]}`}>
               {count} {s}
             </span>
           ))}
+          {data.policy_verdict && (
+            <span className={`rounded border px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest ${
+              data.policy_verdict === "block" ? "text-blocked border-blocked/30 bg-blocked/10" :
+              data.policy_verdict === "warn"  ? "text-warned border-warned/30 bg-warned/10" :
+              "text-allowed border-allowed/30 bg-allowed/10"
+            }`}>
+              policy: {data.policy_verdict}
+            </span>
+          )}
         </div>
       )}
 

@@ -22,33 +22,6 @@ const TYPE_STYLE: Record<string, string> = {
   alert: "text-[color:var(--dg-electric-bright)] border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/5",
 };
 
-const EXAMPLE_POLICIES = [
-  {
-    name: "Block critical security findings",
-    rule_type: "block",
-    description: "Blocks merge when any critical-severity finding is detected.",
-    conditions: { severity: "critical" },
-  },
-  {
-    name: "Warn on public exposure",
-    rule_type: "warn",
-    description: "Warns when resources matching public exposure patterns are changed.",
-    conditions: { resource_pattern: "aws_s3_bucket_public_access_block|aws_security_group" },
-  },
-  {
-    name: "Require encryption for storage",
-    rule_type: "block",
-    description: "Blocks unencrypted S3 buckets or RDS instances.",
-    conditions: { rule_id_prefix: "S3-ENCRYPTION", severity: "high" },
-  },
-  {
-    name: "Alert on IAM wildcard permissions",
-    rule_type: "alert",
-    description: "Alerts team when IAM policies with wildcard actions are detected.",
-    conditions: { message_contains: "wildcard", rule_id_prefix: "IAM" },
-  },
-];
-
 export default async function PoliciesPage({
   params,
 }: {
@@ -66,6 +39,60 @@ export default async function PoliciesPage({
   const active = policies.filter((p: any) => p.enabled).length;
 
   const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
+
+  const examplePolicies = [
+    {
+      id: "block-critical",
+      name: t("policies.exampleBlockCritical") ?? "Block critical security findings",
+      rule_type: "block",
+      description: t("policies.exampleBlockCriticalDesc") ?? "Blocks merge when any critical-severity finding is detected.",
+      conditions: { severity: "critical" },
+    },
+    {
+      id: "warn-exposure",
+      name: t("policies.exampleWarnExposure") ?? "Warn on public exposure",
+      rule_type: "warn",
+      description: t("policies.exampleWarnExposureDesc") ?? "Warns when resources matching public exposure patterns are changed.",
+      conditions: { resource_pattern: "aws_s3_bucket_public_access_block|aws_security_group" },
+    },
+    {
+      id: "block-encryption",
+      name: t("policies.exampleRequireEncryption") ?? "Require encryption for storage",
+      rule_type: "block",
+      description: t("policies.exampleRequireEncryptionDesc") ?? "Blocks unencrypted S3 buckets or RDS instances.",
+      conditions: { rule_id_prefix: "S3-ENCRYPTION", severity: "high" },
+    },
+    {
+      id: "alert-iam",
+      name: t("policies.exampleAlertIam") ?? "Alert on IAM wildcard permissions",
+      rule_type: "alert",
+      description: t("policies.exampleAlertIamDesc") ?? "Alerts team when IAM policies with wildcard actions are detected.",
+      conditions: { message_contains: "wildcard", rule_id_prefix: "IAM" },
+    },
+  ];
+
+  const conditionsRef = [
+    {
+      key: "severity",
+      desc: t("policies.condSeverityDesc") ?? "Minimum severity to trigger",
+      example: '"critical" | "high" | "medium" | "low"',
+    },
+    {
+      key: "resource_pattern",
+      desc: t("policies.condResourcePatternDesc") ?? "Regex matched against resource address",
+      example: '"aws_s3_bucket|aws_iam"',
+    },
+    {
+      key: "message_contains",
+      desc: t("policies.condMessageContainsDesc") ?? "Substring matched in finding message",
+      example: '"wildcard" | "public"',
+    },
+    {
+      key: "rule_id_prefix",
+      desc: t("policies.condRuleIdPrefixDesc") ?? "Prefix matched against rule ID",
+      example: '"IAM-" | "S3-"',
+    },
+  ];
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-8">
@@ -103,7 +130,7 @@ export default async function PoliciesPage({
                 href="/docs/policies"
                 className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
               >
-                Read policies documentation →
+                {t("policies.docLink") ?? "Read policies documentation →"}
               </a>
             </div>
           ) : (
@@ -153,8 +180,8 @@ Content-Type: application/json
               </span>
             </div>
             <div className="divide-y divide-[color:var(--dg-border)]">
-              {EXAMPLE_POLICIES.map((ex) => (
-                <div key={ex.name} className="px-4 py-3">
+              {examplePolicies.map((ex) => (
+                <div key={ex.id} className="px-4 py-3">
                   <div className="flex items-center gap-2 mb-1">
                     <span
                       className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest shrink-0 ${TYPE_STYLE[ex.rule_type]}`}
@@ -181,28 +208,7 @@ Content-Type: application/json
               </span>
             </div>
             <div className="px-4 py-4 space-y-3">
-              {[
-                {
-                  key: "severity",
-                  desc: "Minimum severity to trigger",
-                  example: '"critical" | "high" | "medium" | "low"',
-                },
-                {
-                  key: "resource_pattern",
-                  desc: "Regex matched against resource address",
-                  example: '"aws_s3_bucket|aws_iam"',
-                },
-                {
-                  key: "message_contains",
-                  desc: "Substring matched in finding message",
-                  example: '"wildcard" | "public"',
-                },
-                {
-                  key: "rule_id_prefix",
-                  desc: "Prefix matched against rule ID",
-                  example: '"IAM-" | "S3-"',
-                },
-              ].map((c) => (
+              {conditionsRef.map((c) => (
                 <div key={c.key}>
                   <code className="font-mono text-[10px] text-[color:var(--dg-electric-bright)]">
                     {c.key}

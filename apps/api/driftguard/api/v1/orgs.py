@@ -1,7 +1,7 @@
 import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.api.deps import require_internal_auth
@@ -95,8 +95,12 @@ async def get_org_by_installation(
     _auth: str = Depends(require_internal_auth),
 ) -> dict:
     try:
-        result = await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-        org = result.scalar_one_or_none()
+        result = await db.execute(
+            select(Organization)
+            .where(Organization.github_installation_id == installation_id)
+            .order_by(Organization.created_at.desc())
+        )
+        org = result.scalars().first()
     except Exception:
         org = None
 
@@ -105,13 +109,17 @@ async def get_org_by_installation(
     if org is None:
         raise HTTPException(404, "org not found")
 
+    s = org.settings or {}
     return {
         "id": org.id,
         "installation_id": org.github_installation_id,
         "plan": org.plan,
         "has_stripe_customer": org.stripe_customer_id is not None,
-        "aws_role_arn": (org.settings or {}).get("aws_role_arn"),
+        "aws_role_arn": s.get("aws_role_arn"),
         "aws_external_id": f"driftguard-{org.github_installation_id}",
+        "aws_state_bucket": s.get("state_bucket"),
+        "aws_state_key": s.get("state_key", "terraform.tfstate"),
+        "contact_email": org.contact_email,
     }
 
 
@@ -121,23 +129,42 @@ async def list_org_repos(
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
-    result = await db.execute(select(Repository).where(Repository.org_id == org_id).order_by(Repository.full_name))
+    # Subquery: most recent analysis started_at and risk_score per repo
+    last_a_sq = (
+        select(
+            PullRequest.repo_id,
+            func.max(Analysis.started_at).label("last_scanned_at"),
+        )
+        .join(Analysis, Analysis.pr_id == PullRequest.id)
+        .group_by(PullRequest.repo_id)
+        .subquery()
+    )
+
+    stmt = (
+        select(Repository, last_a_sq.c.last_scanned_at)
+        .outerjoin(last_a_sq, last_a_sq.c.repo_id == Repository.id)
+        .where(Repository.org_id == org_id)
+        .order_by(Repository.full_name)
+    )
+    result = await db.execute(stmt)
     return [
         {
             "id": r.id,
             "full_name": r.full_name,
             "default_branch": r.default_branch,
             "enabled": r.enabled,
+            "last_scanned_at": last_scanned_at.isoformat() if last_scanned_at else None,
         }
-        for r in result.scalars()
+        for r, last_scanned_at in result.all()
     ]
 
 
 @router.get("/{org_id}/analyses")
 async def list_org_analyses(
     org_id: str,
-    limit: int = 20,
-    offset: int = 0,
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    status: str | None = Query(None),
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
@@ -147,9 +174,13 @@ async def list_org_analyses(
         .join(Repository, PullRequest.repo_id == Repository.id)
         .where(Repository.org_id == org_id)
         .order_by(Analysis.started_at.desc().nulls_last())
-        .limit(min(limit, 100))
-        .offset(max(offset, 0))
+        .limit(limit)
+        .offset(offset)
     )
+    if status == "running":
+        stmt = stmt.where(Analysis.status.in_(["running", "pending"]))
+    elif status:
+        stmt = stmt.where(Analysis.status == status)
     result = await db.execute(stmt)
     return [
         {
@@ -161,11 +192,83 @@ async def list_org_analyses(
             "pr_number": p.github_pr_number,
             "head_sha": p.head_sha,
             "repo_full_name": r.full_name,
+            "policy_verdict": a.policy_verdict,
             "started_at": a.started_at.isoformat() if a.started_at else None,
+            "finished_at": a.finished_at.isoformat() if a.finished_at else None,
             "created_at": a.started_at.isoformat() if a.started_at else None,
         }
         for a, p, r in result.all()
     ]
+
+
+class NotificationSettingsUpdate(BaseModel):
+    contact_email: str | None = None
+
+
+@router.patch("/{org_id}/notifications")
+async def update_notification_settings(
+    org_id: str,
+    body: NotificationSettingsUpdate,
+    db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
+) -> dict:
+    org = await db.get(Organization, org_id)
+    if not org:
+        raise HTTPException(404, "org not found")
+
+    first_email = (not org.contact_email) and bool(body.contact_email)
+    if "contact_email" in body.model_fields_set:
+        org.contact_email = body.contact_email
+        db.add(
+            AuditLog(
+                org_id=org_id,
+                actor="api",
+                action="notification_settings.updated",
+                target=org_id,
+                payload={"contact_email_set": bool(body.contact_email)},
+            )
+        )
+        await db.commit()
+
+    # Send welcome email on first-time email configuration
+    if first_email and body.contact_email:
+        try:
+            import asyncio
+
+            from driftguard.services.email import send_welcome
+
+            org_name = (org.settings or {}).get("account_login") or f"installation {org.github_installation_id}"
+            asyncio.create_task(send_welcome(to=body.contact_email, org_name=org_name))
+        except Exception:  # noqa: S110 — email is fire-and-forget
+            pass
+
+    return {"status": "ok", "contact_email": org.contact_email}
+
+
+@router.post("/{org_id}/notifications/test")
+async def test_notification_email(
+    org_id: str,
+    db: AsyncSession = Depends(get_db),
+    _auth: str = Depends(require_internal_auth),
+) -> dict:
+    """Send a test notification email to verify the contact_email is reachable."""
+    org = await db.get(Organization, org_id)
+    if not org:
+        raise HTTPException(404, "org not found")
+    if not org.contact_email:
+        raise HTTPException(400, "no contact_email configured")
+
+    from driftguard.services.email import send_review_complete
+
+    await send_review_complete(
+        to=org.contact_email,
+        repo="example/terraform-infra",
+        pr_number=42,
+        risk_score=75,
+        findings_count=3,
+        analysis_url=f"{settings.public_base_url.rstrip('/')}/dashboard",
+    )
+    return {"status": "ok", "sent_to": org.contact_email}
 
 
 class AwsSettingsUpdate(BaseModel):
@@ -225,6 +328,7 @@ async def update_aws_settings(
 async def list_audit_log(
     org_id: str,
     limit: int = 50,
+    offset: int = 0,
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
@@ -236,6 +340,7 @@ async def list_audit_log(
                 .where(AuditLog.org_id == org_id)
                 .order_by(AuditLog.created_at.desc())
                 .limit(min(limit, 500))
+                .offset(max(offset, 0))
             )
         )
         .scalars()

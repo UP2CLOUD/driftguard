@@ -16,10 +16,19 @@ function warmupApi(installationId: string) {
 }
 
 export async function GET(req: NextRequest) {
-  const installationId = req.nextUrl.searchParams.get("installation_id");
+  const { searchParams } = req.nextUrl;
+  const installationId = searchParams.get("installation_id");
+  const error = searchParams.get("error");
+  const errorDescription = searchParams.get("error_description");
+
+  // GitHub sends ?error=access_denied when the user cancels or denies the install.
+  if (error) {
+    const msg = errorDescription || error;
+    redirect(`/dashboard?setup_error=${encodeURIComponent(msg)}`);
+  }
 
   if (installationId) {
-    // Warm-up corre em paralelo com o auth() — sem await
+    // Warm-up runs in parallel with auth() — no await
     warmupApi(installationId);
   }
 

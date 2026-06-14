@@ -38,7 +38,17 @@ export async function RecentAnalysesSection({
           <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
             {t("repos.recentAnalyses") ?? "Recent analyses"}
           </span>
-          <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{analyses7d} / 7d</span>
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{analyses7d} / 7d</span>
+            {recentAnalyses.length > 0 && (
+              <Link
+                href={`/dashboard/${installationId}/analyses`}
+                className="font-mono text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+              >
+                View all →
+              </Link>
+            )}
+          </div>
         </div>
         {recentAnalyses.length === 0 && !apiAvailable ? (
           <div className="px-6 py-10 text-center">
@@ -93,7 +103,14 @@ export async function RecentAnalysesSection({
                     {formatDateTime(a.created_at, locale)}
                   </div>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
+                <div className="flex items-center gap-2 shrink-0">
+                  {a.policy_verdict && a.policy_verdict !== "pass" && (
+                    <span className={`font-mono text-[9px] uppercase tracking-widest rounded px-1 py-0.5 ${
+                      a.policy_verdict === "block" ? "text-blocked bg-blocked/10" : "text-warned bg-warned/10"
+                    }`}>
+                      {a.policy_verdict}
+                    </span>
+                  )}
                   <span className={`font-mono text-[13px] font-bold tabular-nums ${
                     (a.risk_score ?? 0) >= 70 ? "text-blocked" :
                     (a.risk_score ?? 0) >= 40 ? "text-warned" : "text-allowed"

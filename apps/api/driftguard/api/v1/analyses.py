@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,9 +11,9 @@ router = APIRouter()
 
 @router.get("")
 async def list_analyses(
-    repo_id: str | None = None,
-    limit: int = 20,
-    offset: int = 0,
+    repo_id: str | None = Query(None),
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
@@ -22,8 +22,8 @@ async def list_analyses(
         .join(PullRequest, Analysis.pr_id == PullRequest.id)
         .join(Repository, PullRequest.repo_id == Repository.id)
         .order_by(Analysis.started_at.desc().nulls_last())
-        .limit(min(limit, 100))
-        .offset(max(offset, 0))
+        .limit(limit)
+        .offset(offset)
     )
     if repo_id:
         stmt = stmt.where(Repository.id == repo_id)
@@ -34,12 +34,14 @@ async def list_analyses(
             "id": a.id,
             "status": a.status,
             "risk_score": a.risk_score,
+            "policy_verdict": a.policy_verdict,
             "cost_delta_cents": a.cost_delta_cents,
             "files_scanned": a.files_scanned or 0,
             "pr_number": p.github_pr_number,
             "head_sha": p.head_sha,
             "repo_full_name": r.full_name,
             "started_at": a.started_at.isoformat() if a.started_at else None,
+            "finished_at": a.finished_at.isoformat() if a.finished_at else None,
             "created_at": a.started_at.isoformat() if a.started_at else None,
         }
         for a, p, r in result.all()
@@ -81,6 +83,7 @@ async def get_analysis(
         "critical": critical,
         "high": high,
         "duration_ms": duration_ms,
+        "policy_verdict": a.policy_verdict,
         "errors": a.scan_errors or [],
         "findings": [
             {

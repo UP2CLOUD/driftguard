@@ -53,7 +53,10 @@ def _cleanup() -> None:
 def _mock_list(org=None, incidents: list | None = None) -> AsyncMock:
     """Mock for GET /incidents (two execute calls: org lookup + incident list)."""
     mock = AsyncMock()
-    org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+    org_result = MagicMock(
+        scalar_one_or_none=MagicMock(return_value=org),
+        scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org), all=MagicMock(return_value=[]))),
+    )
     rows_result = MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=incidents or []))))
     mock.execute = AsyncMock(side_effect=[org_result, rows_result])
     return mock
@@ -103,6 +106,30 @@ class TestListIncidents:
     def test_requires_auth(self):
         r = TestClient(app).get("/api/v1/incidents?installation_id=42")
         assert r.status_code == 401
+
+    def test_invalid_status_returns_422(self):
+        r = TestClient(app).get("/api/v1/incidents?installation_id=42&status=bogus", headers=AUTH)
+        assert r.status_code == 422
+
+    def test_invalid_severity_returns_422(self):
+        r = TestClient(app).get("/api/v1/incidents?installation_id=42&severity=ultra", headers=AUTH)
+        assert r.status_code == 422
+
+    def test_valid_status_passes_validation(self):
+        _override(_mock_list(org=None))
+        try:
+            r = TestClient(app).get("/api/v1/incidents?installation_id=9999&status=open", headers=AUTH)
+            assert r.status_code == 200
+        finally:
+            _cleanup()
+
+    def test_valid_severity_passes_validation(self):
+        _override(_mock_list(org=None))
+        try:
+            r = TestClient(app).get("/api/v1/incidents?installation_id=9999&severity=high", headers=AUTH)
+            assert r.status_code == 200
+        finally:
+            _cleanup()
 
 
 # ── GET /incidents/{id} ────────────────────────────────────────────────────────

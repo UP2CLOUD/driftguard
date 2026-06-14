@@ -189,14 +189,43 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
         )
 
     # GHA006: Secret directly interpolated in run: block (can leak via logs/set-output).
-    # Skip matches whose nearest context key is env: — that's the safe pattern.
+    # Walk backwards from the match to find the enclosing YAML key. Fire only when
+    # that key is `run:` — not `env:`, `token:`, `with:`, etc.
+    file_lines = content.splitlines()
     for match in _SECRET_IN_RUN.finditer(content):
-        before = content[: match.start()]
-        last_run = before.rfind("run:")
-        last_env = before.rfind("env:")
-        if last_env > last_run:
+        match_line_idx = content[: match.start()].count("\n")
+        if match_line_idx >= len(file_lines):
             continue
-        line = content[: match.start()].count("\n") + 1
+        match_line = file_lines[match_line_idx]
+
+        # Case A: match on same line as `run:` (e.g. `- run: curl ${{ secrets.X }}`)
+        # Strip leading whitespace and the YAML list indicator `- ` to normalise.
+        last_newline = content.rfind("\n", 0, match.start())
+        text_before_match_on_line = content[last_newline + 1 : match.start()]
+        norm = text_before_match_on_line.lstrip().lstrip("-").lstrip()
+        if norm.startswith("run:"):
+            in_run = True
+        else:
+            # Case B: match on a continuation line — walk backwards to the enclosing key.
+            match_indent = len(match_line) - len(match_line.lstrip())
+            in_run = False
+            for i in range(match_line_idx - 1, -1, -1):
+                ln = file_lines[i]
+                stripped = ln.strip()
+                if not stripped or stripped.startswith("#"):
+                    continue
+                ln_indent = len(ln) - len(ln.lstrip())
+                if ln_indent >= match_indent:
+                    continue
+                # Nearest parent key — strip `- ` list indicator before checking
+                key = stripped.lstrip("-").lstrip()
+                in_run = key.startswith("run:")
+                break
+
+        if not in_run:
+            continue
+
+        line = match_line_idx + 1
         findings.append(
             ScanFinding(
                 rule_id="GHA006",
