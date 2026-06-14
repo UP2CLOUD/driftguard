@@ -44,23 +44,25 @@ export type AuditEntry = {
 
 const ACTION_COLOR: Record<string, string> = {
   // analysis
-  analysis_started: "text-[color:var(--dg-electric-bright)]",
-  analysis_complete: "text-allowed",
-  analysis_failed: "text-blocked",
+  "analysis.completed": "text-allowed",
+  "policy.blocked": "text-blocked",
   // incidents
-  incident_opened: "text-blocked",
-  incident_resolved: "text-allowed",
-  incident_suppressed: "text-[color:var(--dg-fg-muted)]",
+  "incident.status_changed": "text-warned",
   // policies
-  policy_created: "text-[color:var(--dg-electric-bright)]",
-  policy_updated: "text-warned",
-  policy_deleted: "text-blocked",
-  // auth
-  token_created: "text-[color:var(--dg-electric-bright)]",
-  token_revoked: "text-warned",
-  // billing
-  plan_upgraded: "text-allowed",
-  plan_downgraded: "text-warned",
+  "policy.created": "text-[color:var(--dg-electric-bright)]",
+  "policy.updated": "text-warned",
+  "policy.deleted": "text-blocked",
+  // repos
+  "repo.enabled": "text-allowed",
+  "repo.disabled": "text-[color:var(--dg-fg-muted)]",
+  // auth / tokens
+  "token.created": "text-[color:var(--dg-electric-bright)]",
+  "token.revoked": "text-warned",
+  // org settings
+  "notification_settings.updated": "text-[color:var(--dg-electric-bright)]",
+  "aws_settings.updated": "text-[color:var(--dg-electric-bright)]",
+  // scans
+  "scan.completed": "text-allowed",
 };
 
 export default async function AuditLogPage({
