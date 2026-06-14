@@ -43,10 +43,11 @@ def _cleanup() -> None:
 
 def _mock_session(org=None, events: list | None = None) -> AsyncMock:
     mock = AsyncMock()
-
-    org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+    org_result = MagicMock(
+        scalar_one_or_none=MagicMock(return_value=org),
+        scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org), all=MagicMock(return_value=[]))),
+    )
     events_result = MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=events or []))))
-
     mock.execute = AsyncMock(side_effect=[org_result, events_result])
     return mock
 
@@ -68,6 +69,29 @@ class TestListEventsNoOrg:
     def test_missing_installation_id_returns_422(self):
         r = TestClient(app).get("/api/v1/events", headers=AUTH)
         assert r.status_code == 422
+
+    def test_limit_above_max_returns_422(self):
+        r = TestClient(app).get("/api/v1/events?installation_id=111&limit=101", headers=AUTH)
+        assert r.status_code == 422
+
+    def test_limit_at_max_accepted(self):
+        _override(_mock_session(org=None))
+        try:
+            r = TestClient(app).get("/api/v1/events?installation_id=9999&limit=100", headers=AUTH)
+            assert r.status_code == 200
+        finally:
+            _cleanup()
+
+    def test_db_exception_returns_empty(self):
+        mock = AsyncMock()
+        mock.execute = AsyncMock(side_effect=Exception("transient DB error"))
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/events?installation_id=111", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json() == []
+        finally:
+            _cleanup()
 
 
 class TestListEventsWithOrg:
@@ -108,7 +132,46 @@ class TestListEventsWithOrg:
                 "message",
                 "metadata",
                 "repo_id",
+                "analysis_id",
                 "created_at",
             }
+        finally:
+            _cleanup()
+
+    def test_event_type_filter_accepted(self):
+        events = [_event("drift_detected", "warn")]
+        _override(_mock_session(org=_org(), events=events))
+        try:
+            r = TestClient(app).get(
+                "/api/v1/events?installation_id=111&event_type=drift_detected",
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            data = r.json()
+            assert len(data) == 1
+            assert data[0]["event_type"] == "drift_detected"
+        finally:
+            _cleanup()
+
+    def test_severity_filter_accepted(self):
+        events = [_event("policy_blocked", "high")]
+        _override(_mock_session(org=_org(), events=events))
+        try:
+            r = TestClient(app).get(
+                "/api/v1/events?installation_id=111&severity=high",
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            data = r.json()
+            assert len(data) == 1
+            assert data[0]["severity"] == "high"
+        finally:
+            _cleanup()
+
+    def test_offset_param_accepted(self):
+        _override(_mock_session(org=_org(), events=[]))
+        try:
+            r = TestClient(app).get("/api/v1/events?installation_id=111&offset=10", headers=AUTH)
+            assert r.status_code == 200
         finally:
             _cleanup()

@@ -112,6 +112,29 @@ class TestListAnalyses:
         r = TestClient(app).get("/api/v1/analyses")
         assert r.status_code == 401
 
+    def test_limit_above_max_returns_422(self):
+        r = TestClient(app).get("/api/v1/analyses?limit=101", headers=AUTH)
+        assert r.status_code == 422
+
+    def test_repo_id_filter_accepted(self):
+        _override(self._mock_list([]))
+        try:
+            r = TestClient(app).get("/api/v1/analyses?repo_id=repo-1", headers=AUTH)
+            assert r.status_code == 200
+        finally:
+            _cleanup()
+
+    def test_response_includes_files_scanned(self):
+        _override(self._mock_list([(_analysis(), _pr(), _repo())]))
+        try:
+            r = TestClient(app).get("/api/v1/analyses", headers=AUTH)
+            item = r.json()[0]
+            assert item["files_scanned"] == 10
+            assert item["cost_delta_cents"] == 500
+            assert item["head_sha"] is not None
+        finally:
+            _cleanup()
+
 
 # ── GET /analyses/{id} ─────────────────────────────────────────────────────────
 
@@ -198,3 +221,45 @@ class TestGetAnalysis:
     def test_requires_auth(self):
         r = TestClient(app).get("/api/v1/analyses/ana-1")
         assert r.status_code == 401
+
+    def test_finding_category_falls_back_to_type_when_null(self):
+        """category field must use f.type when f.category is None."""
+        a = _analysis()
+        f = _finding()
+        f.category = None
+        f.type = "security"
+        _override(self._mock_get(analysis=a, pr=_pr(), repo=_repo(), findings=[f]))
+        try:
+            r = TestClient(app).get("/api/v1/analyses/ana-1", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json()["findings"][0]["category"] == "security"
+        finally:
+            _cleanup()
+
+    def test_finding_controls_defaults_to_empty_list(self):
+        a = _analysis()
+        f = _finding()
+        f.controls = None
+        _override(self._mock_get(analysis=a, pr=_pr(), repo=_repo(), findings=[f]))
+        try:
+            r = TestClient(app).get("/api/v1/analyses/ana-1", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json()["findings"][0]["controls"] == []
+        finally:
+            _cleanup()
+
+    def test_critical_and_high_counts_correct(self):
+        a = _analysis()
+        findings = [
+            _finding(severity="critical"),
+            _finding(severity="critical"),
+            _finding(severity="high"),
+        ]
+        _override(self._mock_get(analysis=a, pr=_pr(), repo=_repo(), findings=findings))
+        try:
+            r = TestClient(app).get("/api/v1/analyses/ana-1", headers=AUTH)
+            data = r.json()
+            assert data["critical"] == 2
+            assert data["high"] == 1
+        finally:
+            _cleanup()

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from driftguard.api.deps import require_internal_auth
 from driftguard.core.db import get_db
 from driftguard.core.logging import log
-from driftguard.db.models import Organization, Repository
+from driftguard.db.models import AuditLog, Organization, Repository
 from driftguard.services.quota import assert_can_enable_repo
 
 router = APIRouter()
@@ -18,16 +18,23 @@ class RepoPatch(BaseModel):
 
 @router.get("")
 async def list_repos(
-    installation_id: int | None = None,
+    installation_id: int | None = Query(None),
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
     if installation_id is not None:
         # Return all repos (enabled + disabled) for the given org.
-        org_result = await db.execute(
-            select(Organization).where(Organization.github_installation_id == installation_id)
+        org = (
+            (
+                await db.execute(
+                    select(Organization)
+                    .where(Organization.github_installation_id == installation_id)
+                    .order_by(Organization.created_at.desc())
+                )
+            )
+            .scalars()
+            .first()
         )
-        org = org_result.scalar_one_or_none()
         if org is None:
             return []
         result = await db.execute(select(Repository).where(Repository.org_id == org.id))
@@ -65,6 +72,17 @@ async def patch_repo(
                 await assert_can_enable_repo(db, org)
             except ValueError as exc:
                 raise HTTPException(402, str(exc)) from exc
+        if repo.enabled != body.enabled:
+            action = "repo.enabled" if body.enabled else "repo.disabled"
+            db.add(
+                AuditLog(
+                    org_id=repo.org_id,
+                    actor="api",
+                    action=action,
+                    target=repo_id,
+                    payload={"full_name": repo.full_name},
+                )
+            )
         repo.enabled = body.enabled
 
     await db.commit()
@@ -98,6 +116,15 @@ async def enable_repo(
         raise HTTPException(402, str(exc)) from exc
 
     repo.enabled = True
+    db.add(
+        AuditLog(
+            org_id=org.id,
+            actor="api",
+            action="repo.enabled",
+            target=repo_id,
+            payload={"full_name": repo.full_name},
+        )
+    )
     await db.commit()
     log.info("repo_enabled", repo_id=repo_id, org_id=org.id)
     return {"id": repo.id, "enabled": True}
@@ -114,6 +141,15 @@ async def disable_repo(
         raise HTTPException(404, "Repository not found")
 
     repo.enabled = False
+    db.add(
+        AuditLog(
+            org_id=repo.org_id,
+            actor="api",
+            action="repo.disabled",
+            target=repo_id,
+            payload={"full_name": repo.full_name},
+        )
+    )
     await db.commit()
     log.info("repo_disabled", repo_id=repo_id)
     return {"id": repo.id, "enabled": False}

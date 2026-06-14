@@ -41,6 +41,7 @@ def _mock_session(repos: list | None = None, get_return=None) -> AsyncMock:
     mock.execute = AsyncMock(return_value=MagicMock(scalars=MagicMock(return_value=repos or [])))
     mock.get = AsyncMock(return_value=get_return)
     mock.commit = AsyncMock()
+    mock.add = MagicMock()
     return mock
 
 
@@ -78,7 +79,15 @@ class TestListRepos:
     def test_installation_id_filter_unknown_org_returns_empty(self):
         """installation_id with no matching org → empty list, not 404."""
         mock = AsyncMock()
-        org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=None))
+        org_result = MagicMock(
+            scalar_one_or_none=MagicMock(return_value=None),
+            scalars=MagicMock(
+                return_value=MagicMock(
+                    first=MagicMock(return_value=None),
+                    all=MagicMock(return_value=[]),
+                )
+            ),
+        )
         mock.execute = AsyncMock(return_value=org_result)
         _override(mock)
         try:
@@ -93,7 +102,15 @@ class TestListRepos:
         org = Organization(id="org-1", github_installation_id=42, plan="free")
         repos = [_repo("r1", enabled=True), _repo("r2", enabled=False)]
         mock = AsyncMock()
-        org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+        org_result = MagicMock(
+            scalar_one_or_none=MagicMock(return_value=org),
+            scalars=MagicMock(
+                return_value=MagicMock(
+                    first=MagicMock(return_value=org),
+                    all=MagicMock(return_value=[]),
+                )
+            ),
+        )
         repo_result = MagicMock(scalars=MagicMock(return_value=repos))
         mock.execute = AsyncMock(side_effect=[org_result, repo_result])
         _override(mock)
@@ -147,6 +164,7 @@ class TestPatchRepo:
         mock.get = AsyncMock(side_effect=[repo, org])
         mock.execute = AsyncMock(return_value=MagicMock(scalar_one=MagicMock(return_value=0)))
         mock.commit = AsyncMock()
+        mock.add = MagicMock()
         _override(mock)
         try:
             r = TestClient(app).patch(
@@ -250,6 +268,7 @@ class TestEnableRepo:
         # assert_can_enable_repo calls db.execute(select(func.count())) → scalar_one returns 0
         mock.execute = AsyncMock(return_value=MagicMock(scalar_one=MagicMock(return_value=0)))
         mock.commit = AsyncMock()
+        mock.add = MagicMock()
         _override(mock)
         try:
             r = TestClient(app).post("/api/v1/repos/repo-1/enable", headers=AUTH)
@@ -264,6 +283,7 @@ class TestEnableRepo:
         mock = AsyncMock()
         mock.get = AsyncMock(side_effect=[repo, org])
         mock.commit = AsyncMock()
+        mock.add = MagicMock()
         _override(mock)
         try:
             r = TestClient(app).post("/api/v1/repos/repo-1/enable", headers=AUTH)
@@ -312,6 +332,7 @@ class TestDisableRepo:
         mock = AsyncMock()
         mock.get = AsyncMock(return_value=repo)
         mock.commit = AsyncMock()
+        mock.add = MagicMock()
         _override(mock)
         try:
             r = TestClient(app).post("/api/v1/repos/repo-1/disable", headers=AUTH)
@@ -325,6 +346,7 @@ class TestDisableRepo:
         mock = AsyncMock()
         mock.get = AsyncMock(return_value=repo)
         mock.commit = AsyncMock()
+        mock.add = MagicMock()
         _override(mock)
         try:
             r = TestClient(app).post("/api/v1/repos/repo-1/disable", headers=AUTH)

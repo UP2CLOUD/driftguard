@@ -117,10 +117,17 @@ async def ingest_event(
     _rl: None = Depends(rate_limit(per_minute=30, per_hour=500)),
 ) -> IngestEventResponse:
     # 1. Resolve org — reject unknown installations to prevent data injection
-    org_result = await db.execute(
-        select(Organization).where(Organization.github_installation_id == body.installation_id)
+    org = (
+        (
+            await db.execute(
+                select(Organization)
+                .where(Organization.github_installation_id == body.installation_id)
+                .order_by(Organization.created_at.desc())
+            )
+        )
+        .scalars()
+        .first()
     )
-    org = org_result.scalar_one_or_none()
     if not org:
         from fastapi import HTTPException
 
@@ -162,17 +169,23 @@ async def ingest_event(
         window_start = datetime.now(UTC) - timedelta(hours=RECURRENCE_WINDOW_HOURS)
 
         existing = (
-            await db.execute(
-                select(DriftIncident).where(
-                    and_(
-                        DriftIncident.org_id == org.id,
-                        DriftIncident.fingerprint == fp,
-                        DriftIncident.status != "resolved",
-                        DriftIncident.last_seen_at >= window_start,
+            (
+                await db.execute(
+                    select(DriftIncident)
+                    .where(
+                        and_(
+                            DriftIncident.org_id == org.id,
+                            DriftIncident.fingerprint == fp,
+                            DriftIncident.status != "resolved",
+                            DriftIncident.last_seen_at >= window_start,
+                        )
                     )
+                    .order_by(DriftIncident.last_seen_at.desc())
                 )
             )
-        ).scalar_one_or_none()
+            .scalars()
+            .first()
+        )
 
         if existing:
             # Update recurrence

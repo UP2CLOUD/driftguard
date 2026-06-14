@@ -4,6 +4,7 @@ import Link from "next/link";
 import { BillingActions } from "@/components/BillingActions";
 import { UserPreferencesSettings } from "@/components/UserPreferencesSettings";
 import { AwsIntegrationForm } from "@/components/AwsIntegrationForm";
+import { NotificationEmailForm } from "@/components/NotificationEmailForm";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { requireOrg } from "@/lib/org-server";
@@ -144,38 +145,65 @@ export default async function Settings({
         <AwsIntegrationForm installationId={installationId} org={org} />
       </Section>
 
+      {/* ── Notifications ───────────────────────────────────────── */}
+      {org && (
+        <Section title={t("settings.notifications") ?? "Notifications"} description={t("settings.notificationsDesc") ?? "Get an email alert when a PR scan finds critical issues."}>
+          <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
+            <NotificationEmailForm
+              orgId={org.id}
+              installationId={installationId}
+              initialEmail={org.contact_email}
+              labels={{
+                placeholder: t("settings.notifEmailPlaceholder") ?? "team@yourcompany.com",
+                save:        t("settings.notifSave")             ?? "Save",
+                saving:      t("settings.notifSaving")           ?? "saving…",
+                saved:       t("settings.notifSaved")            ?? "Saved.",
+                alertDesc:   t("settings.notifAlertDesc")        ?? "DriftGuard sends an alert when a PR scan scores ≥ 60 risk or a policy block rule fires. Leave blank to disable.",
+                sendTest:    t("settings.notifSendTest")         ?? "Send test email",
+                sending:     t("settings.notifSending")          ?? "sending…",
+                testSent:    t("settings.notifTestSent")         ?? "Test sent to {email}",
+              }}
+            />
+          </div>
+        </Section>
+      )}
+
       {/* ── Billing ─────────────────────────────────────────────── */}
       {org && (
         <Section title={t("settings.billingTitle")} description={t("settings.billingDesc")}>
           <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] sm:grid-cols-3 mb-4">
             <PlanCard
-              name="Free"
+              name={t("settings.planFree") ?? "Free"}
               price="€0"
               detail={
                 planData && !planData.is_premium
-                  ? `${planData.repos.active}/${planData.repos.limit ?? 3} repos active`
-                  : `Up to 3 repos · unlimited PR reviews`
+                  ? (t("settings.planFreeUsage") ?? "{active}/{limit} repos active")
+                      .replace("{active}", String(planData.repos.active))
+                      .replace("{limit}", String(planData.repos.limit ?? 3))
+                  : (t("settings.planFreeDetail") ?? "Up to 3 repos · unlimited PR reviews")
               }
               current={org.plan === "free" || (!planData?.is_premium && org.plan !== "team" && org.plan !== "enterprise")}
               activeLabel={t("settings.active")}
             />
             <PlanCard
-              name="Team"
+              name={t("settings.planTeam") ?? "Team"}
               price="€29"
               period="/repo/mo"
               detail={
                 planData?.is_premium
-                  ? `${planData.monthly_pr_reviews.used ?? 0}/${planData.monthly_pr_reviews.limit ?? 50} PR reviews this month`
-                  : `50 PR reviews/mo · memory · compliance`
+                  ? (t("settings.planTeamUsage") ?? "{used}/{limit} PR reviews this month")
+                      .replace("{used}", String(planData.monthly_pr_reviews.used ?? 0))
+                      .replace("{limit}", String(planData.monthly_pr_reviews.limit ?? 50))
+                  : (t("settings.planTeamDetail") ?? "50 PR reviews/mo · memory · compliance")
               }
               current={org.plan === "team"}
               activeLabel={t("settings.active")}
               highlighted
             />
             <PlanCard
-              name="Enterprise"
+              name={t("settings.planEnterprise") ?? "Enterprise"}
               price="—"
-              detail="Self-hosted · SSO · SLA · custom policy"
+              detail={t("settings.planEnterpriseDetail") ?? "Self-hosted · SSO · SLA · custom policy"}
               current={org.plan === "enterprise"}
               activeLabel={t("settings.active")}
             />
@@ -186,7 +214,7 @@ export default async function Settings({
             <div className="mb-4 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                  Active repositories
+                  {t("settings.activeRepositories") ?? "Active repositories"}
                 </span>
                 <span className={`font-mono text-[11px] font-semibold ${planData.repos.active >= planData.repos.limit ? "text-warned" : "text-[color:var(--dg-fg)]"}`}>
                   {planData.repos.active} / {planData.repos.limit}
@@ -200,7 +228,7 @@ export default async function Settings({
               </div>
               {planData.repos.active >= planData.repos.limit && (
                 <p className="mt-2 font-mono text-[10px] text-warned">
-                  At repo limit. Disable a repository or upgrade to add more.
+                  {t("settings.atRepoLimit") ?? "At repo limit. Disable a repository or upgrade to add more."}
                 </p>
               )}
             </div>
@@ -211,7 +239,7 @@ export default async function Settings({
             <div className="mb-4 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                  PR reviews this month
+                  {t("settings.prReviewsThisMonth") ?? "PR reviews this month"}
                 </span>
                 <span className={`font-mono text-[11px] font-semibold ${planData.monthly_pr_reviews.used >= planData.monthly_pr_reviews.limit ? "text-blocked" : planData.monthly_pr_reviews.used / planData.monthly_pr_reviews.limit >= 0.8 ? "text-warned" : "text-[color:var(--dg-fg)]"}`}>
                   {planData.monthly_pr_reviews.used} / {planData.monthly_pr_reviews.limit}

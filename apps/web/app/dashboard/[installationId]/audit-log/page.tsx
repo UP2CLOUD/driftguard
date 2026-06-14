@@ -3,12 +3,13 @@ import { redirect } from "next/navigation";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
+import Link from "next/link";
 import { BACKEND_URL, authHeaders } from "@/lib/backend";
 import { AuditLogClient } from "./AuditLogClient";
 
-const LIMIT = 200;
+const PAGE_SIZE = 100;
 
-async function fetchAuditLog(installationId: string): Promise<AuditEntry[] | null> {
+async function fetchAuditLog(installationId: string, offset: number): Promise<{ entries: AuditEntry[]; hasNext: boolean } | null> {
   try {
     // 1. resolve org_id
     const orgRes = await fetch(
@@ -19,13 +20,14 @@ async function fetchAuditLog(installationId: string): Promise<AuditEntry[] | nul
     const org = (await orgRes.json()) as { id?: string };
     if (!org?.id) return null;
 
-    // 2. fetch audit log
+    // 2. fetch PAGE_SIZE+1 to detect next page without a separate COUNT query
     const res = await fetch(
-      `${BACKEND_URL}/api/v1/orgs/${org.id}/audit-log?limit=${LIMIT}`,
+      `${BACKEND_URL}/api/v1/orgs/${org.id}/audit-log?limit=${PAGE_SIZE + 1}&offset=${offset}`,
       { headers: authHeaders(), cache: "no-store", signal: AbortSignal.timeout(10000) }
     );
     if (!res.ok) return null;
-    return res.json();
+    const raw: AuditEntry[] = await res.json();
+    return { entries: raw.slice(0, PAGE_SIZE), hasNext: raw.length > PAGE_SIZE };
   } catch {
     return null;
   }
@@ -42,39 +44,48 @@ export type AuditEntry = {
 
 const ACTION_COLOR: Record<string, string> = {
   // analysis
-  analysis_started: "text-[color:var(--dg-electric-bright)]",
-  analysis_complete: "text-allowed",
-  analysis_failed: "text-blocked",
+  "analysis.completed": "text-allowed",
+  "policy.blocked": "text-blocked",
   // incidents
-  incident_opened: "text-blocked",
-  incident_resolved: "text-allowed",
-  incident_suppressed: "text-[color:var(--dg-fg-muted)]",
+  "incident.status_changed": "text-warned",
   // policies
-  policy_created: "text-[color:var(--dg-electric-bright)]",
-  policy_updated: "text-warned",
-  policy_deleted: "text-blocked",
-  // auth
-  token_created: "text-[color:var(--dg-electric-bright)]",
-  token_revoked: "text-warned",
-  // billing
-  plan_upgraded: "text-allowed",
-  plan_downgraded: "text-warned",
+  "policy.created": "text-[color:var(--dg-electric-bright)]",
+  "policy.updated": "text-warned",
+  "policy.deleted": "text-blocked",
+  // repos
+  "repo.enabled": "text-allowed",
+  "repo.disabled": "text-[color:var(--dg-fg-muted)]",
+  // auth / tokens
+  "token.created": "text-[color:var(--dg-electric-bright)]",
+  "token.revoked": "text-warned",
+  // org settings
+  "notification_settings.updated": "text-[color:var(--dg-electric-bright)]",
+  "aws_settings.updated": "text-[color:var(--dg-electric-bright)]",
+  // scans
+  "scan.completed": "text-allowed",
 };
 
 export default async function AuditLogPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ installationId: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
   const session = await auth();
   if (!session) redirect("/");
   const { installationId } = await params;
+  const { page: pageStr } = await searchParams;
+  const page = Math.max(1, parseInt(pageStr ?? "1", 10) || 1);
+  const offset = (page - 1) * PAGE_SIZE;
 
   const preferences = await getUserPreferences();
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
 
-  const entries = await fetchAuditLog(installationId);
+  const result = await fetchAuditLog(installationId, offset);
+  const entries = result?.entries ?? null;
+  const hasNext = result?.hasNext ?? false;
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-6">
@@ -129,22 +140,47 @@ export default async function AuditLogPage({
           </p>
         </div>
       ) : (
-        <AuditLogClient
-          entries={entries}
-          actionColors={ACTION_COLOR}
-          labels={{
-            filterPlaceholder: t("auditLog.filterPlaceholder") ?? "Filter by actor, action or target…",
-            showing: t("auditLog.showing") ?? "showing",
-            of: t("auditLog.of") ?? "of",
-            events: t("auditLog.events") ?? "events",
-            actor: t("auditLog.actor") ?? "actor",
-            action: t("auditLog.action") ?? "action",
-            target: t("auditLog.target") ?? "target",
-            time: t("auditLog.time") ?? "time",
-            payload: t("auditLog.payload") ?? "payload",
-            noMatch: t("auditLog.noMatch") ?? "No events match this filter.",
-          }}
-        />
+        <>
+          <AuditLogClient
+            entries={entries}
+            actionColors={ACTION_COLOR}
+            labels={{
+              filterPlaceholder: t("auditLog.filterPlaceholder") ?? "Filter by actor, action or target…",
+              showing: t("auditLog.showing") ?? "showing",
+              of: t("auditLog.of") ?? "of",
+              events: t("auditLog.events") ?? "events",
+              actor: t("auditLog.actor") ?? "actor",
+              action: t("auditLog.action") ?? "action",
+              target: t("auditLog.target") ?? "target",
+              time: t("auditLog.time") ?? "time",
+              payload: t("auditLog.payload") ?? "payload",
+              noMatch: t("auditLog.noMatch") ?? "No events match this filter.",
+            }}
+          />
+          {(page > 1 || hasNext) && (
+            <div className="flex items-center justify-between pt-2">
+              {page > 1 ? (
+                <Link
+                  href={`?page=${page - 1}`}
+                  className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+                >
+                  {t("analyses.previous") ?? "← Previous"}
+                </Link>
+              ) : <span />}
+              <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+                {(t("analyses.page") ?? "Page {n}").replace("{n}", String(page))}
+              </span>
+              {hasNext ? (
+                <Link
+                  href={`?page=${page + 1}`}
+                  className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+                >
+                  {t("analyses.next") ?? "Next →"}
+                </Link>
+              ) : <span />}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

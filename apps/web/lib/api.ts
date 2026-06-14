@@ -17,6 +17,9 @@ export type Org = {
   has_stripe_customer: boolean;
   aws_role_arn?: string | null;
   aws_external_id?: string | null;
+  aws_state_bucket?: string | null;
+  aws_state_key?: string | null;
+  contact_email?: string | null;
 };
 
 export type Repo = {
@@ -33,7 +36,10 @@ export type AnalysisListItem = {
   risk_score: number | null;
   pr_number: number;
   head_sha: string;
-  repo: string;
+  repo_full_name: string;
+  policy_verdict: string | null;
+  created_at: string | null;
+  files_scanned: number;
 };
 
 export type Finding = {

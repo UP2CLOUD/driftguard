@@ -202,7 +202,7 @@ export default async function IncidentsPage({
                 {inc.suggested_fix && (
                   <div className="mt-3 rounded border border-allowed/20 bg-allowed/5 px-3 py-2.5">
                     <span className="block sm:inline font-mono text-[10px] uppercase tracking-widest text-allowed mb-1 sm:mb-0 sm:mr-2">
-                      Suggested fix:
+                      {t("incidents.suggestedFixInline") ?? "Suggested fix:"}
                     </span>
                     <span className="font-mono text-[12px] sm:text-[11px] leading-relaxed text-allowed break-words [overflow-wrap:anywhere]">
                       {inc.suggested_fix}

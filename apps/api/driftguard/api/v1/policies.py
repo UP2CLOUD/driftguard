@@ -47,8 +47,16 @@ async def list_policies(
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
     org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    ).scalar_one_or_none()
+        (
+            await db.execute(
+                select(Organization)
+                .where(Organization.github_installation_id == installation_id)
+                .order_by(Organization.created_at.desc())
+            )
+        )
+        .scalars()
+        .first()
+    )
     if not org:
         return []
 
@@ -72,8 +80,16 @@ async def create_policy(
         raise HTTPException(422, f"rule_type must be one of: {VALID_RULE_TYPES}")
 
     org = (
-        await db.execute(select(Organization).where(Organization.github_installation_id == installation_id))
-    ).scalar_one_or_none()
+        (
+            await db.execute(
+                select(Organization)
+                .where(Organization.github_installation_id == installation_id)
+                .order_by(Organization.created_at.desc())
+            )
+        )
+        .scalars()
+        .first()
+    )
     if not org:
         raise HTTPException(404, "installation not found")
 
