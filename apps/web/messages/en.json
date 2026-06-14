@@ -338,7 +338,8 @@
     "notifAlertDesc": "DriftGuard sends an alert when a PR scan scores ≥ 60 risk or a policy block rule fires. Leave blank to disable.",
     "notifSending": "sending…",
     "notifSendTest": "Send test email",
-    "notifTestSent": "Test sent to {email}"
+    "notifTestSent": "Test sent to {email}",
+    "billingUnavailable": "Online billing is not enabled for this instance."
   },
   "installApp": {
     "title": "Install the GitHub App",
