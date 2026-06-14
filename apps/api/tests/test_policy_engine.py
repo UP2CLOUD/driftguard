@@ -139,7 +139,10 @@ class TestMatches:
 def _mock_db(org=None, rules=None) -> AsyncMock:
     """Build a mock AsyncSession that returns org and rules in sequence."""
     mock = AsyncMock()
-    org_result = MagicMock(scalar_one_or_none=MagicMock(return_value=org))
+    org_result = MagicMock(
+        scalar_one_or_none=MagicMock(return_value=org),
+        scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org), all=MagicMock(return_value=[]))),
+    )
     rules_result = MagicMock(scalars=MagicMock(return_value=MagicMock(all=MagicMock(return_value=rules or []))))
     mock.execute = AsyncMock(side_effect=[org_result, rules_result])
     mock.flush = AsyncMock()

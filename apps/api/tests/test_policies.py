@@ -270,6 +270,12 @@ class TestMemoryStats:
         mock.execute = AsyncMock(
             return_value=MagicMock(
                 scalar_one_or_none=MagicMock(return_value=None),
+                scalars=MagicMock(
+                    return_value=MagicMock(
+                        first=MagicMock(return_value=None),
+                        all=MagicMock(return_value=[]),
+                    )
+                ),
                 scalar_one=MagicMock(return_value=0),
                 all=MagicMock(return_value=[]),
             )
