@@ -167,6 +167,53 @@ class TestFromStaticScan:
         assert len(findings) == 2
         assert {f.rule_id for f in findings} == {"TF001", "K8S001"}
 
+    def test_best_practice_category_maps_to_policy(self):
+        findings = from_static_scan([_sf(category=Category.BEST_PRACTICE)])
+        assert findings[0].type == "policy"
+
+    def test_kubernetes_category_maps_to_security(self):
+        findings = from_static_scan([_sf(category=Category.KUBERNETES)])
+        assert findings[0].type == "security"
+
+    def test_github_actions_category_maps_to_security(self):
+        findings = from_static_scan([_sf(category=Category.GITHUB_ACTIONS)])
+        assert findings[0].type == "security"
+
+    def test_encryption_category_maps_to_security(self):
+        findings = from_static_scan([_sf(category=Category.ENCRYPTION)])
+        assert findings[0].type == "security"
+
+    def test_secrets_category_maps_to_security(self):
+        findings = from_static_scan([_sf(category=Category.SECRETS)])
+        assert findings[0].type == "security"
+
+    def test_compute_category_maps_to_security(self):
+        findings = from_static_scan([_sf(category=Category.COMPUTE)])
+        assert findings[0].type == "security"
+
+    def test_unknown_category_defaults_to_security(self):
+        """Any category not in the mapping falls back to 'security'."""
+        # Construct a finding with a raw string category to simulate an unknown type
+        sf = ScanFinding(
+            rule_id="FUTURE001",
+            severity=Severity.LOW,
+            category="unknown_future_category",  # type: ignore[arg-type]
+            title="Future rule",
+            message="Unknown category",
+            file="main.tf",
+            line=1,
+        )
+        findings = from_static_scan([sf])
+        assert findings[0].type == "security"
+
+    def test_category_string_stored_in_finding(self):
+        findings = from_static_scan([_sf(category=Category.KUBERNETES)])
+        assert findings[0].category == "kubernetes"
+
+    def test_title_preserved(self):
+        findings = from_static_scan([_sf(title="Privileged container")])
+        assert findings[0].title == "Privileged container"
+
 
 # ── aggregate_cost_cents edge cases ──────────────────────────────────────────
 

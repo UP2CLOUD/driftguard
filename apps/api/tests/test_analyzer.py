@@ -130,3 +130,136 @@ class TestMergeFindings:
         static = [_f("TF001", "r1"), _f("K8S001", "r2"), _f("GHA001", "r3")]
         result = _merge_findings(static, [])
         assert len(result) == 3
+
+
+# ── _compute_risk with plan ────────────────────────────────────────────────────
+
+
+def test_compute_risk_uses_plan_scorer_when_plan_has_changes():
+    """When a TerraformPlan with changes is provided, score_plan() is used instead of finding weights."""
+    from driftguard.services.terraform.plan_parser import parse_plan
+
+    raw = {
+        "format_version": "1.2",
+        "resource_changes": [
+            {
+                "address": "aws_rds_cluster.prod",
+                "type": "aws_rds_cluster",
+                "name": "prod",
+                "provider_config_key": "registry.terraform.io/hashicorp/aws",
+                "change": {
+                    "actions": ["delete"],
+                    "before": {"id": "prod"},
+                    "after": None,
+                    "after_unknown": {},
+                },
+            }
+        ],
+    }
+    plan = parse_plan(raw)
+    assert plan.changes  # guard: plan must have changes
+    score = _compute_risk([], plan)
+    # Deleting an RDS cluster is high-risk → score should be well above finding-fallback
+    assert score >= 70
+
+
+def test_compute_risk_plan_with_no_changes_falls_back_to_findings():
+    """When plan.changes is empty, falls back to finding-severity weighted sum."""
+    from driftguard.services.terraform.plan_parser import parse_plan
+
+    plan = parse_plan({"format_version": "1.2", "resource_changes": []})
+    assert plan.changes == []
+    findings = [_f(None, "r", "critical")]
+    score = _compute_risk(findings, plan)
+    assert score == 40  # critical weight = 40
+
+
+# ── _safe_infracost / _safe_checkov / _safe_drift ─────────────────────────────
+
+
+class TestSafeHelpers:
+    def test_safe_infracost_returns_none_on_error(self, tmp_path):
+        from unittest.mock import patch
+
+        from driftguard.workers.analyzer import _safe_infracost
+
+        with patch("driftguard.workers.analyzer.infracost.cost_breakdown", side_effect=RuntimeError("no binary")):
+            result = _safe_infracost(tmp_path / "plan.json")
+        assert result is None
+
+    def test_safe_infracost_returns_data_on_success(self, tmp_path):
+        from unittest.mock import patch
+
+        from driftguard.workers.analyzer import _safe_infracost
+
+        data = {"totalMonthlyCost": "50.00"}
+        with patch("driftguard.workers.analyzer.infracost.cost_breakdown", return_value=data):
+            result = _safe_infracost(tmp_path / "plan.json")
+        assert result == data
+
+    def test_safe_checkov_returns_none_on_error(self, tmp_path):
+        from unittest.mock import patch
+
+        from driftguard.workers.analyzer import _safe_checkov
+
+        with patch("driftguard.workers.analyzer.checkov.scan", side_effect=FileNotFoundError("checkov not found")):
+            result = _safe_checkov(tmp_path / "plan.json")
+        assert result is None
+
+    def test_safe_checkov_returns_list_on_success(self, tmp_path):
+        from unittest.mock import patch
+
+        from driftguard.workers.analyzer import _safe_checkov
+
+        data = [{"check_id": "CKV_AWS_19", "result": "FAILED"}]
+        with patch("driftguard.workers.analyzer.checkov.scan", return_value=data):
+            result = _safe_checkov(tmp_path / "plan.json")
+        assert result == data
+
+    def test_safe_drift_returns_empty_when_no_state(self, tmp_path):
+        """When no state resources are found, _safe_drift returns []."""
+        from unittest.mock import patch
+
+        from driftguard.workers.analyzer import _safe_drift
+
+        with patch("driftguard.integrations.drift.DriftAnalyzer.analyze_state_file", return_value=None):
+            result = _safe_drift(tmp_path, plan_json={})
+        assert result == []
+
+    def test_safe_drift_returns_findings_for_orphan_resources(self, tmp_path):
+        """Orphan resources in state but not in plan become drift Findings."""
+        from unittest.mock import patch
+
+        from driftguard.workers.analyzer import _safe_drift
+
+        orphan_resource = "aws_instance.orphan"
+        with (
+            patch("driftguard.integrations.drift.DriftAnalyzer.analyze_state_file", return_value={orphan_resource}),
+            patch("driftguard.integrations.drift.DriftAnalyzer.from_plan_json", return_value=[]),
+        ):
+            result = _safe_drift(tmp_path, plan_json={})
+        assert any(f.resource == orphan_resource for f in result)
+
+    def test_safe_drift_returns_empty_on_exception(self, tmp_path):
+        """Any exception in drift detection is swallowed — never raises."""
+        from unittest.mock import patch
+
+        from driftguard.workers.analyzer import _safe_drift
+
+        with patch("driftguard.integrations.drift.DriftAnalyzer.analyze_state_file", side_effect=RuntimeError("crash")):
+            result = _safe_drift(tmp_path, plan_json={})
+        assert result == []
+
+    def test_safe_drift_uses_provided_real_state(self, tmp_path):
+        """When real_state is passed in, analyze_state_file is NOT called."""
+        from unittest.mock import patch
+
+        from driftguard.workers.analyzer import _safe_drift
+
+        provided_state = {"aws_s3_bucket.logs"}
+        with (
+            patch("driftguard.integrations.drift.DriftAnalyzer.analyze_state_file") as mock_analyze,
+            patch("driftguard.integrations.drift.DriftAnalyzer.from_plan_json", return_value=[]),
+        ):
+            _safe_drift(tmp_path, plan_json={}, real_state=provided_state)
+        mock_analyze.assert_not_called()

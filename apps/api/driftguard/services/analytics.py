@@ -29,7 +29,7 @@ def track(event: str, properties: dict | None = None, distinct_id: str = "server
         if ph:
             ph.capture(distinct_id, event, properties or {})
     except Exception as exc:
-        log.debug("analytics.failed", event=event, error=str(exc))
+        log.debug("analytics.failed", event_name=event, error=str(exc))
 
 
 def identify(distinct_id: str, properties: dict) -> None:
