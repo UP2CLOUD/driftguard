@@ -184,6 +184,140 @@ class TestScanTrigger:
         )
         assert r.status_code == 422
 
+    def test_disabled_repo_returns_403(self):
+        from driftguard.db.models import Repository
+
+        org = _org()
+        repo = Repository(
+            id="repo-1",
+            org_id="org-1",
+            github_repo_id=1,
+            full_name="acme/infra",
+            default_branch="main",
+            enabled=False,
+        )
+        org_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
+        repo_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=repo))))
+        mock_session = AsyncMock()
+        mock_session.execute = AsyncMock(side_effect=[org_result, repo_result])
+        mock_session.flush = AsyncMock()
+        mock_session.commit = AsyncMock()
+        mock_session.add = MagicMock()
+        _override(mock_session)
+        try:
+            r = TestClient(app).post(
+                "/api/v1/scans/trigger",
+                json={"installation_id": 42, "repo_full_name": "acme/infra"},
+                headers=AUTH,
+            )
+            assert r.status_code == 403
+            assert "disabled" in r.json()["detail"].lower()
+        finally:
+            _cleanup()
+
+    def test_inprocess_scan_returns_202(self, monkeypatch):
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "celery_enabled", False)
+        org = _org()
+        org_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
+        no_repo_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=None))))
+        mock_session = AsyncMock()
+        mock_session.execute = AsyncMock(side_effect=[org_result, no_repo_result])
+        mock_session.flush = AsyncMock()
+        mock_session.commit = AsyncMock()
+        mock_session.add = MagicMock()
+        _override(mock_session)
+        try:
+            with patch(
+                "driftguard.api.v1.scans._run_scan_inprocess",
+                new_callable=AsyncMock,
+                return_value={
+                    "status": "completed",
+                    "task_id": "ana-1",
+                    "analysis_id": "ana-1",
+                    "risk_score": 0,
+                    "findings": 0,
+                    "message": "Scan completed for acme/infra@default",
+                },
+            ):
+                r = TestClient(app).post(
+                    "/api/v1/scans/trigger",
+                    json={"installation_id": 42, "repo_full_name": "acme/infra"},
+                    headers=AUTH,
+                )
+            assert r.status_code == 202
+            data = r.json()
+            assert data["status"] == "completed"
+            assert data["analysis_id"] == "ana-1"
+        finally:
+            _cleanup()
+
+
+# ── GET /scans/tasks/{task_id} ────────────────────────────────────────────────
+
+
+class TestGetTaskStatus:
+    def test_requires_auth(self):
+        r = TestClient(app).get("/api/v1/scans/tasks/task-1")
+        assert r.status_code == 401
+
+    def test_celery_unavailable_returns_unknown(self):
+        with patch("driftguard.worker.app.celery_app", side_effect=ImportError("celery not configured")):
+            with patch.dict("sys.modules", {"driftguard.worker.app": None}):
+                r = TestClient(app).get("/api/v1/scans/tasks/task-xyz", headers=AUTH)
+        assert r.status_code == 200
+        assert r.json()["state"] == "unknown"
+
+    def _mock_async_result(self, state: str, result=None):
+        ar = MagicMock()
+        ar.state = state
+        ar.result = result
+        celery = MagicMock()
+        celery.AsyncResult.return_value = ar
+        return celery
+
+    def test_pending_state(self):
+        celery = self._mock_async_result("PENDING")
+        with patch("driftguard.worker.app.celery_app", celery):
+            r = TestClient(app).get("/api/v1/scans/tasks/task-1", headers=AUTH)
+        assert r.status_code == 200
+        assert r.json() == {"state": "pending"}
+
+    def test_started_state(self):
+        celery = self._mock_async_result("STARTED")
+        with patch("driftguard.worker.app.celery_app", celery):
+            r = TestClient(app).get("/api/v1/scans/tasks/task-1", headers=AUTH)
+        assert r.status_code == 200
+        assert r.json() == {"state": "started"}
+
+    def test_completed_state(self):
+        task_result = {"analysis_id": "ana-42", "risk_score": 35, "findings": []}
+        celery = self._mock_async_result("SUCCESS", result=task_result)
+        with patch("driftguard.worker.app.celery_app", celery):
+            r = TestClient(app).get("/api/v1/scans/tasks/task-1", headers=AUTH)
+        assert r.status_code == 200
+        data = r.json()
+        assert data["state"] == "completed"
+        assert data["analysis_id"] == "ana-42"
+        assert data["risk_score"] == 35
+
+    def test_failed_state(self):
+        celery = self._mock_async_result("FAILURE", result=RuntimeError("out of memory"))
+        with patch("driftguard.worker.app.celery_app", celery):
+            r = TestClient(app).get("/api/v1/scans/tasks/task-1", headers=AUTH)
+        assert r.status_code == 200
+        data = r.json()
+        assert data["state"] == "failed"
+        assert "error" in data
+
+    def test_revoked_state(self):
+        celery = self._mock_async_result("REVOKED", result="Task was cancelled")
+        with patch("driftguard.worker.app.celery_app", celery):
+            r = TestClient(app).get("/api/v1/scans/tasks/task-1", headers=AUTH)
+        assert r.status_code == 200
+        assert r.json()["state"] == "failed"
+
 
 # ── Default-branch handling ───────────────────────────────────────────────────
 
