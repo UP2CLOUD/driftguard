@@ -245,7 +245,18 @@
     "notifSending": "भेजा जा रहा है…",
     "notifSendTest": "टेस्ट ईमेल भेजें",
     "notifTestSent": "{email} को टेस्ट भेजा गया",
-    "billingUnavailable": "इस इंस्टेंस के लिए ऑनलाइन बिलिंग सक्षम नहीं है।"
+    "billingUnavailable": "इस इंस्टेंस के लिए ऑनलाइन बिलिंग सक्षम नहीं है।",
+    "resources": "संसाधन और सहायता",
+    "resourcesDesc": "दस्तावेज़, API संदर्भ और सहायता पाने के तरीके।",
+    "resourceDocs": "दस्तावेज़",
+    "resourceDocsDesc": "सेटअप गाइड, नीति सिंटैक्स और मूल अवधारणाएँ।",
+    "resourceApi": "API संदर्भ",
+    "resourceApiDesc": "विश्लेषण, नीतियों और संगठनों के लिए REST एंडपॉइंट।",
+    "resourceCli": "DriftGuard CLI",
+    "resourceCliDesc": "Terraform और Kubernetes को स्थानीय रूप से और CI में स्कैन करें।",
+    "resourceSupport": "सहायता से संपर्क करें",
+    "resourceSupportDesc": "प्रश्न, बग रिपोर्ट या फ़ीचर अनुरोध।",
+    "resourceOpen": "खोलें →"
   },
   "installApp": {
     "title": "GitHub App इंस्टॉल करें",

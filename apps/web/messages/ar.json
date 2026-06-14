@@ -245,7 +245,18 @@
     "notifSending": "جارٍ الإرسال…",
     "notifSendTest": "إرسال بريد تجريبي",
     "notifTestSent": "تم إرسال الاختبار إلى {email}",
-    "billingUnavailable": "الفوترة عبر الإنترنت غير مفعّلة لهذه النسخة."
+    "billingUnavailable": "الفوترة عبر الإنترنت غير مفعّلة لهذه النسخة.",
+    "resources": "الموارد والدعم",
+    "resourcesDesc": "الوثائق ومرجع واجهة برمجة التطبيقات وطرق الحصول على المساعدة.",
+    "resourceDocs": "الوثائق",
+    "resourceDocsDesc": "أدلة الإعداد وصياغة السياسات والمفاهيم الأساسية.",
+    "resourceApi": "مرجع واجهة برمجة التطبيقات",
+    "resourceApiDesc": "نقاط نهاية REST للتحليلات والسياسات والمؤسسات.",
+    "resourceCli": "DriftGuard CLI",
+    "resourceCliDesc": "افحص Terraform وKubernetes محليًا وفي CI.",
+    "resourceSupport": "اتصل بالدعم",
+    "resourceSupportDesc": "أسئلة أو تقارير أخطاء أو طلبات ميزات.",
+    "resourceOpen": "فتح →"
   },
   "installApp": {
     "title": "تثبيت تطبيق GitHub",

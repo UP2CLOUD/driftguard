@@ -339,7 +339,18 @@
     "notifSending": "enviando…",
     "notifSendTest": "Enviar e-mail de teste",
     "notifTestSent": "Teste enviado para {email}",
-    "billingUnavailable": "O pagamento online não está ativado nesta instância."
+    "billingUnavailable": "O pagamento online não está ativado nesta instância.",
+    "resources": "Recursos e suporte",
+    "resourcesDesc": "Documentação, referência da API e formas de obter ajuda.",
+    "resourceDocs": "Documentação",
+    "resourceDocsDesc": "Guias de configuração, sintaxe de políticas e conceitos.",
+    "resourceApi": "Referência da API",
+    "resourceApiDesc": "Endpoints REST para análises, políticas e organizações.",
+    "resourceCli": "DriftGuard CLI",
+    "resourceCliDesc": "Escaneie Terraform e Kubernetes localmente e no CI.",
+    "resourceSupport": "Falar com o suporte",
+    "resourceSupportDesc": "Dúvidas, relatos de bugs ou pedidos de recursos.",
+    "resourceOpen": "Abrir →"
   },
   "installApp": {
     "title": "Instalar o GitHub App",

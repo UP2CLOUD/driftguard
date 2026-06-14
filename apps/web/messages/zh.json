@@ -245,7 +245,18 @@
     "notifSending": "发送中…",
     "notifSendTest": "发送测试邮件",
     "notifTestSent": "测试邮件已发送至 {email}",
-    "billingUnavailable": "此实例未启用在线计费。"
+    "billingUnavailable": "此实例未启用在线计费。",
+    "resources": "资源与支持",
+    "resourcesDesc": "文档、API 参考以及获取帮助的方式。",
+    "resourceDocs": "文档",
+    "resourceDocsDesc": "安装指南、策略语法和核心概念。",
+    "resourceApi": "API 参考",
+    "resourceApiDesc": "用于分析、策略和组织的 REST 接口。",
+    "resourceCli": "DriftGuard CLI",
+    "resourceCliDesc": "在本地和 CI 中扫描 Terraform 与 Kubernetes。",
+    "resourceSupport": "联系支持",
+    "resourceSupportDesc": "问题、错误报告或功能请求。",
+    "resourceOpen": "打开 →"
   },
   "installApp": {
     "title": "安装 GitHub 应用",

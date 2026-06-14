@@ -339,7 +339,18 @@
     "notifSending": "sending…",
     "notifSendTest": "Send test email",
     "notifTestSent": "Test sent to {email}",
-    "billingUnavailable": "Online billing is not enabled for this instance."
+    "billingUnavailable": "Online billing is not enabled for this instance.",
+    "resources": "Resources & support",
+    "resourcesDesc": "Documentation, API reference, and ways to get help.",
+    "resourceDocs": "Documentation",
+    "resourceDocsDesc": "Setup guides, policy syntax, and core concepts.",
+    "resourceApi": "API reference",
+    "resourceApiDesc": "REST endpoints for analyses, policies, and orgs.",
+    "resourceCli": "DriftGuard CLI",
+    "resourceCliDesc": "Scan Terraform & Kubernetes locally and in CI.",
+    "resourceSupport": "Contact support",
+    "resourceSupportDesc": "Questions, bug reports, or feature requests.",
+    "resourceOpen": "Open →"
   },
   "installApp": {
     "title": "Install the GitHub App",

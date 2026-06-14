@@ -245,7 +245,18 @@
     "notifSending": "enviando…",
     "notifSendTest": "Enviar email de prueba",
     "notifTestSent": "Prueba enviada a {email}",
-    "billingUnavailable": "La facturación en línea no está habilitada para esta instancia."
+    "billingUnavailable": "La facturación en línea no está habilitada para esta instancia.",
+    "resources": "Recursos y soporte",
+    "resourcesDesc": "Documentación, referencia de la API y formas de obtener ayuda.",
+    "resourceDocs": "Documentación",
+    "resourceDocsDesc": "Guías de configuración, sintaxis de políticas y conceptos.",
+    "resourceApi": "Referencia de la API",
+    "resourceApiDesc": "Endpoints REST para análisis, políticas y organizaciones.",
+    "resourceCli": "DriftGuard CLI",
+    "resourceCliDesc": "Escanea Terraform y Kubernetes localmente y en CI.",
+    "resourceSupport": "Contactar soporte",
+    "resourceSupportDesc": "Preguntas, informes de errores o solicitudes de funciones.",
+    "resourceOpen": "Abrir →"
   },
   "installApp": {
     "title": "Instalar la GitHub App",
