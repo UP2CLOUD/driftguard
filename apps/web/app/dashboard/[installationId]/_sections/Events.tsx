@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getEvents, getOverview } from "./api";
 import { formatTime } from "@/lib/format-date";
 
@@ -44,8 +45,8 @@ export async function EventsSection({
               sev === "critical" ? "text-blocked" :
               sev === "high" ? "text-[color:var(--dg-severity-high)]" :
               sev === "warn" ? "text-warned" : "text-[color:var(--dg-fg-muted)]";
-            return (
-              <div key={e.id} className="px-4 py-3">
+            const inner = (
+              <>
                 <div className="flex items-center gap-2 mb-0.5">
                   <span
                     className={`h-1.5 w-1.5 rounded-full shrink-0 ${dotCls}`}
@@ -61,6 +62,19 @@ export async function EventsSection({
                     {formatTime(e.created_at, locale)}
                   </p>
                 )}
+              </>
+            );
+            return e.analysis_id ? (
+              <Link
+                key={e.id}
+                href={`/dashboard/${installationId}/analyses/${e.analysis_id}`}
+                className="block px-4 py-3 hover:bg-[color:var(--dg-surface-raised)] transition"
+              >
+                {inner}
+              </Link>
+            ) : (
+              <div key={e.id} className="px-4 py-3">
+                {inner}
               </div>
             );
           })}

@@ -273,6 +273,7 @@ async def _recent_events(db: AsyncSession, org_id: str) -> list[dict]:
             "severity": e.severity,
             "source": e.source,
             "message": e.message[:120] if e.message else "",
+            "analysis_id": e.analysis_id,
             "created_at": e.created_at.isoformat() if e.created_at else None,
         }
         for e in rows
