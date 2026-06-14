@@ -34,7 +34,10 @@ export type AnalysisListItem = {
   risk_score: number | null;
   pr_number: number;
   head_sha: string;
-  repo: string;
+  repo_full_name: string;
+  policy_verdict: string | null;
+  created_at: string | null;
+  files_scanned: number;
 };
 
 export type Finding = {
