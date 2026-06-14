@@ -49,8 +49,11 @@ jobs:
     steps:
     - name: Check GCP configuration
       id: check
+      env:
+        GCP_WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+        GCP_DEPLOYER_SA: ${{ vars.GCP_DEPLOYER_SA }}
       run: |
-        if [ -z "${{ vars.GCP_WIF_PROVIDER }}" ] || [ -z "${{ vars.GCP_DEPLOYER_SA }}" ]; then
+        if [ -z "$GCP_WIF_PROVIDER" ] || [ -z "$GCP_DEPLOYER_SA" ]; then
           echo "gcp_ready=false" >> "$GITHUB_OUTPUT"
           echo "::warning::GCP not configured. Set vars.GCP_WIF_PROVIDER and vars.GCP_DEPLOYER_SA."
           echo "::warning::Workflow will run tests only and skip build/deploy."
@@ -208,10 +211,15 @@ jobs:
         chmod +x /usr/local/bin/yq
 
     - name: Update image in gitops repo
+      env:
+        DEPLOY_ENV: ${{ inputs.environment }}
+        DEPLOY_DIGEST: ${{ needs.build-api.outputs.digest }}
+        DEPLOY_SHA: ${{ github.sha }}
+        DEPLOY_ACTOR: ${{ github.actor }}
       run: |
-        ENV="${{ inputs.environment }}"
-        DIGEST="${{ needs.build-api.outputs.digest }}"
-        SHA="${{ github.sha }}"
+        ENV="$DEPLOY_ENV"
+        DIGEST="$DEPLOY_DIGEST"
+        SHA="$DEPLOY_SHA"
         FILE="gitops/envs/${ENV}/api/values-prod.yaml"
 
         # Create file if it doesn't exist yet
@@ -221,7 +229,7 @@ jobs:
         yq e ".image.tag = \"${SHA:0:7}\"" -i "$FILE"
         yq e ".image.digest = \"$DIGEST\"" -i "$FILE"
         yq e '.podAnnotations["dg.io/deployed-at"] = "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'"' -i "$FILE"
-        yq e '.podAnnotations["dg.io/deployed-by"] = "${{ github.actor }}"' -i "$FILE"
+        yq e ".podAnnotations[\"dg.io/deployed-by\"] = \"$DEPLOY_ACTOR\"" -i "$FILE"
 
         cd gitops
         git config user.name  "DriftGuard CI"
@@ -229,7 +237,7 @@ jobs:
         git add -A
         git diff --staged --quiet && echo "No changes" && exit 0
 
-        MSG="chore(${ENV}): deploy api ${SHA:0:7}\n\nDigest: ${DIGEST}\nActor: ${{ github.actor }}"
+        MSG="chore(${ENV}): deploy api ${SHA:0:7}\n\nDigest: ${DIGEST}\nActor: ${DEPLOY_ACTOR}"
         git commit -m "$MSG"
 
         git push
@@ -264,14 +272,18 @@ jobs:
       if: always()
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        DEPLOY_ENV: ${{ inputs.environment }}
+        DEPLOY_SHA: ${{ github.sha }}
+        DEPLOY_ACTOR: ${{ github.actor }}
+        JOB_STATUS: ${{ job.status }}
       run: |
-        RESULT="${{ job.status }}"
+        RESULT="$JOB_STATUS"
         COLOR=$([ "$RESULT" = "success" ] && echo "#22d38d" || echo "#ff4757")
         curl -s -X POST "$SLACK_WEBHOOK_URL" \
           -H "Content-Type: application/json" \
           -d "{
             \"attachments\": [{
               \"color\": \"${COLOR}\",
-              \"text\": \"*Deploy ${{ inputs.environment }}*: ${RESULT}\nAPI: \`${{ github.sha }}\`\nActor: ${{ github.actor }}\"
+              \"text\": \"*Deploy ${DEPLOY_ENV}*: ${RESULT}\nAPI: \`${DEPLOY_SHA}\`\nActor: ${DEPLOY_ACTOR}\"
             }]
           }" || true

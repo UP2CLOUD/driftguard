@@ -104,6 +104,30 @@ class TestListIncidents:
         r = TestClient(app).get("/api/v1/incidents?installation_id=42")
         assert r.status_code == 401
 
+    def test_invalid_status_returns_422(self):
+        r = TestClient(app).get("/api/v1/incidents?installation_id=42&status=bogus", headers=AUTH)
+        assert r.status_code == 422
+
+    def test_invalid_severity_returns_422(self):
+        r = TestClient(app).get("/api/v1/incidents?installation_id=42&severity=ultra", headers=AUTH)
+        assert r.status_code == 422
+
+    def test_valid_status_passes_validation(self):
+        _override(_mock_list(org=None))
+        try:
+            r = TestClient(app).get("/api/v1/incidents?installation_id=9999&status=open", headers=AUTH)
+            assert r.status_code == 200
+        finally:
+            _cleanup()
+
+    def test_valid_severity_passes_validation(self):
+        _override(_mock_list(org=None))
+        try:
+            r = TestClient(app).get("/api/v1/incidents?installation_id=9999&severity=high", headers=AUTH)
+            assert r.status_code == 200
+        finally:
+            _cleanup()
+
 
 # ── GET /incidents/{id} ────────────────────────────────────────────────────────
 
