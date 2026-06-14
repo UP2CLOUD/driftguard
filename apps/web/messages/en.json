@@ -719,7 +719,8 @@
     "sev_critical": "Critical",
     "sev_high": "High",
     "sev_medium": "Medium",
-    "sev_low": "Low"
+    "sev_low": "Low",
+    "viewAnalysis": "View analysis →"
   },
   "docs": {
     "eyebrow": "Documentation",

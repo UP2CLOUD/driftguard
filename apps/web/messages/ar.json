@@ -697,7 +697,8 @@
     "sev_critical": "حرج",
     "sev_high": "عالي",
     "sev_medium": "متوسط",
-    "sev_low": "منخفض"
+    "sev_low": "منخفض",
+    "viewAnalysis": "عرض التحليل →"
   },
   "docs": {
     "eyebrow": "التوثيق",

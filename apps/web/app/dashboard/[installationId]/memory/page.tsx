@@ -182,7 +182,7 @@ export default async function MemoryPage({
                   )}
                   {e.analysis_id && (
                     <span className="font-mono text-[10px] text-[color:var(--dg-electric)]">
-                      View analysis →
+                      {t("memory.viewAnalysis") ?? "View analysis →"}
                     </span>
                   )}
                 </div>
