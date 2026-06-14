@@ -109,13 +109,16 @@ async def get_org_by_installation(
     if org is None:
         raise HTTPException(404, "org not found")
 
+    s = org.settings or {}
     return {
         "id": org.id,
         "installation_id": org.github_installation_id,
         "plan": org.plan,
         "has_stripe_customer": org.stripe_customer_id is not None,
-        "aws_role_arn": (org.settings or {}).get("aws_role_arn"),
+        "aws_role_arn": s.get("aws_role_arn"),
         "aws_external_id": f"driftguard-{org.github_installation_id}",
+        "aws_state_bucket": s.get("state_bucket"),
+        "aws_state_key": s.get("state_key", "terraform.tfstate"),
         "contact_email": org.contact_email,
     }
 

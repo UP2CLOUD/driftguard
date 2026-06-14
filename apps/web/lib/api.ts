@@ -17,6 +17,8 @@ export type Org = {
   has_stripe_customer: boolean;
   aws_role_arn?: string | null;
   aws_external_id?: string | null;
+  aws_state_bucket?: string | null;
+  aws_state_key?: string | null;
   contact_email?: string | null;
 };
 
