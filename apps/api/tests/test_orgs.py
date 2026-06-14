@@ -296,6 +296,20 @@ class TestOrgAnalyses:
         finally:
             _cleanup()
 
+    def test_limit_above_max_returns_422(self):
+        r = TestClient(app).get("/api/v1/orgs/org-1/analyses?limit=101", headers=AUTH)
+        assert r.status_code == 422
+
+    def test_offset_accepted(self):
+        mock = AsyncMock()
+        mock.execute = AsyncMock(return_value=MagicMock(all=MagicMock(return_value=[])))
+        _override(mock)
+        try:
+            r = TestClient(app).get("/api/v1/orgs/org-1/analyses?offset=20", headers=AUTH)
+            assert r.status_code == 200
+        finally:
+            _cleanup()
+
 
 # ── GET /orgs/by-installation/{installation_id} ───────────────────────────────
 
