@@ -20,7 +20,19 @@
     "menuLabel": "القائمة",
     "howItWorks": "▸ كيف يعمل",
     "auditLog": "سجل التدقيق",
-    "analyses": "التحليلات"
+    "analyses": "التحليلات",
+    "cmdConnectGitHub": "ربط GitHub",
+    "cmdDescOverview": "الانتقال إلى نظرة عامة على لوحة التحكم",
+    "cmdDescRepos": "إدارة المستودعات المتصلة",
+    "cmdDescIncidents": "عرض الحوادث النشطة",
+    "cmdDescPolicies": "تكوين قواعد السياسة",
+    "cmdDescMemory": "مراجعة قرارات ذاكرة الذكاء الاصطناعي",
+    "cmdDescSettings": "إعدادات مساحة العمل والفوترة",
+    "cmdDescConnectGitHub": "تثبيت تطبيق GitHub على مؤسستك",
+    "cmdDescDocs": "قراءة التوثيق",
+    "cmdDescSignOut": "تسجيل الخروج من DriftGuard",
+    "cmdSearchPlaceholder": "البحث في الأوامر…",
+    "cmdNoResults": "لم يتم العثور على أوامر"
   },
   "auth": {
     "goToDashboard": "الانتقال إلى لوحة التحكم →",

@@ -20,7 +20,19 @@
     "menuLabel": "菜单",
     "howItWorks": "▸ 工作原理",
     "auditLog": "审计日志",
-    "analyses": "分析"
+    "analyses": "分析",
+    "cmdConnectGitHub": "连接 GitHub",
+    "cmdDescOverview": "前往仪表板概览",
+    "cmdDescRepos": "管理已连接的仓库",
+    "cmdDescIncidents": "查看活跃事件",
+    "cmdDescPolicies": "配置策略规则",
+    "cmdDescMemory": "审查 AI 内存决策",
+    "cmdDescSettings": "工作区和计费设置",
+    "cmdDescConnectGitHub": "在您的组织上安装 GitHub 应用",
+    "cmdDescDocs": "阅读文档",
+    "cmdDescSignOut": "退出 DriftGuard",
+    "cmdSearchPlaceholder": "搜索命令…",
+    "cmdNoResults": "未找到命令"
   },
   "auth": {
     "goToDashboard": "前往控制台 →",

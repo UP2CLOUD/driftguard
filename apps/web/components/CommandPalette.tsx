@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOutToHome } from "@/lib/auth-actions";
+import { useT } from "@/components/I18nProvider";
 
 interface Command {
   label: string;
@@ -18,28 +19,29 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ installationId, open, onClose }: CommandPaletteProps) {
   const router = useRouter();
+  const t = useT();
   const base = `/dashboard/${installationId}`;
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const commands: Command[] = [
-    { label: "Overview", description: "Go to dashboard overview", action: () => router.push(base) },
-    { label: "Repos", description: "Manage connected repositories", action: () => router.push(`${base}/repos`) },
-    { label: "Incidents", description: "View active incidents", action: () => router.push(`${base}/incidents`) },
-    { label: "Policies", description: "Configure policy rules", action: () => router.push(`${base}/policies`) },
-    { label: "Memory", description: "Review AI memory decisions", action: () => router.push(`${base}/memory`) },
-    { label: "Settings", description: "Workspace and billing settings", action: () => router.push(`${base}/settings`) },
+    { label: t("nav.overview") ?? "Overview", description: t("nav.cmdDescOverview") ?? "Go to dashboard overview", action: () => router.push(base) },
+    { label: t("nav.repos") ?? "Repos", description: t("nav.cmdDescRepos") ?? "Manage connected repositories", action: () => router.push(`${base}/repos`) },
+    { label: t("nav.incidents") ?? "Incidents", description: t("nav.cmdDescIncidents") ?? "View active incidents", action: () => router.push(`${base}/incidents`) },
+    { label: t("nav.policies") ?? "Policies", description: t("nav.cmdDescPolicies") ?? "Configure policy rules", action: () => router.push(`${base}/policies`) },
+    { label: t("nav.memory") ?? "Memory", description: t("nav.cmdDescMemory") ?? "Review AI memory decisions", action: () => router.push(`${base}/memory`) },
+    { label: t("nav.settings") ?? "Settings", description: t("nav.cmdDescSettings") ?? "Workspace and billing settings", action: () => router.push(`${base}/settings`) },
     {
-      label: "Connect GitHub",
-      description: "Install GitHub App on your organization",
+      label: t("nav.cmdConnectGitHub") ?? "Connect GitHub",
+      description: t("nav.cmdDescConnectGitHub") ?? "Install GitHub App on your organization",
       action: () => {
         const slug = process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-reviews";
         window.open(`https://github.com/apps/${slug}/installations/new`, "_blank");
       },
     },
-    { label: "Docs", description: "Read the documentation", action: () => router.push("/docs") },
-    { label: "Sign out", description: "Sign out of DriftGuard", action: () => signOutToHome() },
+    { label: t("nav.docs") ?? "Docs", description: t("nav.cmdDescDocs") ?? "Read the documentation", action: () => router.push("/docs") },
+    { label: t("nav.signOut") ?? "Sign out", description: t("nav.cmdDescSignOut") ?? "Sign out of DriftGuard", action: () => signOutToHome() },
   ];
 
   const filtered = commands.filter(
@@ -100,7 +102,7 @@ export function CommandPalette({ installationId, open, onClose }: CommandPalette
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search commands…"
+            placeholder={t("nav.cmdSearchPlaceholder") ?? "Search commands…"}
             className="flex-1 bg-transparent font-mono text-[13px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] outline-none"
           />
           <kbd className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">esc</kbd>
@@ -110,7 +112,7 @@ export function CommandPalette({ installationId, open, onClose }: CommandPalette
         <div className="max-h-64 overflow-y-auto py-1">
           {filtered.length === 0 ? (
             <div className="px-4 py-6 text-center font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">
-              No commands found
+              {t("nav.cmdNoResults") ?? "No commands found"}
             </div>
           ) : (
             filtered.map((cmd, i) => (

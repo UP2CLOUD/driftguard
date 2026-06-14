@@ -20,7 +20,19 @@
     "menuLabel": "Menu",
     "howItWorks": "▸ how it works",
     "auditLog": "Audit log",
-    "analyses": "Analyses"
+    "analyses": "Analyses",
+    "cmdConnectGitHub": "Connect GitHub",
+    "cmdDescOverview": "Go to dashboard overview",
+    "cmdDescRepos": "Manage connected repositories",
+    "cmdDescIncidents": "View active incidents",
+    "cmdDescPolicies": "Configure policy rules",
+    "cmdDescMemory": "Review AI memory decisions",
+    "cmdDescSettings": "Workspace and billing settings",
+    "cmdDescConnectGitHub": "Install GitHub App on your organization",
+    "cmdDescDocs": "Read the documentation",
+    "cmdDescSignOut": "Sign out of DriftGuard",
+    "cmdSearchPlaceholder": "Search commands…",
+    "cmdNoResults": "No commands found"
   },
   "auth": {
     "goToDashboard": "Go to Dashboard →",

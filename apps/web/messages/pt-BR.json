@@ -42,7 +42,19 @@
     "menuLabel": "Menu",
     "howItWorks": "▸ como funciona",
     "auditLog": "Auditoria",
-    "analyses": "Análises"
+    "analyses": "Análises",
+    "cmdConnectGitHub": "Conectar GitHub",
+    "cmdDescOverview": "Ir para a visão geral do painel",
+    "cmdDescRepos": "Gerenciar repositórios conectados",
+    "cmdDescIncidents": "Ver incidentes ativos",
+    "cmdDescPolicies": "Configurar regras de política",
+    "cmdDescMemory": "Revisar decisões de memória de IA",
+    "cmdDescSettings": "Configurações do espaço de trabalho e faturamento",
+    "cmdDescConnectGitHub": "Instalar o GitHub App na sua organização",
+    "cmdDescDocs": "Ler a documentação",
+    "cmdDescSignOut": "Sair do DriftGuard",
+    "cmdSearchPlaceholder": "Pesquisar comandos…",
+    "cmdNoResults": "Nenhum comando encontrado"
   },
   "auth": {
     "goToDashboard": "Ir para o painel →",

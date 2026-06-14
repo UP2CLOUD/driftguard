@@ -20,7 +20,19 @@
     "menuLabel": "मेनू",
     "howItWorks": "▸ कैसे काम करता है",
     "auditLog": "ऑडिट लॉग",
-    "analyses": "विश्लेषण"
+    "analyses": "विश्लेषण",
+    "cmdConnectGitHub": "GitHub कनेक्ट करें",
+    "cmdDescOverview": "डैशबोर्ड अवलोकन पर जाएं",
+    "cmdDescRepos": "कनेक्टेड रिपॉजिटरी प्रबंधित करें",
+    "cmdDescIncidents": "सक्रिय घटनाएं देखें",
+    "cmdDescPolicies": "नीति नियम कॉन्फ़िगर करें",
+    "cmdDescMemory": "AI मेमोरी निर्णयों की समीक्षा करें",
+    "cmdDescSettings": "कार्यस्थान और बिलिंग सेटिंग्स",
+    "cmdDescConnectGitHub": "अपने संगठन पर GitHub App इंस्टॉल करें",
+    "cmdDescDocs": "दस्तावेज़ पढ़ें",
+    "cmdDescSignOut": "DriftGuard से साइन आउट करें",
+    "cmdSearchPlaceholder": "कमांड खोजें…",
+    "cmdNoResults": "कोई कमांड नहीं मिला"
   },
   "auth": {
     "goToDashboard": "डैशबोर्ड पर जाएँ →",
