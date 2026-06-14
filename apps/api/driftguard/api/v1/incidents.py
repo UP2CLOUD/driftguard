@@ -40,6 +40,11 @@ async def list_incidents(
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
+    if status is not None and status not in VALID_STATUSES:
+        raise HTTPException(422, f"status must be one of: {', '.join(sorted(VALID_STATUSES))}")
+    if severity is not None and severity not in VALID_SEVERITIES:
+        raise HTTPException(422, f"severity must be one of: {', '.join(sorted(VALID_SEVERITIES))}")
+
     org = (
         (
             await db.execute(
@@ -51,11 +56,6 @@ async def list_incidents(
         .scalars()
         .first()
     )
-    if status is not None and status not in VALID_STATUSES:
-        raise HTTPException(422, f"status must be one of: {', '.join(sorted(VALID_STATUSES))}")
-    if severity is not None and severity not in VALID_SEVERITIES:
-        raise HTTPException(422, f"severity must be one of: {', '.join(sorted(VALID_SEVERITIES))}")
-
     if not org:
         return []
 
