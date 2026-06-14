@@ -266,7 +266,12 @@ class TestScanQuota:
         """Quota infrastructure errors must not block scans (parity with webhook path)."""
         org = _org()
         org_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
-        no_row_result = MagicMock(scalar_one_or_none=MagicMock(return_value=None))
+        no_row_result = MagicMock(
+            scalar_one_or_none=MagicMock(return_value=None),
+            scalars=MagicMock(
+                return_value=MagicMock(first=MagicMock(return_value=None), all=MagicMock(return_value=[]))
+            ),
+        )
         mock_session = AsyncMock()
         mock_session.execute = AsyncMock(side_effect=[org_result, no_row_result, no_row_result])
         mock_session.flush = AsyncMock()

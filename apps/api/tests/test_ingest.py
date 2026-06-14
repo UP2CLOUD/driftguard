@@ -109,7 +109,11 @@ def test_ingest_high_severity_review_action():
 def test_ingest_unknown_installation_returns_404():
     """Events from unregistered installations must be rejected."""
     mock = AsyncMock()
-    mock.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=None)))
+    _no_result = MagicMock(
+        scalar_one_or_none=MagicMock(return_value=None),
+        scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=None), all=MagicMock(return_value=[]))),
+    )
+    mock.execute = AsyncMock(return_value=_no_result)
     mock.flush = AsyncMock()
     mock.commit = AsyncMock()
     mock.add = MagicMock()
