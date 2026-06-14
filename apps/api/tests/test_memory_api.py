@@ -117,6 +117,29 @@ class TestListMemory:
         r = TestClient(app).get("/api/v1/memory?installation_id=42")
         assert r.status_code == 401
 
+    def test_limit_above_max_returns_422(self):
+        r = TestClient(app).get("/api/v1/memory?installation_id=42&limit=101", headers=AUTH)
+        assert r.status_code == 422
+
+    def test_limit_at_max_accepted(self):
+        _override(_mock_list(org=None))
+        try:
+            r = TestClient(app).get("/api/v1/memory?installation_id=9999&limit=100", headers=AUTH)
+            assert r.status_code == 200
+        finally:
+            _cleanup()
+
+    def test_null_intent_text_returned_as_null(self):
+        emb = _embedding()
+        emb.intent_text = None
+        _override(_mock_list(org=_org(), embeddings=[emb]))
+        try:
+            r = TestClient(app).get("/api/v1/memory?installation_id=42", headers=AUTH)
+            assert r.status_code == 200
+            assert r.json()[0]["intent_text"] is None
+        finally:
+            _cleanup()
+
 
 # ── GET /memory/stats ─────────────────────────────────────────────────────────
 
@@ -166,6 +189,27 @@ class TestMemoryStats:
     def test_requires_auth(self):
         r = TestClient(app).get("/api/v1/memory/stats?installation_id=42")
         assert r.status_code == 401
+
+    def test_null_severity_excluded_from_by_severity(self):
+        """Embeddings with severity=None must not appear as a null key in by_severity."""
+        _override(
+            _mock_stats(
+                org=_org(),
+                total=3,
+                outcome_rows=[("blocked", 3)],
+                sev_rows=[(None, 2), ("high", 1)],
+            )
+        )
+        try:
+            r = TestClient(app).get("/api/v1/memory/stats?installation_id=42", headers=AUTH)
+            assert r.status_code == 200
+            data = r.json()
+            assert None not in data["by_severity"]
+            assert "null" not in data["by_severity"]
+            assert data["by_severity"]["high"] == 1
+            assert data["total"] == 3
+        finally:
+            _cleanup()
 
 
 # ── POST /memory/recall ───────────────────────────────────────────────────────
