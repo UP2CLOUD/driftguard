@@ -258,3 +258,59 @@ class TestPatchIncident:
             assert r.json()["description"] == "Updated details"
         finally:
             _cleanup()
+
+    def test_resolved_at_not_overwritten_when_already_set(self):
+        """Re-resolving an already-resolved incident must not reset resolved_at."""
+        original_resolved = datetime(2026, 1, 15, 12, 0, 0, tzinfo=UTC)
+        inc = _incident(status="resolved")
+        inc.resolved_at = original_resolved
+        _override(_mock_get(incident=inc))
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/incidents/inc-1",
+                json={"status": "resolved"},
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            assert r.json()["resolved_at"] == "2026-01-15T12:00:00+00:00"
+        finally:
+            _cleanup()
+
+    def test_update_suggested_fix(self):
+        inc = _incident()
+        _override(_mock_get(incident=inc))
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/incidents/inc-1",
+                json={"suggested_fix": "Run terraform apply with correct ACL"},
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            assert r.json()["suggested_fix"] == "Run terraform apply with correct ACL"
+        finally:
+            _cleanup()
+
+
+# ── GET /incidents — limit/offset validation ──────────────────────────────────
+
+
+class TestListIncidentsValidation:
+    def test_limit_above_max_returns_422(self):
+        r = TestClient(app).get("/api/v1/incidents?installation_id=42&limit=101", headers=AUTH)
+        assert r.status_code == 422
+
+    def test_limit_at_max_accepted(self):
+        _override(_mock_list(org=None))
+        try:
+            r = TestClient(app).get("/api/v1/incidents?installation_id=9999&limit=100", headers=AUTH)
+            assert r.status_code == 200
+        finally:
+            _cleanup()
+
+    def test_offset_accepted(self):
+        _override(_mock_list(org=None))
+        try:
+            r = TestClient(app).get("/api/v1/incidents?installation_id=9999&offset=50", headers=AUTH)
+            assert r.status_code == 200
+        finally:
+            _cleanup()
