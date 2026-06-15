@@ -20,11 +20,11 @@ from pathlib import Path
 from driftguard_cli.scanner.engine import Category, ScanFinding, Severity
 
 _UNPINNED_ACTION = re.compile(
-    r"uses:\s+([a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+)@(?![\da-f]{40})(main|master|latest|v\d+\.?\d*\.?\d*)(?:\s|$)",
+    r"uses:\s+([a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+)@(?![\da-f]{40}\b)([^#\s]+)",
     re.MULTILINE,
 )
 _UNSECURE_COMMANDS = re.compile(r"ACTIONS_ALLOW_UNSECURE_COMMANDS\s*:\s*true", re.IGNORECASE)
-_SECRET_IN_RUN = re.compile(r"\$\{\{\s*secrets\.\w+\s*\}\}")
+_SECRET_IN_RUN = re.compile(r"\$\{\{\s*(?:secrets\.[\w-]+|github\.token)\s*\}\}")
 _UNTRUSTED_IF = re.compile(
     r"if:\s*[^\n]*\$\{\{\s*github\.event\.(issue|pull_request|comment)\.\w+",
     re.MULTILINE,

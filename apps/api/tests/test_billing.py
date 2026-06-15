@@ -378,6 +378,70 @@ async def test_checkout_creates_session(billing_api_db, monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_checkout_rejects_non_alphanumeric_installation_id(billing_api_db, monkeypatch):
+    """installation_id with path-traversal chars is rejected with 400."""
+    monkeypatch.setattr(settings, "stripe_api_key", "sk_test_fake")
+    monkeypatch.setattr(settings, "stripe_price_pro", "price_pro_xyz")
+    org_id = billing_api_db
+    with patch("driftguard.services.billing.stripe") as mock_stripe:
+        mock_stripe.Customer.create.return_value = MagicMock(id="cus_evil")
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            r = await client.post(
+                "/api/v1/billing/checkout",
+                json={"org_id": org_id, "plan": "pro", "installation_id": "../../etc"},
+                headers={"Authorization": "Bearer dev-only-change-me"},
+            )
+    assert r.status_code == 400
+    assert "alphanumeric" in r.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_checkout_with_installation_id_sets_return_urls(billing_api_db, monkeypatch):
+    """When installation_id is provided, success/cancel URLs include the settings path."""
+    monkeypatch.setattr(settings, "stripe_api_key", "sk_test_fake")
+    monkeypatch.setattr(settings, "stripe_price_pro", "price_pro_xyz")
+    monkeypatch.setattr(settings, "public_base_url", "https://app.driftguard.io")
+    org_id = billing_api_db
+    fake_session = MagicMock(url="https://checkout.stripe.com/pay/cs_test_iid")
+    with patch("driftguard.services.billing.stripe") as mock_stripe:
+        mock_stripe.Customer.create.return_value = MagicMock(id="cus_iid")
+        mock_stripe.checkout.Session.create.return_value = fake_session
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            r = await client.post(
+                "/api/v1/billing/checkout",
+                json={"org_id": org_id, "plan": "pro", "installation_id": "123456"},
+                headers={"Authorization": "Bearer dev-only-change-me"},
+            )
+    assert r.status_code == 200
+    call_kwargs = mock_stripe.checkout.Session.create.call_args.kwargs
+    assert call_kwargs["success_url"] == "https://app.driftguard.io/dashboard/123456/settings?checkout=success"
+    assert call_kwargs["cancel_url"] == "https://app.driftguard.io/dashboard/123456/settings?checkout=cancelled"
+
+
+@pytest.mark.asyncio
+async def test_checkout_without_installation_id_uses_fallback_urls(billing_api_db, monkeypatch):
+    """Without installation_id, success/cancel URLs fall back to /dashboard root."""
+    monkeypatch.setattr(settings, "stripe_api_key", "sk_test_fake")
+    monkeypatch.setattr(settings, "stripe_price_pro", "price_pro_xyz")
+    monkeypatch.setattr(settings, "public_base_url", "https://app.driftguard.io")
+    org_id = billing_api_db
+    fake_session = MagicMock(url="https://checkout.stripe.com/pay/cs_test_no_iid")
+    with patch("driftguard.services.billing.stripe") as mock_stripe:
+        mock_stripe.Customer.create.return_value = MagicMock(id="cus_no_iid")
+        mock_stripe.checkout.Session.create.return_value = fake_session
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            r = await client.post(
+                "/api/v1/billing/checkout",
+                json={"org_id": org_id, "plan": "pro"},
+                headers={"Authorization": "Bearer dev-only-change-me"},
+            )
+    assert r.status_code == 200
+    call_kwargs = mock_stripe.checkout.Session.create.call_args.kwargs
+    assert call_kwargs["success_url"] == "https://app.driftguard.io/dashboard?checkout=success"
+    assert call_kwargs["cancel_url"] == "https://app.driftguard.io/dashboard?checkout=cancelled"
+
+
+@pytest.mark.asyncio
 async def test_checkout_requires_auth(billing_api_db):
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         r = await client.post("/api/v1/billing/checkout", json={"org_id": "x", "plan": "pro"})
@@ -478,6 +542,30 @@ async def test_get_plan_requires_auth(plan_api_db):
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         r = await client.get("/api/v1/billing/plan?installation_id=1")
     assert r.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_get_plan_includes_billing_enabled_false(plan_api_db, monkeypatch):
+    monkeypatch.setattr(settings, "stripe_api_key", "")
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        r = await client.get(
+            "/api/v1/billing/plan?installation_id=99999",
+            headers={"Authorization": "Bearer dev-only-change-me"},
+        )
+    assert r.status_code == 200
+    assert r.json()["billing_enabled"] is False
+
+
+@pytest.mark.asyncio
+async def test_get_plan_includes_billing_enabled_true(plan_api_db, monkeypatch):
+    monkeypatch.setattr(settings, "stripe_api_key", "sk_test_fake")
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        r = await client.get(
+            "/api/v1/billing/plan?installation_id=99999",
+            headers={"Authorization": "Bearer dev-only-change-me"},
+        )
+    assert r.status_code == 200
+    assert r.json()["billing_enabled"] is True
 
 
 # ── Downgrade auto-disable integration ───────────────────────────────────────

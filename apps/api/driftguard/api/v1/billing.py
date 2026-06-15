@@ -14,6 +14,7 @@ from driftguard.services.billing import (
     get_or_create_customer,
     price_for_plan,
     require_stripe_configured,
+    stripe_configured,
     stripe_error_message,
 )
 from driftguard.services.quota import get_monthly_pr_count, is_premium
@@ -26,6 +27,7 @@ def _free_plan_defaults() -> dict:
         "plan": "free",
         "subscription_status": "free",
         "is_premium": False,
+        "billing_enabled": stripe_configured(),
         "repos": {"active": 0, "limit": settings.free_repository_limit},
         "monthly_pr_reviews": {"used": None, "limit": None},
     }
@@ -64,6 +66,7 @@ async def get_plan(
         "plan": org.plan,
         "subscription_status": org.subscription_status,
         "is_premium": premium,
+        "billing_enabled": stripe_configured(),
         "repos": {
             "active": active_repos,
             "limit": None if premium else settings.free_repository_limit,
@@ -79,6 +82,7 @@ class CheckoutRequest(BaseModel):
     org_id: str
     plan: str
     email: str | None = None
+    installation_id: str | None = None
 
 
 @router.post("/checkout")
@@ -101,7 +105,15 @@ async def checkout(
     except StripeError as exc:
         raise HTTPException(502, stripe_error_message(exc)) from exc
 
-    url = create_checkout_session(customer_id=customer_id, price_id=price_id, org_id=org.id)
+    try:
+        url = create_checkout_session(
+            customer_id=customer_id,
+            price_id=price_id,
+            org_id=org.id,
+            installation_id=req.installation_id,
+        )
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
     return {"url": url}
 
 

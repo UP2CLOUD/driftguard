@@ -246,6 +246,7 @@
     "notifSendTest": "Enviar email de prueba",
     "notifTestSent": "Prueba enviada a {email}",
     "billingUnavailable": "La facturación en línea no está habilitada para esta instancia.",
+    "checkoutSuccess": "Pago completado — tu plan ha sido actualizado. Puede tardar un momento en reflejarse aquí.",
     "resources": "Recursos y soporte",
     "resourcesDesc": "Documentación, referencia de la API y formas de obtener ayuda.",
     "resourceDocs": "Documentación",
@@ -520,7 +521,8 @@
       "linkPrivacy": "Privacidad",
       "linkTerms": "Términos",
       "linkDpa": "DPA",
-      "linkSubproc": "Subprocesadores"
+      "linkSubproc": "Subprocesadores",
+      "linkAbout": "Acerca de"
     },
     "incidents": {
       "sectionTitle": "Cada PR de agente. Cada milisegundo.",
@@ -1216,7 +1218,8 @@
     "copy": "Copiar",
     "copied": "¡Copiado!",
     "openInNew": "Abrir en nueva pestaña",
-    "getStarted": "Empezar"
+    "getStarted": "Empezar",
+    "docs": "Docs"
   },
   "findings": {
     "critical": "Crítico",
@@ -1318,5 +1321,29 @@
     "scanning": "escaneando…",
     "scanError": "error — intenta de nuevo",
     "rescan": "↺ Repetir análisis"
+  },
+  "about": {
+    "eyebrow": "Empresa",
+    "title": "Construimos la capa de seguridad para agentes de infraestructura con IA",
+    "body": "DriftGuard fue fundado en Lisboa para resolver un problema que enfrentamos: agentes de IA realizando cambios autónomos en Terraform sin controles. Construimos la capa de seguridad en tiempo de ejecución que hubiéramos deseado que existiera.",
+    "missionEyebrow": "Misión",
+    "missionTitle": "Hacer que la infraestructura impulsada por IA sea segura por defecto",
+    "missionBody": "Cada pull request de Terraform debe revisarse para detectar configuraciones erróneas de seguridad, desviaciones de costos e infracciones de políticas antes de llegar a producción. Lo hacemos automáticamente, para todos los equipos.",
+    "valuesEyebrow": "Principios",
+    "valuesTitle": "Cómo trabajamos",
+    "value0Title": "Seguridad primero",
+    "value0Body": "Cada característica comienza desde una suposición de seguridad. Tratamos tu infraestructura con la misma sensibilidad que el código fuente.",
+    "value1Title": "Abierto por defecto",
+    "value1Body": "Nuestras reglas de escáner, motor de políticas y CLI son de código abierto. Creemos que las herramientas de seguridad deben ser auditables.",
+    "value2Title": "Experiencia del desarrollador",
+    "value2Body": "Las revisiones de PR deben ser rápidas y accionables. Sin falsos positivos, sin ruido — solo la señal que importa.",
+    "value3Title": "Privacidad nativa",
+    "value3Body": "Procesamos solo metadatos. Ningún estado de infraestructura se almacena más allá de lo necesario para la revisión.",
+    "ctaTitle": "Únete a los equipos que despliegan infraestructura de forma segura",
+    "ctaBody": "DriftGuard se integra con tu flujo de trabajo de GitHub en menos de 30 segundos.",
+    "ctaDocs": "Leer la documentación →",
+    "ctaGithub": "Star en GitHub →",
+    "metaTitle": "Acerca de — DriftGuard",
+    "metaDesc": "Conoce al equipo y la misión detrás de DriftGuard, la capa de seguridad en tiempo de ejecución con IA para agentes Terraform."
   }
 }

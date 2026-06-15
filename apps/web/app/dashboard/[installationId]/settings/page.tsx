@@ -18,6 +18,7 @@ type PlanData = {
   plan: string;
   subscription_status: string;
   is_premium: boolean;
+  billing_enabled: boolean;
   repos: { active: number; limit: number | null };
   monthly_pr_reviews: { used: number | null; limit: number | null };
 };
@@ -38,10 +39,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Settings({
   params,
+  searchParams,
 }: {
   params: Promise<{ installationId: string }>;
+  searchParams?: Promise<{ checkout?: string }>;
 }) {
   const { installationId } = await params;
+  const sp = searchParams ? await searchParams : null;
+  const checkoutResult = sp?.checkout ?? null;
+
   const preferences = await getUserPreferences();
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
@@ -67,6 +73,16 @@ export default async function Settings({
           {t("settings.title")}
         </h1>
       </div>
+
+      {/* Checkout result banner */}
+      {checkoutResult === "success" && (
+        <div className="flex items-start gap-3 rounded-md border border-allowed/30 bg-allowed/5 px-4 py-3">
+          <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-allowed shrink-0" />
+          <p className="font-mono text-[11px] text-allowed">
+            {t("settings.checkoutSuccess") ?? "Payment complete — your plan has been upgraded. It may take a moment to reflect here."}
+          </p>
+        </div>
+      )}
 
       {/* API offline warning */}
       {!org && (
@@ -259,6 +275,7 @@ export default async function Settings({
             installationId={installationId}
             hasCustomer={!!org.has_stripe_customer}
             plan={org.plan}
+            billingEnabled={planData?.billing_enabled ?? true}
           />
         </Section>
       )}

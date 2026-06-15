@@ -167,14 +167,18 @@ export async function openPortal(orgId: string, installationId: string): Promise
   return url;
 }
 
-export async function internalStartCheckout(orgId: string, plan: string): Promise<string> {
+export async function internalStartCheckout(
+  orgId: string,
+  plan: string,
+  installationId?: string,
+): Promise<string> {
   const r = await fetch(`${BASE}/api/v1/billing/checkout`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${requireSecret()}`,
     },
-    body: JSON.stringify({ org_id: orgId, plan }),
+    body: JSON.stringify({ org_id: orgId, plan, installation_id: installationId }),
   });
   if (!r.ok) await throwApiError(r, "Failed to start checkout");
   const { url } = await r.json();

@@ -110,14 +110,29 @@ async def scan_directory(root: Path) -> ScanResult:
         result.errors.append(f"Directory not found: {root}")
         return result
 
-    # Collect files by type
-    tf_files = list(root.rglob("*.tf"))
-    k8s_files = [f for f in root.rglob("*.yaml") if ".github" not in str(f.parent)] + [
-        f for f in root.rglob("*.yml") if ".github" not in str(f.parent)
-    ]
+    # Collect files by type, pruning directories that should never be scanned
+    _IGNORED_DIRS = {".git", "node_modules", ".venv", "venv", ".terraform", "build", "dist", "__pycache__"}
+    tf_files: list[Path] = []
+    k8s_files: list[Path] = []
+
+    import os
+
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in _IGNORED_DIRS]
+        dp = Path(dirpath)
+        rel_parts = dp.relative_to(root).parts
+        is_gha = rel_parts[:2] == (".github", "workflows")
+        for fname in filenames:
+            full = dp / fname
+            if fname.endswith(".tf"):
+                tf_files.append(full)
+            elif fname.endswith((".yaml", ".yml")) and not is_gha and ".github" not in rel_parts:
+                k8s_files.append(full)
+
+    gha_dir = root / ".github" / "workflows"
     gha_files = (
-        list((root / ".github" / "workflows").rglob("*.yml")) + list((root / ".github" / "workflows").rglob("*.yaml"))
-        if (root / ".github" / "workflows").exists()
+        list(gha_dir.glob("*.yml")) + list(gha_dir.glob("*.yaml"))
+        if gha_dir.exists()
         else []
     )
 

@@ -58,13 +58,18 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
         if kind not in _K8S_KINDS:
             continue
 
-        name = doc.get("metadata", {}).get("name", "unnamed")
+        metadata = doc.get("metadata")
+        name = metadata.get("name", "unnamed") if isinstance(metadata, dict) else "unnamed"
         resource = f"{kind}/{name}"
         spec = _extract_pod_spec(doc)
         if not spec:
             continue
 
-        containers = spec.get("containers", []) + spec.get("initContainers", [])
+        containers = []
+        for key in ("containers", "initContainers"):
+            val = spec.get(key)
+            if isinstance(val, list):
+                containers.extend(val)
 
         # Pod-level checks
         if spec.get("hostPID"):
@@ -268,17 +273,31 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
 
 def _extract_pod_spec(doc: dict) -> dict | None:
     """Extract the pod spec from various K8s resource types."""
+    if not isinstance(doc, dict):
+        return None
     kind = doc.get("kind", "")
-    spec = doc.get("spec", {})
+    spec = doc.get("spec")
+    if not isinstance(spec, dict):
+        return None
 
     if kind == "Pod":
         return spec
-    if kind in ("Deployment", "DaemonSet", "StatefulSet", "ReplicaSet"):
-        return spec.get("template", {}).get("spec", {})
-    if kind == "Job":
-        return spec.get("template", {}).get("spec", {})
+    if kind in ("Deployment", "DaemonSet", "StatefulSet", "ReplicaSet", "Job"):
+        template = spec.get("template")
+        if isinstance(template, dict):
+            pod_spec = template.get("spec")
+            if isinstance(pod_spec, dict):
+                return pod_spec
     if kind == "CronJob":
-        return spec.get("jobTemplate", {}).get("spec", {}).get("template", {}).get("spec", {})
+        job_template = spec.get("jobTemplate")
+        if isinstance(job_template, dict):
+            job_spec = job_template.get("spec")
+            if isinstance(job_spec, dict):
+                template = job_spec.get("template")
+                if isinstance(template, dict):
+                    pod_spec = template.get("spec")
+                    if isinstance(pod_spec, dict):
+                        return pod_spec
     return None
 
 

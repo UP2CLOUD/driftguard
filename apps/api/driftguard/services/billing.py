@@ -62,15 +62,23 @@ async def get_or_create_customer(db: AsyncSession, org: Organization, email: str
     return customer.id
 
 
-def create_checkout_session(*, customer_id: str, price_id: str, org_id: str) -> str:
+def create_checkout_session(*, customer_id: str, price_id: str, org_id: str, installation_id: str | None = None) -> str:
     base = settings.public_base_url.rstrip("/")
+    if installation_id:
+        if not installation_id.isalnum():
+            raise ValueError("installation_id must be alphanumeric")
+        success_url = f"{base}/dashboard/{installation_id}/settings?checkout=success"
+        cancel_url = f"{base}/dashboard/{installation_id}/settings?checkout=cancelled"
+    else:
+        success_url = f"{base}/dashboard?checkout=success"
+        cancel_url = f"{base}/dashboard?checkout=cancelled"
     try:
         session = _stripe().checkout.Session.create(
             customer=customer_id,
             mode="subscription",
             line_items=[{"price": price_id, "quantity": 1}],
-            success_url=f"{base}/dashboard?checkout=success",
-            cancel_url=f"{base}/dashboard?checkout=cancelled",
+            success_url=success_url,
+            cancel_url=cancel_url,
             automatic_tax={"enabled": True},
             client_reference_id=org_id,
             allow_promotion_codes=True,

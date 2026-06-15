@@ -11,16 +11,18 @@ export function BillingActions({
   installationId,
   hasCustomer,
   plan,
+  billingEnabled = true,
 }: {
   orgId: string;
   installationId: string;
   hasCustomer: boolean;
   plan: string;
+  billingEnabled?: boolean;
 }) {
   const t = useT();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState("");
-  const [billingUnavailable, setBillingUnavailable] = useState(false);
+  const [billingUnavailable, setBillingUnavailable] = useState(!billingEnabled);
 
   async function upgrade(targetPlan: string) {
     setLoading(targetPlan);
@@ -30,7 +32,7 @@ export function BillingActions({
       const url = await startCheckout(orgId, targetPlan, installationId);
       window.location.href = url;
     } catch (e) {
-      const msg = (e as Error).message ?? "";
+      const msg = e instanceof Error ? e.message : String(e);
       if (_BILLING_UNCONFIGURED.test(msg)) {
         setBillingUnavailable(true);
       } else {
@@ -48,7 +50,7 @@ export function BillingActions({
       const url = await openPortal(orgId, installationId);
       window.location.href = url;
     } catch (e) {
-      const msg = (e as Error).message ?? "";
+      const msg = e instanceof Error ? e.message : String(e);
       if (_BILLING_UNCONFIGURED.test(msg)) {
         setBillingUnavailable(true);
       } else {
@@ -96,15 +98,12 @@ export function BillingActions({
           </button>
         )}
         {plan === "team" && (
-          <button
-            onClick={() => upgrade("enterprise")}
-            disabled={loading !== null}
-            className="dg-button dg-button-ghost text-[12px] disabled:opacity-40"
+          <a
+            href="mailto:sales@driftguard.io"
+            className="dg-button dg-button-ghost text-[12px]"
           >
-            {loading === "enterprise"
-              ? (t("settings.redirecting") ?? "Redirecting…")
-              : (t("settings.upgradeToEnterprise") ?? "Upgrade to Enterprise →")}
-          </button>
+            {t("settings.upgradeToEnterprise") ?? "Upgrade to Enterprise →"}
+          </a>
         )}
         {hasCustomer && (
           <button

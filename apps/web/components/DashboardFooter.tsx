@@ -15,7 +15,7 @@ export async function DashboardFooter() {
         <div className="flex items-center gap-4 flex-wrap">
           <span>© 2026 UP2CLOUD</span>
           <span className="opacity-40">·</span>
-          <Link href="/docs" className="hover:text-[color:var(--dg-fg)] transition">Docs</Link>
+          <Link href="/docs" className="hover:text-[color:var(--dg-fg)] transition">{t("common.docs")}</Link>
           <span className="opacity-40">·</span>
           <Link href="/privacy" className="hover:text-[color:var(--dg-fg)] transition">{t("common.privacy")}</Link>
           <span className="opacity-40">·</span>
