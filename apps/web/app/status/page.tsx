@@ -1,26 +1,31 @@
 import { type Locale } from "@/i18n/config";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import type { Metadata } from "next";
-import { pageMeta, localizedPageMeta } from "@/lib/seo";
+import { localizedPageMeta } from "@/lib/seo";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
+import { BACKEND_URL } from "@/lib/backend";
 
-
-
-const SYSTEMS = [
-  { name: "API",                 description: "Core review pipeline",          status: "operational" },
-  { name: "GitHub Webhooks",     description: "PR event ingestion",            status: "operational" },
-  { name: "Memory index",        description: "Semantic recall (pgvector)",    status: "operational" },
-  { name: "Cost analysis",       description: "Infracost integration",         status: "operational" },
-  { name: "Security scanner",    description: "Checkov + AI triage",           status: "operational" },
-  { name: "Billing",             description: "Stripe webhook processing",      status: "operational" },
-  { name: "Dashboard",           description: "Web application (Vercel)",      status: "operational" },
-] as const;
+type HealthReady = {
+  status: "ok" | "degraded";
+  checks: {
+    db?: string;
+    redis?: string;
+    github_app?: string;
+    stripe?: string;
+    ai_review?: string;
+  };
+};
 
 type SystemStatus = "operational" | "degraded" | "outage";
 
-// STATUS_LABEL replaced with t() calls below
+function checkToStatus(val: string | undefined): SystemStatus {
+  if (!val || val === "not_configured") return "operational";
+  if (val === "ok") return "operational";
+  if (val.startsWith("error")) return "outage";
+  return "degraded";
+}
 
 const STATUS_COLOR: Record<SystemStatus, string> = {
   operational: "text-allowed border-allowed/30 bg-allowed/10",
@@ -48,18 +53,46 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function StatusPage() {
-  const allOperational = SYSTEMS.every((s) => s.status === "operational");
-  const now = new Date().toUTCString();
-
   const preferences = await getUserPreferences();
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
+
+  // Fetch live readiness from backend — public endpoint, no auth needed
+  let ready: HealthReady | null = null;
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/v1/ready`, {
+      next: { revalidate: 30 },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (res.ok || res.status === 503) {
+      ready = await res.json() as HealthReady;
+    }
+  } catch {
+    // Backend unreachable — treat everything as operational (fail-open for status page)
+  }
+
+  const checks = ready?.checks ?? {};
+  const SYSTEMS = [
+    { name: t("status.pipeline"),  description: t("status.p99"),       status: checkToStatus(checks.db) },
+    { name: t("status.webhooks"),  description: "PR event ingestion",   status: checkToStatus(checks.github_app) },
+    { name: t("status.memory"),    description: t("status.memory"),     status: checkToStatus(checks.db) },
+    { name: t("status.costAnalysis"), description: t("status.checkov"), status: "operational" as SystemStatus },
+    { name: t("status.checkov"),   description: t("status.checkov"),    status: "operational" as SystemStatus },
+    { name: "Billing",             description: "Stripe webhook processing", status: checkToStatus(checks.stripe) },
+    { name: t("status.dashboard"), description: "Web application",      status: "operational" as SystemStatus },
+  ];
+
+  const allOperational = ready === null
+    ? true
+    : ready.status === "ok";
+
+  const now = new Date().toUTCString();
 
   return (
     <MarketingPageShell
       eyebrow={t("status.eyebrow")}
       title={allOperational ? t("status.titleOk") : t("status.titleDegraded")}
-      subtitle={`Last checked: ${now}`}
+      subtitle={`${t("status.lastChecked")} ${now}`}
       narrow
     >
       {/* Global indicator */}
@@ -101,22 +134,24 @@ export default async function StatusPage() {
         ))}
       </div>
 
-      {/* Uptime */}
+      {/* Uptime — static bars (all green when operational) */}
       <div className="mb-10">
         <div className="dg-label mb-4">{t("status.uptime")}</div>
         <div className="flex items-end gap-0.5 h-10">
           {Array.from({ length: 90 }).map((_, i) => (
             <div
               key={i}
-              className="flex-1 rounded-sm bg-allowed/80 hover:bg-allowed transition-colors cursor-default"
-              style={{ height: `${85 + Math.random() * 15}%` }}
-              title="99.9% uptime"
+              className={`flex-1 rounded-sm transition-colors cursor-default ${allOperational ? "bg-allowed/80 hover:bg-allowed" : "bg-warned/60 hover:bg-warned"}`}
+              style={{ height: "100%" }}
+              title={allOperational ? t("status_labels.operational") : t("status_labels.degraded")}
             />
           ))}
         </div>
         <div className="flex items-center justify-between mt-2 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
           <span>90 days ago</span>
-          <span className="text-allowed">99.94% avg uptime</span>
+          <span className={allOperational ? "text-allowed" : "text-warned"}>
+            {allOperational ? t("status_labels.allOperational") : t("status_labels.partialOutage")}
+          </span>
           <span>{t("status.today")}</span>
         </div>
       </div>
@@ -126,7 +161,7 @@ export default async function StatusPage() {
         <div className="dg-label mb-4">{t("status.recentIncidents")}</div>
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-8 text-center">
           <p className="font-mono text-[12px] text-[color:var(--dg-fg-subtle)]">
-            No incidents in the last 30 days.
+            {t("status.noIncidents")}
           </p>
         </div>
       </div>

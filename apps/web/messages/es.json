@@ -940,7 +940,72 @@
     "item_webhooks_title": "Webhooks",
     "item_webhooks_desc": "Eventos salientes para integración de incidentes",
     "item_rateLimits_title": "Límites de uso",
-    "item_rateLimits_desc": "Cuotas por organización y por API key"
+    "item_rateLimits_desc": "Cuotas por organización y por API key",
+    "security": {
+      "eyebrow": "Docs · Conceptos clave",
+      "title": "Análisis de seguridad",
+      "subtitle": "Análisis estático con Checkov más triaje con IA en cada PR de Terraform."
+    },
+    "dora": {
+      "eyebrow": "Docs · Cumplimiento",
+      "title": "Evidencia DORA",
+      "subtitle": "Recopilación automática de evidencias para el Reglamento de Resiliencia Operativa Digital de la UE."
+    },
+    "nis2": {
+      "eyebrow": "Docs · Cumplimiento",
+      "title": "Cumplimiento NIS2",
+      "subtitle": "Directiva de Redes y Sistemas de Información — DriftGuard mapea tus cambios Terraform a controles NIS2."
+    },
+    "iso": {
+      "eyebrow": "Docs · Cumplimiento",
+      "title": "Controles ISO 27001",
+      "subtitle": "Mapeo de controles del Anexo A para cada cambio de infraestructura revisado en pull request."
+    },
+    "audit": {
+      "eyebrow": "Docs · Cumplimiento",
+      "title": "Registro de auditoría",
+      "subtitle": "Flujo de eventos firmado e inmutable — cada revisión, aprobación y anulación, a prueba de manipulaciones."
+    },
+    "aws": {
+      "eyebrow": "Docs · Integraciones",
+      "title": "Integración con AWS",
+      "subtitle": "STS AssumeRole y backend de estado S3 — DriftGuard lee tu estado AWS sin almacenar credenciales."
+    },
+    "gcp": {
+      "eyebrow": "Docs · Integraciones",
+      "title": "Integración con GCP",
+      "subtitle": "Workload Identity Federation — sin credenciales de larga duración, sin claves de cuenta de servicio."
+    },
+    "azure": {
+      "eyebrow": "Docs · Integraciones",
+      "title": "Integración con Azure",
+      "subtitle": "Identidad de carga de trabajo federada para acceso seguro a recursos Azure sin claves."
+    },
+    "slack": {
+      "eyebrow": "Docs · Integraciones",
+      "title": "Alertas en Slack",
+      "subtitle": "Enrutamiento por canal y severidad — bloqueos críticos en #incidentes, avisos en #revisiones-infra."
+    },
+    "selfHost": {
+      "eyebrow": "Docs · Despliegue",
+      "title": "Despliegue auto-hospedado",
+      "subtitle": "Helm chart e imágenes de contenedor — ejecuta DriftGuard en tu propio clúster Kubernetes."
+    },
+    "cloudRun": {
+      "eyebrow": "Docs · Despliegue",
+      "title": "Despliegue en Cloud Run",
+      "subtitle": "Despliegue de referencia en GCP con Cloud Run — infraestructura gestionada, escalado automático."
+    },
+    "env": {
+      "eyebrow": "Docs · Despliegue",
+      "title": "Variables de entorno",
+      "subtitle": "Referencia completa — todas las variables de configuración, valores por defecto y ejemplos."
+    },
+    "rateLimits": {
+      "eyebrow": "Docs · API",
+      "title": "Límites de velocidad",
+      "subtitle": "Cuotas por organización y por clave de API — entiende los límites, gestiona errores 429 y solicita aumentos."
+    }
   },
   "status": {
     "eyebrow": "Estado del sistema",
@@ -969,7 +1034,8 @@
     "meta": {
       "title": "Estado — DriftGuard",
       "description": "Estado del sistema DriftGuard en tiempo real."
-    }
+    },
+    "noIncidents": "Sin incidentes en los últimos 30 días."
   },
   "security": {
     "eyebrow": "Confianza y seguridad",

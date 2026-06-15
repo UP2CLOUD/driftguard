@@ -964,7 +964,72 @@
     "item_webhooks_title": "Webhooks",
     "item_webhooks_desc": "Outbound events for incident integration",
     "item_rateLimits_title": "Rate limits",
-    "item_rateLimits_desc": "Per-org and per-API-key quotas"
+    "item_rateLimits_desc": "Per-org and per-API-key quotas",
+    "security": {
+      "eyebrow": "Docs · Core concepts",
+      "title": "Security scanning",
+      "subtitle": "Checkov static analysis plus AI-powered triage on every Terraform PR."
+    },
+    "dora": {
+      "eyebrow": "Docs · Compliance",
+      "title": "DORA evidence",
+      "subtitle": "Automatic evidence collection for the EU Digital Operational Resilience Act."
+    },
+    "nis2": {
+      "eyebrow": "Docs · Compliance",
+      "title": "NIS2 compliance",
+      "subtitle": "Network and Information Systems directive — DriftGuard maps your Terraform changes to NIS2 controls."
+    },
+    "iso": {
+      "eyebrow": "Docs · Compliance",
+      "title": "ISO 27001 controls",
+      "subtitle": "Annex A control mapping for every infrastructure change reviewed on pull request."
+    },
+    "audit": {
+      "eyebrow": "Docs · Compliance",
+      "title": "Audit log",
+      "subtitle": "Signed, append-only event stream — every review, approval, and override, tamper-evident."
+    },
+    "aws": {
+      "eyebrow": "Docs · Integrations",
+      "title": "AWS integration",
+      "subtitle": "STS AssumeRole and S3 state backend — DriftGuard reads your live AWS state without storing credentials."
+    },
+    "gcp": {
+      "eyebrow": "Docs · Integrations",
+      "title": "GCP integration",
+      "subtitle": "Workload Identity Federation — no long-lived credentials, no service account keys."
+    },
+    "azure": {
+      "eyebrow": "Docs · Integrations",
+      "title": "Azure integration",
+      "subtitle": "Federated workload identity for secure, keyless Azure resource access from DriftGuard."
+    },
+    "slack": {
+      "eyebrow": "Docs · Integrations",
+      "title": "Slack alerts",
+      "subtitle": "Channel routing per severity — critical blocks in #incidents, warnings in #infra-reviews."
+    },
+    "selfHost": {
+      "eyebrow": "Docs · Deploy",
+      "title": "Self-hosted deployment",
+      "subtitle": "Helm chart plus container images — run DriftGuard in your own Kubernetes cluster."
+    },
+    "cloudRun": {
+      "eyebrow": "Docs · Deploy",
+      "title": "Cloud Run deployment",
+      "subtitle": "Reference GCP deployment using Cloud Run — managed infrastructure, automatic scaling."
+    },
+    "env": {
+      "eyebrow": "Docs · Deploy",
+      "title": "Environment variables",
+      "subtitle": "Full reference — every configuration variable, default values, and examples."
+    },
+    "rateLimits": {
+      "eyebrow": "Docs · API",
+      "title": "Rate limits",
+      "subtitle": "Per-org and per-API-key quotas — understand limits, handle 429s, and request increases."
+    }
   },
   "status": {
     "eyebrow": "System status",
@@ -993,7 +1058,8 @@
     "meta": {
       "title": "Status — DriftGuard",
       "description": "Real-time DriftGuard system status. Check uptime for the review pipeline, dashboard, GitHub webhooks, and integrations."
-    }
+    },
+    "noIncidents": "No incidents in the last 30 days."
   },
   "security": {
     "eyebrow": "Trust & security",
