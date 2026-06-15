@@ -14,8 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return localizedPageMeta({
     path:        "/docs/security",
     locale,
-    title:       t("docs.meta.title"),
-    description: t("docs.meta.description"),
+    title:       `${t("docs.security.title")} — DriftGuard`,
+    description: t("docs.security.subtitle"),
   });
 }
 

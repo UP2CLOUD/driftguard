@@ -179,7 +179,10 @@
     "placeholder": "you@company.com",
     "join": "Entrar",
     "loading": "...",
-    "success": "✓ Inscrito"
+    "success": "✓ Inscrito",
+    "title": "Entre na lista de espera",
+    "subtitle": "Acesso antecipado ao DriftGuard — segurança em tempo de execução com IA para agentes Terraform.",
+    "note": "Sem spam. Cancele quando quiser."
   },
   "footer": {
     "privacy": "Privacidade",
@@ -1411,5 +1414,11 @@
     "ctaGithub": "Star no GitHub →",
     "metaTitle": "Sobre — DriftGuard",
     "metaDesc": "Saiba mais sobre a equipe e a missão por trás do DriftGuard, a camada de segurança em tempo de execução com IA para agentes Terraform."
+  },
+  "cookie": {
+    "notice": "Usamos cookies de análise para entender como você usa o DriftGuard e melhorar a experiência.",
+    "accept": "Aceitar cookies",
+    "decline": "Recusar",
+    "learnMore": "Política de privacidade"
   }
 }

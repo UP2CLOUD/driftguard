@@ -155,7 +155,10 @@
     "placeholder": "you@company.com",
     "join": "शामिल हों",
     "loading": "...",
-    "success": "✓ शामिल"
+    "success": "✓ शामिल",
+    "title": "प्रतीक्षा सूची में शामिल हों",
+    "subtitle": "DriftGuard तक जल्द पहुंच पाएं — Terraform एजेंट्स के लिए AI रनटाइम सुरक्षा।",
+    "note": "कोई स्पैम नहीं। कभी भी सदस्यता रद्द करें।"
   },
   "footer": {
     "privacy": "गोपनीयता",
@@ -1411,5 +1414,11 @@
     "ctaGithub": "GitHub पर Star करें →",
     "metaTitle": "हमारे बारे में — DriftGuard",
     "metaDesc": "DriftGuard के पीछे की टीम और मिशन के बारे में जानें, Terraform एजेंट्स के लिए AI रनटाइम सुरक्षा परत।"
+  },
+  "cookie": {
+    "notice": "हम DriftGuard के उपयोग को समझने और अनुभव बेहतर बनाने के लिए एनालिटिक्स कुकीज़ का उपयोग करते हैं।",
+    "accept": "कुकीज़ स्वीकार करें",
+    "decline": "अस्वीकार करें",
+    "learnMore": "गोपनीयता नीति"
   }
 }

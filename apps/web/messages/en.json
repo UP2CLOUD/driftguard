@@ -155,7 +155,10 @@
     "placeholder": "you@company.com",
     "join": "Join",
     "loading": "...",
-    "success": "✓ In"
+    "success": "✓ In",
+    "title": "Join the waitlist",
+    "subtitle": "Get early access to DriftGuard — AI runtime safety for Terraform agents.",
+    "note": "No spam. Unsubscribe at any time."
   },
   "common": {
     "privacy": "Privacy",
@@ -1411,5 +1414,11 @@
     "ctaGithub": "Star on GitHub →",
     "metaTitle": "About — DriftGuard",
     "metaDesc": "Learn about the team and mission behind DriftGuard, the AI runtime safety layer for Terraform agents."
+  },
+  "cookie": {
+    "notice": "We use analytics cookies to understand how you use DriftGuard and improve the experience.",
+    "accept": "Accept cookies",
+    "decline": "Decline",
+    "learnMore": "Privacy policy"
   }
 }

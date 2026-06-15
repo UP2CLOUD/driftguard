@@ -14,8 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return localizedPageMeta({
     path:        "/docs/cloud-run",
     locale,
-    title:       t("docs.meta.title"),
-    description: t("docs.meta.description"),
+    title:       `${t("docs.cloudRun.title")} — DriftGuard`,
+    description: t("docs.cloudRun.subtitle"),
   });
 }
 

@@ -13,6 +13,7 @@ import { hreflangAlternates, jsonLdOrganization, jsonLdWebSite, jsonLdProduct, o
 import { type Locale } from "@/i18n/config";
 import { JsonLd } from "@/components/JsonLd";
 import { NavigationTransition } from "@/components/NavigationTransition";
+import { CookieBanner } from "@/components/CookieBanner";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -117,6 +118,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <PostHogProvider>
               {children}
               <NavigationTransition />
+              <CookieBanner />
             </PostHogProvider>
           </AuthProvider>
         </I18nProvider>

@@ -75,9 +75,9 @@ export default async function StatusPage() {
   const SYSTEMS = [
     { name: t("status.pipeline"),  description: t("status.p99"),       status: checkToStatus(checks.db) },
     { name: t("status.webhooks"),  description: "PR event ingestion",   status: checkToStatus(checks.github_app) },
-    { name: t("status.memory"),    description: t("status.memory"),     status: checkToStatus(checks.db) },
-    { name: t("status.costAnalysis"), description: t("status.checkov"), status: "operational" as SystemStatus },
-    { name: t("status.checkov"),   description: t("status.checkov"),    status: "operational" as SystemStatus },
+    { name: t("status.memory"),       description: t("docs.memory.subtitle"),   status: checkToStatus(checks.db) },
+    { name: t("status.costAnalysis"), description: t("status.infracost"),        status: "operational" as SystemStatus },
+    { name: t("docs.security.title"), description: t("status.checkov"),          status: "operational" as SystemStatus },
     { name: "Billing",             description: "Stripe webhook processing", status: checkToStatus(checks.stripe) },
     { name: t("status.dashboard"), description: "Web application",      status: "operational" as SystemStatus },
   ];

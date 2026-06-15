@@ -155,7 +155,10 @@
     "placeholder": "you@company.com",
     "join": "加入",
     "loading": "...",
-    "success": "✓ 已加入"
+    "success": "✓ 已加入",
+    "title": "加入等候名单",
+    "subtitle": "抢先体验 DriftGuard — 面向 Terraform 代理的 AI 运行时安全。",
+    "note": "不发垃圾邮件，随时可取消订阅。"
   },
   "footer": {
     "privacy": "隐私",
@@ -1411,5 +1414,11 @@
     "ctaGithub": "在 GitHub 上收藏 →",
     "metaTitle": "关于 — DriftGuard",
     "metaDesc": "了解 DriftGuard 背后的团队和使命，DriftGuard 是面向 Terraform 代理的 AI 运行时安全层。"
+  },
+  "cookie": {
+    "notice": "我们使用分析 Cookie 来了解您如何使用 DriftGuard 并改善使用体验。",
+    "accept": "接受 Cookie",
+    "decline": "拒绝",
+    "learnMore": "隐私政策"
   }
 }
