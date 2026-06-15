@@ -178,7 +178,8 @@
     "copy": "Copy",
     "copied": "Copied!",
     "openInNew": "Open in new tab",
-    "getStarted": "Get started"
+    "getStarted": "Get started",
+    "docs": "Docs"
   },
   "footer": {
     "privacy": "Privacy",
@@ -544,7 +545,8 @@
       "linkPrivacy": "Privacy",
       "linkTerms": "Terms",
       "linkDpa": "DPA",
-      "linkSubproc": "Subprocessors"
+      "linkSubproc": "Subprocessors",
+      "linkAbout": "About"
     },
     "incidents": {
       "sectionTitle": "Every agent PR. Every millisecond.",
@@ -1319,5 +1321,29 @@
     "scanning": "scanning…",
     "scanError": "failed — try again",
     "rescan": "↺ Re-run scan"
+  },
+  "about": {
+    "eyebrow": "Company",
+    "title": "We build the safety layer for AI infrastructure agents",
+    "body": "DriftGuard was founded in Lisbon to solve a problem we faced ourselves: AI agents making autonomous Terraform changes with no guardrails. We built the runtime safety layer we wished existed.",
+    "missionEyebrow": "Mission",
+    "missionTitle": "Make AI-driven infrastructure safe by default",
+    "missionBody": "Every Terraform pull request should be reviewed for security misconfigurations, cost drift, and policy violations before it reaches production. We make that happen automatically, for every team.",
+    "valuesEyebrow": "Principles",
+    "valuesTitle": "How we work",
+    "value0Title": "Security first",
+    "value0Body": "Every feature starts from a security assumption. We treat your infrastructure as sensitive as source code.",
+    "value1Title": "Open by default",
+    "value1Body": "Our scanner rules, policy engine, and CLI are open-source. We believe security tools should be auditable.",
+    "value2Title": "Developer experience",
+    "value2Body": "PR reviews should be fast and actionable. No false positives, no noise — just the signal that matters.",
+    "value3Title": "Privacy native",
+    "value3Body": "We process only metadata. No infrastructure state is stored beyond what is needed for the review.",
+    "ctaTitle": "Join teams shipping infrastructure safely",
+    "ctaBody": "DriftGuard integrates with your GitHub workflow in under 30 seconds.",
+    "ctaDocs": "Read the docs →",
+    "ctaGithub": "Star on GitHub →",
+    "metaTitle": "About — DriftGuard",
+    "metaDesc": "Learn about the team and mission behind DriftGuard, the AI runtime safety layer for Terraform agents."
   }
 }

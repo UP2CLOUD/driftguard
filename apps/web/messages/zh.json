@@ -521,7 +521,8 @@
       "linkPrivacy": "隐私",
       "linkTerms": "条款",
       "linkDpa": "DPA",
-      "linkSubproc": "子处理商"
+      "linkSubproc": "子处理商",
+      "linkAbout": "关于我们"
     },
     "incidents": {
       "sectionTitle": "每个代理 PR。每一毫秒。",
@@ -1217,7 +1218,8 @@
     "copy": "复制",
     "copied": "已复制！",
     "openInNew": "在新标签页打开",
-    "getStarted": "快速开始"
+    "getStarted": "快速开始",
+    "docs": "文档"
   },
   "findings": {
     "critical": "严重",
@@ -1319,5 +1321,29 @@
     "scanning": "扫描中…",
     "scanError": "失败 — 请重试",
     "rescan": "↺ 重新扫描"
+  },
+  "about": {
+    "eyebrow": "公司",
+    "title": "我们为 AI 基础设施代理构建安全层",
+    "body": "DriftGuard 在里斯本成立，旨在解决我们自身面临的问题：AI 代理在没有任何安全护栏的情况下自主进行 Terraform 变更。我们构建了我们希望早已存在的运行时安全层。",
+    "missionEyebrow": "使命",
+    "missionTitle": "让 AI 驱动的基础设施默认安全",
+    "missionBody": "每个 Terraform 拉取请求在进入生产环境之前都应检查安全配置错误、成本漂移和策略违规。我们为每个团队自动实现这一目标。",
+    "valuesEyebrow": "原则",
+    "valuesTitle": "我们的工作方式",
+    "value0Title": "安全优先",
+    "value0Body": "每个功能都从安全假设出发。我们将您的基础设施视为与源代码同等敏感的内容。",
+    "value1Title": "默认开放",
+    "value1Body": "我们的扫描规则、策略引擎和 CLI 均为开源。我们相信安全工具应该是可审计的。",
+    "value2Title": "开发者体验",
+    "value2Body": "PR 审查应该快速且可执行。没有误报，没有噪音——只有真正重要的信号。",
+    "value3Title": "隐私原生",
+    "value3Body": "我们仅处理元数据。除审查所需之外，不存储任何基础设施状态。",
+    "ctaTitle": "加入安全交付基础设施的团队",
+    "ctaBody": "DriftGuard 在 30 秒内与您的 GitHub 工作流集成。",
+    "ctaDocs": "阅读文档 →",
+    "ctaGithub": "在 GitHub 上收藏 →",
+    "metaTitle": "关于 — DriftGuard",
+    "metaDesc": "了解 DriftGuard 背后的团队和使命，DriftGuard 是面向 Terraform 代理的 AI 运行时安全层。"
   }
 }

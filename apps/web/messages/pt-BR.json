@@ -20,7 +20,8 @@
     "copy": "Copiar",
     "copied": "Copiado!",
     "openInNew": "Abrir em nova aba",
-    "getStarted": "Começar"
+    "getStarted": "Começar",
+    "docs": "Docs"
   },
   "nav": {
     "features": "Recursos",
@@ -544,7 +545,8 @@
       "linkPrivacy": "Privacidade",
       "linkTerms": "Termos",
       "linkDpa": "DPA",
-      "linkSubproc": "Subprocessadores"
+      "linkSubproc": "Subprocessadores",
+      "linkAbout": "Sobre"
     },
     "incidents": {
       "sectionTitle": "Cada PR de agente. Cada milissegundo.",
@@ -1319,5 +1321,29 @@
     "scanning": "escaneando…",
     "scanError": "falhou — tente novamente",
     "rescan": "↺ Re-executar análise"
+  },
+  "about": {
+    "eyebrow": "Empresa",
+    "title": "Construímos a camada de segurança para agentes de infraestrutura com IA",
+    "body": "O DriftGuard foi fundado em Lisboa para resolver um problema que enfrentamos: agentes de IA fazendo alterações autônomas no Terraform sem guardrails. Construímos a camada de segurança em tempo de execução que gostaríamos que existisse.",
+    "missionEyebrow": "Missão",
+    "missionTitle": "Tornar a infraestrutura gerenciada por IA segura por padrão",
+    "missionBody": "Cada pull request do Terraform deve ser revisado para verificar erros de configuração de segurança, desvios de custo e violações de políticas antes de chegar à produção. Fazemos isso acontecer automaticamente, para todas as equipes.",
+    "valuesEyebrow": "Princípios",
+    "valuesTitle": "Como trabalhamos",
+    "value0Title": "Segurança em primeiro lugar",
+    "value0Body": "Cada funcionalidade começa de uma premissa de segurança. Tratamos sua infraestrutura com a mesma sensibilidade do código-fonte.",
+    "value1Title": "Aberto por padrão",
+    "value1Body": "Nossas regras de scanner, motor de políticas e CLI são open-source. Acreditamos que ferramentas de segurança devem ser auditáveis.",
+    "value2Title": "Experiência do desenvolvedor",
+    "value2Body": "As revisões de PR devem ser rápidas e acionáveis. Sem falsos positivos, sem ruído — apenas o sinal que importa.",
+    "value3Title": "Privacidade nativa",
+    "value3Body": "Processamos apenas metadados. Nenhum estado de infraestrutura é armazenado além do necessário para a revisão.",
+    "ctaTitle": "Junte-se às equipes que lançam infraestrutura com segurança",
+    "ctaBody": "O DriftGuard integra-se ao seu fluxo de trabalho do GitHub em menos de 30 segundos.",
+    "ctaDocs": "Leia a documentação →",
+    "ctaGithub": "Star no GitHub →",
+    "metaTitle": "Sobre — DriftGuard",
+    "metaDesc": "Saiba mais sobre a equipe e a missão por trás do DriftGuard, a camada de segurança em tempo de execução com IA para agentes Terraform."
   }
 }

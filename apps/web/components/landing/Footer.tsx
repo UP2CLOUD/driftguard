@@ -59,6 +59,7 @@ export async function Footer() {
 
           {/* Company */}
           <FootCol title={t("landing.footer.colCompany")} links={[
+            { l: t("landing.footer.linkAbout"),   h: "/about" },
             { l: t("landing.footer.linkCareers"), h: "/careers" },
             { l: t("landing.footer.linkStatus"),  h: "/status" },
             { l: "GitHub", h: "https://github.com/UP2CLOUD/driftguard" },
