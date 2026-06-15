@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useT } from "@/components/I18nProvider";
-
-const CONSENT_KEY = "dg_cookie_consent";
+import { CONSENT_KEY } from "@/lib/consent";
 
 export function CookieBanner() {
   const t = useT();

@@ -158,7 +158,8 @@
     "success": "✓ Listo",
     "title": "Únete a la lista de espera",
     "subtitle": "Acceso anticipado a DriftGuard — seguridad en tiempo de ejecución con IA para agentes Terraform.",
-    "note": "Sin spam. Cancela cuando quieras."
+    "note": "Sin spam. Cancela cuando quieras.",
+    "eyebrow": "Acceso anticipado"
   },
   "footer": {
     "privacy": "Privacidad",
@@ -1038,7 +1039,11 @@
       "title": "Estado — DriftGuard",
       "description": "Estado del sistema DriftGuard en tiempo real."
     },
-    "noIncidents": "Sin incidentes en los últimos 30 días."
+    "noIncidents": "Sin incidentes en los últimos 30 días.",
+    "prIngestion": "Ingesta de eventos de PR",
+    "billing": "Facturación",
+    "stripeWebhooks": "Procesamiento de webhooks de Stripe",
+    "webApp": "Aplicación web"
   },
   "security": {
     "eyebrow": "Confianza y seguridad",

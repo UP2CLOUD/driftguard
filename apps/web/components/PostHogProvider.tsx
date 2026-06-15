@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-
-const CONSENT_KEY = "dg_cookie_consent";
+import { CONSENT_KEY } from "@/lib/consent";
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {

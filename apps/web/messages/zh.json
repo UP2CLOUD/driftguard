@@ -158,7 +158,8 @@
     "success": "✓ 已加入",
     "title": "加入等候名单",
     "subtitle": "抢先体验 DriftGuard — 面向 Terraform 代理的 AI 运行时安全。",
-    "note": "不发垃圾邮件，随时可取消订阅。"
+    "note": "不发垃圾邮件，随时可取消订阅。",
+    "eyebrow": "抢先体验"
   },
   "footer": {
     "privacy": "隐私",
@@ -1038,7 +1039,11 @@
       "title": "系统状态 — DriftGuard",
       "description": "DriftGuard 系统实时状态。"
     },
-    "noIncidents": "过去 30 天内无事件。"
+    "noIncidents": "过去 30 天内无事件。",
+    "prIngestion": "PR 事件摄取",
+    "billing": "账单",
+    "stripeWebhooks": "Stripe webhook 处理",
+    "webApp": "Web 应用"
   },
   "security": {
     "eyebrow": "信任与安全",

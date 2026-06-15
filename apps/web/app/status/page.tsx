@@ -21,8 +21,9 @@ type HealthReady = {
 type SystemStatus = "operational" | "degraded" | "outage";
 
 function checkToStatus(val: string | undefined): SystemStatus {
-  if (!val || val === "not_configured") return "operational";
-  if (val === "ok") return "operational";
+  if (!val || val === "ok") return "operational";
+  // Backend returns "not_configured" or "not_configured: FIELD1, FIELD2"
+  if (val === "not_configured" || val.startsWith("not_configured:")) return "operational";
   if (val.startsWith("error")) return "outage";
   return "degraded";
 }
@@ -64,7 +65,7 @@ export default async function StatusPage() {
       next: { revalidate: 30 },
       signal: AbortSignal.timeout(5000),
     });
-    if (res.ok || res.status === 503) {
+    if ((res.ok || res.status === 503) && (res.headers.get("content-type") ?? "").includes("application/json")) {
       ready = await res.json() as HealthReady;
     }
   } catch {
@@ -74,12 +75,12 @@ export default async function StatusPage() {
   const checks = ready?.checks ?? {};
   const SYSTEMS = [
     { name: t("status.pipeline"),  description: t("status.p99"),       status: checkToStatus(checks.db) },
-    { name: t("status.webhooks"),  description: "PR event ingestion",   status: checkToStatus(checks.github_app) },
-    { name: t("status.memory"),       description: t("docs.memory.subtitle"),   status: checkToStatus(checks.db) },
-    { name: t("status.costAnalysis"), description: t("status.infracost"),        status: "operational" as SystemStatus },
-    { name: t("docs.security.title"), description: t("status.checkov"),          status: "operational" as SystemStatus },
-    { name: "Billing",             description: "Stripe webhook processing", status: checkToStatus(checks.stripe) },
-    { name: t("status.dashboard"), description: "Web application",      status: "operational" as SystemStatus },
+    { name: t("status.webhooks"),      description: t("status.prIngestion"),       status: checkToStatus(checks.github_app) },
+    { name: t("status.memory"),        description: t("docs.memory.subtitle"),     status: checkToStatus(checks.db) },
+    { name: t("status.costAnalysis"),  description: t("status.infracost"),          status: "operational" as SystemStatus },
+    { name: t("docs.security.title"),  description: t("status.checkov"),            status: checkToStatus(checks.ai_review) },
+    { name: t("status.billing"),       description: t("status.stripeWebhooks"),     status: checkToStatus(checks.stripe) },
+    { name: t("status.dashboard"),     description: t("status.webApp"),             status: "operational" as SystemStatus },
   ];
 
   const allOperational = ready === null

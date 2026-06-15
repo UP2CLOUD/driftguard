@@ -158,7 +158,8 @@
     "success": "✓ تم",
     "title": "انضم إلى قائمة الانتظار",
     "subtitle": "احصل على وصول مبكر إلى DriftGuard — أمان وقت التشغيل بالذكاء الاصطناعي لوكلاء Terraform.",
-    "note": "لا رسائل مزعجة. إلغاء الاشتراك في أي وقت."
+    "note": "لا رسائل مزعجة. إلغاء الاشتراك في أي وقت.",
+    "eyebrow": "وصول مبكر"
   },
   "footer": {
     "privacy": "الخصوصية",
@@ -1038,7 +1039,11 @@
       "title": "الحالة — DriftGuard",
       "description": "حالة نظام DriftGuard في الوقت الفعلي."
     },
-    "noIncidents": "لا توجد حوادث في آخر 30 يومًا."
+    "noIncidents": "لا توجد حوادث في آخر 30 يومًا.",
+    "prIngestion": "استيعاب أحداث PR",
+    "billing": "الفوترة",
+    "stripeWebhooks": "معالجة Stripe webhooks",
+    "webApp": "تطبيق الويب"
   },
   "security": {
     "eyebrow": "الثقة والأمان",

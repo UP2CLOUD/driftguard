@@ -27,7 +27,7 @@ export default async function WaitlistPage() {
 
   return (
     <MarketingPageShell
-      eyebrow="Early access"
+      eyebrow={t("waitlist.eyebrow")}
       title={t("waitlist.title")}
       subtitle={t("waitlist.subtitle")}
       narrow

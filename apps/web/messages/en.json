@@ -158,7 +158,8 @@
     "success": "✓ In",
     "title": "Join the waitlist",
     "subtitle": "Get early access to DriftGuard — AI runtime safety for Terraform agents.",
-    "note": "No spam. Unsubscribe at any time."
+    "note": "No spam. Unsubscribe at any time.",
+    "eyebrow": "Early access"
   },
   "common": {
     "privacy": "Privacy",
@@ -1062,7 +1063,11 @@
       "title": "Status — DriftGuard",
       "description": "Real-time DriftGuard system status. Check uptime for the review pipeline, dashboard, GitHub webhooks, and integrations."
     },
-    "noIncidents": "No incidents in the last 30 days."
+    "noIncidents": "No incidents in the last 30 days.",
+    "prIngestion": "PR event ingestion",
+    "billing": "Billing",
+    "stripeWebhooks": "Stripe webhook processing",
+    "webApp": "Web application"
   },
   "security": {
     "eyebrow": "Trust & security",
