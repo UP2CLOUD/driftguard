@@ -378,6 +378,24 @@ async def test_checkout_creates_session(billing_api_db, monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_checkout_rejects_non_alphanumeric_installation_id(billing_api_db, monkeypatch):
+    """installation_id with path-traversal chars is rejected with 400."""
+    monkeypatch.setattr(settings, "stripe_api_key", "sk_test_fake")
+    monkeypatch.setattr(settings, "stripe_price_pro", "price_pro_xyz")
+    org_id = billing_api_db
+    with patch("driftguard.services.billing.stripe") as mock_stripe:
+        mock_stripe.Customer.create.return_value = MagicMock(id="cus_evil")
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            r = await client.post(
+                "/api/v1/billing/checkout",
+                json={"org_id": org_id, "plan": "pro", "installation_id": "../../etc"},
+                headers={"Authorization": "Bearer dev-only-change-me"},
+            )
+    assert r.status_code == 400
+    assert "alphanumeric" in r.json()["detail"]
+
+
+@pytest.mark.asyncio
 async def test_checkout_with_installation_id_sets_return_urls(billing_api_db, monkeypatch):
     """When installation_id is provided, success/cancel URLs include the settings path."""
     monkeypatch.setattr(settings, "stripe_api_key", "sk_test_fake")

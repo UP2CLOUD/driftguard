@@ -30,7 +30,7 @@ export function BillingActions({
       const url = await startCheckout(orgId, targetPlan, installationId);
       window.location.href = url;
     } catch (e) {
-      const msg = (e as Error).message ?? "";
+      const msg = e instanceof Error ? e.message : String(e);
       if (_BILLING_UNCONFIGURED.test(msg)) {
         setBillingUnavailable(true);
       } else {
@@ -48,7 +48,7 @@ export function BillingActions({
       const url = await openPortal(orgId, installationId);
       window.location.href = url;
     } catch (e) {
-      const msg = (e as Error).message ?? "";
+      const msg = e instanceof Error ? e.message : String(e);
       if (_BILLING_UNCONFIGURED.test(msg)) {
         setBillingUnavailable(true);
       } else {

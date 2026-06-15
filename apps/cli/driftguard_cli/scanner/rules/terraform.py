@@ -33,11 +33,11 @@ _RE_RESOURCE = re.compile(r'^\s*resource\s+"([^"]+)"\s+"([^"]+)"', re.MULTILINE)
 _RE_ATTR = re.compile(r"^\s*(\w[\w.]*)\s*=\s*(.+)$", re.MULTILINE)
 _RE_BLOCK = re.compile(r"^\s*(\w+)\s*\{", re.MULTILINE)
 _SECRET_ATTR = re.compile(r"(password|secret|token|private_key|api_key|access_key|secret_access_key)", re.IGNORECASE)
-_WILDCARD_IAM = re.compile(r'"Resource"\s*:\s*"\*"')
-_ACTION_WILD = re.compile(r'"Action"\s*:\s*"\*"')
+_WILDCARD_IAM = re.compile(r'(?:"Resource"\s*:\s*"\*"|resources\s*=\s*\[\s*"\*"\s*\])', re.IGNORECASE)
+_ACTION_WILD = re.compile(r'(?:"Action"\s*:\s*"\*"|actions\s*=\s*\[\s*"\*"\s*\])', re.IGNORECASE)
 _PUBLIC_ACL = re.compile(r'acl\s*=\s*"public', re.IGNORECASE)
-_ALL_CIDR = re.compile(r'cidr_block[s]?\s*=\s*"\s*0\.0\.0\.0/0\s*"', re.IGNORECASE)
-_ALL_IPV6 = re.compile(r'ipv6_cidr_block[s]?\s*=\s*"\s*::/0\s*"', re.IGNORECASE)
+_ALL_CIDR = re.compile(r'cidr_block[s]?\s*=\s*\[?\s*[^\]\n]*"0\.0\.0\.0/0"[^\]\n]*\]?', re.IGNORECASE)
+_ALL_IPV6 = re.compile(r'ipv6_cidr_block[s]?\s*=\s*\[?\s*[^\]\n]*"::/0"[^\]\n]*\]?', re.IGNORECASE)
 _PLAINTEXT = re.compile(r'^\s*(?:password|secret|token)\s*=\s*"(?!\$\{)[^"]{4,}"', re.IGNORECASE | re.MULTILINE)
 
 
@@ -395,14 +395,19 @@ def _extract_resource_blocks(content: str) -> list[tuple[str, str, str, int]]:
         res_type = match.group(1)
         res_name = match.group(2)
         start_line = content[: match.start()].count("\n") + 1
-        # Simple brace counting to extract body
+        # Brace counting to extract body; ignore braces inside double-quoted strings
         depth = 1
         i = start
+        in_quote = False
         while i < len(content) and depth > 0:
-            if content[i] == "{":
-                depth += 1
-            elif content[i] == "}":
-                depth -= 1
+            char = content[i]
+            if char == '"' and (i == 0 or content[i - 1] != "\\"):
+                in_quote = not in_quote
+            elif not in_quote:
+                if char == "{":
+                    depth += 1
+                elif char == "}":
+                    depth -= 1
             i += 1
         body = content[start : i - 1]
         results.append((res_type, res_name, body, start_line))

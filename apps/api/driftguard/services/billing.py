@@ -67,6 +67,8 @@ def create_checkout_session(
 ) -> str:
     base = settings.public_base_url.rstrip("/")
     if installation_id:
+        if not installation_id.isalnum():
+            raise ValueError("installation_id must be alphanumeric")
         success_url = f"{base}/dashboard/{installation_id}/settings?checkout=success"
         cancel_url = f"{base}/dashboard/{installation_id}/settings?checkout=cancelled"
     else:

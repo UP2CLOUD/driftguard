@@ -102,12 +102,15 @@ async def checkout(
     except StripeError as exc:
         raise HTTPException(502, stripe_error_message(exc)) from exc
 
-    url = create_checkout_session(
-        customer_id=customer_id,
-        price_id=price_id,
-        org_id=org.id,
-        installation_id=req.installation_id,
-    )
+    try:
+        url = create_checkout_session(
+            customer_id=customer_id,
+            price_id=price_id,
+            org_id=org.id,
+            installation_id=req.installation_id,
+        )
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
     return {"url": url}
 
 

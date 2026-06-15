@@ -277,7 +277,7 @@ repos:
 |------|----------|-------------|
 | TF001 | critical | IAM policy allows all resources (`"Resource": "*"`) |
 | TF002 | high | S3 bucket missing `aws_s3_bucket_public_access_block` |
-| TF003 | high | `force_destroy = true` on data resource |
+| TF003 | high | `force_destroy = true` on storage resource |
 | TF004 | high | RDS `skip_final_snapshot = true` |
 | TF005 | medium | RDS missing `deletion_protection = true` |
 | TF006 | high | Potential hardcoded secret (password/token/key attributes) |
