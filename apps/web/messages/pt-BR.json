@@ -102,7 +102,7 @@
     "repos": "Repositórios",
     "recentScans": "Scans recentes",
     "noScansYet": "Nenhum scan ainda",
-    "noScansDesc": "Executa o teu primeiro scan acima para ver os resultados aqui.",
+    "noScansDesc": "Execute seu primeiro scan acima para ver os resultados aqui.",
     "repository": "Repositório",
     "status": "Estado",
     "removeDriftGuard": "Remover DriftGuard",
@@ -110,13 +110,13 @@
     "severity": "Severidade",
     "resource": "Recurso",
     "message": "Mensagem",
-    "noFixSuggestion": "Sugestão de correcção não disponível.",
+    "noFixSuggestion": "Sugestão de correção não disponível.",
     "errorTitle": "Erro",
     "errorDesc": "Ocorreu um erro ao carregar esta página.",
     "backToDashboard": "Voltar ao painel",
     "errorFallback": "Ocorreu um erro inesperado. Tente novamente.",
     "analysisNotFound": "Análise não encontrada",
-    "analysisNotFoundDesc": "Esta análise não existe ou foi eliminada.",
+    "analysisNotFoundDesc": "Esta análise não existe ou foi excluída.",
     "findingsType": "Tipo",
     "findingsEmpty": "Sem resultados. A infraestrutura parece limpa.",
     "suggestedFix": "Correção sugerida",
@@ -285,7 +285,7 @@
     "preferencesDesc": "Idioma, apresentação e preferências de notificação.",
     "awsTitle": "Integração AWS",
     "awsDesc": "Concede acesso só de leitura ao DriftGuard para comparar o estado live com os planos Terraform. Sem credenciais armazenadas — STS AssumeRole com ID externo.",
-    "billingDesc": "Gere a tua subscrição e método de pagamento.",
+    "billingDesc": "Gerencie sua assinatura e método de pagamento.",
     "workspaceTitle": "Workspace",
     "workspaceDesc": "Metadados só de leitura sobre esta instalação.",
     "installationId": "ID de instalação GitHub",
@@ -295,7 +295,7 @@
     "stripeActive": "activo",
     "active": "Ativo",
     "apiOfflineWarning": "API offline — seções de faturamento e AWS indisponíveis.",
-    "uninstallDesc": "Desinstala o GitHub App. Todas as análises e memória serão eliminadas em 30 dias.",
+    "uninstallDesc": "Desinstale o GitHub App. Todas as análises e memória serão excluídas em 30 dias.",
     "uninstallButton": "Desinstalar →",
     "dangerZone": "Zona de perigo",
     "dangerZoneDesc": "Acções irreversíveis. Procede com cuidado.",
@@ -311,7 +311,7 @@
     "githubSettingsLink": "Configurações GitHub →",
     "meta": {
       "title": "Definições — DriftGuard",
-      "description": "Gere as definições da tua organização DriftGuard, integrações e políticas."
+      "description": "Gerencie as configurações da sua organização DriftGuard, integrações e políticas."
     },
     "upgradeToTeam": "Assinar Team →",
     "upgradeToEnterprise": "Assinar Enterprise →",
@@ -368,7 +368,7 @@
     "ctaButton": "Instalar GitHub App — grátis",
     "ctaReadDocs": "Ler a documentação →",
     "hero": {
-      "line1": "Os teus agentes de IA escrevem Terraform.",
+      "line1": "Seus agentes de IA escrevem Terraform.",
       "line2": "Nós garantimos que fazem deploy com segurança.",
       "cta_start": "Começar",
       "cta_install": "Instalar GitHub App — grátis",
@@ -393,7 +393,7 @@
       "nodeComment": "Comentário no PR",
       "nodeOutcome": "Resultado propagado",
       "sectionTitle": "Gateway de infraestrutura, não middleware.",
-      "sectionSubtitle": "DriftGuard é uma GitHub App — sem sidecar, sem agente, sem acesso à cloud além de STS só-leitura. O pipeline de revisão corre na nossa infra. O teu Terraform nunca sai do lugar.",
+      "sectionSubtitle": "DriftGuard é uma GitHub App — sem sidecar, sem agente, sem acesso à cloud além de STS somente leitura. O pipeline de revisão roda na nossa infra. Seu Terraform nunca sai do lugar.",
       "figCaption": "fig 02 ▸ fluxo de dados",
       "agentLabel": "AGENTE",
       "agentSub": "LLM / geração de código",
@@ -408,13 +408,13 @@
       "step01Title": "PR abre",
       "step01Body": "Qualquer PR Terraform ou OpenTofu — escrito por engenheiro ou agente IA — activa o DriftGuard. Lemos o terraform plan, output do infracost e scans de segurança.",
       "step02Title": "Recall semântico (sub‑10ms)",
-      "step02Body": "O embedding da alteração é comparado com falhas passadas na tua equipa. Se existir um incidente semelhante, o comentário no PR cita-o — com pontuação de similaridade e link.",
+      "step02Body": "O embedding da alteração é comparado com falhas passadas na sua equipe. Se houver um incidente semelhante, o comentário no PR o cita — com pontuação de similaridade e link.",
       "step03Title": "Portal de políticas",
-      "step03Body": "Políticas compatíveis com OPA aplicam acções permitidas por ambiente, classe de recurso e pontuação de risco. Bloqueia merges, avisa revisores ou auto-aprova alterações seguras.",
+      "step03Body": "Políticas compatíveis com OPA aplicam ações permitidas por ambiente, classe de recurso e pontuação de risco. Bloqueia merges, avisa revisores ou auto-aprova alterações seguras.",
       "step04Title": "Comentário no PR",
       "step04Body": "Um único comentário de alto sinal: delta de custo, drift, descobertas de segurança, evidências de conformidade (DORA / NIS2 / ISO 27001) — e citações a falhas passadas.",
       "step05Title": "Resultado propagado",
-      "step05Body": "O resultado do merge e o estado pós-deploy tornam-se nova memória. Os teus agentes e engenheiros melhoram todos os dias."
+      "step05Body": "O resultado do merge e o estado pós-deploy se tornam nova memória. Seus agentes e engenheiros melhoram todos os dias."
     },
     "codeIntegration": {
       "title": "Instale em 30 segundos",
@@ -426,7 +426,7 @@
       "fullDocs": "▸ documentação completa"
     },
     "cta": {
-      "headline": "Prontos para fazer deploy com segurança"
+      "headline": "Pronto para fazer deploy com segurança"
     },
     "dashboardPreview": {
       "liveEnv": "Ambiente live",
@@ -514,7 +514,7 @@
         },
         "aiNative": {
           "title": "Construído para agentes contribuidores",
-          "body": "Agentes IA escrevem metade da tua IaC. DriftGuard trata-os como engenheiros juniores.",
+          "body": "Agentes de IA escrevem metade da sua IaC. DriftGuard os trata como engenheiros juniores.",
           "example": "agent.cursor abriu PR #847\n23 recursos · risco 84/100\n→ 2 descobertas críticas · BLOQUEADO"
         }
       }
@@ -568,12 +568,12 @@
       "liveDemo": "AO VIVO · DEMO"
     },
     "metrics": {
-      "connectPrompt": "Liga a tua instalação GitHub para ver métricas live do workspace.",
+      "connectPrompt": "Conecte sua instalação GitHub para ver métricas ao vivo do workspace.",
       "liveEyebrow": "Dados em tempo real do workspace",
       "staticEyebrow": "Capacidades da plataforma",
-      "liveTitle": "O teu workspace DriftGuard",
+      "liveTitle": "Seu workspace DriftGuard",
       "staticTitle": "Construído para infraestrutura de produção.",
-      "liveSubtitle": "Dados em tempo real dos teus repositórios ligados.",
+      "liveSubtitle": "Dados em tempo real dos seus repositórios conectados.",
       "staticSubtitle": "Garantias mensuráveis em cada PR Terraform — cobertura, precisão e latência.",
       "liveLabel1": "Análises de PR / 7d",
       "liveLabel2": "Incidentes abertos",
@@ -655,10 +655,10 @@
       }
     },
     "semanticMemory": {
-      "sectionTitle": "Os teus agentes aprendem de produção. Permanentemente.",
-      "sectionSubtitle": "Cada incidente — deploy bloqueado, evento de drift, violação de política — torna-se um embedding 384-d. O próximo PR semelhante recupera o incidente original automaticamente.",
+      "sectionTitle": "Seus agentes aprendem com a produção. Permanentemente.",
+      "sectionSubtitle": "Cada incidente — deploy bloqueado, evento de drift, violação de política — vira um embedding 384-d. O próximo PR semelhante recupera o incidente original automaticamente.",
       "recalledLabel": "Incidentes recuperados",
-      "ariaLabel": "Os teus agentes aprendem de produção. Permanentemente.",
+      "ariaLabel": "Seus agentes aprendem com a produção. Permanentemente.",
       "query": "Consulta",
       "eyebrow": "Memória operacional",
       "subtitle": "Cada incidente — deploy bloqueado, evento de drift, violação de política — vira um vetor de 384 dimensões. Quando um agente submete padrão semelhante semanas depois, DriftGuard exibe o incidente original com pontuação de similaridade antes do merge."
@@ -822,7 +822,7 @@
   "docs": {
     "eyebrow": "Documentação",
     "title": "Documentação DriftGuard",
-    "subtitle": "Tudo o que precisas para integrar, configurar e operar o DriftGuard.",
+    "subtitle": "Tudo o que você precisa para integrar, configurar e operar o DriftGuard.",
     "getStarted": "Começar",
     "coreConc": "Conceitos principais",
     "integrations": "Integrações",
@@ -843,9 +843,9 @@
       "webhookGuide": "guia de webhooks"
     },
     "firstReview": {
-      "label": "A tua primeira revisão",
+      "label": "Sua primeira revisão",
       "eyebrow": "Docs · Começar",
-      "title": "A tua primeira revisão de PR",
+      "title": "Sua primeira revisão de PR",
       "subtitle": "O que o DriftGuard analisa em cada PR Terraform e como interpretar os resultados."
     },
     "api": {
@@ -870,19 +870,19 @@
       "label": "Detecção de drift",
       "eyebrow": "Docs · Conceitos",
       "title": "Detecção de drift",
-      "subtitle": "Estado real da cloud vs. o que o teu plano Terraform espera."
+      "subtitle": "Estado real da cloud vs. o que seu plano Terraform espera."
     },
     "policies": {
       "label": "Motor de políticas",
       "eyebrow": "Docs · Conceitos",
       "title": "Motor de políticas",
-      "subtitle": "Declara o que os teus agentes e engenheiros têm permissão para alterar."
+      "subtitle": "Declare o que seus agentes e engenheiros têm permissão para alterar."
     },
     "webhooks": {
       "label": "Webhooks de saída",
       "eyebrow": "Docs · Integrações",
       "title": "Webhooks de saída",
-      "subtitle": "Recebe eventos do DriftGuard no Slack, Teams ou no teu próprio endpoint."
+      "subtitle": "Receba eventos do DriftGuard no Slack, Teams ou no seu próprio endpoint."
     },
     "meta": {
       "title": "Documentação — DriftGuard",
@@ -922,13 +922,13 @@
     "postRecall": "POST /api/v1/memory/recall",
     "apiRef": "Referência da API",
     "h1": "Construa, implante e opere o DriftGuard.",
-    "pageSubtitle": "Tudo o que precisas para integrar o DriftGuard no teu pipeline Terraform e fluxos de agentes de IA.",
+    "pageSubtitle": "Tudo o que você precisa para integrar o DriftGuard no seu pipeline Terraform e fluxos de agentes de IA.",
     "helpText": "Somos uma equipa pequena. Envia-nos um e-mail — respondemos em menos de 24h nos dias úteis.",
     "sectionDeploy": "Implantação",
     "sectionApi": "API",
     "item_install_title": "Instalar o GitHub App",
     "item_install_desc": "Instalação em 30s em qualquer org do GitHub",
-    "item_firstReview_title": "A tua primeira revisão de PR",
+    "item_firstReview_title": "Sua primeira revisão de PR",
     "item_firstReview_desc": "Abre um PR Terraform e recebe uma revisão",
     "item_policies_title": "Configurar políticas",
     "item_policies_desc": "Pacotes de políticas OPA/Rego por repositório",
@@ -1012,7 +1012,7 @@
     "disclosure": "Divulgação responsável",
     "reportVuln": "Reportar uma vulnerabilidade",
     "disclosureBody1": "Se descobrires uma vulnerabilidade de segurança no DriftGuard, reporta-a para security@driftguard.io. O nosso objectivo é responder em 24 horas e resolver problemas críticos em 72 horas.",
-    "disclosureBody2": "Por favor, não abras issues públicas no GitHub para vulnerabilidades de segurança. Confirmaremos o teu relatório, manter-te-emos informado do progresso e daremos crédito no nosso advisory de segurança, se desejares.",
+    "disclosureBody2": "Por favor, não abra issues públicas no GitHub para vulnerabilidades de segurança. Confirmaremos o seu relatório, manteremos você informado do progresso e daremos crédito no nosso advisory de segurança, se desejar.",
     "controlLabels": {
       "encryptionRest": "Encriptação em repouso",
       "encryptionTransit": "Encriptação em trânsito",
@@ -1044,7 +1044,7 @@
     "full": "Completo",
     "planned": "Planeado",
     "evidencePack": "Pack de evidências",
-    "evidencePackDesc": "Precisas de um export de evidências de conformidade para o teu auditor? Disponível para SOC 2, ISO 27001, DORA e NIS2.",
+    "evidencePackDesc": "Precisa de um export de evidências de conformidade para o seu auditor? Disponível para SOC 2, ISO 27001, DORA e NIS2.",
     "requestPack": "Solicitar pack de evidências",
     "status_evidence_ready": "Evidência disponível",
     "status_compliant": "Conforme",
@@ -1080,7 +1080,7 @@
     "eyebrow": "Clientes",
     "title": "Confiado por engenheiros de plataforma",
     "subtitle": "Equipas que usam o DriftGuard para governar Terraform escrito por IA e por humanos.",
-    "yourTeam": "A tua equipa a seguir",
+    "yourTeam": "Sua equipe a seguir",
     "ctaTitle": "Começa a rever PRs em 30 segundos",
     "ctaBody": "Sem cartão de crédito. Sem alterações de infra. Funciona com qualquer repo Terraform ou OpenTofu no GitHub.",
     "ctaButton": "Instalar GitHub App — grátis →",
@@ -1088,7 +1088,7 @@
     "p50": "Latência P50",
     "driftCost": "custo drift detectado",
     "uptime": "SLA uptime",
-    "yourTeamNext": "A tua equipa a seguir",
+    "yourTeamNext": "Sua equipe a seguir",
     "meta": {
       "title": "Clientes — DriftGuard",
       "description": "Equipas que usam DriftGuard para governar código de infraestrutura gerado por IA."
@@ -1106,19 +1106,19 @@
     "getInTouch": "Entra em contacto →",
     "noRoles": "Sem posições abertas de momento.",
     "noRolesBody": "Contratamos quando o produto exige. Segue-nos no LinkedIn.",
-    "noRoleDesc": "Contratamos por competências, não por títulos. Envia o teu perfil e o que queres construir.",
+    "noRoleDesc": "Contratamos por competências, não por títulos. Envie seu perfil e o que você quer construir.",
     "whyUs": "Porquê o DriftGuard",
     "remoteFirst": "Remote-first",
     "remoteFirstDesc": "Fuso horário EU preferido. Sem escritórios, sem deslocações.",
     "highOwn": "Alta responsabilidade",
-    "highOwnDesc": "Equipa pequena. Tens o teu domínio do início ao fim.",
+    "highOwnDesc": "Equipe pequena. Você tem seu domínio do início ao fim.",
     "shipFast": "Entregar rápido",
     "shipFastDesc": "Iteramos semanalmente. Opiniões fortes sobre o âmbito.",
     "openCore": "Open-core",
     "openCoreDesc": "O analisador principal é open source. Construes em público.",
     "openSource": "Core open source",
     "euOnly": "Fuso horário EU preferido",
-    "noRole": "Não vês a tua vaga?",
+    "noRole": "Não encontrou sua vaga?",
     "meta": {
       "title": "Carreiras — DriftGuard",
       "description": "Junta-te à equipa que cria segurança de runtime para engenheiros de infraestrutura."
@@ -1135,7 +1135,7 @@
     "note": "Entradas técnicas mantidas em inglês como registo canónico.",
     "meta": {
       "title": "Changelog — DriftGuard",
-      "description": "Actualizações de produto, novas funcionalidades e melhorias do DriftGuard."
+      "description": "Atualizações de produto, novas funcionalidades e melhorias do DriftGuard."
     }
   },
   "pricing": {
@@ -1161,7 +1161,7 @@
   "legal": {
     "languageNote": "Este documento é fornecido em inglês por exactidão legal. As traduções são apenas informativas.",
     "effectiveDate": "Data de vigência:",
-    "lastUpdated": "Última actualização:"
+    "lastUpdated": "Última atualização:"
   },
   "subprocessors": {
     "eyebrow": "Legal",
@@ -1170,7 +1170,7 @@
     "name": "Subprocessador",
     "purpose": "Finalidade",
     "location": "Localização dos dados",
-    "updated": "Última actualização:",
+    "updated": "Última atualização:",
     "subprocessor": "Subprocessador",
     "country": "País",
     "objection": "Objecção a alteração de subprocessador",
@@ -1191,7 +1191,7 @@
   },
   "seo": {
     "title": "DriftGuard — Segurança de runtime para agentes Terraform",
-    "description": "O DriftGuard revê cada PR Terraform que os teus agentes de IA abrem — custo, drift, segurança, conformidade. Memória semântica de incidentes passados evita erros repetidos.",
+    "description": "O DriftGuard revisa cada PR Terraform que seus agentes de IA abrem — custo, drift, segurança, conformidade. Memória semântica de incidentes passados evita erros repetidos.",
     "ogTitle": "DriftGuard — Segurança de runtime para agentes Terraform",
     "ogDesc": "Custo · drift · segurança · conformidade em cada PR Terraform.",
     "twitterDesc": "Segurança de runtime para agentes Terraform."
@@ -1207,16 +1207,16 @@
     "configResource": "aws_rds.*.delete",
     "howItWorks": "▸ como funciona",
     "terminalLabel": "fig 01 ▸ supervisor de runtime (ao vivo)",
-    "terminalRefresh": "auto‑actualiza ▪ 1.4s",
+    "terminalRefresh": "auto‑atualiza ▪ 1.4s",
     "statP99": "P99",
     "statMemory": "Memória",
     "statCompliance": "Conformidade",
     "statMemorySub": "semântica",
     "statComplianceSub": "NIS2 · ISO",
-    "subText": "O DriftGuard revê cada PR Terraform e OpenTofu — escrito por humanos ou agentes IA. Detectamos {cost}, {drift}, {security} e {compliance} — e lembramos de cada falha para que os teus agentes não repitam os mesmos erros."
+    "subText": "O DriftGuard revisa cada PR Terraform e OpenTofu — escrito por humanos ou agentes de IA. Detectamos {cost}, {drift}, {security} e {compliance} — e lembramos de cada falha para que seus agentes não repitam os mesmos erros."
   },
   "cta": {
-    "headline": "Recupera o controlo da tua cloud.",
+    "headline": "Recupere o controle da sua cloud.",
     "readDocs": "Ler a documentação →",
     "otuCompatible": "Compatível com OpenTofu",
     "noCodeChange": "Sem alterações de código"
