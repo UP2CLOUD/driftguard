@@ -11,16 +11,18 @@ export function BillingActions({
   installationId,
   hasCustomer,
   plan,
+  billingEnabled = true,
 }: {
   orgId: string;
   installationId: string;
   hasCustomer: boolean;
   plan: string;
+  billingEnabled?: boolean;
 }) {
   const t = useT();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState("");
-  const [billingUnavailable, setBillingUnavailable] = useState(false);
+  const [billingUnavailable, setBillingUnavailable] = useState(!billingEnabled);
 
   async function upgrade(targetPlan: string) {
     setLoading(targetPlan);

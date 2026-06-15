@@ -62,9 +62,7 @@ async def get_or_create_customer(db: AsyncSession, org: Organization, email: str
     return customer.id
 
 
-def create_checkout_session(
-    *, customer_id: str, price_id: str, org_id: str, installation_id: str | None = None
-) -> str:
+def create_checkout_session(*, customer_id: str, price_id: str, org_id: str, installation_id: str | None = None) -> str:
     base = settings.public_base_url.rstrip("/")
     if installation_id:
         if not installation_id.isalnum():

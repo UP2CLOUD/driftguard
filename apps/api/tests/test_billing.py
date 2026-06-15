@@ -544,6 +544,30 @@ async def test_get_plan_requires_auth(plan_api_db):
     assert r.status_code == 401
 
 
+@pytest.mark.asyncio
+async def test_get_plan_includes_billing_enabled_false(plan_api_db, monkeypatch):
+    monkeypatch.setattr(settings, "stripe_api_key", "")
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        r = await client.get(
+            "/api/v1/billing/plan?installation_id=99999",
+            headers={"Authorization": "Bearer dev-only-change-me"},
+        )
+    assert r.status_code == 200
+    assert r.json()["billing_enabled"] is False
+
+
+@pytest.mark.asyncio
+async def test_get_plan_includes_billing_enabled_true(plan_api_db, monkeypatch):
+    monkeypatch.setattr(settings, "stripe_api_key", "sk_test_fake")
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        r = await client.get(
+            "/api/v1/billing/plan?installation_id=99999",
+            headers={"Authorization": "Bearer dev-only-change-me"},
+        )
+    assert r.status_code == 200
+    assert r.json()["billing_enabled"] is True
+
+
 # ── Downgrade auto-disable integration ───────────────────────────────────────
 
 

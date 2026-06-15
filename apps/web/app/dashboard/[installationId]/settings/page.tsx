@@ -18,6 +18,7 @@ type PlanData = {
   plan: string;
   subscription_status: string;
   is_premium: boolean;
+  billing_enabled: boolean;
   repos: { active: number; limit: number | null };
   monthly_pr_reviews: { used: number | null; limit: number | null };
 };
@@ -274,6 +275,7 @@ export default async function Settings({
             installationId={installationId}
             hasCustomer={!!org.has_stripe_customer}
             plan={org.plan}
+            billingEnabled={planData?.billing_enabled ?? true}
           />
         </Section>
       )}
