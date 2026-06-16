@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { BACKEND_URL, authHeaders } from "@/lib/backend";
+import { beProxy } from "@/lib/backend";
 
 export async function POST(
   _req: Request,
@@ -12,12 +12,7 @@ export async function POST(
   }
 
   const { repoId } = await params;
-
-  const res = await fetch(`${BACKEND_URL}/api/v1/repos/${repoId}/disable`, {
-    method: "POST",
-    headers: authHeaders(),
-  });
-
-  const body = await res.json().catch(() => ({}));
-  return NextResponse.json(body, { status: res.status });
+  const { body, status } = await beProxy(`/api/v1/repos/${repoId}/disable`, { method: "POST", timeout: 8000 });
+  if (body === null) return new NextResponse(null, { status });
+  return NextResponse.json(body, { status });
 }

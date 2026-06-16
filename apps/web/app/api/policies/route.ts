@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { BACKEND_URL, authHeaders } from "@/lib/backend";
+import { beProxy } from "@/lib/backend";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -11,16 +11,14 @@ export async function POST(req: NextRequest) {
 
   if (!installation_id) return NextResponse.json({ error: "installation_id required" }, { status: 400 });
 
-  const res = await fetch(
-    `${BACKEND_URL}/api/v1/policies?installation_id=${installation_id}`,
+  const { body: data, status } = await beProxy(
+    `/api/v1/policies?installation_id=${installation_id}`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...authHeaders() },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(policy),
-      signal: AbortSignal.timeout(10000),
     },
   );
-
-  const data = await res.json().catch(() => ({}));
-  return NextResponse.json(data, { status: res.status });
+  if (data === null) return new NextResponse(null, { status });
+  return NextResponse.json(data, { status });
 }

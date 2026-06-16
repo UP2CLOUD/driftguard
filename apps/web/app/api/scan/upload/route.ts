@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { BACKEND_URL, authHeaders } from "@/lib/backend";
+import { beProxy } from "@/lib/backend";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -8,13 +8,11 @@ export async function POST(req: NextRequest) {
 
   const formData = await req.formData();
 
-  const res = await fetch(`${BACKEND_URL}/api/v1/scans/upload`, {
+  const { body, status } = await beProxy(`/api/v1/scans/upload`, {
     method: "POST",
-    headers: authHeaders(),
     body: formData,
-    signal: AbortSignal.timeout(60000),
+    timeout: 60000,
   });
-
-  const data = await res.json().catch(() => ({}));
-  return NextResponse.json(data, { status: res.status });
+  if (body === null) return new NextResponse(null, { status });
+  return NextResponse.json(body, { status });
 }
