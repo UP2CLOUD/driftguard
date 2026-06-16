@@ -149,7 +149,13 @@
     "upgrade": "升级",
     "costDelta": "成本变化",
     "recentScansCount": "共 {n} 条",
-    "noScansTrigger": "在上方运行手动扫描，或打开 Terraform PR 以触发首次分析。"
+    "noScansTrigger": "在上方运行手动扫描，或打开 Terraform PR 以触发首次分析。",
+    "upgradeNudge": "免费计划 · 升级以解锁无限 PR 审查、AI 记忆和合规报告。",
+    "firstPrGuideTitle": "打开 PR 时会发生什么",
+    "firstPrStep1": "推送包含 *.tf 文件更改的分支",
+    "firstPrStep2": "在 GitHub 上打开拉取请求",
+    "firstPrStep3": "DriftGuard 扫描安全性、成本和策略违规",
+    "firstPrStep4": "结果作为 PR 评论显示，也在此仪表板中显示"
   },
   "waitlist": {
     "placeholder": "you@company.com",

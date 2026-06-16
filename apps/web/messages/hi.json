@@ -149,7 +149,13 @@
     "upgrade": "अपग्रेड",
     "costDelta": "लागत परिवर्तन",
     "recentScansCount": "कुल {n}",
-    "noScansTrigger": "पहला विश्लेषण शुरू करने के लिए ऊपर मैन्युअल स्कैन चलाएं या Terraform PR खोलें।"
+    "noScansTrigger": "पहला विश्लेषण शुरू करने के लिए ऊपर मैन्युअल स्कैन चलाएं या Terraform PR खोलें।",
+    "upgradeNudge": "मुफ़्त प्लान · असीमित PR समीक्षाएं, AI मेमोरी और अनुपालन रिपोर्ट अनलॉक करने के लिए अपग्रेड करें।",
+    "firstPrGuideTitle": "PR खोलने पर क्या होता है",
+    "firstPrStep1": "*.tf फ़ाइल परिवर्तनों के साथ एक शाखा पुश करें",
+    "firstPrStep2": "GitHub पर एक पुल अनुरोध खोलें",
+    "firstPrStep3": "DriftGuard सुरक्षा, लागत और नीति उल्लंघनों की जांच करता है",
+    "firstPrStep4": "परिणाम PR टिप्पणी के रूप में और यहाँ डैशबोर्ड में दिखाई देते हैं"
   },
   "waitlist": {
     "placeholder": "you@company.com",

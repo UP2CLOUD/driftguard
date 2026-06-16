@@ -119,6 +119,21 @@ export async function StatsStripSection({
         ))}
       </div>
 
+      {/* Soft upgrade nudge for engaged free users not yet at limit */}
+      {!isPremium && repos > 0 && analyses7d > 0 && !(repoLimit != null && activeRepos >= repoLimit) && (
+        <div className="flex items-center justify-between px-4 py-2 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+          <span>
+            {t("dashboard.upgradeNudge") ?? "Free plan · upgrade to unlock unlimited PR reviews, AI memory, and compliance reports."}
+          </span>
+          <Link
+            href={`/dashboard/${installationId}/settings?intent=upgrade`}
+            className="ml-3 shrink-0 text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+          >
+            {t("dashboard.upgrade") ?? "Upgrade"} →
+          </Link>
+        </div>
+      )}
+
       {/* Free plan upgrade nudge when at repo limit */}
       {!isPremium && repoLimit != null && activeRepos >= repoLimit && (
         <div className="flex items-center justify-between px-4 py-2 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">

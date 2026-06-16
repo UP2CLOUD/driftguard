@@ -149,7 +149,13 @@
     "upgrade": "Upgrade",
     "costDelta": "Cost delta",
     "recentScansCount": "{n} total",
-    "noScansTrigger": "Run a manual scan above or open a Terraform PR to trigger the first analysis."
+    "noScansTrigger": "Run a manual scan above or open a Terraform PR to trigger the first analysis.",
+    "upgradeNudge": "Free plan · upgrade to unlock unlimited PR reviews, AI memory, and compliance reports.",
+    "firstPrGuideTitle": "What happens when you open a PR",
+    "firstPrStep1": "Push a branch with *.tf file changes",
+    "firstPrStep2": "Open a pull request on GitHub",
+    "firstPrStep3": "DriftGuard scans for security, cost & policy violations",
+    "firstPrStep4": "Results appear as a PR comment and here in the dashboard"
   },
   "waitlist": {
     "placeholder": "you@company.com",

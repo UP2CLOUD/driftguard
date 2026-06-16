@@ -149,7 +149,13 @@
     "upgrade": "Actualizar",
     "costDelta": "Variación de costo",
     "recentScansCount": "{n} total",
-    "noScansTrigger": "Ejecuta un análisis manual arriba o abre un PR de Terraform para activar el primer análisis."
+    "noScansTrigger": "Ejecuta un análisis manual arriba o abre un PR de Terraform para activar el primer análisis.",
+    "upgradeNudge": "Plan gratuito · actualiza para desbloquear revisiones de PR ilimitadas, memoria de IA e informes de cumplimiento.",
+    "firstPrGuideTitle": "Qué ocurre cuando abres un PR",
+    "firstPrStep1": "Sube una rama con cambios en archivos *.tf",
+    "firstPrStep2": "Abre un pull request en GitHub",
+    "firstPrStep3": "DriftGuard analiza seguridad, costos y violaciones de política",
+    "firstPrStep4": "Los resultados aparecen como comentario en el PR y aquí en el panel"
   },
   "waitlist": {
     "placeholder": "you@company.com",
