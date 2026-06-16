@@ -21,7 +21,13 @@
     "copied": "Copiado!",
     "openInNew": "Abrir em nova aba",
     "getStarted": "Começar",
-    "docs": "Docs"
+    "docs": "Docs",
+    "saving": "Salvando…",
+    "enabled": "Habilitado",
+    "disabled": "Desabilitado",
+    "skipToMainContent": "Ir para o conteúdo principal",
+    "dismissChecklist": "Fechar lista de verificação",
+    "viewPrOnGitHub": "Ver PR no GitHub"
   },
   "nav": {
     "features": "Recursos",
@@ -56,7 +62,9 @@
     "cmdDescDocs": "Ler a documentação",
     "cmdDescSignOut": "Sair do DriftGuard",
     "cmdSearchPlaceholder": "Pesquisar comandos…",
-    "cmdNoResults": "Nenhum comando encontrado"
+    "cmdNoResults": "Nenhum comando encontrado",
+    "openCommandPalette": "Abrir paleta de comandos",
+    "toggleMenu": "Alternar menu"
   },
   "auth": {
     "goToDashboard": "Ir para o painel →",
@@ -369,7 +377,8 @@
     "resourceCliDesc": "Escaneie Terraform e Kubernetes localmente e no CI.",
     "resourceSupport": "Falar com o suporte",
     "resourceSupportDesc": "Dúvidas, relatos de bugs ou pedidos de recursos.",
-    "resourceOpen": "Abrir →"
+    "resourceOpen": "Abrir →",
+    "installFrom": "Instalado de"
   },
   "installApp": {
     "title": "Instalar o GitHub App",
@@ -1318,7 +1327,13 @@
   "aws": {
     "step1": "Passo 1 — Criar role IAM",
     "step2": "Passo 2 — Colar role ARN",
-    "externalId": "ID externo:"
+    "externalId": "ID externo:",
+    "deployDesc": "Implante o módulo Terraform somente leitura na sua conta AWS.",
+    "roleDesc": "Cria um role com condição de ID externo — sem acesso com curinga.",
+    "roleArnLabel": "ARN do Role",
+    "stateBucketLabel": "Bucket de estado (opcional)",
+    "stateKeyLabel": "Chave de estado",
+    "savedDriftEnabled": "✓ Salvo — detecção de drift habilitada"
   },
   "terms": {
     "meta": {
@@ -1437,6 +1452,7 @@
     "notice": "Usamos cookies de análise para entender como você usa o DriftGuard e melhorar a experiência.",
     "accept": "Aceitar cookies",
     "decline": "Recusar",
-    "learnMore": "Política de privacidade"
+    "learnMore": "Política de privacidade",
+    "ariaLabel": "Consentimento de cookies"
   }
 }

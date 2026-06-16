@@ -90,7 +90,7 @@ export default async function Settings({
           <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-warned shrink-0" />
           <p className="font-mono text-[11px] text-warned">
             {t("settings.apiOfflineWarning")}
-            {" "}Install from{" "}
+            {" "}{t("settings.installFrom") ?? "Install from"}{" "}
             <span className="opacity-70">{process.env.NEXT_PUBLIC_API_URL ?? "not set"}</span>
           </p>
         </div>

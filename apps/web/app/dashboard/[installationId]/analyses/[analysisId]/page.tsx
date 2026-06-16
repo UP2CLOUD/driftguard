@@ -144,7 +144,7 @@ export default async function AnalysisPage({
                         target="_blank"
                         rel="noreferrer"
                         className="font-mono text-lg text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition ml-1"
-                        title="View PR on GitHub"
+                        title={t("common.viewPrOnGitHub") ?? "View PR on GitHub"}
                       >#{data.pr_number} ↗</a>
                     : null}
                 </>

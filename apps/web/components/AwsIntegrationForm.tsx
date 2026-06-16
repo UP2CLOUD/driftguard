@@ -61,8 +61,8 @@ export function AwsIntegrationForm({
           <div>
             <div className="dg-label mb-1">{t("aws.step1")}</div>
             <p className="text-[12px] text-[color:var(--dg-fg-muted)] max-w-sm">
-              Deploy the read-only Terraform module in your AWS account.
-              Creates a role with external ID condition — no wildcard access.
+              {t("aws.deployDesc") ?? "Deploy the read-only Terraform module in your AWS account."}{" "}
+              {t("aws.roleDesc") ?? "Creates a role with external ID condition — no wildcard access."}
             </p>
             <pre className="mt-3 rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[10px] text-[color:var(--dg-fg)]">
               {`module "driftguard" {\n  source = "github.com/UP2CLOUD/driftguard//infra/terraform/modules/customer-iam"\n  driftguard_aws_account_id = "<your-aws-account-id>"\n  state_bucket = "my-tfstate-bucket" # optional\n}`}
@@ -80,7 +80,7 @@ export function AwsIntegrationForm({
             rel="noreferrer"
             className="dg-button dg-button-ghost text-[12px] shrink-0"
           >
-            View module →
+            {t("common.viewAll") ?? "View"} →
           </a>
         </div>
       </div>
@@ -91,7 +91,7 @@ export function AwsIntegrationForm({
         <div className="space-y-3">
           <div>
             <label className="block font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1.5">
-              Role ARN
+              {t("aws.roleArnLabel") ?? "Role ARN"}
             </label>
             <input
               value={roleArn}
@@ -104,7 +104,7 @@ export function AwsIntegrationForm({
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <label className="block font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1.5">
-                State bucket (optional)
+                {t("aws.stateBucketLabel") ?? "State bucket (optional)"}
               </label>
               <input
                 value={stateBucket}
@@ -115,7 +115,7 @@ export function AwsIntegrationForm({
             </div>
             <div>
               <label className="block font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1.5">
-                State key
+                {t("aws.stateKeyLabel") ?? "State key"}
               </label>
               <input
                 value={stateKey}
@@ -133,11 +133,11 @@ export function AwsIntegrationForm({
           <p className="font-mono text-[11px] text-blocked">{error}</p>
         )}
         {!error && saved && (
-          <p className="font-mono text-[11px] text-allowed">✓ Saved — drift detection enabled</p>
+          <p className="font-mono text-[11px] text-allowed">{t("aws.savedDriftEnabled") ?? "✓ Saved — drift detection enabled"}</p>
         )}
         {!error && !saved && (
           <p className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-            {org?.aws_role_arn ? `Connected: ${org.aws_role_arn.slice(0, 40)}…` : "Not connected"}
+            {org?.aws_role_arn ? `Connected: ${org.aws_role_arn.slice(0, 40)}…` : (t("settings.notConnected") ?? "Not connected")}
           </p>
         )}
         <button
@@ -145,7 +145,7 @@ export function AwsIntegrationForm({
           disabled={saving || !roleArn || !org}
           className="dg-button dg-button-primary text-[12px] disabled:opacity-40"
         >
-          {saving ? "Saving…" : "Save"}
+          {saving ? (t("common.saving") ?? "Saving…") : (t("common.save") ?? "Save")}
         </button>
       </div>
     </div>

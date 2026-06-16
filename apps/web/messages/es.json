@@ -32,7 +32,9 @@
     "cmdDescDocs": "Leer la documentación",
     "cmdDescSignOut": "Cerrar sesión de DriftGuard",
     "cmdSearchPlaceholder": "Buscar comandos…",
-    "cmdNoResults": "No se encontraron comandos"
+    "cmdNoResults": "No se encontraron comandos",
+    "openCommandPalette": "Abrir paleta de comandos",
+    "toggleMenu": "Alternar menú"
   },
   "auth": {
     "goToDashboard": "Ir al panel →",
@@ -274,7 +276,8 @@
     "resourceCliDesc": "Escanea Terraform y Kubernetes localmente y en CI.",
     "resourceSupport": "Contactar soporte",
     "resourceSupportDesc": "Preguntas, informes de errores o solicitudes de funciones.",
-    "resourceOpen": "Abrir →"
+    "resourceOpen": "Abrir →",
+    "installFrom": "Instalado desde"
   },
   "installApp": {
     "title": "Instalar la GitHub App",
@@ -1306,7 +1309,13 @@
     "copied": "¡Copiado!",
     "openInNew": "Abrir en nueva pestaña",
     "getStarted": "Empezar",
-    "docs": "Docs"
+    "docs": "Docs",
+    "saving": "Guardando…",
+    "enabled": "Habilitado",
+    "disabled": "Deshabilitado",
+    "skipToMainContent": "Saltar al contenido principal",
+    "dismissChecklist": "Descartar lista de verificación",
+    "viewPrOnGitHub": "Ver PR en GitHub"
   },
   "findings": {
     "critical": "Crítico",
@@ -1318,7 +1327,13 @@
   "aws": {
     "step1": "Paso 1 — Crear rol IAM",
     "step2": "Paso 2 — Pegar rol ARN",
-    "externalId": "ID externo:"
+    "externalId": "ID externo:",
+    "deployDesc": "Implemente el módulo Terraform de solo lectura en su cuenta de AWS.",
+    "roleDesc": "Crea un rol con condición de ID externo — sin acceso comodín.",
+    "roleArnLabel": "ARN del rol",
+    "stateBucketLabel": "Bucket de estado (opcional)",
+    "stateKeyLabel": "Clave de estado",
+    "savedDriftEnabled": "✓ Guardado — detección de drift habilitada"
   },
   "terms": {
     "meta": {
@@ -1437,6 +1452,7 @@
     "notice": "Usamos cookies de análisis para entender cómo usas DriftGuard y mejorar la experiencia.",
     "accept": "Aceptar cookies",
     "decline": "Rechazar",
-    "learnMore": "Política de privacidad"
+    "learnMore": "Política de privacidad",
+    "ariaLabel": "Consentimiento de cookies"
   }
 }

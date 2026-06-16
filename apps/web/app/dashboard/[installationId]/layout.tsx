@@ -50,15 +50,18 @@ export default async function DashboardLayout({
         planLabel={planLabel}
         openIncidents={openIncidents}
         labels={{
-          overview:  t("nav.overview")  ?? "Overview",
-          docs:      t("nav.docs")      ?? "Docs",
-          repos:     t("nav.repos")     ?? "Repos",
-          analyses:  t("nav.analyses")  ?? "Analyses",
-          incidents: t("nav.incidents") ?? "Incidents",
-          policies:  t("nav.policies")  ?? "Policies",
-          memory:    t("nav.memory")    ?? "Memory",
-          auditLog:  t("nav.auditLog")  ?? "Audit log",
-          settings:  t("nav.settings")  ?? "Settings",
+          overview:            t("nav.overview")              ?? "Overview",
+          docs:                t("nav.docs")                  ?? "Docs",
+          repos:               t("nav.repos")                 ?? "Repos",
+          analyses:            t("nav.analyses")              ?? "Analyses",
+          incidents:           t("nav.incidents")             ?? "Incidents",
+          policies:            t("nav.policies")              ?? "Policies",
+          memory:              t("nav.memory")                ?? "Memory",
+          auditLog:            t("nav.auditLog")              ?? "Audit log",
+          settings:            t("nav.settings")              ?? "Settings",
+          skipToMainContent:   t("common.skipToMainContent")  ?? "Skip to main content",
+          openCommandPalette:  t("nav.openCommandPalette")    ?? "Open command palette",
+          toggleMenu:          t("nav.toggleMenu")            ?? "Toggle menu",
         }}
       />
       <SetInstallationCookie installationId={installationId} />

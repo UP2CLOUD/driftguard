@@ -109,5 +109,5 @@ export async function ReadinessChecklistSection({
     },
   ];
 
-  return <ReadinessChecklist items={items} title={t("dashboard.readinessTitle") ?? "Production readiness"} />;
+  return <ReadinessChecklist items={items} title={t("dashboard.readinessTitle") ?? "Production readiness"} dismissLabel={t("common.dismissChecklist") ?? "Dismiss checklist"} />;
 }
