@@ -54,7 +54,7 @@ export default async function FirstReview() {
               { label: "AI review", desc: "Claude summarises the full diff intent, blast radius, and suggested fixes." },
             ].map((item, i) => (
               <div key={i} className="flex gap-4 border-b border-[color:var(--dg-border)] last:border-b-0 px-4 py-3.5">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] shrink-0 mt-0.5 w-28">{item.label}</span>
+                <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] shrink-0 mt-0.5 w-28">{item.label}</span>
                 <span className="text-[12px] text-[color:var(--dg-fg-muted)]">{item.desc}</span>
               </div>
             ))}

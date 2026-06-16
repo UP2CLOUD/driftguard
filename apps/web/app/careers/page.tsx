@@ -96,11 +96,11 @@ export default async function Careers() {
                       {role.title}
                     </h2>
                     <div className="flex items-center gap-3 mt-1.5">
-                      <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                      <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                         {t(`careers.${role.typeKey}` as any)}
                       </span>
                       <span className="opacity-40">·</span>
-                      <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                      <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                         {role.location}
                       </span>
                     </div>
@@ -118,7 +118,7 @@ export default async function Careers() {
                     {role.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-2 py-0.5 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]"
+                        className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-2 py-0.5 font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]"
                       >
                         {tag}
                       </span>

@@ -154,13 +154,13 @@ export function IncidentTimeline({ installationId }: { installationId?: number }
                 <div className="h-2.5 w-2.5 rounded-full bg-warned/60" />
                 <div className="h-2.5 w-2.5 rounded-full bg-allowed/60" />
               </div>
-              <div className="flex-1 text-center font-mono text-[10px] text-[color:var(--dg-fg-subtle)] truncate">
+              <div className="flex-1 text-center font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] truncate">
                 driftguard — runtime trace
                 {isLive ? ` · installation ${installationId}` : " · PR #847 · acme/infra"}
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className={`h-1.5 w-1.5 rounded-full ${isLive ? "bg-allowed dg-pulse" : "bg-[color:var(--dg-fg-subtle)]"}`} />
-                <span className={`font-mono text-[10px] ${isLive ? "text-allowed" : "text-[color:var(--dg-fg-subtle)]"}`}>
+                <span className={`font-sans font-medium text-[10px] ${isLive ? "text-allowed" : "text-[color:var(--dg-fg-subtle)]"}`}>
                   {isLive ? t("landing.incidents.labelLive") : t("landing.incidents.labelDemo")}
                 </span>
               </div>
@@ -183,20 +183,20 @@ export function IncidentTimeline({ installationId }: { installationId?: number }
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] tabular-nums shrink-0">
+                      <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] tabular-nums shrink-0">
                         {e.ts}
                       </span>
-                      <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest shrink-0 ${BADGE_STYLE[e.badge] ?? ""}`}>
+                      <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[9px] uppercase tracking-widest shrink-0 ${BADGE_STYLE[e.badge] ?? ""}`}>
                         {e.badge}
                       </span>
-                      <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] truncate">
+                      <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] truncate">
                         {e.source}
                       </span>
                     </div>
                     <div className={`text-[12px] font-medium truncate ${e.label}`}>
                       {e.message}
                     </div>
-                    <div className="mt-0.5 font-mono text-[10px] text-[color:var(--dg-fg-subtle)] truncate">
+                    <div className="mt-0.5 font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] truncate">
                       {e.detail}
                     </div>
                   </div>
@@ -205,7 +205,7 @@ export function IncidentTimeline({ installationId }: { installationId?: number }
             </div>
 
             {/* Footer */}
-            <div className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-2.5 flex justify-between font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+            <div className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-2.5 flex justify-between font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
               <span>{footer}</span>
               <span className={footerRight.includes("blocked") ? "text-blocked" : "text-[color:var(--dg-fg-subtle)]"}>
                 {footerRight}
@@ -223,7 +223,7 @@ export function IncidentTimeline({ installationId }: { installationId?: number }
             ].map((s) => (
               <div key={s.step} className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
                 <div className="flex items-start gap-3">
-                  <span className="mt-0.5 shrink-0 font-mono text-[10px] font-semibold" style={{ color: s.color }}>
+                  <span className="mt-0.5 shrink-0 font-sans font-medium text-[10px] font-semibold" style={{ color: s.color }}>
                     {s.step}
                   </span>
                   <div>

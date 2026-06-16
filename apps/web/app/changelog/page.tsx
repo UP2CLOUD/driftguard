@@ -101,7 +101,7 @@ export default async function Changelog() {
                   <h2 className="font-sans text-[18px] font-semibold tracking-tight text-[color:var(--dg-fg)]">
                     {r.version}
                   </h2>
-                  <span className="rounded border border-[color:var(--dg-border)] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                  <span className="rounded border border-[color:var(--dg-border)] px-1.5 py-0.5 font-sans font-medium text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                     {r.tag}
                   </span>
                 </div>
@@ -114,7 +114,7 @@ export default async function Changelog() {
                   key={i}
                   className="flex items-start gap-3 border-b border-[color:var(--dg-border)] last:border-b-0 bg-[color:var(--dg-surface)] px-4 py-3"
                 >
-                  <span className={`mt-0.5 shrink-0 rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${TYPE_STYLE[item.type]}`}>
+                  <span className={`mt-0.5 shrink-0 rounded border px-1.5 py-0.5 font-sans font-medium text-[9px] uppercase tracking-widest ${TYPE_STYLE[item.type]}`}>
                     {t(`changelog.${item.type}` as any)}
                   </span>
                   <span className="text-[12px] text-[color:var(--dg-fg-muted)]">{item.text}</span>

@@ -42,7 +42,7 @@ const METRICS: { value: string; key: "reviews7d" | "p50" | "driftCost" | "uptime
   { value: "99.94%", key: "uptime" },
 ];
 
-const TAG_STYLE = "rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]";
+const TAG_STYLE = "rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-1.5 py-0.5 font-sans font-medium text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]";
 
 export async function generateMetadata(): Promise<Metadata> {
   const prefs  = await getUserPreferences();
@@ -76,7 +76,7 @@ export default async function Customers() {
             <div className="font-sans text-2xl sm:text-3xl font-bold text-[color:var(--dg-fg)] tabular-nums">
               {m.value}
             </div>
-            <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+            <div className="mt-1 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
               {t(`customers.${m.key}` as any)}
             </div>
           </div>

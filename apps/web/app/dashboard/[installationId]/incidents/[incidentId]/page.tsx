@@ -44,7 +44,7 @@ export default async function IncidentDetailPage({
   if (!incident) {
     return (
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-20 text-center">
-        <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+        <div className="mb-3 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
           {t("incidents.notFound")}
         </div>
         <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-5">
@@ -66,7 +66,7 @@ export default async function IncidentDetailPage({
       <div className="flex items-center gap-3 mb-8">
         <Link
           href={`/dashboard/${installationId}/incidents`}
-          className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
+          className="font-sans font-semibold text-[11px] uppercase tracking-wide text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
         >
           ← {t("incidents.title") ?? "Incidents"}
         </Link>
@@ -77,14 +77,14 @@ export default async function IncidentDetailPage({
         <div className="flex-1 min-w-0">
           <div className="dg-label mb-2">{t("incidents.eyebrow") ?? "Incident"}</div>
           <div className="flex items-center gap-2 flex-wrap mb-2">
-            <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest shrink-0 ${SEV[incident.severity] ?? ""}`}>
+            <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest shrink-0 ${SEV[incident.severity] ?? ""}`}>
               {incident.severity}
             </span>
-            <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest shrink-0 ${STATUS_BADGE[incident.status] ?? ""}`}>
+            <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest shrink-0 ${STATUS_BADGE[incident.status] ?? ""}`}>
               {incident.status}
             </span>
             {incident.recurrence_count > 1 && (
-              <span className="font-mono text-[10px] text-warned">
+              <span className="font-sans font-medium text-[10px] text-warned">
                 ↺ {t("incidents.recurrenceLabel")?.replace("{n}", String(incident.recurrence_count)) ?? `${incident.recurrence_count}× recurrence`}
               </span>
             )}
@@ -101,7 +101,7 @@ export default async function IncidentDetailPage({
           {/* Description */}
           {incident.description && (
             <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-4">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-2">
+              <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-2">
                 {t("incidents.descriptionSection")}
               </div>
               <p className="text-[13px] text-[color:var(--dg-fg-muted)] leading-relaxed">
@@ -113,7 +113,7 @@ export default async function IncidentDetailPage({
           {/* Root cause */}
           {incident.root_cause && (
             <div className="rounded-md border border-warned/20 bg-warned/5 p-4">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-warned mb-2">
+              <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-warned mb-2">
                 {t("incidents.rootCauseSection")}
               </div>
               <p className="text-[13px] text-warned leading-relaxed">
@@ -125,7 +125,7 @@ export default async function IncidentDetailPage({
           {/* Suggested fix */}
           {incident.suggested_fix && (
             <div className="rounded-md border border-allowed/20 bg-allowed/5 p-4">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-allowed mb-2">
+              <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-allowed mb-2">
                 {t("incidents.suggestedFix") ?? "Suggested fix"}
               </div>
               <p className="text-[13px] text-allowed leading-relaxed">
@@ -147,7 +147,7 @@ export default async function IncidentDetailPage({
         <div className="space-y-4">
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
             <div className="border-b border-[color:var(--dg-border)] px-4 py-3">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+              <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                 {t("incidents.timelineSection")}
               </span>
             </div>
@@ -159,7 +159,7 @@ export default async function IncidentDetailPage({
                 { label: t("incidents.recurrences"), val: String(incident.recurrence_count ?? 0) },
               ].map(({ label, val }) => (
                 <div key={label} className="px-4 py-3">
-                  <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-0.5">{label}</div>
+                  <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-0.5">{label}</div>
                   <div className="font-mono text-[12px] text-[color:var(--dg-fg)]">{val}</div>
                 </div>
               ))}
@@ -169,8 +169,8 @@ export default async function IncidentDetailPage({
           {/* Fingerprint */}
           {incident.fingerprint && (
             <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-4">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">{t("incidents.fingerprintLabel")}</div>
-              <code className="font-mono text-[10px] text-[color:var(--dg-fg-muted)] break-all">{incident.fingerprint}</code>
+              <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">{t("incidents.fingerprintLabel")}</div>
+              <code className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-muted)] break-all">{incident.fingerprint}</code>
             </div>
           )}
         </div>

@@ -106,7 +106,7 @@ export default async function DashboardRoot({
             <a href={installUrl} className="dg-button dg-button-primary w-full justify-center text-[13px]">
               {t("installApp.cta") ?? "Install GitHub App →"}
             </a>
-            <p className="mt-4 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+            <p className="mt-4 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
               {t("installApp.hint") ?? "Takes 30 seconds. No credit card required."}
             </p>
           </div>
@@ -136,7 +136,7 @@ export default async function DashboardRoot({
                       {inst.account?.login ?? inst.id}
                     </span>
                   </div>
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] group-hover:text-[color:var(--dg-electric-bright)] transition shrink-0">
+                  <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] group-hover:text-[color:var(--dg-electric-bright)] transition shrink-0">
                     Enter →
                   </span>
                 </Link>

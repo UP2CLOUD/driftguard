@@ -117,7 +117,7 @@ export default async function PoliciesPage({
           <PolicyCreateForm installationId={installationId} />
           {policies.length === 0 ? (
             <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-12 text-center">
-              <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+              <div className="mb-3 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                 {t("policies.engineReady")}
               </div>
               <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
@@ -144,7 +144,7 @@ export default async function PoliciesPage({
           {/* API usage section */}
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
             <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+              <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                 {t("policies.createViaApi")}
               </span>
             </div>
@@ -152,7 +152,7 @@ export default async function PoliciesPage({
               <p className="text-[12px] text-[color:var(--dg-fg-muted)] mb-3">
                 {t("policies.createViaApiDesc")}
               </p>
-              <pre className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-4 py-3 font-mono text-[10px] text-[color:var(--dg-electric-bright)] overflow-x-auto whitespace-pre-wrap">
+              <pre className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-4 py-3 font-sans font-medium text-[10px] text-[color:var(--dg-electric-bright)] overflow-x-auto whitespace-pre-wrap">
 {`POST ${apiBase}/api/v1/policies?installation_id=${installationId}
 Authorization: Bearer YOUR_SECRET_KEY
 Content-Type: application/json
@@ -175,7 +175,7 @@ Content-Type: application/json
           {/* Example policies */}
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
             <div className="border-b border-[color:var(--dg-border)] px-4 py-3">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+              <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                 {t("policies.exampleRules") ?? "Example rules"}
               </span>
             </div>
@@ -184,7 +184,7 @@ Content-Type: application/json
                 <div key={ex.id} className="px-4 py-3">
                   <div className="flex items-center gap-2 mb-1">
                     <span
-                      className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest shrink-0 ${TYPE_STYLE[ex.rule_type]}`}
+                      className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest shrink-0 ${TYPE_STYLE[ex.rule_type]}`}
                     >
                       {ex.rule_type}
                     </span>
@@ -203,20 +203,20 @@ Content-Type: application/json
           {/* Conditions syntax reference */}
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
             <div className="border-b border-[color:var(--dg-border)] px-4 py-3">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+              <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                 {t("policies.conditionsRef") ?? "Conditions reference"}
               </span>
             </div>
             <div className="px-4 py-4 space-y-3">
               {conditionsRef.map((c) => (
                 <div key={c.key}>
-                  <code className="font-mono text-[10px] text-[color:var(--dg-electric-bright)]">
+                  <code className="font-sans font-medium text-[10px] text-[color:var(--dg-electric-bright)]">
                     {c.key}
                   </code>
-                  <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
+                  <p className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
                     {c.desc}
                   </p>
-                  <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] opacity-60">
+                  <p className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] opacity-60">
                     e.g. {c.example}
                   </p>
                 </div>

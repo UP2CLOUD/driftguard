@@ -82,7 +82,7 @@ export function TokenManager({
       <div className="rounded-md border border-[color:var(--dg-border)] p-4 space-y-3">
         <div className="flex flex-col sm:flex-row gap-3">
           <label className="flex-1">
-            <span className="block font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">
+            <span className="block font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">
               {L.name}
             </span>
             <input
@@ -94,7 +94,7 @@ export function TokenManager({
             />
           </label>
           <label>
-            <span className="block font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">
+            <span className="block font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">
               {L.role}
             </span>
             <select
@@ -123,7 +123,7 @@ export function TokenManager({
 
         {fresh && (
           <div className="rounded border border-warned/30 bg-warned/5 p-3 space-y-2">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-warned">
+            <p className="font-sans font-medium text-[10px] uppercase tracking-widest text-warned">
               {L.copyHint}
             </p>
             <div className="flex items-center gap-2">
@@ -156,16 +156,16 @@ export function TokenManager({
                     <span className={`font-mono text-[13px] truncate ${tk.revoked ? "line-through text-[color:var(--dg-fg-subtle)]" : "text-[color:var(--dg-fg)]"}`}>
                       {tk.name}
                     </span>
-                    <span className="font-mono text-[10px] rounded border border-[color:var(--dg-border)] px-1.5 py-0.5 text-[color:var(--dg-fg-subtle)]">
+                    <span className="font-sans font-medium text-[10px] rounded border border-[color:var(--dg-border)] px-1.5 py-0.5 text-[color:var(--dg-fg-subtle)]">
                       {tk.role}
                     </span>
                     {tk.revoked && (
-                      <span className="font-mono text-[10px] rounded border border-blocked/30 bg-blocked/5 px-1.5 py-0.5 text-blocked">
+                      <span className="font-sans font-medium text-[10px] rounded border border-blocked/30 bg-blocked/5 px-1.5 py-0.5 text-blocked">
                         {L.revoked}
                       </span>
                     )}
                   </div>
-                  <p className="mt-0.5 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+                  <p className="mt-0.5 font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
                     {L.created} {new Date(tk.created_at).toLocaleDateString()} · {L.lastUsed}{" "}
                     {tk.last_used_at ? new Date(tk.last_used_at).toLocaleString() : L.never}
                   </p>
@@ -187,7 +187,7 @@ export function TokenManager({
 
       {/* Usage */}
       <div className="rounded-md border border-[color:var(--dg-border)] p-4">
-        <p className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-2">
+        <p className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-2">
           {L.usageTitle}
         </p>
         <pre className="overflow-x-auto rounded bg-[color:var(--dg-canvas)] p-3 font-mono text-[11px] leading-relaxed text-[color:var(--dg-fg-muted)]">

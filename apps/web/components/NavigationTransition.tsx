@@ -154,7 +154,7 @@ export function NavigationTransition() {
 
         {/* Title */}
         <div className="space-y-1">
-          <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-[color:var(--dg-fg-subtle)]">
+          <p className="font-sans font-medium text-[10px] uppercase tracking-[0.25em] text-[color:var(--dg-fg-subtle)]">
             driftguard · runtime
           </p>
           <p className="font-sans text-[15px] font-medium text-[color:var(--dg-fg)]">

@@ -32,7 +32,7 @@ export async function Footer() {
                 <span className="absolute inline-flex h-full w-full rounded-full bg-allowed opacity-50 dg-pulse" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-allowed" />
               </span>
-              <span className="font-mono text-[10px] text-allowed">{t("landing.footer.status")}</span>
+              <span className="font-sans font-medium text-[10px] text-allowed">{t("landing.footer.status")}</span>
             </div>
           </div>
 
@@ -77,7 +77,7 @@ export async function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-[color:var(--dg-border)]">
-        <div className="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-4 px-4 sm:px-6 py-5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] sm:flex-row sm:items-center">
+        <div className="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-4 px-4 sm:px-6 py-5 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] sm:flex-row sm:items-center">
           <div className="flex flex-wrap items-center gap-3">
             <span>© 2026 UP2CLOUD</span>
             <span className="opacity-50">●</span>

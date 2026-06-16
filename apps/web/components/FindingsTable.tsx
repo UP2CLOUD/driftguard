@@ -44,7 +44,7 @@ export function FindingsTable({ findings }: { findings: Finding[] }) {
   return (
     <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
       {/* Header */}
-      <div className="hidden sm:grid grid-cols-[90px_1fr_1fr_80px] border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] gap-4">
+      <div className="hidden sm:grid grid-cols-[90px_1fr_1fr_80px] border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] gap-4">
         <span>{t("dashboard.severity")}</span>
         <span>{t("dashboard.resource")}</span>
         <span>{t("dashboard.message")}</span>
@@ -64,7 +64,7 @@ export function FindingsTable({ findings }: { findings: Finding[] }) {
               {/* Severity */}
               <div className="flex items-center gap-2">
                 <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${SEV_DOT[f.severity] ?? "bg-[color:var(--dg-fg-subtle)]"}`} />
-                <span className={`inline-flex items-center rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest ${SEV_STYLE[f.severity] ?? ""}`}>
+                <span className={`inline-flex items-center rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest ${SEV_STYLE[f.severity] ?? ""}`}>
                   {f.severity}
                 </span>
               </div>
@@ -80,7 +80,7 @@ export function FindingsTable({ findings }: { findings: Finding[] }) {
               </div>
 
               {/* Type */}
-              <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] uppercase tracking-wider">
+              <div className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] uppercase tracking-wider">
                 {f.type}
               </div>
             </button>
@@ -97,7 +97,7 @@ export function FindingsTable({ findings }: { findings: Finding[] }) {
                       </span>
                       <button
                         onClick={() => copy(i, f.suggestion!)}
-                        className="font-mono text-[10px] uppercase tracking-wider text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
+                        className="font-sans font-medium text-[10px] uppercase tracking-wider text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
                       >
                         {copied === i ? `✓ ${t("common.copied")}` : `▸ ${t("common.copy")}`}
                       </button>
@@ -116,7 +116,7 @@ export function FindingsTable({ findings }: { findings: Finding[] }) {
       </div>
 
       {/* Summary footer */}
-      <div className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 flex items-center justify-between font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+      <div className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 flex items-center justify-between font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
         <span>{findings.length} {findings.length !== 1 ? t("dashboard.findingPlural") : t("dashboard.findingSingular")}</span>
         <span className="flex items-center gap-3">
           {["critical","high","medium","low"].map(s => {

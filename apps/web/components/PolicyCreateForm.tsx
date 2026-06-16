@@ -119,7 +119,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
     return (
       <button
         onClick={() => setOpen(true)}
-        className="rounded bg-[color:var(--dg-electric)] px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-white hover:brightness-110 transition"
+        className="rounded bg-[color:var(--dg-electric)] px-3 py-1.5 font-sans font-semibold text-[11px] uppercase tracking-wide text-white hover:brightness-110 transition"
       >
         {t("policies.addPolicy")}
       </button>
@@ -129,7 +129,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
   return (
     <div className="rounded-md border border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-surface)] overflow-hidden">
       <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] px-4 py-3">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
+        <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
           {t("policies.newPolicy")}
         </span>
         <button
@@ -142,13 +142,13 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
 
       {/* Presets */}
       <div className="px-4 pt-4">
-        <p className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-2">{t("policies.quickPresets")}</p>
+        <p className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-2">{t("policies.quickPresets")}</p>
         <div className="flex flex-wrap gap-2 mb-4">
           {presets.map((p) => (
             <button
               key={p.id}
               onClick={() => applyPreset(p)}
-              className="rounded border border-[color:var(--dg-border)] px-2.5 py-1 font-mono text-[10px] text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
+              className="rounded border border-[color:var(--dg-border)] px-2.5 py-1 font-sans font-medium text-[10px] text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
             >
               {p.name}
             </button>
@@ -159,7 +159,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
       <form onSubmit={submit} className="px-4 pb-4 space-y-4">
         {/* Name */}
         <div>
-          <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
+          <label className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
             {t("policies.nameLabel")}
           </label>
           <input
@@ -173,7 +173,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
         {/* Rule type + Severity */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
+            <label className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
               {t("policies.actionLabel")}
             </label>
             <select
@@ -187,7 +187,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
             </select>
           </div>
           <div>
-            <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
+            <label className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
               {t("policies.severityLabel")}
             </label>
             <select
@@ -202,7 +202,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
 
         {/* Description */}
         <div>
-          <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
+          <label className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
             {t("policies.descriptionLabel")}
           </label>
           <input
@@ -215,7 +215,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
 
         {/* Conditions */}
         <div>
-          <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
+          <label className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
             {t("policies.conditions")}
           </label>
           {Object.entries(form.conditions).map(([k, v]) => (
@@ -226,7 +226,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
               <button
                 type="button"
                 onClick={() => removeCondition(k)}
-                className="font-mono text-[10px] text-blocked hover:text-blocked/70 transition"
+                className="font-sans font-medium text-[10px] text-blocked hover:text-blocked/70 transition"
               >
                 ×
               </button>
@@ -262,7 +262,7 @@ export function PolicyCreateForm({ installationId }: { installationId: string })
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded bg-[color:var(--dg-electric)] py-2 font-mono text-[11px] uppercase tracking-widest text-white hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition"
+          className="w-full rounded bg-[color:var(--dg-electric)] py-2 font-sans font-semibold text-[11px] uppercase tracking-wide text-white hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition"
         >
           {loading ? t("policies.creating") : t("policies.createPolicy")}
         </button>

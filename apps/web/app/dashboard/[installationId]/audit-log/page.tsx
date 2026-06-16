@@ -120,7 +120,7 @@ export default async function AuditLogPage({
         {["DORA Art. 8", "NIS2 Art. 21", "ISO 27001 A.8.15"].map((b) => (
           <span
             key={b}
-            className="font-mono text-[10px] uppercase tracking-widest rounded border border-[color:var(--dg-electric)]/20 bg-[color:var(--dg-electric)]/5 px-2 py-1 text-[color:var(--dg-electric-bright)]"
+            className="font-sans font-medium text-[10px] uppercase tracking-widest rounded border border-[color:var(--dg-electric)]/20 bg-[color:var(--dg-electric)]/5 px-2 py-1 text-[color:var(--dg-electric-bright)]"
           >
             {b}
           </span>
@@ -167,7 +167,7 @@ export default async function AuditLogPage({
                   {t("analyses.previous") ?? "← Previous"}
                 </Link>
               ) : <span />}
-              <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+              <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
                 {(t("analyses.page") ?? "Page {n}").replace("{n}", String(page))}
               </span>
               {hasNext ? (

@@ -78,7 +78,7 @@ export default async function Compliance() {
                 <span className="font-mono text-[14px] font-bold text-[color:var(--dg-fg)]">{f.name}</span>
                 <span className="text-[12px] text-[color:var(--dg-fg-muted)]">{t(`compliance.frameworks.${f.key}.fullName` as any)}</span>
               </div>
-              <span className={`rounded border px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest ${STATUS_STYLE[f.status]}`}>
+              <span className={`rounded border px-2 py-0.5 font-sans font-medium text-[9px] uppercase tracking-widest ${STATUS_STYLE[f.status]}`}>
                 {t(`compliance.status_${f.status.replace(/-/g, "_")}` as any)}
               </span>
             </div>
@@ -87,7 +87,7 @@ export default async function Compliance() {
                 <p className="text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)] mb-3">{t(`compliance.frameworks.${f.key}.desc` as any)}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {f.articles.map((a) => (
-                    <span key={a} className="rounded border border-[color:var(--dg-border)] px-2 py-0.5 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{a}</span>
+                    <span key={a} className="rounded border border-[color:var(--dg-border)] px-2 py-0.5 font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">{a}</span>
                   ))}
                 </div>
               </div>

@@ -61,7 +61,7 @@ export default async function ApiReference() {
       <section className="mb-12">
         <div className="dg-label mb-4">{t("docs.auth")}</div>
         <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] overflow-hidden">
-          <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+          <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
             Example request
           </div>
           <pre className="overflow-x-auto p-5 font-mono text-[12.5px] leading-relaxed text-[color:var(--dg-fg)]">{`curl https://api.driftguard.io/api/v1/health \
@@ -76,12 +76,12 @@ export default async function ApiReference() {
       <section className="mb-12">
         <div className="dg-label mb-4">{t("docs.endpoints")}</div>
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
-          <div className="grid border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] grid-cols-[80px_1fr_1fr]">
+          <div className="grid border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] grid-cols-[80px_1fr_1fr]">
             <span>{t("docs.method")}</span><span>Path</span><span className="hidden md:inline">{t("docs.description")}</span>
           </div>
           {ENDPOINTS.map((e) => (
             <div key={e.path} className="grid grid-cols-[80px_1fr] md:grid-cols-[80px_1fr_1fr] gap-2 items-start border-b border-[color:var(--dg-border)] last:border-b-0 bg-[color:var(--dg-surface)] hover:bg-[color:var(--dg-surface-raised)] px-4 py-3 transition">
-              <span className={`inline-flex items-center justify-center rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-widest w-fit ${METHOD_STYLE[e.method] || ""}`}>{e.method}</span>
+              <span className={`inline-flex items-center justify-center rounded border px-1.5 py-0.5 font-sans font-medium text-[9px] font-bold tracking-widest w-fit ${METHOD_STYLE[e.method] || ""}`}>{e.method}</span>
               <code className="font-mono text-[12px] text-[color:var(--dg-fg)]">{e.path}</code>
               <span className="col-span-2 md:col-span-1 font-mono text-[11px] text-[color:var(--dg-fg-muted)] md:pt-0 pt-0">{e.desc}</span>
             </div>

@@ -86,7 +86,7 @@ function FeatureCell({
             {body}
           </p>
           <pre
-            className="absolute inset-0 font-mono text-[10px] leading-relaxed transition-all duration-200 overflow-hidden"
+            className="absolute inset-0 font-sans font-medium text-[10px] leading-relaxed transition-all duration-200 overflow-hidden"
             style={{
               opacity: hovered ? 1 : 0,
               transform: hovered ? "translateY(0)" : "translateY(4px)",
@@ -164,7 +164,7 @@ export function FeatureGrid() {
             />
           ))}
         </div>
-        <p className="mt-4 text-center font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+        <p className="mt-4 text-center font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
           {t("landing.featureGrid.hoverHint")}
         </p>
       </div>

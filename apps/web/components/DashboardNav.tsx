@@ -91,7 +91,7 @@ export function DashboardNav({
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`relative flex items-center gap-1.5 px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-wider transition rounded ${
+                    className={`relative flex items-center gap-1.5 px-2.5 py-1.5 font-sans font-semibold text-[11px] uppercase tracking-wide transition rounded ${
                       isActive
                         ? "text-[color:var(--dg-fg)]"
                         : "text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)]"
@@ -102,7 +102,7 @@ export function DashboardNav({
                       <span className="absolute bottom-0 inset-x-2.5 h-0.5 bg-[color:var(--dg-electric)] rounded-full" />
                     )}
                     {item.badge ? (
-                      <span className="rounded bg-blocked/20 px-1 font-mono text-[10px] text-blocked">
+                      <span className="rounded bg-blocked/20 px-1 font-sans font-medium text-[10px] text-blocked">
                         {item.badge}
                       </span>
                     ) : null}
@@ -115,7 +115,7 @@ export function DashboardNav({
           {/* Right */}
           <div className="flex items-center gap-2 sm:gap-3">
             {planLabel && (
-              <span className="hidden lg:inline rounded border border-[color:var(--dg-border)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+              <span className="hidden lg:inline rounded border border-[color:var(--dg-border)] px-2 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                 {planLabel}
               </span>
             )}
@@ -128,7 +128,7 @@ export function DashboardNav({
             {/* Command palette trigger */}
             <button
               onClick={() => setPaletteOpen(true)}
-              className="hidden lg:flex items-center gap-1.5 rounded border border-[color:var(--dg-border)] px-2 py-1 font-mono text-[10px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
+              className="hidden lg:flex items-center gap-1.5 rounded border border-[color:var(--dg-border)] px-2 py-1 font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
               aria-label="Open command palette"
             >
               <span>⌘K</span>
@@ -179,7 +179,7 @@ export function DashboardNav({
                     <span>{item.label}</span>
                     <div className="flex items-center gap-2">
                       {item.badge ? (
-                        <span className="rounded bg-blocked/20 px-1.5 py-0.5 font-mono text-[10px] text-blocked">
+                        <span className="rounded bg-blocked/20 px-1.5 py-0.5 font-sans font-medium text-[10px] text-blocked">
                           {item.badge}
                         </span>
                       ) : null}

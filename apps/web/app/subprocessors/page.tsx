@@ -41,7 +41,7 @@ export default async function Subprocessors() {
       eyebrow={t("subprocessors.eyebrow")} title={t("subprocessors.title")} subtitle={t("subprocessors.subtitle")}
     >
       <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden mb-10">
-        <div className="grid grid-cols-[1fr_2fr_1fr] border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+        <div className="grid grid-cols-[1fr_2fr_1fr] border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
           <span>{t("subprocessors.subprocessor")}</span>
           <span className="hidden sm:inline">{t("subprocessors.purpose")}</span>
           <span>{t("subprocessors.country")}</span>

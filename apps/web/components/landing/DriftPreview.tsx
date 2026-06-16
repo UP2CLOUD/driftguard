@@ -106,7 +106,7 @@ export function DriftPreview() {
               <button
                 key={tabKey}
                 onClick={() => setTab(tabKey)}
-                className={`px-4 py-2 font-mono text-[11px] uppercase tracking-widest rounded-t border-x border-t transition-colors ${
+                className={`px-4 py-2 font-sans font-semibold text-[11px] uppercase tracking-wide rounded-t border-x border-t transition-colors ${
                   tab === tabKey
                     ? "border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] text-[color:var(--dg-fg)]"
                     : "border-transparent text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)]"
@@ -187,7 +187,7 @@ export function DriftPreview() {
                           )}
                         </td>
                         <td className="px-4 py-3.5">
-                          <span className="font-mono text-[10px] text-[color:var(--dg-fg-muted)]">{row.finding}</span>
+                          <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-muted)]">{row.finding}</span>
                         </td>
                         <td className="px-4 py-3.5">
                           <span className={`font-mono text-[11px] ${row.cost ? "text-warned" : "text-[color:var(--dg-fg-subtle)]"}`}>
@@ -223,7 +223,7 @@ export function DriftPreview() {
                         </td>
                         <td className="px-4 py-3.5 font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">{row.plan}</td>
                         <td className="px-4 py-3.5 font-mono text-[11px] text-warned">{row.live}</td>
-                        <td className="px-4 py-3.5 font-mono text-[10px] text-[color:var(--dg-fg-muted)]">{row.delta}</td>
+                        <td className="px-4 py-3.5 font-sans font-medium text-[10px] text-[color:var(--dg-fg-muted)]">{row.delta}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -258,12 +258,12 @@ export function DriftPreview() {
 
             {/* Footer */}
             <div className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-4 py-2.5 flex items-center justify-between">
-              <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+              <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
                 {tab === "PR Analysis" && t("landing.driftPreview.footerPrAnalysis")}
                 {tab === "Drift State" && t("landing.driftPreview.footerDriftState")}
                 {tab === "FinOps" && t("landing.driftPreview.footerFinOps")}
               </span>
-              <span className="flex items-center gap-1.5 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+              <span className="flex items-center gap-1.5 font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
                 <span className="h-1.5 w-1.5 rounded-full bg-allowed dg-pulse" />
                 {t("landing.driftPreview.liveData")}
               </span>
@@ -288,7 +288,7 @@ function Stat({ label, value, accent }: { label: string; value: string; accent?:
 
 function Th({ children, align }: { children: React.ReactNode; align?: "right" }) {
   return (
-    <th className={`px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] font-normal ${align === "right" ? "text-right" : ""}`}>
+    <th className={`px-4 py-2.5 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] font-normal ${align === "right" ? "text-right" : ""}`}>
       {children}
     </th>
   );

@@ -32,7 +32,7 @@ export function CopyField({ label, value }: { label: string; value: string }) {
         <button
           type="button"
           onClick={copy}
-          className="shrink-0 rounded border border-[color:var(--dg-border)] px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:border-[color:var(--dg-electric)]/40 hover:text-[color:var(--dg-electric)] transition"
+          className="shrink-0 rounded border border-[color:var(--dg-border)] px-2 py-1 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:border-[color:var(--dg-electric)]/40 hover:text-[color:var(--dg-electric)] transition"
           aria-label={`${t("common.copy")} ${label}`}
         >
           {copied ? `✓ ${t("common.copied")}` : t("common.copy")}

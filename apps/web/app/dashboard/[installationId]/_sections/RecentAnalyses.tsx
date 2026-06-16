@@ -35,15 +35,15 @@ export async function RecentAnalysesSection({
     <>
       <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
         <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+          <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
             {t("repos.recentAnalyses") ?? "Recent analyses"}
           </span>
           <div className="flex items-center gap-3">
-            <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{analyses7d} / 7d</span>
+            <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">{analyses7d} / 7d</span>
             {recentAnalyses.length > 0 && (
               <Link
                 href={`/dashboard/${installationId}/analyses`}
-                className="font-mono text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+                className="font-sans font-medium text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
               >
                 View all →
               </Link>
@@ -61,13 +61,13 @@ export async function RecentAnalysesSection({
             <div className="flex flex-wrap items-center justify-center gap-2">
               <a
                 href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-reviews"}/installations/new`}
-                className="rounded bg-[color:var(--dg-electric)] px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-white hover:brightness-110 transition"
+                className="rounded bg-[color:var(--dg-electric)] px-3 py-1.5 font-sans font-semibold text-[11px] uppercase tracking-wide text-white hover:brightness-110 transition"
               >
                 {t("dashboard.connectGithubCta") ?? "Connect GitHub →"}
               </a>
               <a
                 href="/docs/install"
-                className="rounded border border-[color:var(--dg-border)] px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] transition"
+                className="rounded border border-[color:var(--dg-border)] px-3 py-1.5 font-sans font-semibold text-[11px] uppercase tracking-wide text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] transition"
               >
                 {t("dashboard.setupGuide") ?? "Setup guide"}
               </a>
@@ -83,7 +83,7 @@ export async function RecentAnalysesSection({
             </p>
             {/* First-PR guide */}
             <div className="max-w-md mx-auto space-y-3">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] text-center mb-4">
+              <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] text-center mb-4">
                 {t("dashboard.firstPrGuideTitle") ?? "What happens when you open a PR"}
               </div>
               {[
@@ -93,7 +93,7 @@ export async function RecentAnalysesSection({
                 { step: "4", label: t("dashboard.firstPrStep4") ?? "Results appear as a PR comment and here in the dashboard" },
               ].map(({ step, label }) => (
                 <div key={step} className="flex items-start gap-3">
-                  <span className="shrink-0 h-5 w-5 rounded-full border border-[color:var(--dg-border)] font-mono text-[10px] flex items-center justify-center text-[color:var(--dg-fg-subtle)]">
+                  <span className="shrink-0 h-5 w-5 rounded-full border border-[color:var(--dg-border)] font-sans font-medium text-[10px] flex items-center justify-center text-[color:var(--dg-fg-subtle)]">
                     {step}
                   </span>
                   <span className="text-[12px] text-[color:var(--dg-fg-muted)] pt-0.5 leading-relaxed">{label}</span>
@@ -103,7 +103,7 @@ export async function RecentAnalysesSection({
             <div className="mt-8 flex justify-center">
               <Link
                 href="/docs/install"
-                className="font-mono text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+                className="font-sans font-medium text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
               >
                 {t("dashboard.setupGuide") ?? "Setup guide"} →
               </Link>
@@ -122,17 +122,17 @@ export async function RecentAnalysesSection({
                     <code className="font-mono text-[11px] text-[color:var(--dg-fg)] truncate">
                       {a.repo_full_name}#{a.pr_number}
                     </code>
-                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] hidden sm:inline">
+                    <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] hidden sm:inline">
                       {a.head_sha?.slice(0, 7)}
                     </span>
                   </div>
-                  <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+                  <div className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
                     {formatDateTime(a.created_at, locale)}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {a.policy_verdict && a.policy_verdict !== "pass" && (
-                    <span className={`font-mono text-[9px] uppercase tracking-widest rounded px-1 py-0.5 ${
+                    <span className={`font-sans font-medium text-[9px] uppercase tracking-widest rounded px-1 py-0.5 ${
                       a.policy_verdict === "block" ? "text-blocked bg-blocked/10" : "text-warned bg-warned/10"
                     }`}>
                       {a.policy_verdict}
@@ -144,7 +144,7 @@ export async function RecentAnalysesSection({
                   }`}>
                     {a.risk_score ?? "—"}
                   </span>
-                  <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition" aria-hidden="true">→</span>
+                  <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition" aria-hidden="true">→</span>
                 </div>
               </Link>
             ))}
@@ -155,7 +155,7 @@ export async function RecentAnalysesSection({
       {!apiAvailable && ghRepos.length > 0 && (
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
           <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+            <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
               {t("dashboard.ghReposTitle") ?? "Repositories (GitHub)"}
             </span>
           </div>
@@ -169,7 +169,7 @@ export async function RecentAnalysesSection({
                 className="flex items-center justify-between px-4 py-3 hover:bg-[color:var(--dg-surface-raised)] transition"
               >
                 <code className="font-mono text-[11px] text-[color:var(--dg-fg)]">{r.full_name}</code>
-                <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{r.default_branch}</span>
+                <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">{r.default_branch}</span>
               </a>
             ))}
           </div>

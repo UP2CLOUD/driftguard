@@ -27,7 +27,7 @@ export default async function TokensPage({
       <div>
         <Link
           href={`/dashboard/${installationId}/settings`}
-          className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
+          className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
         >
           ← {t("settings.title") ?? "Settings"}
         </Link>

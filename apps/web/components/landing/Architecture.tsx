@@ -167,7 +167,7 @@ function Step({ n, title, body, visible, delay }: {
       <span className="absolute -left-[7px] top-1 h-3 w-3 rounded-full border border-[color:var(--dg-electric)] bg-[color:var(--dg-canvas)]" />
       <div className="flex-1">
         <div className="flex items-baseline gap-3">
-          <span className="font-mono text-[10px] tracking-widest text-[color:var(--dg-fg-subtle)]">{n}</span>
+          <span className="font-sans font-medium text-[10px] tracking-widest text-[color:var(--dg-fg-subtle)]">{n}</span>
           <span className="text-[15px] font-semibold text-[color:var(--dg-fg)]">{title}</span>
         </div>
         <p className="mt-1.5 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">{body}</p>

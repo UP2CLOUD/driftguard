@@ -71,8 +71,7 @@ body {
   overflow-x: hidden; /* prevent horizontal scroll on mobile */
   background: var(--dg-canvas);
   color: var(--dg-fg);
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  font-variant-ligatures: contextual;
+  font-feature-settings: "cv01", "ss01";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -347,10 +346,10 @@ body {
     @apply rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface-raised)];
   }
   .dg-mono {
-    @apply font-mono text-[11px] uppercase tracking-[0.12em] text-[color:var(--dg-fg-subtle)];
+    @apply font-sans font-semibold text-[11px] uppercase tracking-[0.08em] text-[color:var(--dg-fg-subtle)];
   }
   .dg-label {
-    @apply font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--dg-fg-subtle)];
+    @apply font-sans font-semibold text-[10px] uppercase tracking-[0.08em] text-[color:var(--dg-fg-subtle)];
   }
   .dg-button {
     @apply inline-flex items-center gap-1.5 rounded-md px-3.5 py-2 text-[13px] font-medium transition-all duration-150;

@@ -84,7 +84,7 @@ export function UploadScan({
         <button
           onClick={upload}
           disabled={status === "loading"}
-          className="w-full rounded bg-[color:var(--dg-electric)] px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-white hover:brightness-110 disabled:opacity-40 transition"
+          className="w-full rounded bg-[color:var(--dg-electric)] px-4 py-2 font-sans font-semibold text-[11px] uppercase tracking-wide text-white hover:brightness-110 disabled:opacity-40 transition"
         >
           {status === "loading"
             ? (labels?.scanning ?? "Scanning…")
@@ -99,7 +99,7 @@ export function UploadScan({
                 .replace("{score}", String(result.risk_score ?? 0))
                 .replace("{n}", String(result.findings?.length ?? 0))}
           </p>
-          <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
+          <p className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
             {labels?.redirecting ?? "Redirecting to results…"}
           </p>
         </div>
@@ -114,7 +114,7 @@ export function UploadScan({
           <p className="font-mono text-[11px] text-blocked">✗ {err}</p>
           <a
             href={`/dashboard/${installationId}/settings`}
-            className="font-mono text-[10px] text-[color:var(--dg-electric-bright)] underline underline-offset-2"
+            className="font-sans font-medium text-[10px] text-[color:var(--dg-electric-bright)] underline underline-offset-2"
           >
             {labels?.managePlan ?? "Manage plan →"}
           </a>

@@ -11,7 +11,7 @@ export async function DashboardFooter() {
 
   return (
     <footer className="border-t border-[color:var(--dg-border)] mt-auto">
-      <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-4 sm:px-6 py-4 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] flex-wrap">
+      <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-4 sm:px-6 py-4 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] flex-wrap">
         <div className="flex items-center gap-4 flex-wrap">
           <span>© 2026 UP2CLOUD</span>
           <span className="opacity-40">·</span>

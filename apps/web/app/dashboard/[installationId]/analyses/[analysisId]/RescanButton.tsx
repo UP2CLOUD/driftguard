@@ -74,14 +74,14 @@ export function RescanButton({
 
   if (status === "scanning") {
     return (
-      <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] animate-pulse">
+      <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] animate-pulse">
         {labels?.queuing ?? "queuing…"}
       </span>
     );
   }
   if (status === "polling") {
     return (
-      <span className="font-mono text-[10px] text-[color:var(--dg-electric-bright)] flex items-center gap-1">
+      <span className="font-sans font-medium text-[10px] text-[color:var(--dg-electric-bright)] flex items-center gap-1">
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--dg-electric-bright)] animate-pulse" />
         {labels?.scanning ?? "scanning…"}
       </span>
@@ -89,7 +89,7 @@ export function RescanButton({
   }
   if (status === "error") {
     return (
-      <span className="font-mono text-[10px] text-blocked">
+      <span className="font-sans font-medium text-[10px] text-blocked">
         {labels?.error ?? "failed — try again"}
       </span>
     );

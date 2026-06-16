@@ -127,7 +127,7 @@ export function ScanTrigger({
         <button
           onClick={trigger}
           disabled={busy || !repo.trim()}
-          className="flex-1 rounded bg-[color:var(--dg-electric)] px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-white hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition"
+          className="flex-1 rounded bg-[color:var(--dg-electric)] px-4 py-2 font-sans font-semibold text-[11px] uppercase tracking-wide text-white hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition"
         >
           {status === "loading"
             ? (labels?.queuing ?? "Queuing…")
@@ -149,7 +149,7 @@ export function ScanTrigger({
           <p className="font-mono text-[11px] text-blocked">✗ {msg}</p>
           <a
             href={`/dashboard/${installationId}/settings`}
-            className="font-mono text-[10px] text-[color:var(--dg-electric-bright)] underline underline-offset-2"
+            className="font-sans font-medium text-[10px] text-[color:var(--dg-electric-bright)] underline underline-offset-2"
           >
             {labels?.managePlan ?? "Manage plan →"}
           </a>

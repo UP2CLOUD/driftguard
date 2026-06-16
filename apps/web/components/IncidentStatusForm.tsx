@@ -63,7 +63,7 @@ export function IncidentStatusForm({
     return (
       <button
         onClick={() => setOpen(true)}
-        className="rounded border border-[color:var(--dg-border)] px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
+        className="rounded border border-[color:var(--dg-border)] px-3 py-1.5 font-sans font-semibold text-[11px] uppercase tracking-wide text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
       >
         {t("incidents.updateStatus")}
       </button>
@@ -73,7 +73,7 @@ export function IncidentStatusForm({
   return (
     <div className="rounded-md border border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-surface)] overflow-hidden">
       <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] px-4 py-3">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
+        <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
           {t("incidents.updateStatus")}
         </span>
         <button
@@ -86,7 +86,7 @@ export function IncidentStatusForm({
       <div className="p-4 space-y-4">
         {/* Status selector */}
         <div>
-          <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-2">
+          <label className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-2">
             {t("incidents.status")}
           </label>
           <div className="flex flex-wrap gap-2">
@@ -94,7 +94,7 @@ export function IncidentStatusForm({
               <button
                 key={s.value}
                 onClick={() => setStatus(s.value)}
-                className={`rounded border px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest transition ${
+                className={`rounded border px-2.5 py-1 font-sans font-medium text-[10px] uppercase tracking-widest transition ${
                   status === s.value
                     ? s.cls
                     : "border-[color:var(--dg-border)] text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)]"
@@ -108,7 +108,7 @@ export function IncidentStatusForm({
 
         {/* Root cause */}
         <div>
-          <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
+          <label className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
             {t("incidents.rootCause")}
           </label>
           <textarea
@@ -122,7 +122,7 @@ export function IncidentStatusForm({
 
         {/* Suggested fix */}
         <div>
-          <label className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
+          <label className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] block mb-1">
             {t("incidents.suggestedFixLabel")}
           </label>
           <textarea
@@ -140,7 +140,7 @@ export function IncidentStatusForm({
         <button
           onClick={save}
           disabled={loading}
-          className="w-full rounded bg-[color:var(--dg-electric)] py-2 font-mono text-[11px] uppercase tracking-widest text-white hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition"
+          className="w-full rounded bg-[color:var(--dg-electric)] py-2 font-sans font-semibold text-[11px] uppercase tracking-wide text-white hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition"
         >
           {loading ? t("incidents.saving") : t("incidents.saveChanges")}
         </button>

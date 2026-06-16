@@ -52,7 +52,7 @@ export default async function RepoPage({
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-8">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+      <div className="flex items-center gap-3 font-sans font-semibold text-[11px] uppercase tracking-wide text-[color:var(--dg-fg-subtle)]">
         <Link href={`/dashboard/${installationId}`} className="hover:text-[color:var(--dg-fg)] transition">
           {t("nav.overview")}
         </Link>
@@ -78,7 +78,7 @@ export default async function RepoPage({
           )}
         </div>
         <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1.5 font-mono text-[10px] text-allowed">
+          <span className="flex items-center gap-1.5 font-sans font-medium text-[10px] text-allowed">
             <span className="h-1.5 w-1.5 rounded-full bg-allowed" />
             {t("repos.connected")}
           </span>
@@ -94,7 +94,7 @@ export default async function RepoPage({
             { label: t("repos.highRiskPrs"), value: critHigh },
           ].map(({ label, value }) => (
             <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">
+              <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">
                 {label}
               </div>
               <div className="font-mono text-xl font-bold text-[color:var(--dg-fg)]">{value}</div>
@@ -105,7 +105,7 @@ export default async function RepoPage({
 
       {/* Analyses list */}
       <section>
-        <h2 className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-3">
+        <h2 className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-3">
           {t("repos.recentAnalyses") ?? "Recent analyses"}
         </h2>
 
@@ -136,7 +136,7 @@ export default async function RepoPage({
                   <p className="font-mono text-[12px] text-[color:var(--dg-fg)]">
                     {a.pr_number ? `PR #${a.pr_number}` : t("repos.manualScan")}
                   </p>
-                  <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
+                  <p className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
                     {a.head_sha ? `${a.head_sha.slice(0, 7)} · ` : ""}
                     {formatDate(a.created_at, prefs.locale)}
                   </p>
@@ -144,14 +144,14 @@ export default async function RepoPage({
 
                 <div className="flex items-center gap-2 shrink-0">
                   {a.policy_verdict && a.policy_verdict !== "pass" && (
-                    <span className={`font-mono text-[9px] uppercase tracking-widest rounded px-1 py-0.5 ${
+                    <span className={`font-sans font-medium text-[9px] uppercase tracking-widest rounded px-1 py-0.5 ${
                       a.policy_verdict === "block" ? "text-blocked bg-blocked/10" : "text-warned bg-warned/10"
                     }`}>
                       {a.policy_verdict}
                     </span>
                   )}
                   <span
-                    className={`font-mono text-[10px] uppercase tracking-widest px-2 py-0.5 rounded border ${
+                    className={`font-sans font-medium text-[10px] uppercase tracking-widest px-2 py-0.5 rounded border ${
                       a.status === "completed"
                         ? "text-allowed border-allowed/30 bg-allowed/5"
                         : a.status === "failed"

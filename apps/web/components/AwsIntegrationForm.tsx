@@ -63,11 +63,11 @@ export function AwsIntegrationForm({
               Deploy the read-only Terraform module in your AWS account.
               Creates a role with external ID condition — no wildcard access.
             </p>
-            <pre className="mt-3 rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[10px] text-[color:var(--dg-fg)]">
+            <pre className="mt-3 rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-canvas)] px-3 py-2 font-sans font-medium text-[10px] text-[color:var(--dg-fg)]">
               {`module "driftguard" {\n  source = "github.com/UP2CLOUD/driftguard//infra/terraform/modules/customer-iam"\n  driftguard_aws_account_id = "<your-aws-account-id>"\n  state_bucket = "my-tfstate-bucket" # optional\n}`}
             </pre>
             <div className="mt-3 flex items-center gap-2">
-              <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{t("aws.externalId")}</span>
+              <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">{t("aws.externalId")}</span>
               <code className="font-mono text-[11px] text-[color:var(--dg-electric-bright)] select-all">
                 {externalId}
               </code>
@@ -89,7 +89,7 @@ export function AwsIntegrationForm({
         <div className="dg-label mb-3">{t("aws.step2")}</div>
         <div className="space-y-3">
           <div>
-            <label className="block font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1.5">
+            <label className="block font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1.5">
               Role ARN
             </label>
             <input
@@ -102,7 +102,7 @@ export function AwsIntegrationForm({
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="block font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1.5">
+              <label className="block font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1.5">
                 State bucket (optional)
               </label>
               <input
@@ -113,7 +113,7 @@ export function AwsIntegrationForm({
               />
             </div>
             <div>
-              <label className="block font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1.5">
+              <label className="block font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1.5">
                 State key
               </label>
               <input
@@ -135,7 +135,7 @@ export function AwsIntegrationForm({
           <p className="font-mono text-[11px] text-allowed">✓ Saved — drift detection enabled</p>
         )}
         {!error && !saved && (
-          <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+          <p className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
             {org?.aws_role_arn ? `Connected: ${org.aws_role_arn.slice(0, 40)}…` : "Not connected"}
           </p>
         )}

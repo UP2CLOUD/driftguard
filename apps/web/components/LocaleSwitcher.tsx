@@ -100,7 +100,7 @@ export function LocaleSwitcher({
         onClick={() => (open ? closeMenu() : openMenu())}
         className={`
           inline-flex items-center gap-1.5 px-2 py-1 rounded
-          font-mono text-[10px] uppercase tracking-widest
+          font-sans font-medium text-[10px] uppercase tracking-widest
           text-[color:var(--dg-fg-subtle)] border border-transparent
           transition-all duration-150
           hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-border)] hover:bg-[color:var(--dg-surface)]

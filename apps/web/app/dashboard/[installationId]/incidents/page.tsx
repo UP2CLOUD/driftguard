@@ -114,7 +114,7 @@ export default async function IncidentsPage({
                 {tab.label}
                 {tab.count > 0 && (
                   <span
-                    className={`rounded px-1 font-mono text-[10px] tabular-nums ${
+                    className={`rounded px-1 font-sans font-medium text-[10px] tabular-nums ${
                       isActive
                         ? "bg-[color:var(--dg-electric)]/15 text-[color:var(--dg-fg)]"
                         : "bg-[color:var(--dg-surface)] text-[color:var(--dg-fg-subtle)]"
@@ -136,7 +136,7 @@ export default async function IncidentsPage({
 
       {filtered.length === 0 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
-          <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-allowed">● {t("incidents.noActive")}</div>
+          <div className="mb-3 font-sans font-medium text-[10px] uppercase tracking-widest text-allowed">● {t("incidents.noActive")}</div>
           <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
             {t("incidents.noTitle")}
           </p>
@@ -163,7 +163,7 @@ export default async function IncidentsPage({
                 {/* Title row */}
                 <div className="flex items-start gap-2 flex-wrap mb-2">
                   <span
-                    className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest shrink-0 ${SEV[inc.severity] ?? ""}`}
+                    className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest shrink-0 ${SEV[inc.severity] ?? ""}`}
                   >
                     {inc.severity}
                   </span>
@@ -182,7 +182,7 @@ export default async function IncidentsPage({
                 {/* Meta row */}
                 <div className="flex items-center gap-x-3 gap-y-1.5 flex-wrap">
                   <span
-                    className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest shrink-0 ${STATUS_BADGE[inc.status] ?? ""}`}
+                    className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest shrink-0 ${STATUS_BADGE[inc.status] ?? ""}`}
                   >
                     {inc.status}
                   </span>
@@ -201,7 +201,7 @@ export default async function IncidentsPage({
                 {/* Suggested fix */}
                 {inc.suggested_fix && (
                   <div className="mt-3 rounded border border-allowed/20 bg-allowed/5 px-3 py-2.5">
-                    <span className="block sm:inline font-mono text-[10px] uppercase tracking-widest text-allowed mb-1 sm:mb-0 sm:mr-2">
+                    <span className="block sm:inline font-sans font-medium text-[10px] uppercase tracking-widest text-allowed mb-1 sm:mb-0 sm:mr-2">
                       {t("incidents.suggestedFixInline") ?? "Suggested fix:"}
                     </span>
                     <span className="font-mono text-[12px] sm:text-[11px] leading-relaxed text-allowed break-words [overflow-wrap:anywhere]">
