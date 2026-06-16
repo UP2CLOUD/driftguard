@@ -106,7 +106,7 @@ export default async function Settings({
               {org ? t("settings.connected") : t("settings.notConnected")}
             </span>
           </div>
-          <Row label={t("settings.githubApp")} value={process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-reviews"} mono />
+          <Row label={t("settings.githubApp")} value={process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-app"} mono />
           <CopyField label={t("settings.githubInstallationRow")} value={installationId} />
           {process.env.NEXT_PUBLIC_API_URL ? (
             <CopyField
@@ -120,7 +120,7 @@ export default async function Settings({
           <div className="px-4 py-3 flex items-center justify-between">
             <span className="text-[12px] text-[color:var(--dg-fg-muted)]">{t("settings.manageInstallation")}</span>
             <a
-              href={`https://github.com/organizations/settings/installations/${installationId}`}
+              href={`https://github.com/settings/installations/${installationId}`}
               target="_blank"
               rel="noreferrer"
               className="font-sans font-medium text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
