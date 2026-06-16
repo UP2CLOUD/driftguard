@@ -46,7 +46,7 @@ export async function RecentAnalysesSection({
                 href={`/dashboard/${installationId}/analyses`}
                 className="font-sans font-medium text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
               >
-                View all →
+                {t("common.viewAll") ?? "View all"} →
               </Link>
             )}
           </div>
