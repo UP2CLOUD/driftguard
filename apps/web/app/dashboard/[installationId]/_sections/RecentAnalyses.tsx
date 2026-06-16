@@ -74,13 +74,40 @@ export async function RecentAnalysesSection({
             </div>
           </div>
         ) : recentAnalyses.length === 0 ? (
-          <div className="px-6 py-10 text-center">
-            <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
+          <div className="px-6 py-10">
+            <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-1 text-center">
               {t("dashboard.noAnalysesTitle") ?? "No PR analyses yet"}
             </p>
-            <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto leading-relaxed">
+            <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto leading-relaxed text-center mb-8">
               {t("dashboard.noAnalysesOpenPrDesc") ?? "Open a Terraform or OpenTofu pull request in a connected repository to trigger the first analysis."}
             </p>
+            {/* First-PR guide */}
+            <div className="max-w-md mx-auto space-y-3">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] text-center mb-4">
+                {t("dashboard.firstPrGuideTitle") ?? "What happens when you open a PR"}
+              </div>
+              {[
+                { step: "1", label: t("dashboard.firstPrStep1") ?? "Push a branch with *.tf file changes" },
+                { step: "2", label: t("dashboard.firstPrStep2") ?? "Open a pull request on GitHub" },
+                { step: "3", label: t("dashboard.firstPrStep3") ?? "DriftGuard scans for security, cost & policy violations" },
+                { step: "4", label: t("dashboard.firstPrStep4") ?? "Results appear as a PR comment and here in the dashboard" },
+              ].map(({ step, label }) => (
+                <div key={step} className="flex items-start gap-3">
+                  <span className="shrink-0 h-5 w-5 rounded-full border border-[color:var(--dg-border)] font-mono text-[10px] flex items-center justify-center text-[color:var(--dg-fg-subtle)]">
+                    {step}
+                  </span>
+                  <span className="text-[12px] text-[color:var(--dg-fg-muted)] pt-0.5 leading-relaxed">{label}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-8 flex justify-center">
+              <Link
+                href="/docs/install"
+                className="font-mono text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+              >
+                {t("dashboard.setupGuide") ?? "Setup guide"} →
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="divide-y divide-[color:var(--dg-border)]">

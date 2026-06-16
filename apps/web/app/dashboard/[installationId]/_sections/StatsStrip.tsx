@@ -3,6 +3,14 @@ import { getOverview, getPlan } from "./api";
 
 type T = (key: string) => string | null | undefined;
 
+type Cell = {
+  label: string;
+  value: string | number;
+  color: string;
+  hint: string | null;
+  progress?: number;
+};
+
 export async function StatsStripSection({
   installationId,
   t,
@@ -36,7 +44,7 @@ export async function StatsStripSection({
   const repoColor =
     repoLimit != null && activeRepos >= repoLimit ? "text-warned" : "";
 
-  const cells = [
+  const cells: Cell[] = [
     {
       label: t("repos.statsRepos") ?? "Repos",
       value: repoValue,
@@ -83,22 +91,48 @@ export async function StatsStripSection({
       value: `${prUsed}/${prLimit}`,
       color: pct >= 1 ? "text-blocked" : pct >= 0.8 ? "text-warned" : "",
       hint: pct >= 1 ? (t("dashboard.limitReached") ?? "Limit reached") : pct >= 0.8 ? (t("dashboard.nearLimit") ?? "Near limit") : null,
+      progress: pct,
     });
   }
 
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)]">
-        {cells.map(({ label, value, color, hint }) => (
+        {cells.map(({ label, value, color, hint, progress }) => (
           <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
             <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">{label}</div>
             <div className={`font-mono text-xl font-bold tabular-nums ${color || "text-[color:var(--dg-fg)]"}`}>{value}</div>
             {hint && (
               <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5 truncate">{hint}</div>
             )}
+            {progress != null && (
+              <div className="mt-2 h-0.5 rounded-full bg-[color:var(--dg-border)] overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all ${
+                    progress >= 1 ? "bg-blocked" : progress >= 0.8 ? "bg-warned" : "bg-allowed"
+                  }`}
+                  style={{ width: `${Math.min(100, progress * 100)}%` }}
+                />
+              </div>
+            )}
           </div>
         ))}
       </div>
+
+      {/* Soft upgrade nudge for engaged free users not yet at limit */}
+      {!isPremium && repos > 0 && analyses7d > 0 && !(repoLimit != null && activeRepos >= repoLimit) && (
+        <div className="flex items-center justify-between px-4 py-2 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+          <span>
+            {t("dashboard.upgradeNudge") ?? "Free plan · upgrade to unlock unlimited PR reviews, AI memory, and compliance reports."}
+          </span>
+          <Link
+            href={`/dashboard/${installationId}/settings?intent=upgrade`}
+            className="ml-3 shrink-0 text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+          >
+            {t("dashboard.upgrade") ?? "Upgrade"} →
+          </Link>
+        </div>
+      )}
 
       {/* Free plan upgrade nudge when at repo limit */}
       {!isPremium && repoLimit != null && activeRepos >= repoLimit && (

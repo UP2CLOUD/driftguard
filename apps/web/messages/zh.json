@@ -149,13 +149,23 @@
     "upgrade": "升级",
     "costDelta": "成本变化",
     "recentScansCount": "共 {n} 条",
-    "noScansTrigger": "在上方运行手动扫描，或打开 Terraform PR 以触发首次分析。"
+    "noScansTrigger": "在上方运行手动扫描，或打开 Terraform PR 以触发首次分析。",
+    "upgradeNudge": "免费计划 · 升级以解锁无限 PR 审查、AI 记忆和合规报告。",
+    "firstPrGuideTitle": "打开 PR 时会发生什么",
+    "firstPrStep1": "推送包含 *.tf 文件更改的分支",
+    "firstPrStep2": "在 GitHub 上打开拉取请求",
+    "firstPrStep3": "DriftGuard 扫描安全性、成本和策略违规",
+    "firstPrStep4": "结果作为 PR 评论显示，也在此仪表板中显示"
   },
   "waitlist": {
     "placeholder": "you@company.com",
     "join": "加入",
     "loading": "...",
-    "success": "✓ 已加入"
+    "success": "✓ 已加入",
+    "title": "加入等候名单",
+    "subtitle": "抢先体验 DriftGuard — 面向 Terraform 代理的 AI 运行时安全。",
+    "note": "不发垃圾邮件，随时可取消订阅。",
+    "eyebrow": "抢先体验"
   },
   "footer": {
     "privacy": "隐私",
@@ -940,7 +950,72 @@
     "item_webhooks_title": "Webhooks",
     "item_webhooks_desc": "用于事件集成的出站事件",
     "item_rateLimits_title": "速率限制",
-    "item_rateLimits_desc": "按组织和 API key 的配额"
+    "item_rateLimits_desc": "按组织和 API key 的配额",
+    "security": {
+      "eyebrow": "文档 · 核心概念",
+      "title": "安全扫描",
+      "subtitle": "每次 Terraform PR 都会进行 Checkov 静态分析和 AI 驱动的问题分类。"
+    },
+    "dora": {
+      "eyebrow": "文档 · 合规",
+      "title": "DORA 证据",
+      "subtitle": "自动收集欧盟数字运营韧性法规所需的合规证据。"
+    },
+    "nis2": {
+      "eyebrow": "文档 · 合规",
+      "title": "NIS2 合规",
+      "subtitle": "网络和信息系统指令 — DriftGuard 将您的 Terraform 变更映射到 NIS2 控制措施。"
+    },
+    "iso": {
+      "eyebrow": "文档 · 合规",
+      "title": "ISO 27001 控制",
+      "subtitle": "针对每次基础设施变更在拉取请求中进行附录 A 控制映射。"
+    },
+    "audit": {
+      "eyebrow": "文档 · 合规",
+      "title": "审计日志",
+      "subtitle": "带签名的只追加事件流 — 每次审查、批准和覆盖均防篡改。"
+    },
+    "aws": {
+      "eyebrow": "文档 · 集成",
+      "title": "AWS 集成",
+      "subtitle": "STS AssumeRole 和 S3 状态后端 — DriftGuard 在不存储凭证的情况下读取您的 AWS 实时状态。"
+    },
+    "gcp": {
+      "eyebrow": "文档 · 集成",
+      "title": "GCP 集成",
+      "subtitle": "工作负载身份联合 — 无需长期凭证，无需服务账号密钥。"
+    },
+    "azure": {
+      "eyebrow": "文档 · 集成",
+      "title": "Azure 集成",
+      "subtitle": "联合工作负载身份，实现对 Azure 资源的安全无密钥访问。"
+    },
+    "slack": {
+      "eyebrow": "文档 · 集成",
+      "title": "Slack 告警",
+      "subtitle": "按严重程度路由到不同频道 — 严重阻断发送至 #incidents，警告发送至 #infra-reviews。"
+    },
+    "selfHost": {
+      "eyebrow": "文档 · 部署",
+      "title": "自托管部署",
+      "subtitle": "Helm chart 和容器镜像 — 在您自己的 Kubernetes 集群中运行 DriftGuard。"
+    },
+    "cloudRun": {
+      "eyebrow": "文档 · 部署",
+      "title": "Cloud Run 部署",
+      "subtitle": "使用 Cloud Run 的 GCP 参考部署 — 托管基础设施，自动扩缩容。"
+    },
+    "env": {
+      "eyebrow": "文档 · 部署",
+      "title": "环境变量",
+      "subtitle": "完整参考 — 每个配置变量、默认值和示例。"
+    },
+    "rateLimits": {
+      "eyebrow": "文档 · API",
+      "title": "速率限制",
+      "subtitle": "按组织和 API 密钥的配额 — 了解限制、处理 429 错误并申请提高配额。"
+    }
   },
   "status": {
     "eyebrow": "系统状态",
@@ -969,7 +1044,12 @@
     "meta": {
       "title": "系统状态 — DriftGuard",
       "description": "DriftGuard 系统实时状态。"
-    }
+    },
+    "noIncidents": "过去 30 天内无事件。",
+    "prIngestion": "PR 事件摄取",
+    "billing": "账单",
+    "stripeWebhooks": "Stripe webhook 处理",
+    "webApp": "Web 应用"
   },
   "security": {
     "eyebrow": "信任与安全",
@@ -1345,5 +1425,11 @@
     "ctaGithub": "在 GitHub 上收藏 →",
     "metaTitle": "关于 — DriftGuard",
     "metaDesc": "了解 DriftGuard 背后的团队和使命，DriftGuard 是面向 Terraform 代理的 AI 运行时安全层。"
+  },
+  "cookie": {
+    "notice": "我们使用分析 Cookie 来了解您如何使用 DriftGuard 并改善使用体验。",
+    "accept": "接受 Cookie",
+    "decline": "拒绝",
+    "learnMore": "隐私政策"
   }
 }

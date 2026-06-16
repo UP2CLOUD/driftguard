@@ -33,7 +33,7 @@ export default async function DashboardPage({
 
   return (
     <div className="bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 sm:py-12">
+      <div id="main-content" className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 sm:py-12">
         <DemoToggle active={demoMode} />
 
         <Suspense fallback={<StatsStripFallback />}>

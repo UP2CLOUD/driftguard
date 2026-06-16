@@ -149,13 +149,23 @@
     "upgrade": "Actualizar",
     "costDelta": "Variación de costo",
     "recentScansCount": "{n} total",
-    "noScansTrigger": "Ejecuta un análisis manual arriba o abre un PR de Terraform para activar el primer análisis."
+    "noScansTrigger": "Ejecuta un análisis manual arriba o abre un PR de Terraform para activar el primer análisis.",
+    "upgradeNudge": "Plan gratuito · actualiza para desbloquear revisiones de PR ilimitadas, memoria de IA e informes de cumplimiento.",
+    "firstPrGuideTitle": "Qué ocurre cuando abres un PR",
+    "firstPrStep1": "Sube una rama con cambios en archivos *.tf",
+    "firstPrStep2": "Abre un pull request en GitHub",
+    "firstPrStep3": "DriftGuard analiza seguridad, costos y violaciones de política",
+    "firstPrStep4": "Los resultados aparecen como comentario en el PR y aquí en el panel"
   },
   "waitlist": {
     "placeholder": "you@company.com",
     "join": "Unirse",
     "loading": "...",
-    "success": "✓ Listo"
+    "success": "✓ Listo",
+    "title": "Únete a la lista de espera",
+    "subtitle": "Acceso anticipado a DriftGuard — seguridad en tiempo de ejecución con IA para agentes Terraform.",
+    "note": "Sin spam. Cancela cuando quieras.",
+    "eyebrow": "Acceso anticipado"
   },
   "footer": {
     "privacy": "Privacidad",
@@ -940,7 +950,72 @@
     "item_webhooks_title": "Webhooks",
     "item_webhooks_desc": "Eventos salientes para integración de incidentes",
     "item_rateLimits_title": "Límites de uso",
-    "item_rateLimits_desc": "Cuotas por organización y por API key"
+    "item_rateLimits_desc": "Cuotas por organización y por API key",
+    "security": {
+      "eyebrow": "Docs · Conceptos clave",
+      "title": "Análisis de seguridad",
+      "subtitle": "Análisis estático con Checkov más triaje con IA en cada PR de Terraform."
+    },
+    "dora": {
+      "eyebrow": "Docs · Cumplimiento",
+      "title": "Evidencia DORA",
+      "subtitle": "Recopilación automática de evidencias para el Reglamento de Resiliencia Operativa Digital de la UE."
+    },
+    "nis2": {
+      "eyebrow": "Docs · Cumplimiento",
+      "title": "Cumplimiento NIS2",
+      "subtitle": "Directiva de Redes y Sistemas de Información — DriftGuard mapea tus cambios Terraform a controles NIS2."
+    },
+    "iso": {
+      "eyebrow": "Docs · Cumplimiento",
+      "title": "Controles ISO 27001",
+      "subtitle": "Mapeo de controles del Anexo A para cada cambio de infraestructura revisado en pull request."
+    },
+    "audit": {
+      "eyebrow": "Docs · Cumplimiento",
+      "title": "Registro de auditoría",
+      "subtitle": "Flujo de eventos firmado e inmutable — cada revisión, aprobación y anulación, a prueba de manipulaciones."
+    },
+    "aws": {
+      "eyebrow": "Docs · Integraciones",
+      "title": "Integración con AWS",
+      "subtitle": "STS AssumeRole y backend de estado S3 — DriftGuard lee tu estado AWS sin almacenar credenciales."
+    },
+    "gcp": {
+      "eyebrow": "Docs · Integraciones",
+      "title": "Integración con GCP",
+      "subtitle": "Workload Identity Federation — sin credenciales de larga duración, sin claves de cuenta de servicio."
+    },
+    "azure": {
+      "eyebrow": "Docs · Integraciones",
+      "title": "Integración con Azure",
+      "subtitle": "Identidad de carga de trabajo federada para acceso seguro a recursos Azure sin claves."
+    },
+    "slack": {
+      "eyebrow": "Docs · Integraciones",
+      "title": "Alertas en Slack",
+      "subtitle": "Enrutamiento por canal y severidad — bloqueos críticos en #incidentes, avisos en #revisiones-infra."
+    },
+    "selfHost": {
+      "eyebrow": "Docs · Despliegue",
+      "title": "Despliegue auto-hospedado",
+      "subtitle": "Helm chart e imágenes de contenedor — ejecuta DriftGuard en tu propio clúster Kubernetes."
+    },
+    "cloudRun": {
+      "eyebrow": "Docs · Despliegue",
+      "title": "Despliegue en Cloud Run",
+      "subtitle": "Despliegue de referencia en GCP con Cloud Run — infraestructura gestionada, escalado automático."
+    },
+    "env": {
+      "eyebrow": "Docs · Despliegue",
+      "title": "Variables de entorno",
+      "subtitle": "Referencia completa — todas las variables de configuración, valores por defecto y ejemplos."
+    },
+    "rateLimits": {
+      "eyebrow": "Docs · API",
+      "title": "Límites de velocidad",
+      "subtitle": "Cuotas por organización y por clave de API — entiende los límites, gestiona errores 429 y solicita aumentos."
+    }
   },
   "status": {
     "eyebrow": "Estado del sistema",
@@ -969,7 +1044,12 @@
     "meta": {
       "title": "Estado — DriftGuard",
       "description": "Estado del sistema DriftGuard en tiempo real."
-    }
+    },
+    "noIncidents": "Sin incidentes en los últimos 30 días.",
+    "prIngestion": "Ingesta de eventos de PR",
+    "billing": "Facturación",
+    "stripeWebhooks": "Procesamiento de webhooks de Stripe",
+    "webApp": "Aplicación web"
   },
   "security": {
     "eyebrow": "Confianza y seguridad",
@@ -1345,5 +1425,11 @@
     "ctaGithub": "Star en GitHub →",
     "metaTitle": "Acerca de — DriftGuard",
     "metaDesc": "Conoce al equipo y la misión detrás de DriftGuard, la capa de seguridad en tiempo de ejecución con IA para agentes Terraform."
+  },
+  "cookie": {
+    "notice": "Usamos cookies de análisis para entender cómo usas DriftGuard y mejorar la experiencia.",
+    "accept": "Aceptar cookies",
+    "decline": "Rechazar",
+    "learnMore": "Política de privacidad"
   }
 }
