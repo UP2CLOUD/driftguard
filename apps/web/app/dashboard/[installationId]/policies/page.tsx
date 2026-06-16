@@ -152,7 +152,7 @@ export default async function PoliciesPage({
               <p className="text-[12px] text-[color:var(--dg-fg-muted)] mb-3">
                 {t("policies.createViaApiDesc")}
               </p>
-              <pre className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-4 py-3 font-sans font-medium text-[10px] text-[color:var(--dg-electric-bright)] overflow-x-auto whitespace-pre-wrap">
+              <pre className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-4 py-3 font-mono text-[10px] text-[color:var(--dg-electric-bright)] overflow-x-auto whitespace-pre-wrap">
 {`POST ${apiBase}/api/v1/policies?installation_id=${installationId}
 Authorization: Bearer YOUR_SECRET_KEY
 Content-Type: application/json

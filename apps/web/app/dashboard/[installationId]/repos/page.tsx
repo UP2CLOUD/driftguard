@@ -383,7 +383,7 @@ export default async function ReposPage({
                   <p className="font-mono text-[12px] text-[color:var(--dg-fg)] truncate">
                     {a.repo_full_name || a.source || `${t("repos.scanFallback") ?? "Scan"} ${(a.id || a.analysis_id)?.slice(0, 8) ?? ""}`}
                   </p>
-                  <p className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
+                  <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
                     {a.pr_number ? `PR #${a.pr_number}` : (t("repos.manualScanLabel") ?? "manual")}
                     {a.head_sha ? ` · ${a.head_sha.slice(0, 7)}` : ""}
                     {a.created_at ? ` · ${formatDate(a.created_at, prefs.locale)}` : ""}

@@ -170,7 +170,7 @@ export default async function IncidentDetailPage({
           {incident.fingerprint && (
             <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-4">
               <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">{t("incidents.fingerprintLabel")}</div>
-              <code className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-muted)] break-all">{incident.fingerprint}</code>
+              <code className="font-mono text-[10px] text-[color:var(--dg-fg-muted)] break-all">{incident.fingerprint}</code>
             </div>
           )}
         </div>

@@ -212,7 +212,7 @@ export default async function AnalysesPage({
                     ) : null}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
+                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
                       {a.head_sha ? a.head_sha.slice(0, 7) : (t("analyses.manual") ?? "manual")}
                       {/* Mobile: show date + status inline */}
                       <span className="sm:hidden">

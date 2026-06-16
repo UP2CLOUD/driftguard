@@ -63,7 +63,7 @@ export function AwsIntegrationForm({
               Deploy the read-only Terraform module in your AWS account.
               Creates a role with external ID condition — no wildcard access.
             </p>
-            <pre className="mt-3 rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-canvas)] px-3 py-2 font-sans font-medium text-[10px] text-[color:var(--dg-fg)]">
+            <pre className="mt-3 rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[10px] text-[color:var(--dg-fg)]">
               {`module "driftguard" {\n  source = "github.com/UP2CLOUD/driftguard//infra/terraform/modules/customer-iam"\n  driftguard_aws_account_id = "<your-aws-account-id>"\n  state_bucket = "my-tfstate-bucket" # optional\n}`}
             </pre>
             <div className="mt-3 flex items-center gap-2">

@@ -99,7 +99,7 @@ export function AuditLogClient({
                   </div>
                   {isOpen && hasPayload && (
                     <div className="border-t border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-4 py-3">
-                      <pre className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-muted)] overflow-x-auto leading-relaxed">
+                      <pre className="font-mono text-[10px] text-[color:var(--dg-fg-muted)] overflow-x-auto leading-relaxed">
                         {JSON.stringify(e.payload, null, 2)}
                       </pre>
                     </div>

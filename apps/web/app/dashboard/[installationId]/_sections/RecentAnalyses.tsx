@@ -122,7 +122,7 @@ export async function RecentAnalysesSection({
                     <code className="font-mono text-[11px] text-[color:var(--dg-fg)] truncate">
                       {a.repo_full_name}#{a.pr_number}
                     </code>
-                    <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] hidden sm:inline">
+                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] hidden sm:inline">
                       {a.head_sha?.slice(0, 7)}
                     </span>
                   </div>
