@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 
 export async function GET(req: Request) {
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not available in production" }, { status: 404 });
+  }
+  const session = await auth();
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const url = process.env.NEXT_PUBLIC_API_URL || "(not set — using http://localhost:8000)";
   const secret = process.env.SECRET_KEY ?? "";
   const secretHint = secret ? `${secret.slice(0, 6)}…(len=${secret.length})` : "(not set)";
