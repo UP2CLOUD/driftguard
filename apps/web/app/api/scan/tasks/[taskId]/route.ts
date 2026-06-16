@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { BACKEND_URL, authHeaders } from "@/lib/backend";
+import { beProxy } from "@/lib/backend";
 
 export async function GET(
   _req: NextRequest,
@@ -11,11 +11,7 @@ export async function GET(
 
   const { taskId } = await params;
 
-  const res = await fetch(`${BACKEND_URL}/api/v1/scans/tasks/${taskId}`, {
-    headers: authHeaders(),
-    signal: AbortSignal.timeout(5000),
-  });
-
-  const data = await res.json().catch(() => ({}));
-  return NextResponse.json(data, { status: res.ok ? 200 : res.status });
+  const { body, status } = await beProxy(`/api/v1/scans/tasks/${taskId}`, { method: "GET", timeout: 5000 });
+  if (body === null) return new NextResponse(null, { status });
+  return NextResponse.json(body, { status });
 }

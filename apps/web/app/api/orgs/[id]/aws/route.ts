@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { BACKEND_URL, authHeaders } from "@/lib/backend";
+import { beProxy } from "@/lib/backend";
 
 export async function PATCH(
   req: NextRequest,
@@ -12,13 +12,11 @@ export async function PATCH(
   const { id } = await params;
   const body = await req.json();
 
-  const res = await fetch(`${BACKEND_URL}/api/v1/orgs/${id}/aws`, {
+  const { body: data, status } = await beProxy(`/api/v1/orgs/${id}/aws`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json", ...authHeaders() },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
-    signal: AbortSignal.timeout(10000),
   });
-
-  const data = await res.json().catch(() => ({}));
-  return NextResponse.json(data, { status: res.status });
+  if (data === null) return new NextResponse(null, { status });
+  return NextResponse.json(data, { status });
 }

@@ -66,3 +66,32 @@ export async function beGetFull<T>(
     return { data: null, status: null };
   }
 }
+
+/**
+ * Proxy a mutating request to the backend, returning `{ body, status }`.
+ *
+ * - Catches network / timeout errors → 502 with a safe error body
+ * - Merges authHeaders() with any extra headers passed in init
+ * - Handles 204 No Content (body is null)
+ * - Default timeout: 10 s (override via init.timeout)
+ */
+export async function beProxy(
+  path: string,
+  init: RequestInit & { timeout?: number } = {},
+): Promise<{ body: unknown; status: number }> {
+  const { timeout = 10000, headers: extraHeaders, ...rest } = init;
+  try {
+    const res = await fetch(`${BASE}${path}`, {
+      ...rest,
+      headers: { ...authHeaders(), ...(extraHeaders as Record<string, string> | undefined) },
+      signal: AbortSignal.timeout(timeout),
+    });
+    if (res.status === 204) return { body: null, status: 204 };
+    const body = await res.json().catch(() => ({}));
+    return { body, status: res.status };
+  } catch (err) {
+    console.warn(`[backend] proxy failed — ${BASE}${path}`, err);
+    return { body: { error: "upstream unavailable" }, status: 502 };
+  }
+}
+
