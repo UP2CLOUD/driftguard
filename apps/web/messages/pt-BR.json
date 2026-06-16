@@ -311,7 +311,7 @@
     "awsTitle": "Integração AWS",
     "awsDesc": "Concede acesso só de leitura ao DriftGuard para comparar o estado live com os planos Terraform. Sem credenciais armazenadas — STS AssumeRole com ID externo.",
     "billingDesc": "Gerencie sua assinatura e método de pagamento.",
-    "workspaceTitle": "Workspace",
+    "workspaceTitle": "Espaço de trabalho",
     "workspaceDesc": "Metadados só de leitura sobre esta instalação.",
     "installationId": "ID de instalação GitHub",
     "organisationId": "ID da organização",
@@ -498,7 +498,7 @@
       "statActual": "Real",
       "statDriftWaste": "Desperdício por drift",
       "colCost": "Custo",
-      "colGate": "Gate",
+      "colGate": "Portão",
       "actionBlocked": "bloqueado",
       "actionWarned": "alertado",
       "actionAllowed": "permitido",
@@ -551,7 +551,7 @@
       "gdpr": "RGPD‑nativo",
       "colProduct": "Produto",
       "colCompany": "Empresa",
-      "colLegal": "Legal",
+      "colLegal": "Jurídico",
       "colDocs": "Docs",
       "linkPricing": "Preços",
       "linkChangelog": "Changelog",
@@ -655,7 +655,7 @@
           "cta": "Auto-hospedagem →"
         },
         "team": {
-          "tier": "Team",
+          "tier": "Equipe",
           "badge": "Mais popular",
           "desc": "Revisões de PR de produção para contribuidores humanos e agentes.",
           "f1": "Análises de PR ilimitadas",
@@ -853,7 +853,7 @@
     "coreConc": "Conceitos principais",
     "integrations": "Integrações",
     "compliance": "Conformidade",
-    "legal": "Legal",
+    "legal": "Jurídico",
     "install": {
       "label": "Instalação",
       "eyebrow": "Docs · Começar",
@@ -876,7 +876,7 @@
     },
     "api": {
       "label": "Referência API",
-      "eyebrow": "Developers",
+      "eyebrow": "Desenvolvedores",
       "title": "Referência API",
       "subtitle": "API REST — todos os endpoints, autenticação e exemplos."
     },
@@ -924,7 +924,7 @@
     "openApiSpec": "Especificação OpenAPI",
     "requestAccess": "Solicitar acesso →",
     "poweredByInfracost": "Desenvolvido por Infracost",
-    "thresholds": "Thresholds",
+    "thresholds": "Limites",
     "currency": "Moeda",
     "howItWorks": "Como funciona",
     "awsIntegration": "Integração AWS",
@@ -1197,14 +1197,14 @@
     "openRoles": "Vagas abertas",
     "fullTime": "Tempo inteiro",
     "partTime": "Part-time / Contrato",
-    "remote": "Remote · EU",
+    "remote": "Remoto · EU",
     "apply": "Candidatar →",
     "getInTouch": "Entra em contacto →",
     "noRoles": "Sem posições abertas de momento.",
     "noRolesBody": "Contratamos quando o produto exige. Segue-nos no LinkedIn.",
     "noRoleDesc": "Contratamos por competências, não por títulos. Envie seu perfil e o que você quer construir.",
     "whyUs": "Porquê o DriftGuard",
-    "remoteFirst": "Remote-first",
+    "remoteFirst": "Trabalho Remoto",
     "remoteFirstDesc": "Fuso horário EU preferido. Sem escritórios, sem deslocações.",
     "highOwn": "Alta responsabilidade",
     "highOwnDesc": "Equipe pequena. Você tem seu domínio do início ao fim.",
@@ -1226,7 +1226,7 @@
     "subtitle": "Todas as alterações à plataforma DriftGuard, as mais recentes primeiro.",
     "new": "Novo",
     "fix": "Correcção",
-    "breaking": "Breaking",
+    "breaking": "Incompatível",
     "improved": "Melhorado",
     "note": "Entradas técnicas mantidas em inglês como registo canónico.",
     "meta": {
@@ -1260,7 +1260,7 @@
     "lastUpdated": "Última atualização:"
   },
   "subprocessors": {
-    "eyebrow": "Legal",
+    "eyebrow": "Jurídico",
     "title": "Subprocessadores",
     "subtitle": "Serviços de terceiros que processam dados pessoais em nome do DriftGuard.",
     "name": "Subprocessador",
@@ -1277,7 +1277,7 @@
     }
   },
   "dpa": {
-    "eyebrow": "Legal",
+    "eyebrow": "Jurídico",
     "title": "Acordo de Processamento de Dados",
     "subtitle": "Entre DriftGuard (Processador) e o Cliente (Controlador). Conforme com o RGPD Art. 28.",
     "meta": {
