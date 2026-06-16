@@ -102,12 +102,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = await getLocale();
+  const preferences = await getUserPreferences();
+  const locale = preferences.locale;
   const messages = await getMessages(locale);
   const dir = isRtlLocale(locale) ? "rtl" : "ltr";
+  const themeClass = preferences.theme === "light" ? "light" : preferences.theme === "system" ? "system" : "";
 
   return (
-    <html lang={locale} dir={dir} className={`${inter.variable} ${geistMono.variable}`} suppressHydrationWarning>
+    <html lang={locale} dir={dir} className={`${inter.variable} ${geistMono.variable}${themeClass ? ` ${themeClass}` : ""}`} suppressHydrationWarning>
       <body className="min-h-screen font-sans text-sm antialiased relative" suppressHydrationWarning>
         <JsonLd data={[
             jsonLdOrganization({ name: "DriftGuard", description: "AI runtime safety for Terraform agents", locale: locale as import("@/i18n/config").Locale }),

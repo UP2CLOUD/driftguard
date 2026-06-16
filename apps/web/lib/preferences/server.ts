@@ -4,7 +4,7 @@ import { currencyCookieName, isCurrency } from "@/lib/currency/config";
 import { defaultCurrency, type CurrencyCode } from "@/lib/currency/config";
 import { getLocale } from "@/i18n/get-locale";
 import type { Locale } from "@/i18n/config";
-import type { UserPreferences } from "./config";
+import { themeCookieName, isTheme, defaultTheme, type Theme, type UserPreferences } from "./config";
 
 export const getCurrency = cache(async function getCurrency(): Promise<CurrencyCode> {
   const cookieStore = await cookies();
@@ -13,9 +13,16 @@ export const getCurrency = cache(async function getCurrency(): Promise<CurrencyC
   return defaultCurrency;
 });
 
-export const getUserPreferences = cache(async function getUserPreferences(): Promise<UserPreferences> {
-  const [locale, currency] = await Promise.all([getLocale(), getCurrency()]);
-  return { locale, currency };
+export const getTheme = cache(async function getTheme(): Promise<Theme> {
+  const cookieStore = await cookies();
+  const value = cookieStore.get(themeCookieName)?.value;
+  if (value && isTheme(value)) return value;
+  return defaultTheme;
 });
 
-export type { Locale, CurrencyCode, UserPreferences };
+export const getUserPreferences = cache(async function getUserPreferences(): Promise<UserPreferences> {
+  const [locale, currency, theme] = await Promise.all([getLocale(), getCurrency(), getTheme()]);
+  return { locale, currency, theme };
+});
+
+export type { Locale, CurrencyCode, Theme, UserPreferences };
