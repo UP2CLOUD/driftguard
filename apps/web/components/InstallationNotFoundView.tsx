@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { getGitHubAppInstallUrl } from "@/lib/github-app";
 
 export function InstallationNotFoundView({ installationId }: { installationId?: string }) {
   return (
@@ -23,7 +24,7 @@ export function InstallationNotFoundView({ installationId }: { installationId?: 
         </p>
         <div className="flex gap-3">
           <a
-            href="https://github.com/apps/driftguard-app/installations/new"
+            href={getGitHubAppInstallUrl()}
             className="dg-button dg-button-primary text-[12px]"
           >
             Install GitHub App →

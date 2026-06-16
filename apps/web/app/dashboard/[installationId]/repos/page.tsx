@@ -8,6 +8,7 @@ import { RepoToggle } from "@/components/RepoToggle";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
+import { getGitHubAppInstallUrl } from "@/lib/github-app";
 import { beGet } from "@/lib/backend";
 import { formatDate } from "@/lib/format-date";
 
@@ -89,8 +90,7 @@ export default async function ReposPage({
     }
   }
 
-  const slug = process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-reviews";
-  const installUrl = `https://github.com/apps/${slug}/installations/new`;
+  const installUrl = getGitHubAppInstallUrl();
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8 space-y-10">

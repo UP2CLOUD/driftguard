@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getOverview } from "./api";
 import { fetchInstallationRepos } from "@/lib/github-installation";
 import { formatDateTime } from "@/lib/format-date";
+import { getGitHubAppInstallUrl } from "@/lib/github-app";
 
 type T = (key: string) => string | null | undefined;
 
@@ -60,7 +61,7 @@ export async function RecentAnalysesSection({
             </p>
             <div className="flex flex-wrap items-center justify-center gap-2">
               <a
-                href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-reviews"}/installations/new`}
+                href={getGitHubAppInstallUrl()}
                 className="rounded bg-[color:var(--dg-electric)] px-3 py-1.5 font-sans font-semibold text-[11px] uppercase tracking-wide text-white hover:brightness-110 transition"
               >
                 {t("dashboard.connectGithubCta") ?? "Connect GitHub →"}
