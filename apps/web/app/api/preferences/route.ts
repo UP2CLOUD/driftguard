@@ -10,6 +10,7 @@ const cookieOptions = {
   maxAge: 60 * 60 * 24 * 365,
   sameSite: "lax" as const,
   httpOnly: false,
+  secure: process.env.NODE_ENV === "production",
 };
 
 export async function GET() {

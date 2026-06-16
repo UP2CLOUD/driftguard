@@ -29,7 +29,7 @@ export async function EventsSection({
         {apiAvailable && (
           <span className="flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-allowed animate-pulse" aria-hidden="true" />
-            <span className="font-sans font-medium text-[10px] text-allowed">live</span>
+            <span className="font-sans font-medium text-[10px] text-allowed">{t("dashboard.live") ?? "live"}</span>
           </span>
         )}
       </div>
