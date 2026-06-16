@@ -40,7 +40,7 @@ export default async function RepoPage({
     beGet<any>(`/api/v1/orgs/${org.id}/repos`).then(
       (repos: any[]) => repos?.find((r: any) => r.id === repoId) ?? null
     ).catch(() => null),
-    (beGet<unknown[]>(`/api/v1/analyses?repo_id=${repoId}&limit=30`, { revalidate: 30 }) ?? Promise.resolve([])),
+    beGet<unknown[]>(`/api/v1/analyses?repo_id=${repoId}&limit=30`, { revalidate: 30 }).then((r) => r ?? []).catch(() => []),
   ]);
 
   const analysesList: any[] = Array.isArray(analyses) ? analyses : [];

@@ -275,7 +275,7 @@ export default async function Settings({
             installationId={installationId}
             hasCustomer={!!org.has_stripe_customer}
             plan={org.plan}
-            billingEnabled={planData?.billing_enabled ?? true}
+            billingEnabled={true}
           />
         </Section>
       )}

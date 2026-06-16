@@ -38,6 +38,7 @@ export function NotificationEmailForm({
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ contact_email: email.trim() || null }),
+        signal: AbortSignal.timeout(10000),
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
@@ -57,6 +58,7 @@ export function NotificationEmailForm({
     try {
       const res = await fetch(`/api/orgs/${orgId}/notifications/test`, {
         method: "POST",
+        signal: AbortSignal.timeout(10000),
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));

@@ -17,7 +17,7 @@ export function UpgradeIntent({ installationId }: { installationId: string }) {
 
     (async () => {
       try {
-        const me = await fetch("/api/me/installation");
+        const me = await fetch("/api/me/installation", { signal: AbortSignal.timeout(8000) });
         if (!me.ok) throw new Error("Could not resolve installation");
         const { orgId } = await me.json();
         if (!orgId) {
@@ -28,6 +28,7 @@ export function UpgradeIntent({ installationId }: { installationId: string }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ orgId, plan: "team", installationId }),
+          signal: AbortSignal.timeout(15000),
         });
         if (!res.ok) {
           if (res.status === 503) {
