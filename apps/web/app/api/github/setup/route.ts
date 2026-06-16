@@ -10,7 +10,6 @@ function warmupApi(installationId: string) {
   const fire = (path: string) =>
     fetch(`${BACKEND_URL}${path}`, {
       headers: authHeaders(),
-      keepalive: true,
       signal: AbortSignal.timeout(5000),
     }).catch(() => {});
 
