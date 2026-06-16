@@ -118,6 +118,7 @@ async function get<T>(path: string): Promise<T> {
   const r = await fetch(`${BASE}${path}`, {
     cache: "no-store",
     headers,
+    signal: AbortSignal.timeout(8000),
   });
   if (!r.ok) throw new ApiError(r.status, `${path}: ${r.status}`);
   return r.json();
@@ -179,6 +180,7 @@ export async function internalStartCheckout(
       "Authorization": `Bearer ${requireSecret()}`,
     },
     body: JSON.stringify({ org_id: orgId, plan, installation_id: installationId }),
+    signal: AbortSignal.timeout(15000),
   });
   if (!r.ok) await throwApiError(r, "Failed to start checkout");
   const { url } = await r.json();
@@ -193,6 +195,7 @@ export async function internalOpenPortal(orgId: string, email?: string | null): 
       "Authorization": `Bearer ${requireSecret()}`,
     },
     body: JSON.stringify({ org_id: orgId, email: email ?? undefined }),
+    signal: AbortSignal.timeout(15000),
   });
   if (!r.ok) await throwApiError(r, "Failed to open billing portal");
   const { url } = await r.json();

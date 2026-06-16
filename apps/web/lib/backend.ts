@@ -81,9 +81,13 @@ export async function beProxy(
 ): Promise<{ body: unknown; status: number }> {
   const { timeout = 10000, headers: extraHeaders, ...rest } = init;
   try {
+    const headers = new Headers(authHeaders());
+    if (extraHeaders) {
+      new Headers(extraHeaders).forEach((value, key) => headers.set(key, value));
+    }
     const res = await fetch(`${BASE}${path}`, {
       ...rest,
-      headers: { ...authHeaders(), ...(extraHeaders as Record<string, string> | undefined) },
+      headers,
       signal: AbortSignal.timeout(timeout),
     });
     if (res.status === 204) return { body: null, status: 204 };
