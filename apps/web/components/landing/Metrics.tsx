@@ -104,7 +104,7 @@ export function Metrics({ installationId }: { installationId?: number }) {
           <MetricCell label={label4} value={val4} sub={sub4} />
         </div>
         {!live && (
-          <p className="mt-4 text-center font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+          <p className="mt-4 text-center font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
             {t("landing.metrics.connectPrompt")}
           </p>
         )}
@@ -124,7 +124,7 @@ function MetricCell({ label, value, sub, accent }: {
       }`}>
         {value}
       </div>
-      <div className="mt-1.5 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{sub}</div>
+      <div className="mt-1.5 font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">{sub}</div>
     </div>
   );
 }

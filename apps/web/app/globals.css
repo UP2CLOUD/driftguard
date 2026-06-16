@@ -66,13 +66,90 @@
   --dg-grid-color: rgba(154, 160, 166, 0.04);
 }
 
+/* ── Light mode ──────────────────────────────────────── */
+html.light {
+  color-scheme: light;
+
+  --dg-canvas: #ffffff;
+  --dg-surface: #f5f6f8;
+  --dg-surface-raised: #eef0f3;
+  --dg-surface-overlay: #e8eaed;
+
+  --dg-border: #dde0e5;
+  --dg-border-strong: #c8ccd2;
+  --dg-border-bright: #9aa0a6;
+
+  --dg-fg: #0d1117;
+  --dg-fg-muted: #444c56;
+  --dg-fg-subtle: #6e7681;
+  --dg-fg-faint: #c8ccd2;
+
+  --dg-electric: #0969da;
+  --dg-electric-bright: #0550ae;
+  --dg-electric-dim: #cfe2ff;
+  --dg-cyan: #0284c7;
+  --dg-purple: #7c3aed;
+  --dg-orange: #ea580c;
+
+  --dg-blocked: #cf222e;
+  --dg-allowed: #1a7f37;
+  --dg-warned: #9a6700;
+  --dg-info: #0969da;
+
+  --dg-severity-critical: #cf222e;
+  --dg-severity-high: #bc4c00;
+  --dg-severity-medium: #9a6700;
+  --dg-severity-low: #6e7681;
+
+  --dg-grid-color: rgba(0, 0, 0, 0.04);
+}
+
+/* ── System preference (when html.system) ────────────── */
+@media (prefers-color-scheme: light) {
+  html.system {
+    color-scheme: light;
+
+    --dg-canvas: #ffffff;
+    --dg-surface: #f5f6f8;
+    --dg-surface-raised: #eef0f3;
+    --dg-surface-overlay: #e8eaed;
+
+    --dg-border: #dde0e5;
+    --dg-border-strong: #c8ccd2;
+    --dg-border-bright: #9aa0a6;
+
+    --dg-fg: #0d1117;
+    --dg-fg-muted: #444c56;
+    --dg-fg-subtle: #6e7681;
+    --dg-fg-faint: #c8ccd2;
+
+    --dg-electric: #0969da;
+    --dg-electric-bright: #0550ae;
+    --dg-electric-dim: #cfe2ff;
+    --dg-cyan: #0284c7;
+    --dg-purple: #7c3aed;
+    --dg-orange: #ea580c;
+
+    --dg-blocked: #cf222e;
+    --dg-allowed: #1a7f37;
+    --dg-warned: #9a6700;
+    --dg-info: #0969da;
+
+    --dg-severity-critical: #cf222e;
+    --dg-severity-high: #bc4c00;
+    --dg-severity-medium: #9a6700;
+    --dg-severity-low: #6e7681;
+
+    --dg-grid-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
 html,
 body {
   overflow-x: hidden; /* prevent horizontal scroll on mobile */
   background: var(--dg-canvas);
   color: var(--dg-fg);
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  font-variant-ligatures: contextual;
+  font-feature-settings: "cv01", "ss01";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -347,10 +424,10 @@ body {
     @apply rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface-raised)];
   }
   .dg-mono {
-    @apply font-mono text-[11px] uppercase tracking-[0.12em] text-[color:var(--dg-fg-subtle)];
+    @apply font-sans font-semibold text-[11px] uppercase tracking-[0.08em] text-[color:var(--dg-fg-subtle)];
   }
   .dg-label {
-    @apply font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--dg-fg-subtle)];
+    @apply font-sans font-semibold text-[10px] uppercase tracking-[0.08em] text-[color:var(--dg-fg-subtle)];
   }
   .dg-button {
     @apply inline-flex items-center gap-1.5 rounded-md px-3.5 py-2 text-[13px] font-medium transition-all duration-150;

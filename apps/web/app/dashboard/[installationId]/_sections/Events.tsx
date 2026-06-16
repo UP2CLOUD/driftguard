@@ -23,13 +23,13 @@ export async function EventsSection({
   return (
     <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden h-fit">
       <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+        <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
           {t("dashboard.eventFeed") ?? "Event feed"}
         </span>
         {apiAvailable && (
           <span className="flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-allowed animate-pulse" aria-hidden="true" />
-            <span className="font-mono text-[10px] text-allowed">live</span>
+            <span className="font-sans font-medium text-[10px] text-allowed">live</span>
           </span>
         )}
       </div>
@@ -52,13 +52,13 @@ export async function EventsSection({
                     className={`h-1.5 w-1.5 rounded-full shrink-0 ${dotCls}`}
                     aria-label={`Severity: ${sev}`}
                   />
-                  <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] truncate">
+                  <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] truncate">
                     {e.event_type} · {e.source}
                   </span>
                 </div>
                 <p className={`text-[11px] truncate ${txtCls}`}>{e.message}</p>
                 {e.created_at && (
-                  <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
+                  <p className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
                     {formatTime(e.created_at, locale)}
                   </p>
                 )}

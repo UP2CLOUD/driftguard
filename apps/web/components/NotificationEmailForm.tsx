@@ -86,18 +86,18 @@ export function NotificationEmailForm({
         <button
           type="submit"
           disabled={status === "saving"}
-          className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-2 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)] disabled:opacity-50 transition"
+          className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-2 font-sans font-semibold text-[11px] uppercase tracking-wide text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)] disabled:opacity-50 transition"
         >
           {status === "saving" ? (labels?.saving ?? "saving…") : (labels?.save ?? "Save")}
         </button>
       </div>
       {status === "saved" && (
-        <p className="font-mono text-[10px] text-allowed">{labels?.saved ?? "Saved."}</p>
+        <p className="font-sans font-medium text-[10px] text-allowed">{labels?.saved ?? "Saved."}</p>
       )}
       {status === "error" && (
-        <p className="font-mono text-[10px] text-blocked">{errorMsg}</p>
+        <p className="font-sans font-medium text-[10px] text-blocked">{errorMsg}</p>
       )}
-      <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] leading-relaxed">
+      <p className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] leading-relaxed">
         {labels?.alertDesc ?? "DriftGuard sends an alert when a PR scan scores ≥ 60 risk or a policy block rule fires. Leave blank to disable."}
       </p>
       {savedEmail && (
@@ -106,17 +106,17 @@ export function NotificationEmailForm({
             type="button"
             onClick={sendTest}
             disabled={testStatus === "sending"}
-            className="rounded border border-[color:var(--dg-border)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)] disabled:opacity-50 transition"
+            className="rounded border border-[color:var(--dg-border)] px-3 py-1.5 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)] disabled:opacity-50 transition"
           >
             {testStatus === "sending" ? (labels?.sending ?? "sending…") : (labels?.sendTest ?? "Send test email")}
           </button>
           {testStatus === "sent" && (
-            <span className="font-mono text-[10px] text-allowed">
+            <span className="font-sans font-medium text-[10px] text-allowed">
               {(labels?.testSent ?? "Test sent to {email}").replace("{email}", savedEmail)}
             </span>
           )}
           {testStatus === "error" && (
-            <span className="font-mono text-[10px] text-blocked">{errorMsg}</span>
+            <span className="font-sans font-medium text-[10px] text-blocked">{errorMsg}</span>
           )}
         </div>
       )}

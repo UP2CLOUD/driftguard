@@ -136,7 +136,7 @@ export default async function AnalysesPage({
                 {tab.label}
                 {tab.count != null && tab.count > 0 && (
                   <span
-                    className={`rounded px-1 font-mono text-[10px] ${
+                    className={`rounded px-1 font-sans font-medium text-[10px] ${
                       isActive
                         ? "bg-[color:var(--dg-surface-raised)] text-[color:var(--dg-fg)]"
                         : "bg-[color:var(--dg-surface)] text-[color:var(--dg-fg-subtle)]"
@@ -156,7 +156,7 @@ export default async function AnalysesPage({
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
           {all.length === 0 ? (
             <>
-              <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+              <div className="mb-3 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                 {t("analyses.noTitle") ?? "No analyses yet"}
               </div>
               <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
@@ -182,11 +182,11 @@ export default async function AnalysesPage({
         <>
           {/* Table header — desktop only */}
           <div className="hidden sm:grid grid-cols-[44px_1fr_90px_100px_110px] gap-4 bg-[color:var(--dg-surface)] border border-b-0 border-[color:var(--dg-border)] rounded-t-md px-4 py-2">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colRisk") ?? "Risk"}</span>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colRepo") ?? "Repository / PR"}</span>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colStatus") ?? "Status"}</span>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colFiles") ?? "Files"}</span>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colDate") ?? "Date"}</span>
+            <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colRisk") ?? "Risk"}</span>
+            <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colRepo") ?? "Repository / PR"}</span>
+            <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colStatus") ?? "Status"}</span>
+            <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colFiles") ?? "Files"}</span>
+            <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("analyses.colDate") ?? "Date"}</span>
           </div>
 
           <div className="rounded-md sm:rounded-t-none border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
@@ -220,7 +220,7 @@ export default async function AnalysesPage({
                       </span>
                     </span>
                     {a.policy_verdict && a.policy_verdict !== "pass" && (
-                      <span className={`font-mono text-[9px] uppercase tracking-widest rounded px-1 py-0.5 ${
+                      <span className={`font-sans font-medium text-[9px] uppercase tracking-widest rounded px-1 py-0.5 ${
                         a.policy_verdict === "block" ? "text-blocked bg-blocked/10" : "text-warned bg-warned/10"
                       }`}>
                         {a.policy_verdict}
@@ -232,7 +232,7 @@ export default async function AnalysesPage({
                 {/* Status */}
                 <div className="hidden sm:flex items-center">
                   <span
-                    className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest ${STATUS_BADGE[a.status] ?? "text-[color:var(--dg-fg-subtle)] border-[color:var(--dg-border)]"}`}
+                    className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest ${STATUS_BADGE[a.status] ?? "text-[color:var(--dg-fg-subtle)] border-[color:var(--dg-border)]"}`}
                   >
                     {a.status}
                   </span>
@@ -245,7 +245,7 @@ export default async function AnalysesPage({
 
                 {/* Date */}
                 <div className="hidden sm:flex items-center justify-between gap-2">
-                  <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+                  <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
                     {a.created_at ? formatDate(a.created_at, prefs.locale) : "—"}
                   </span>
                   <svg
@@ -272,7 +272,7 @@ export default async function AnalysesPage({
                   {t("analyses.previous") ?? "← Previous"}
                 </Link>
               ) : <span />}
-              <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+              <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
                 {(t("analyses.page") ?? "Page {n}").replace("{n}", String(page))}
               </span>
               {hasNext ? (

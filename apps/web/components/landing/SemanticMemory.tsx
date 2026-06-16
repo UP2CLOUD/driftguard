@@ -84,7 +84,7 @@ export function SemanticMemory() {
           <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)]">
             <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] px-4 py-2.5">
               <div className="dg-label">{t("landing.semanticMemory.recalledLabel")}</div>
-              <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] tabular-nums">
+              <div className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] tabular-nums">
                 top‑k = 6
               </div>
             </div>
@@ -106,7 +106,7 @@ export function SemanticMemory() {
                   {/* Label */}
                   <div className="flex-1 min-w-0">
                     <div className="font-mono text-[12px] text-[color:var(--dg-fg)] truncate">{n.label}</div>
-                    <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] tabular-nums">{n.incident}</div>
+                    <div className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] tabular-nums">{n.incident}</div>
                   </div>
 
                   {/* Similarity bar */}
@@ -117,14 +117,14 @@ export function SemanticMemory() {
                         style={{ width: visible ? `${n.sim * 100}%` : "0%", transition: `width ${500 + i * 80}ms cubic-bezier(0.16,1,0.3,1) ${i * 50}ms`, boxShadow: visible && n.sim > 0.8 ? "0 0 6px var(--dg-electric)" : "none" }}
                       />
                     </div>
-                    <span className="font-mono text-[10px] tabular-nums text-[color:var(--dg-electric-bright)] w-9 text-right">
+                    <span className="font-sans font-medium text-[10px] tabular-nums text-[color:var(--dg-electric-bright)] w-9 text-right">
                       {n.sim.toFixed(2)}
                     </span>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="border-t border-[color:var(--dg-border)] px-4 py-2.5 font-mono text-[10px] text-[color:var(--dg-fg-subtle)] flex justify-between">
+            <div className="border-t border-[color:var(--dg-border)] px-4 py-2.5 font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] flex justify-between">
               <span>↑ ↓ navigate ▪ ↵ open trace</span>
               <span className="text-allowed">indexed ▪ healthy</span>
             </div>

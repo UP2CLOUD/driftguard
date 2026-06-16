@@ -59,7 +59,7 @@ export function RepoToggle({
       <button
         onClick={toggle}
         disabled={loading}
-        className={`font-mono text-[10px] uppercase tracking-widest px-2 py-1 rounded border transition disabled:opacity-40 ${
+        className={`font-sans font-medium text-[10px] uppercase tracking-widest px-2 py-1 rounded border transition disabled:opacity-40 ${
           enabled
             ? "text-[color:var(--dg-fg-muted)] border-[color:var(--dg-border)] hover:text-blocked hover:border-blocked/40"
             : "text-[color:var(--dg-electric)] border-[color:var(--dg-electric)]/30 hover:bg-[color:var(--dg-electric)]/5"
@@ -68,7 +68,7 @@ export function RepoToggle({
         {loading ? "…" : enabled ? (labels?.disable ?? "Disable") : (labels?.enable ?? "Enable")}
       </button>
       {error && (
-        <p className="font-mono text-[10px] text-warned text-right max-w-[160px] leading-tight">{error}</p>
+        <p className="font-sans font-medium text-[10px] text-warned text-right max-w-[160px] leading-tight">{error}</p>
       )}
     </div>
   );

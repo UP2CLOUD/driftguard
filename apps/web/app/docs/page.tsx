@@ -109,10 +109,10 @@ export default async function DocsPage() {
       <div className="mt-10 rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] overflow-hidden">
         <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 flex items-center justify-between">
           <div className="dg-label">▸ quickstart</div>
-          <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">~30s</div>
+          <div className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">~30s</div>
         </div>
         <pre className="overflow-x-auto p-5 font-mono text-[12.5px] leading-relaxed text-[color:var(--dg-fg)]">{QUICKSTART}</pre>
-        <div className="border-t border-[color:var(--dg-border)] px-4 py-2.5 flex items-center justify-between font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+        <div className="border-t border-[color:var(--dg-border)] px-4 py-2.5 flex items-center justify-between font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
           <span>config.driftguard.yml ▪ committed to repo</span>
           <a href="https://github.com/apps/driftguard-app/installations/new"
             className="text-[color:var(--dg-electric-bright)] hover:underline">

@@ -28,7 +28,7 @@ export function NotFoundPage({ hasSession }: { hasSession: boolean }) {
 
       {/* Content */}
       <div className="relative flex-1 flex flex-col items-center justify-center text-center px-6 py-20">
-        <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric)] mb-4">
+        <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-electric)] mb-4">
           {t("notFound.code")}
         </div>
         <h1 className="font-sans text-3xl sm:text-4xl font-semibold tracking-tight text-[color:var(--dg-fg)] mb-4">

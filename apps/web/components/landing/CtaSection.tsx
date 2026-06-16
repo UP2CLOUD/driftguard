@@ -25,7 +25,7 @@ export function CtaSection({
               {t("cta.readDocs")}
             </a>
           </div>
-          <div className="flex flex-wrap justify-center gap-4 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+          <div className="flex flex-wrap justify-center gap-4 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
             <span className="flex items-center gap-1.5">
               <span className="h-1 w-1 rounded-full bg-allowed" />
               {t("cta.otuCompatible")}

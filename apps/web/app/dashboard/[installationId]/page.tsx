@@ -86,7 +86,7 @@ function PanelFallback({ label, rows }: { label: string; rows: number }) {
   return (
     <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
       <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+        <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
           {label}
         </span>
       </div>

@@ -112,7 +112,7 @@ export default async function StatusPage() {
 
       {/* Systems table */}
       <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden mb-12">
-        <div className="grid grid-cols-[1fr_auto] border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] gap-4">
+        <div className="grid grid-cols-[1fr_auto] border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] gap-4">
           <span>{t("status.system")}</span>
           <span>{t("status.status")}</span>
         </div>
@@ -127,7 +127,7 @@ export default async function StatusPage() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <span className={`h-1.5 w-1.5 rounded-full ${DOT_COLOR[s.status]} ${s.status === "operational" ? "dg-pulse" : ""}`} />
-              <span className={`rounded border px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest ${STATUS_COLOR[s.status]}`}>
+              <span className={`rounded border px-2 py-0.5 font-sans font-medium text-[9px] uppercase tracking-widest ${STATUS_COLOR[s.status]}`}>
                 {t(`status_labels.${s.status}`)}
               </span>
             </div>
@@ -148,7 +148,7 @@ export default async function StatusPage() {
             />
           ))}
         </div>
-        <div className="flex items-center justify-between mt-2 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+        <div className="flex items-center justify-between mt-2 font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
           <span>90 days ago</span>
           <span className={allOperational ? "text-allowed" : "text-warned"}>
             {allOperational ? t("status_labels.allOperational") : t("status_labels.partialOutage")}

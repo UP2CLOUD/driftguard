@@ -109,7 +109,7 @@ export function CodeIntegration() {
                 <button
                   key={k}
                   onClick={() => setLang(k)}
-                  className={`relative px-4 py-3 font-mono text-[11px] uppercase tracking-widest transition
+                  className={`relative px-4 py-3 font-sans font-semibold text-[11px] uppercase tracking-wide transition
                     ${lang === k
                       ? "text-[color:var(--dg-fg)]"
                       : "text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg-muted)]"
@@ -124,7 +124,7 @@ export function CodeIntegration() {
             </div>
             <button
               onClick={copy}
-              className="mr-3 font-mono text-[10px] uppercase tracking-wider text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
+              className="mr-3 font-sans font-medium text-[10px] uppercase tracking-wider text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
             >
               {copied ? t("landing.codeIntegration.copied") : t("landing.codeIntegration.copy")}
             </button>
@@ -140,7 +140,7 @@ export function CodeIntegration() {
           </div>
 
           {/* Bottom strip */}
-          <div className="flex items-center justify-between border-t border-[color:var(--dg-border)] px-4 py-2 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+          <div className="flex items-center justify-between border-t border-[color:var(--dg-border)] px-4 py-2 font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
             <span>sdk.driftguard.io ▪ semver 0.4.2 ▪ {SAMPLES[lang].split("\n").length} lines</span>
             <a href="/docs" className="text-[color:var(--dg-electric-bright)] hover:underline">{t("landing.codeIntegration.fullDocs")}</a>
           </div>
@@ -152,7 +152,7 @@ export function CodeIntegration() {
           {["Terraform", "OpenTofu", "Terragrunt", "Atlantis", "Spacelift", "Cursor", "Devin", "Claude Code"].map((f) => (
             <span
               key={f}
-              className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)]/60 px-2 py-1 font-mono text-[10px] text-[color:var(--dg-fg-muted)] hover:border-[color:var(--dg-border-bright)] hover:text-[color:var(--dg-fg)] transition cursor-default"
+              className="rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)]/60 px-2 py-1 font-sans font-medium text-[10px] text-[color:var(--dg-fg-muted)] hover:border-[color:var(--dg-border-bright)] hover:text-[color:var(--dg-fg)] transition cursor-default"
             >
               {f}
             </span>

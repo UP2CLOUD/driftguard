@@ -43,7 +43,7 @@ export function TrustBar() {
         {[...ROLES, ...ROLES].map((role, i) => (
           <span
             key={i}
-            className="inline-flex items-center gap-2.5 px-5 font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--dg-fg-subtle)] select-none"
+            className="inline-flex items-center gap-2.5 px-5 font-sans font-medium text-[10px] uppercase tracking-[0.2em] text-[color:var(--dg-fg-subtle)] select-none"
           >
             <span className="h-1 w-1 rounded-full bg-[color:var(--dg-fg-subtle)]/40 shrink-0" />
             {role}

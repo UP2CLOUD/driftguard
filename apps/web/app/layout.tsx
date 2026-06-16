@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Inter, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { I18nProvider } from "@/components/I18nProvider";
@@ -16,13 +16,13 @@ import { NavigationTransition } from "@/components/NavigationTransition";
 import { CookieBanner } from "@/components/CookieBanner";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   display: "swap",
@@ -102,12 +102,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = await getLocale();
+  const preferences = await getUserPreferences();
+  const locale = preferences.locale;
   const messages = await getMessages(locale);
   const dir = isRtlLocale(locale) ? "rtl" : "ltr";
+  const themeClass = preferences.theme === "light" ? "light" : preferences.theme === "system" ? "system" : "";
 
   return (
-    <html lang={locale} dir={dir} className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+    <html lang={locale} dir={dir} className={`${inter.variable} ${geistMono.variable}${themeClass ? ` ${themeClass}` : ""}`} suppressHydrationWarning>
       <body className="min-h-screen font-sans text-sm antialiased relative" suppressHydrationWarning>
         <JsonLd data={[
             jsonLdOrganization({ name: "DriftGuard", description: "AI runtime safety for Terraform agents", locale: locale as import("@/i18n/config").Locale }),

@@ -38,18 +38,18 @@ export async function IncidentsSection({
   return (
     <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
       <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+        <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
           {t("dashboard.driftIncidents") ?? "Drift incidents"}
         </span>
         <div className="flex items-center gap-3">
           {openInc > 0 && (
-            <span className="font-mono text-[10px] rounded border border-blocked/30 bg-blocked/10 text-blocked px-1.5 py-0.5">
+            <span className="font-sans font-medium text-[10px] rounded border border-blocked/30 bg-blocked/10 text-blocked px-1.5 py-0.5">
               {openInc} open
             </span>
           )}
           <Link
             href={`/dashboard/${installationId}/incidents`}
-            className="font-mono text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+            className="font-sans font-medium text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
           >
             View all →
           </Link>
@@ -70,12 +70,12 @@ export async function IncidentsSection({
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                <span className={`font-mono text-[10px] uppercase tracking-widest ${SEV_COLOR[inc.severity] ?? ""}`}>
+                <span className={`font-sans font-medium text-[10px] uppercase tracking-widest ${SEV_COLOR[inc.severity] ?? ""}`}>
                   {inc.severity}
                 </span>
                 <span className="text-[12px] font-medium text-[color:var(--dg-fg)] truncate">{inc.title}</span>
               </div>
-              <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] flex items-center gap-3">
+              <div className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] flex items-center gap-3">
                 <span>{inc.status}</span>
                 {inc.recurrence_count > 1 && (
                   <span className="text-warned">↺ {inc.recurrence_count}×</span>

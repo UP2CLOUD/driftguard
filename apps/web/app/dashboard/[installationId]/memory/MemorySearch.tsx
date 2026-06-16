@@ -86,11 +86,11 @@ export function MemorySearch({
                     <code className="font-mono text-[11px] text-[color:var(--dg-fg)]">
                       {h.repo_full_name}#{h.pr_number}
                     </code>
-                    <span className={`font-mono text-[9px] uppercase tracking-widest rounded border px-1.5 py-0.5 ${OUT_BADGE[h.outcome] ?? "border-[color:var(--dg-border)] text-[color:var(--dg-fg-subtle)]"}`}>
+                    <span className={`font-sans font-medium text-[9px] uppercase tracking-widest rounded border px-1.5 py-0.5 ${OUT_BADGE[h.outcome] ?? "border-[color:var(--dg-border)] text-[color:var(--dg-fg-subtle)]"}`}>
                       {h.outcome}
                     </span>
                     {h.severity && (
-                      <span className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                      <span className="font-sans font-medium text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                         {h.severity}
                       </span>
                     )}
@@ -101,7 +101,7 @@ export function MemorySearch({
                           style={{ width: `${pct}%` }}
                         />
                       </span>
-                      <span className="font-mono text-[10px] tabular-nums text-[color:var(--dg-fg-subtle)]">
+                      <span className="font-sans font-medium text-[10px] tabular-nums text-[color:var(--dg-fg-subtle)]">
                         {pct}% {L.similarity}
                       </span>
                     </span>
@@ -114,7 +114,7 @@ export function MemorySearch({
                   {h.analysis_id && (
                     <Link
                       href={`/dashboard/${installationId}/analyses/${h.analysis_id}`}
-                      className="mt-1 inline-block font-mono text-[10px] text-[color:var(--dg-electric-bright)] hover:underline"
+                      className="mt-1 inline-block font-sans font-medium text-[10px] text-[color:var(--dg-electric-bright)] hover:underline"
                     >
                       {L.viewAnalysis}
                     </Link>
@@ -127,7 +127,7 @@ export function MemorySearch({
       )}
 
       {hits === null && !error && (
-        <p className="px-4 py-3 font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+        <p className="px-4 py-3 font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
           {L.hint}
         </p>
       )}

@@ -100,8 +100,8 @@ export default async function Settings({
       <Section title={t("settings.githubIntegration")} description={t("settings.githubIntegrationDesc")}>
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
           <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] px-4 py-3">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("dashboard.status")}</span>
-            <span className={`flex items-center gap-1.5 font-mono text-[10px] ${org ? "text-allowed" : "text-warned"}`}>
+            <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("dashboard.status")}</span>
+            <span className={`flex items-center gap-1.5 font-sans font-medium text-[10px] ${org ? "text-allowed" : "text-warned"}`}>
               <span className={`h-1.5 w-1.5 rounded-full ${org ? "bg-allowed" : "bg-warned"}`} />
               {org ? t("settings.connected") : t("settings.notConnected")}
             </span>
@@ -123,7 +123,7 @@ export default async function Settings({
               href={`https://github.com/organizations/settings/installations/${installationId}`}
               target="_blank"
               rel="noreferrer"
-              className="font-mono text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+              className="font-sans font-medium text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
             >
               {t("settings.githubSettingsLink")}
             </a>
@@ -229,7 +229,7 @@ export default async function Settings({
           {planData && !planData.is_premium && planData.repos.limit != null && (
             <div className="mb-4 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                   {t("settings.activeRepositories") ?? "Active repositories"}
                 </span>
                 <span className={`font-mono text-[11px] font-semibold ${planData.repos.active >= planData.repos.limit ? "text-warned" : "text-[color:var(--dg-fg)]"}`}>
@@ -243,7 +243,7 @@ export default async function Settings({
                 />
               </div>
               {planData.repos.active >= planData.repos.limit && (
-                <p className="mt-2 font-mono text-[10px] text-warned">
+                <p className="mt-2 font-sans font-medium text-[10px] text-warned">
                   {t("settings.atRepoLimit") ?? "At repo limit. Disable a repository or upgrade to add more."}
                 </p>
               )}
@@ -254,7 +254,7 @@ export default async function Settings({
           {planData?.is_premium && planData.monthly_pr_reviews.limit != null && planData.monthly_pr_reviews.used != null && (
             <div className="mb-4 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-3">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
                   {t("settings.prReviewsThisMonth") ?? "PR reviews this month"}
                 </span>
                 <span className={`font-mono text-[11px] font-semibold ${planData.monthly_pr_reviews.used >= planData.monthly_pr_reviews.limit ? "text-blocked" : planData.monthly_pr_reviews.used / planData.monthly_pr_reviews.limit >= 0.8 ? "text-warned" : "text-[color:var(--dg-fg)]"}`}>
@@ -339,7 +339,7 @@ export default async function Settings({
             href={`https://github.com/settings/installations/${installationId}`}
             target="_blank"
             rel="noreferrer"
-            className="shrink-0 rounded border border-blocked/40 bg-blocked/10 px-3 py-2 font-mono text-[11px] uppercase tracking-widest text-blocked hover:bg-blocked/20 transition"
+            className="shrink-0 rounded border border-blocked/40 bg-blocked/10 px-3 py-2 font-sans font-semibold text-[11px] uppercase tracking-wide text-blocked hover:bg-blocked/20 transition"
           >
             {t("settings.uninstallButton")}
           </a>
@@ -391,7 +391,7 @@ function ResourceCard({
     >
       <div className="flex items-center justify-between gap-2">
         <span className="text-[13px] font-semibold text-[color:var(--dg-fg)]">{title}</span>
-        <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] transition group-hover:text-[color:var(--dg-electric)]">
+        <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] transition group-hover:text-[color:var(--dg-electric)]">
           {cta}
         </span>
       </div>
@@ -428,7 +428,7 @@ function PlanCard({
       <div className="flex items-center justify-between gap-2">
         <div className="dg-label">{name}</div>
         {current && (
-          <span className="inline-flex items-center gap-1 rounded border border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/10 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
+          <span className="inline-flex items-center gap-1 rounded border border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/10 px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
             <span className="h-1 w-1 rounded-full bg-[color:var(--dg-electric)]" />
             {activeLabel}
           </span>
@@ -437,7 +437,7 @@ function PlanCard({
       <div className="mt-3 flex items-baseline gap-1">
         <span className="font-sans text-xl font-semibold text-[color:var(--dg-fg)]">{price}</span>
         {period && (
-          <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{period}</span>
+          <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">{period}</span>
         )}
       </div>
       <p className="mt-1.5 text-[11px] text-[color:var(--dg-fg-muted)]">{detail}</p>

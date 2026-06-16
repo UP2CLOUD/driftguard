@@ -39,10 +39,10 @@ export function ReadinessChecklist({ items, title = "Getting started" }: Readine
     <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] overflow-hidden">
       <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] px-4 py-3">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+          <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
             {title}
           </span>
-          <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+          <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
             {doneCount}/{items.length}
           </span>
         </div>
@@ -76,7 +76,7 @@ export function ReadinessChecklist({ items, title = "Getting started" }: Readine
             {!item.done && item.href && item.ctaLabel && (
               <Link
                 href={item.href}
-                className="font-mono text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition shrink-0"
+                className="font-sans font-medium text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition shrink-0"
               >
                 {item.ctaLabel} →
               </Link>

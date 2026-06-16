@@ -4,7 +4,7 @@ export function LegalDocument({ document }: { document: LegalDocumentContent }) 
   return (
     <article className="dg-panel p-6 md:p-8">
       <header className="border-b border-[color:var(--dg-border)] pb-6">
-        <p className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+        <p className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
           {document.label}
         </p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-[color:var(--dg-fg)] md:text-3xl">

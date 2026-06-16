@@ -20,7 +20,7 @@ export function StatusBar() {
 
   return (
     <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]/95 backdrop-blur supports-[backdrop-filter]:bg-[color:var(--dg-canvas)]/80">
-      <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-1.5 font-mono text-[10px] tracking-wider text-[color:var(--dg-fg-subtle)]">
+      <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-1.5 font-sans font-medium text-[10px] tracking-wider text-[color:var(--dg-fg-subtle)]">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1.5">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-allowed dg-pulse" />

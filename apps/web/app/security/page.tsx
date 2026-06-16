@@ -75,7 +75,7 @@ export default async function Security() {
       </section>
 
       <div className="rounded-md border border-[color:var(--dg-border)] p-5 flex items-center justify-between gap-4">
-        <div className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+        <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
           Status page
         </div>
         <a href="/status"

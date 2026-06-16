@@ -126,7 +126,7 @@ export function Pricing() {
             >
               {p.badge && (
                 <div className="absolute -top-px left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center rounded-b border border-t-0 border-[color:var(--dg-electric)]/40 bg-[color:var(--dg-electric)]/10 px-3 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
+                  <span className="inline-flex items-center rounded-b border border-t-0 border-[color:var(--dg-electric)]/40 bg-[color:var(--dg-electric)]/10 px-3 py-0.5 font-sans font-medium text-[9px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
                     {p.badge}
                   </span>
                 </div>

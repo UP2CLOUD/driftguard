@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { CurrencyCode } from "@/lib/currency/config";
 import type { Locale } from "@/i18n/config";
-import type { UserPreferences } from "@/lib/preferences/config";
+import type { Theme, UserPreferences } from "@/lib/preferences/config";
 
 type PreferencesPatch = Partial<UserPreferences>;
 
@@ -82,6 +82,11 @@ export function useUserPreferences(initial?: UserPreferences) {
     [updatePreferences]
   );
 
+  const setTheme = useCallback(
+    (theme: Theme) => updatePreferences({ theme }),
+    [updatePreferences]
+  );
+
   return {
     preferences,
     loading,
@@ -89,6 +94,7 @@ export function useUserPreferences(initial?: UserPreferences) {
     error,
     setLocale,
     setCurrency,
+    setTheme,
     updatePreferences,
   };
 }

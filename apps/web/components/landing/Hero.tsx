@@ -103,7 +103,7 @@ export function Hero({
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--dg-electric)] opacity-60" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--dg-electric-bright)]" />
             </span>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] truncate">
+            <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] truncate">
               {t("hero.badge")}
             </span>
           </div>
@@ -150,7 +150,7 @@ export function Hero({
           <div className="mt-6 hidden xs:flex sm:flex items-center gap-2 rounded-lg border
             border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] px-3 py-2.5
             w-fit max-w-full overflow-hidden">
-            <code className="font-mono text-[10px] sm:text-[11px] text-[color:var(--dg-fg-muted)] truncate min-w-0 block">
+            <code className="font-sans font-medium text-[10px] sm:text-[11px] text-[color:var(--dg-fg-muted)] truncate min-w-0 block">
               <span className="text-[color:var(--dg-electric-bright)]">{t("hero.configLabel")}</span>
               <span className="mx-2 opacity-30">|</span>
               <span className="text-allowed">{t("hero.configBlock")}</span>
@@ -164,7 +164,7 @@ export function Hero({
             {ctaSecondary}
             <Link
               href="/#architecture"
-              className="font-mono text-[11px] uppercase tracking-wider text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
+              className="font-sans font-semibold text-[11px] uppercase tracking-wide text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition"
             >
               {t("nav.howItWorks")}
             </Link>
@@ -182,7 +182,7 @@ export function Hero({
         <div className="relative hidden lg:flex items-center">
           <div className="w-full">
             <LiveTerminal />
-            <div className="mt-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+            <div className="mt-3 flex items-center justify-between font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
               <span>{t("hero.terminalLabel")}</span>
               <span>{t("hero.terminalRefresh")}</span>
             </div>

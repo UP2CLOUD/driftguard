@@ -49,7 +49,7 @@ export function AuditLogClient({
           placeholder={L.filterPlaceholder}
           className="flex-1 min-w-[240px] rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] outline-none focus:border-[color:var(--dg-electric)] placeholder:text-[color:var(--dg-fg-subtle)]"
         />
-        <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] shrink-0">
+        <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] shrink-0">
           {L.showing} {filtered.length} {L.of} {entries.length} {L.events}
         </span>
       </div>
@@ -59,7 +59,7 @@ export function AuditLogClient({
         {/* Header */}
         <div className="hidden sm:grid grid-cols-[1fr_1fr_1fr_160px_32px] border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-2">
           {[L.actor, L.action, L.target, L.time, ""].map((h) => (
-            <span key={h} className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+            <span key={h} className="font-sans font-medium text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
               {h}
             </span>
           ))}
@@ -81,14 +81,14 @@ export function AuditLogClient({
                     <span className="font-mono text-[11px] text-[color:var(--dg-fg)] truncate">{e.actor ?? "—"}</span>
                     <span className={`font-mono text-[11px] truncate ${actionCls}`}>{e.action ?? "—"}</span>
                     <span className="font-mono text-[11px] text-[color:var(--dg-fg-muted)] truncate">{e.target ?? "—"}</span>
-                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] shrink-0">
+                    <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] shrink-0">
                       {ts ? ts.toLocaleString() : "—"}
                     </span>
                     {hasPayload ? (
                       <button
                         onClick={() => toggle(e.id)}
                         aria-expanded={isOpen}
-                        className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-electric)] transition select-none"
+                        className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-electric)] transition select-none"
                         title={L.payload}
                       >
                         {isOpen ? "▾" : "▸"}

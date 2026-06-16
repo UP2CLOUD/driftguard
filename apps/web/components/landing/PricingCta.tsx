@@ -104,7 +104,7 @@ export function PricingCta({ tier, href, external, className, label }: Props) {
         {loading ? "…" : label}
       </a>
       {error && (
-        <p className="mt-2 font-mono text-[10px] text-blocked text-center">{error}</p>
+        <p className="mt-2 font-sans font-medium text-[10px] text-blocked text-center">{error}</p>
       )}
     </>
   );

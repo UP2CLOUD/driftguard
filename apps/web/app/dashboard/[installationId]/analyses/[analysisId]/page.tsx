@@ -78,7 +78,7 @@ export default async function AnalysisPage({
   if (!data) {
     return (
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-20 text-center">
-        <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+        <div className="mb-3 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
           {t("dashboard.analysisUnavailable")}
         </div>
         <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-1">
@@ -120,12 +120,12 @@ export default async function AnalysisPage({
       {/* Back */}
       <div className="flex items-center gap-4 mb-8">
         <Link href={`/dashboard/${installationId}/analyses`}
-          className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">
+          className="inline-flex items-center gap-1.5 font-sans font-semibold text-[11px] uppercase tracking-wide text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">
           ← {t("nav.analyses") ?? "Analyses"}
         </Link>
         <span className="text-[color:var(--dg-border)]">·</span>
         <Link href={`/dashboard/${installationId}`}
-          className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">
+          className="inline-flex items-center gap-1.5 font-sans font-semibold text-[11px] uppercase tracking-wide text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] transition">
           {t("nav.overview")}
         </Link>
       </div>
@@ -182,7 +182,7 @@ export default async function AnalysisPage({
             </div>
             <div className="dg-label mt-0.5">{t("dashboard.riskScore")}</div>
           </div>
-          <div className={`px-3 py-1.5 rounded border font-mono text-[11px] uppercase tracking-widest ${
+          <div className={`px-3 py-1.5 rounded border font-sans font-semibold text-[11px] uppercase tracking-wide ${
             data.status === "completed" ? "text-allowed border-allowed/30 bg-allowed/5" :
             data.status === "failed"    ? "text-blocked border-blocked/30 bg-blocked/5" :
             "text-warned border-warned/30 bg-warned/5"
@@ -216,12 +216,12 @@ export default async function AnalysisPage({
       {(bySeverity.length > 0 || data.policy_verdict) && (
         <div className="mb-6 flex flex-wrap gap-2">
           {bySeverity.map(({ s, count }) => (
-            <span key={s} className={`rounded border px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest ${SEV_STYLE[s]}`}>
+            <span key={s} className={`rounded border px-2.5 py-1 font-sans font-medium text-[10px] uppercase tracking-widest ${SEV_STYLE[s]}`}>
               {count} {s}
             </span>
           ))}
           {data.policy_verdict && (
-            <span className={`rounded border px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest ${
+            <span className={`rounded border px-2.5 py-1 font-sans font-medium text-[10px] uppercase tracking-widest ${
               data.policy_verdict === "block" ? "text-blocked border-blocked/30 bg-blocked/10" :
               data.policy_verdict === "warn"  ? "text-warned border-warned/30 bg-warned/10" :
               "text-allowed border-allowed/30 bg-allowed/10"
@@ -237,10 +237,10 @@ export default async function AnalysisPage({
       {data.ai_summary && (
         <div className="mb-6 rounded-md border border-[color:var(--dg-electric)]/20 bg-[color:var(--dg-electric)]/5 p-5">
           <div className="flex items-center gap-2 mb-3">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
+            <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
               ⬡ {t("dashboard.aiReview")}
             </span>
-            <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">{t("dashboard.aiReviewDesc")}</span>
+            <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">{t("dashboard.aiReviewDesc")}</span>
           </div>
           <div className="prose prose-invert prose-sm max-w-none
             [&_h2]:font-sans [&_h2]:text-[13px] [&_h2]:font-semibold [&_h2]:text-[color:var(--dg-fg)] [&_h2]:mt-4 [&_h2]:mb-2
@@ -272,13 +272,13 @@ export default async function AnalysisPage({
             <div key={i} className="px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition">
               {/* Top row */}
               <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest ${SEV_STYLE[f.severity] ?? SEV_STYLE.info}`}>
+                <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest ${SEV_STYLE[f.severity] ?? SEV_STYLE.info}`}>
                   {f.severity}
                 </span>
-                <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">
+                <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">
                   {f.rule_id}
                 </span>
-                <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+                <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
                   {CAT_ICON[f.category] ?? "◈"} {f.category}
                 </span>
               </div>
@@ -306,7 +306,7 @@ export default async function AnalysisPage({
               {/* Suggestion */}
               {f.suggestion && (
                 <div className="mt-2 rounded border border-allowed/20 bg-allowed/5 px-3 py-2">
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-allowed mr-2">{t("incidents.suggestedFix")}</span>
+                  <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-allowed mr-2">{t("incidents.suggestedFix")}</span>
                   <span className="font-mono text-[11px] text-allowed">{f.suggestion}</span>
                 </div>
               )}
@@ -315,7 +315,7 @@ export default async function AnalysisPage({
               {f.controls?.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1">
                   {f.controls.map((ctrl: string) => (
-                    <span key={ctrl} className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">
+                    <span key={ctrl} className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">
                       {ctrl}
                     </span>
                   ))}
@@ -329,7 +329,7 @@ export default async function AnalysisPage({
       {/* Errors */}
       {data.errors?.length > 0 && (
         <div className="mt-6 rounded-md border border-warned/30 bg-warned/5 p-4">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-warned mb-2">
+          <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-warned mb-2">
             {t("dashboard.scannerWarnings")}
           </div>
           {data.errors.map((e: string, i: number) => (

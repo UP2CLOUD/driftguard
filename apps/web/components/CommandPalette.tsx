@@ -105,7 +105,7 @@ export function CommandPalette({ installationId, open, onClose }: CommandPalette
             placeholder={t("nav.cmdSearchPlaceholder") ?? "Search commands…"}
             className="flex-1 bg-transparent font-mono text-[13px] text-[color:var(--dg-fg)] placeholder-[color:var(--dg-fg-subtle)] outline-none"
           />
-          <kbd className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">esc</kbd>
+          <kbd className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">esc</kbd>
         </div>
 
         {/* results */}
@@ -129,11 +129,11 @@ export function CommandPalette({ installationId, open, onClose }: CommandPalette
                 <div className="flex-1 min-w-0">
                   <div className="font-mono text-[12px] text-[color:var(--dg-fg)]">{cmd.label}</div>
                   {cmd.description && (
-                    <div className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] truncate">{cmd.description}</div>
+                    <div className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] truncate">{cmd.description}</div>
                   )}
                 </div>
                 {i === selected && (
-                  <kbd className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5 shrink-0">↵</kbd>
+                  <kbd className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5 shrink-0">↵</kbd>
                 )}
               </button>
             ))

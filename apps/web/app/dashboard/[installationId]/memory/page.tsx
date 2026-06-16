@@ -127,7 +127,7 @@ export default async function MemoryPage({
 
       {entries.length === 0 && page === 1 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
-          <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">{t("memory.engineReady")}</div>
+          <div className="mb-3 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">{t("memory.engineReady")}</div>
           <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
             {t("memory.noTitle")}
           </p>
@@ -151,17 +151,17 @@ export default async function MemoryPage({
                     {e.pr_number ? <span className="text-[color:var(--dg-fg-muted)]">#{e.pr_number}</span> : null}
                   </code>
                   {e.outcome && (
-                    <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest ${OUT_BADGE[e.outcome] ?? "border-[color:var(--dg-border)] text-[color:var(--dg-fg-subtle)]"}`}>
+                    <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest ${OUT_BADGE[e.outcome] ?? "border-[color:var(--dg-border)] text-[color:var(--dg-fg-subtle)]"}`}>
                       {e.outcome}
                     </span>
                   )}
                   {e.severity && (
-                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] uppercase tracking-widest">
+                    <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] uppercase tracking-widest">
                       {e.severity}
                     </span>
                   )}
                   {e.blast_radius && (
-                    <span className={`font-mono text-[10px] uppercase tracking-widest ${BLAST_COLOR[e.blast_radius] ?? ""}`}>
+                    <span className={`font-sans font-medium text-[10px] uppercase tracking-widest ${BLAST_COLOR[e.blast_radius] ?? ""}`}>
                       blast:{e.blast_radius}
                     </span>
                   )}
@@ -177,12 +177,12 @@ export default async function MemoryPage({
                 {/* Footer: date + analysis link */}
                 <div className="flex items-center gap-3">
                   {e.created_at && (
-                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+                    <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
                       {formatDate(e.created_at, preferences.locale)}
                     </span>
                   )}
                   {e.analysis_id && (
-                    <span className="font-mono text-[10px] text-[color:var(--dg-electric)]">
+                    <span className="font-sans font-medium text-[10px] text-[color:var(--dg-electric)]">
                       {t("memory.viewAnalysis") ?? "View analysis →"}
                     </span>
                   )}
@@ -203,7 +203,7 @@ export default async function MemoryPage({
               {t("analyses.previous") ?? "← Previous"}
             </Link>
           ) : <span />}
-          <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+          <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
             {(t("analyses.page") ?? "Page {n}").replace("{n}", String(page))}
           </span>
           {hasNext ? (
