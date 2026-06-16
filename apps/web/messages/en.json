@@ -32,7 +32,9 @@
     "cmdDescDocs": "Read the documentation",
     "cmdDescSignOut": "Sign out of DriftGuard",
     "cmdSearchPlaceholder": "Search commands…",
-    "cmdNoResults": "No commands found"
+    "cmdNoResults": "No commands found",
+    "openCommandPalette": "Open command palette",
+    "toggleMenu": "Toggle menu"
   },
   "auth": {
     "goToDashboard": "Go to Dashboard →",
@@ -191,7 +193,13 @@
     "copied": "Copied!",
     "openInNew": "Open in new tab",
     "getStarted": "Get started",
-    "docs": "Docs"
+    "docs": "Docs",
+    "saving": "Saving…",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "skipToMainContent": "Skip to main content",
+    "dismissChecklist": "Dismiss checklist",
+    "viewPrOnGitHub": "View PR on GitHub"
   },
   "footer": {
     "privacy": "Privacy",
@@ -369,7 +377,8 @@
     "resourceCliDesc": "Scan Terraform & Kubernetes locally and in CI.",
     "resourceSupport": "Contact support",
     "resourceSupportDesc": "Questions, bug reports, or feature requests.",
-    "resourceOpen": "Open →"
+    "resourceOpen": "Open →",
+    "installFrom": "Install from"
   },
   "installApp": {
     "title": "Install the GitHub App",
@@ -1318,7 +1327,15 @@
   "aws": {
     "step1": "Step 1 — Create IAM role",
     "step2": "Step 2 — Paste role ARN",
-    "externalId": "External ID:"
+    "externalId": "External ID:",
+    "deployDesc": "Deploy the read-only Terraform module in your AWS account.",
+    "roleDesc": "Creates a role with external ID condition — no wildcard access.",
+    "roleArnLabel": "Role ARN",
+    "stateBucketLabel": "State bucket (optional)",
+    "stateKeyLabel": "State key",
+    "savedDriftEnabled": "✓ Saved — drift detection enabled",
+    "viewModule": "View module",
+    "connectedArn": "Connected: {arn}"
   },
   "terms": {
     "meta": {
@@ -1437,6 +1454,7 @@
     "notice": "We use analytics cookies to understand how you use DriftGuard and improve the experience.",
     "accept": "Accept cookies",
     "decline": "Decline",
-    "learnMore": "Privacy policy"
+    "learnMore": "Privacy policy",
+    "ariaLabel": "Cookie consent"
   }
 }

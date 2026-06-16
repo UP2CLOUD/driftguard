@@ -62,7 +62,7 @@ export function DashboardNav({
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:border focus:border-[color:var(--dg-electric)] focus:bg-[color:var(--dg-canvas)] focus:px-3 focus:py-2 focus:font-mono focus:text-[12px] focus:text-[color:var(--dg-fg)] focus:shadow-md"
       >
-        Skip to main content
+        {l("skipToMainContent", "Skip to main content")}
       </a>
 
       <nav className="sticky top-0 z-40 border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]/90 backdrop-blur-md">
@@ -129,7 +129,7 @@ export function DashboardNav({
             <button
               onClick={() => setPaletteOpen(true)}
               className="hidden lg:flex items-center gap-1.5 rounded border border-[color:var(--dg-border)] px-2 py-1 font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-electric)]/40 transition"
-              aria-label="Open command palette"
+              aria-label={l("openCommandPalette", "Open command palette")}
             >
               <span>⌘K</span>
             </button>
@@ -147,7 +147,7 @@ export function DashboardNav({
             <button
               onClick={() => setMenuOpen((v) => !v)}
               className="lg:hidden flex flex-col items-center justify-center gap-[5px] w-9 h-9 rounded border border-[color:var(--dg-border)] hover:border-[color:var(--dg-electric)]/40 transition"
-              aria-label="Toggle menu"
+              aria-label={l("toggleMenu", "Toggle menu")}
               aria-expanded={menuOpen}
             >
               <span className={`block w-4 h-px bg-[color:var(--dg-fg-muted)] transition-all origin-center ${menuOpen ? "rotate-45 translate-y-[6px]" : ""}`} />

@@ -176,7 +176,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
       <div className="mt-1 shrink-0">
         <span
           role="img"
-          aria-label={policy.enabled ? "Enabled" : "Disabled"}
+          aria-label={policy.enabled ? (t("common.enabled") ?? "Enabled") : (t("common.disabled") ?? "Disabled")}
           className={`h-1.5 w-1.5 rounded-full inline-block ${policy.enabled ? "bg-allowed" : "bg-[color:var(--dg-fg-subtle)]"}`}
         />
       </div>

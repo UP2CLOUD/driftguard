@@ -32,7 +32,9 @@
     "cmdDescDocs": "दस्तावेज़ पढ़ें",
     "cmdDescSignOut": "DriftGuard से साइन आउट करें",
     "cmdSearchPlaceholder": "कमांड खोजें…",
-    "cmdNoResults": "कोई कमांड नहीं मिला"
+    "cmdNoResults": "कोई कमांड नहीं मिला",
+    "openCommandPalette": "कमांड पैलेट खोलें",
+    "toggleMenu": "मेनू टॉगल करें"
   },
   "auth": {
     "goToDashboard": "डैशबोर्ड पर जाएँ →",
@@ -274,7 +276,8 @@
     "resourceCliDesc": "Terraform और Kubernetes को स्थानीय रूप से और CI में स्कैन करें।",
     "resourceSupport": "सहायता से संपर्क करें",
     "resourceSupportDesc": "प्रश्न, बग रिपोर्ट या फ़ीचर अनुरोध।",
-    "resourceOpen": "खोलें →"
+    "resourceOpen": "खोलें →",
+    "installFrom": "से इंस्टॉल करें"
   },
   "installApp": {
     "title": "GitHub App इंस्टॉल करें",
@@ -1306,7 +1309,13 @@
     "copied": "कॉपी हो गया!",
     "openInNew": "नए टैब में खोलें",
     "getStarted": "शुरू करें",
-    "docs": "दस्तावेज़"
+    "docs": "दस्तावेज़",
+    "saving": "सहेज रहे हैं…",
+    "enabled": "सक्षम",
+    "disabled": "अक्षम",
+    "skipToMainContent": "मुख्य सामग्री पर जाएं",
+    "dismissChecklist": "चेकलिस्ट बंद करें",
+    "viewPrOnGitHub": "GitHub पर PR देखें"
   },
   "findings": {
     "critical": "गंभीर",
@@ -1318,7 +1327,15 @@
   "aws": {
     "step1": "चरण 1 — IAM रोल बनाएं",
     "step2": "चरण 2 — रोल ARN पेस्ट करें",
-    "externalId": "बाहरी ID:"
+    "externalId": "बाहरी ID:",
+    "deployDesc": "अपने AWS खाते में केवल-पठन Terraform मॉड्यूल तैनात करें।",
+    "roleDesc": "बाहरी ID शर्त के साथ एक रोल बनाता है — कोई वाइल्डकार्ड एक्सेस नहीं।",
+    "roleArnLabel": "Role ARN",
+    "stateBucketLabel": "स्टेट बकेट (वैकल्पिक)",
+    "stateKeyLabel": "स्टेट की",
+    "savedDriftEnabled": "✓ सहेजा गया — ड्रिफ्ट डिटेक्शन सक्षम",
+    "viewModule": "मॉड्यूल देखें",
+    "connectedArn": "कनेक्टेड: {arn}"
   },
   "terms": {
     "meta": {
@@ -1437,6 +1454,7 @@
     "notice": "हम DriftGuard के उपयोग को समझने और अनुभव बेहतर बनाने के लिए एनालिटिक्स कुकीज़ का उपयोग करते हैं।",
     "accept": "कुकीज़ स्वीकार करें",
     "decline": "अस्वीकार करें",
-    "learnMore": "गोपनीयता नीति"
+    "learnMore": "गोपनीयता नीति",
+    "ariaLabel": "कुकी सहमति"
   }
 }

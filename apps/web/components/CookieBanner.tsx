@@ -50,7 +50,7 @@ export function CookieBanner() {
   return (
     <div
       role="dialog"
-      aria-label="Cookie consent"
+      aria-label={t("cookie.ariaLabel") ?? "Cookie consent"}
       className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-sm z-50 rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] shadow-lg p-4"
     >
       <p className="text-[12px] text-[color:var(--dg-fg-muted)] leading-relaxed mb-3">

@@ -13,11 +13,12 @@ export interface ChecklistItem {
 interface ReadinessChecklistProps {
   items: ChecklistItem[];
   title?: string;
+  dismissLabel?: string;
 }
 
 const DISMISS_KEY = "dg_checklist_dismissed";
 
-export function ReadinessChecklist({ items, title = "Getting started" }: ReadinessChecklistProps) {
+export function ReadinessChecklist({ items, title = "Getting started", dismissLabel = "Dismiss checklist" }: ReadinessChecklistProps) {
   const doneCount = items.filter((i) => i.done).length;
   const allDone = doneCount === items.length;
   const [dismissed, setDismissed] = useState(false);
@@ -48,7 +49,7 @@ export function ReadinessChecklist({ items, title = "Getting started" }: Readine
         </div>
         <button
           onClick={dismiss}
-          aria-label="Dismiss checklist"
+          aria-label={dismissLabel}
           className="h-5 w-5 flex items-center justify-center rounded text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)] hover:bg-[color:var(--dg-surface-raised)] transition cursor-pointer"
         >
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">

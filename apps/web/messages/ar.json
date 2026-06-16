@@ -32,7 +32,9 @@
     "cmdDescDocs": "قراءة التوثيق",
     "cmdDescSignOut": "تسجيل الخروج من DriftGuard",
     "cmdSearchPlaceholder": "البحث في الأوامر…",
-    "cmdNoResults": "لم يتم العثور على أوامر"
+    "cmdNoResults": "لم يتم العثور على أوامر",
+    "openCommandPalette": "فتح لوحة الأوامر",
+    "toggleMenu": "تبديل القائمة"
   },
   "auth": {
     "goToDashboard": "الانتقال إلى لوحة التحكم →",
@@ -274,7 +276,8 @@
     "resourceCliDesc": "افحص Terraform وKubernetes محليًا وفي CI.",
     "resourceSupport": "اتصل بالدعم",
     "resourceSupportDesc": "أسئلة أو تقارير أخطاء أو طلبات ميزات.",
-    "resourceOpen": "فتح →"
+    "resourceOpen": "فتح →",
+    "installFrom": "مثبَّت من"
   },
   "installApp": {
     "title": "تثبيت تطبيق GitHub",
@@ -1306,7 +1309,13 @@
     "copied": "تم النسخ!",
     "openInNew": "فتح في تبويب جديد",
     "getStarted": "ابدأ",
-    "docs": "المستندات"
+    "docs": "المستندات",
+    "saving": "جارٍ الحفظ…",
+    "enabled": "مُفعَّل",
+    "disabled": "معطَّل",
+    "skipToMainContent": "انتقل إلى المحتوى الرئيسي",
+    "dismissChecklist": "إغلاق قائمة التحقق",
+    "viewPrOnGitHub": "عرض طلب السحب على GitHub"
   },
   "findings": {
     "critical": "حرج",
@@ -1318,7 +1327,15 @@
   "aws": {
     "step1": "الخطوة 1 — إنشاء دور IAM",
     "step2": "الخطوة 2 — لصق دور ARN",
-    "externalId": "المعرف الخارجي:"
+    "externalId": "المعرف الخارجي:",
+    "deployDesc": "نشر وحدة Terraform للقراءة فقط في حساب AWS الخاص بك.",
+    "roleDesc": "إنشاء دور بشرط المعرّف الخارجي — بدون وصول بالبدل.",
+    "roleArnLabel": "ARN الدور",
+    "stateBucketLabel": "حاوية الحالة (اختياري)",
+    "stateKeyLabel": "مفتاح الحالة",
+    "savedDriftEnabled": "✓ تم الحفظ — اكتشاف الانحراف مُفعَّل",
+    "viewModule": "عرض الوحدة",
+    "connectedArn": "متصل: {arn}"
   },
   "terms": {
     "meta": {
@@ -1437,6 +1454,7 @@
     "notice": "نستخدم ملفات تعريف الارتباط التحليلية لفهم كيفية استخدامك لـ DriftGuard وتحسين التجربة.",
     "accept": "قبول ملفات تعريف الارتباط",
     "decline": "رفض",
-    "learnMore": "سياسة الخصوصية"
+    "learnMore": "سياسة الخصوصية",
+    "ariaLabel": "موافقة ملفات تعريف الارتباط"
   }
 }

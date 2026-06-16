@@ -32,7 +32,9 @@
     "cmdDescDocs": "阅读文档",
     "cmdDescSignOut": "退出 DriftGuard",
     "cmdSearchPlaceholder": "搜索命令…",
-    "cmdNoResults": "未找到命令"
+    "cmdNoResults": "未找到命令",
+    "openCommandPalette": "打开命令面板",
+    "toggleMenu": "切换菜单"
   },
   "auth": {
     "goToDashboard": "前往控制台 →",
@@ -274,7 +276,8 @@
     "resourceCliDesc": "在本地和 CI 中扫描 Terraform 与 Kubernetes。",
     "resourceSupport": "联系支持",
     "resourceSupportDesc": "问题、错误报告或功能请求。",
-    "resourceOpen": "打开 →"
+    "resourceOpen": "打开 →",
+    "installFrom": "安装来源"
   },
   "installApp": {
     "title": "安装 GitHub 应用",
@@ -1306,7 +1309,13 @@
     "copied": "已复制！",
     "openInNew": "在新标签页打开",
     "getStarted": "快速开始",
-    "docs": "文档"
+    "docs": "文档",
+    "saving": "保存中…",
+    "enabled": "已启用",
+    "disabled": "已禁用",
+    "skipToMainContent": "跳至主内容",
+    "dismissChecklist": "关闭清单",
+    "viewPrOnGitHub": "在 GitHub 上查看 PR"
   },
   "findings": {
     "critical": "严重",
@@ -1318,7 +1327,15 @@
   "aws": {
     "step1": "步骤 1 — 创建 IAM 角色",
     "step2": "步骤 2 — 粘贴角色 ARN",
-    "externalId": "外部 ID："
+    "externalId": "外部 ID：",
+    "deployDesc": "在您的 AWS 账户中部署只读 Terraform 模块。",
+    "roleDesc": "创建带外部 ID 条件的角色 — 无通配符访问。",
+    "roleArnLabel": "角色 ARN",
+    "stateBucketLabel": "状态存储桶（可选）",
+    "stateKeyLabel": "状态键",
+    "savedDriftEnabled": "✓ 已保存 — 漂移检测已启用",
+    "viewModule": "查看模块",
+    "connectedArn": "已连接：{arn}"
   },
   "terms": {
     "meta": {
@@ -1437,6 +1454,7 @@
     "notice": "我们使用分析 Cookie 来了解您如何使用 DriftGuard 并改善使用体验。",
     "accept": "接受 Cookie",
     "decline": "拒绝",
-    "learnMore": "隐私政策"
+    "learnMore": "隐私政策",
+    "ariaLabel": "Cookie 同意"
   }
 }

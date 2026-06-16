@@ -139,7 +139,7 @@ export default async function ReposPage({
                   href={`/dashboard/${installationId}/settings?intent=upgrade`}
                   className="font-sans font-medium text-[10px] text-[color:var(--dg-electric)] hover:opacity-70 transition"
                 >
-                  Upgrade →
+                  {t("dashboard.upgrade") ?? "Upgrade"} →
                 </Link>
               )}
             </div>
