@@ -57,6 +57,14 @@ export function DashboardNav({
         onClose={() => setPaletteOpen(false)}
       />
 
+      {/* Skip link — visible on keyboard focus only */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:border focus:border-[color:var(--dg-electric)] focus:bg-[color:var(--dg-canvas)] focus:px-3 focus:py-2 focus:font-mono focus:text-[12px] focus:text-[color:var(--dg-fg)] focus:shadow-md"
+      >
+        Skip to main content
+      </a>
+
       <nav className="sticky top-0 z-40 border-b border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)]/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-4 sm:px-6 py-3">
           {/* Left: logo + nav */}
