@@ -36,6 +36,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(10000),
     });
     if (!res.ok) {
       const d = await res.json().catch(() => ({}));
@@ -81,7 +82,7 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
     setLoading("delete");
     setError("");
     try {
-      const res = await fetch(`/api/policies/${policy.id}`, { method: "DELETE" });
+      const res = await fetch(`/api/policies/${policy.id}`, { method: "DELETE", signal: AbortSignal.timeout(10000) });
       if (!res.ok && res.status !== 204) throw new Error("Delete failed");
       router.refresh();
     } catch (e: any) {

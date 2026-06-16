@@ -44,6 +44,7 @@ export function IncidentStatusForm({
           root_cause: rootCause || undefined,
           suggested_fix: suggestedFix || undefined,
         }),
+        signal: AbortSignal.timeout(10000),
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));

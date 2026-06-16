@@ -41,6 +41,7 @@ export function AwsIntegrationForm({
           state_bucket: stateBucket,
           state_key: stateKey,
         }),
+        signal: AbortSignal.timeout(15000),
       });
       if (!res.ok) throw new Error(await res.text());
       setSaved(true);
