@@ -1333,7 +1333,9 @@
     "roleArnLabel": "ARN del rol",
     "stateBucketLabel": "Bucket de estado (opcional)",
     "stateKeyLabel": "Clave de estado",
-    "savedDriftEnabled": "✓ Guardado — detección de drift habilitada"
+    "savedDriftEnabled": "✓ Guardado — detección de drift habilitada",
+    "viewModule": "Ver módulo",
+    "connectedArn": "Conectado: {arn}"
   },
   "terms": {
     "meta": {

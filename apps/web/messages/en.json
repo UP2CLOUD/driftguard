@@ -1333,7 +1333,9 @@
     "roleArnLabel": "Role ARN",
     "stateBucketLabel": "State bucket (optional)",
     "stateKeyLabel": "State key",
-    "savedDriftEnabled": "✓ Saved — drift detection enabled"
+    "savedDriftEnabled": "✓ Saved — drift detection enabled",
+    "viewModule": "View module",
+    "connectedArn": "Connected: {arn}"
   },
   "terms": {
     "meta": {

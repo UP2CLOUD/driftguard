@@ -80,7 +80,7 @@ export function AwsIntegrationForm({
             rel="noreferrer"
             className="dg-button dg-button-ghost text-[12px] shrink-0"
           >
-            {t("common.viewAll") ?? "View"} →
+            {t("aws.viewModule") ?? "View module"} →
           </a>
         </div>
       </div>
@@ -137,7 +137,7 @@ export function AwsIntegrationForm({
         )}
         {!error && !saved && (
           <p className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-            {org?.aws_role_arn ? `Connected: ${org.aws_role_arn.slice(0, 40)}…` : (t("settings.notConnected") ?? "Not connected")}
+            {org?.aws_role_arn ? `${t("settings.connected") ?? "Connected"}: ${org.aws_role_arn.slice(0, 40)}…` : (t("settings.notConnected") ?? "Not connected")}
           </p>
         )}
         <button

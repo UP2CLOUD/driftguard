@@ -1333,7 +1333,9 @@
     "roleArnLabel": "角色 ARN",
     "stateBucketLabel": "状态存储桶（可选）",
     "stateKeyLabel": "状态键",
-    "savedDriftEnabled": "✓ 已保存 — 漂移检测已启用"
+    "savedDriftEnabled": "✓ 已保存 — 漂移检测已启用",
+    "viewModule": "查看模块",
+    "connectedArn": "已连接：{arn}"
   },
   "terms": {
     "meta": {

@@ -1333,7 +1333,9 @@
     "roleArnLabel": "Role ARN",
     "stateBucketLabel": "स्टेट बकेट (वैकल्पिक)",
     "stateKeyLabel": "स्टेट की",
-    "savedDriftEnabled": "✓ सहेजा गया — ड्रिफ्ट डिटेक्शन सक्षम"
+    "savedDriftEnabled": "✓ सहेजा गया — ड्रिफ्ट डिटेक्शन सक्षम",
+    "viewModule": "मॉड्यूल देखें",
+    "connectedArn": "कनेक्टेड: {arn}"
   },
   "terms": {
     "meta": {

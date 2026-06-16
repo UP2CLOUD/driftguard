@@ -1333,7 +1333,9 @@
     "roleArnLabel": "ARN الدور",
     "stateBucketLabel": "حاوية الحالة (اختياري)",
     "stateKeyLabel": "مفتاح الحالة",
-    "savedDriftEnabled": "✓ تم الحفظ — اكتشاف الانحراف مُفعَّل"
+    "savedDriftEnabled": "✓ تم الحفظ — اكتشاف الانحراف مُفعَّل",
+    "viewModule": "عرض الوحدة",
+    "connectedArn": "متصل: {arn}"
   },
   "terms": {
     "meta": {
