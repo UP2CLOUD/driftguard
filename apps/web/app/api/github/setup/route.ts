@@ -8,7 +8,10 @@ export const dynamic = "force-dynamic";
 function warmupApi(installationId: string) {
   if (!BACKEND_URL) return;
   const fire = (path: string) =>
-    fetch(`${BACKEND_URL}${path}`, { headers: authHeaders(), keepalive: true }).catch(() => {});
+    fetch(`${BACKEND_URL}${path}`, {
+      headers: authHeaders(),
+      signal: AbortSignal.timeout(5000),
+    }).catch(() => {});
 
   fire(`/api/v1/dashboard/overview?installation_id=${installationId}`);
   fire(`/api/v1/incidents?installation_id=${installationId}&limit=5`);

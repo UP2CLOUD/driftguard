@@ -32,14 +32,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  const r = await fetch(`https://api.resend.com/audiences/${audienceId}/contacts`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, unsubscribed: false }),
-  });
+  let r: Response;
+  try {
+    r = await fetch(`https://api.resend.com/audiences/${audienceId}/contacts`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, unsubscribed: false }),
+      signal: AbortSignal.timeout(10000),
+    });
+  } catch {
+    return NextResponse.json({ error: "upstream" }, { status: 502 });
+  }
 
   if (!r.ok && r.status !== 409) {
     return NextResponse.json({ error: "upstream" }, { status: 502 });
