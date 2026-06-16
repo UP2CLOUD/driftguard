@@ -6,6 +6,7 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { localizedPageMeta } from "@/lib/seo";
+import { getGitHubAppInstallUrl } from "@/lib/github-app";
 
 export async function generateMetadata(): Promise<Metadata> {
   const prefs    = await getUserPreferences();
@@ -77,8 +78,14 @@ function getSections(t: (key: string) => string) {
   ];
 }
 
-const QUICKSTART = `# 1. Install the GitHub App on your org
-$ open https://github.com/apps/driftguard-app/installations/new
+export default async function DocsPage() {
+  const prefs = await getUserPreferences();
+  const msgs  = await getMessages(prefs.locale);
+  const t     = createTranslator(msgs);
+  const sections = getSections(t);
+  const installUrl = getGitHubAppInstallUrl();
+  const QUICKSTART = `# 1. Install the GitHub App on your org
+$ open ${installUrl}
 
 # 2. Add .github/driftguard.yml to your repo
 policy:
@@ -88,12 +95,6 @@ compliance:
   frameworks: [DORA, NIS2, ISO27001]
 
 # 3. Open a PR — DriftGuard comments with cost, security, compliance.`;
-
-export default async function DocsPage() {
-  const prefs = await getUserPreferences();
-  const msgs  = await getMessages(prefs.locale);
-  const t     = createTranslator(msgs);
-  const sections = getSections(t);
   return (
     <MarketingPageShell>
       <div className="max-w-3xl">
@@ -114,7 +115,7 @@ export default async function DocsPage() {
         <pre className="overflow-x-auto p-5 font-mono text-[12.5px] leading-relaxed text-[color:var(--dg-fg)]">{QUICKSTART}</pre>
         <div className="border-t border-[color:var(--dg-border)] px-4 py-2.5 flex items-center justify-between font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
           <span>config.driftguard.yml ▪ committed to repo</span>
-          <a href="https://github.com/apps/driftguard-app/installations/new"
+          <a href={installUrl}
             className="text-[color:var(--dg-electric-bright)] hover:underline">
             ▸ install now
           </a>

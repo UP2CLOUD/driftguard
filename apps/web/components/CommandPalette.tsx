@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOutToHome } from "@/lib/auth-actions";
 import { useT } from "@/components/I18nProvider";
+import { getGitHubAppInstallUrl } from "@/lib/github-app";
 
 interface Command {
   label: string;
@@ -36,8 +37,7 @@ export function CommandPalette({ installationId, open, onClose }: CommandPalette
       label: t("nav.cmdConnectGitHub") ?? "Connect GitHub",
       description: t("nav.cmdDescConnectGitHub") ?? "Install GitHub App on your organization",
       action: () => {
-        const slug = process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-reviews";
-        window.open(`https://github.com/apps/${slug}/installations/new`, "_blank");
+        window.open(getGitHubAppInstallUrl(), "_blank");
       },
     },
     { label: t("nav.docs") ?? "Docs", description: t("nav.cmdDescDocs") ?? "Read the documentation", action: () => router.push("/docs") },

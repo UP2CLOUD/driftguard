@@ -1,5 +1,6 @@
 import { getOverviewFull } from "./api";
 import { ReadinessChecklist } from "@/components/ui/ReadinessChecklist";
+import { getGitHubAppInstallUrl } from "@/lib/github-app";
 
 type T = (key: string) => string | null | undefined;
 
@@ -75,8 +76,7 @@ export async function ReadinessChecklistSection({
     );
   }
 
-  const slug = process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-reviews";
-  const installUrl = `https://github.com/apps/${slug}/installations/new`;
+  const installUrl = getGitHubAppInstallUrl();
 
   const items = [
     {

@@ -5,9 +5,11 @@ import { MarketingPageShell } from "@/components/MarketingPageShell";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
+import { getGitHubAppInstallUrl } from "@/lib/github-app";
 
-const STEP_CODES = [
-  "open https://github.com/apps/driftguard-app/installations/new",
+function getStepCodes() {
+  return [
+  `open ${getGitHubAppInstallUrl()}`,
   `cat > .github/driftguard.yml << 'EOF'
 policy:
   block:
@@ -21,7 +23,8 @@ cost:
   threshold_monthly_usd: 500
 EOF`,
   "git checkout -b test/driftguard-review\n# edit any .tf file\ngit push && open a PR",
-];
+  ];
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const prefs  = await getUserPreferences();
@@ -41,10 +44,11 @@ export default async function Install() {
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
 
+  const stepCodes = getStepCodes();
   const STEPS = [
-    { n: "01", title: t("docs.install.step1Title"), code: STEP_CODES[0], desc: t("docs.install.step1Desc") },
-    { n: "02", title: t("docs.install.step2Title"), code: STEP_CODES[1], desc: t("docs.install.step2Desc") },
-    { n: "03", title: t("docs.install.step3Title"), code: STEP_CODES[2], desc: t("docs.install.step3Desc") },
+    { n: "01", title: t("docs.install.step1Title"), code: stepCodes[0], desc: t("docs.install.step1Desc") },
+    { n: "02", title: t("docs.install.step2Title"), code: stepCodes[1], desc: t("docs.install.step2Desc") },
+    { n: "03", title: t("docs.install.step3Title"), code: stepCodes[2], desc: t("docs.install.step3Desc") },
   ];
 
   return (

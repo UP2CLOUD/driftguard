@@ -4,6 +4,7 @@ import { useT } from "@/components/TranslationProvider";
 import { useState } from "react";
 import { SectionHeader } from "./Architecture";
 import { PricingCta } from "./PricingCta";
+import { getGitHubAppInstallUrl } from "@/lib/github-app";
 
 export function Pricing() {
   const t = useT();
@@ -43,7 +44,7 @@ export function Pricing() {
       ],
       highlighted: true,
       cta: t("landing.pricing.plans.team.cta"),
-      href: "https://github.com/apps/driftguard-app/installations/new",
+      href: getGitHubAppInstallUrl(),
       external: true,
       badge: t("landing.pricing.plans.team.badge"),
     },

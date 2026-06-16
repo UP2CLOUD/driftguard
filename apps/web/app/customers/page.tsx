@@ -5,6 +5,7 @@ import { pageMeta, localizedPageMeta } from "@/lib/seo";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
+import { getGitHubAppInstallUrl } from "@/lib/github-app";
 
 
 
@@ -116,7 +117,7 @@ export default async function Customers() {
           {t("customers.ctaBody")}
         </p>
         <a
-          href="https://github.com/apps/driftguard-app/installations/new"
+          href={getGitHubAppInstallUrl()}
           className="dg-button dg-button-primary text-[13px]"
         >
           {t("customers.ctaButton")}
