@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
+import { getUserPreferences } from "@/lib/preferences/server";
 import { beGet } from "@/lib/backend";
 import type { FinOpsDashboard, FinOpsReview } from "@/lib/api";
 
@@ -40,27 +41,28 @@ export default async function FinOpsPage({ params }: Props) {
   if (!session) redirect("/");
 
   const { installationId } = await params;
+  const preferences = await getUserPreferences();
   const [data, messages] = await Promise.all([
     fetchFinOpsDashboard(installationId),
-    getMessages(),
+    getMessages(preferences.locale),
   ]);
-  const t = createTranslator(messages, "finops");
+  const t = createTranslator(messages);
 
   return (
     <div className="mx-auto max-w-[1400px] space-y-6 px-4 sm:px-6 py-6 sm:py-8">
       <div>
         <h1 className="font-sans text-xl sm:text-2xl font-semibold tracking-tight text-[color:var(--dg-fg)]">
-          {t("title") ?? "FinOps Review"}
+          {t("finops.title") ?? "FinOps Review"}
         </h1>
         <p className="mt-1 text-[13px] text-[color:var(--dg-fg-muted)]">
-          {t("subtitle") ?? "Cloud cost analysis for Terraform pull requests"}
+          {t("finops.subtitle") ?? "Cloud cost analysis for Terraform pull requests"}
         </p>
       </div>
 
       {!data || data.total_reviews === 0 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
           <p className="text-[13px] text-[color:var(--dg-fg-muted)]">
-            {t("noReviews") ?? "No FinOps reviews yet. Open a pull request with Terraform changes to get cost estimates."}
+            {t("finops.noReviews") ?? "No FinOps reviews yet. Open a pull request with Terraform changes to get cost estimates."}
           </p>
         </div>
       ) : (
@@ -69,7 +71,7 @@ export default async function FinOpsPage({ params }: Props) {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
               <p className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                {t("totalDelta") ?? "Total Monthly Impact"}
+                {t("finops.totalDelta") ?? "Total Monthly Impact"}
               </p>
               <p className="mt-2 font-sans text-2xl font-bold text-[color:var(--dg-fg)]">
                 {fmtCents(data.total_monthly_delta_cents)}
@@ -78,7 +80,7 @@ export default async function FinOpsPage({ params }: Props) {
             </div>
             <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
               <p className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                {t("avgDelta") ?? "Avg Monthly Impact"}
+                {t("finops.avgDelta") ?? "Avg Monthly Impact"}
               </p>
               <p className="mt-2 font-sans text-2xl font-bold text-[color:var(--dg-fg)]">
                 {fmtCents(data.average_monthly_delta_cents)}
@@ -87,7 +89,7 @@ export default async function FinOpsPage({ params }: Props) {
             </div>
             <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
               <p className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                {t("highestRisk") ?? "Highest Risk Score"}
+                {t("finops.highestRisk") ?? "Highest Risk Score"}
               </p>
               <p className="mt-2 font-sans text-2xl font-bold text-[color:var(--dg-fg)]">
                 {data.highest_risk_score}
@@ -102,7 +104,7 @@ export default async function FinOpsPage({ params }: Props) {
             data.provider_breakdown.azure > 0) && (
             <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
               <h2 className="font-sans font-semibold text-[13px] text-[color:var(--dg-fg)]">
-                {t("providerBreakdown") ?? "Provider Breakdown"}
+                {t("finops.providerBreakdown") ?? "Provider Breakdown"}
               </h2>
               <div className="mt-4 grid grid-cols-3 gap-4 text-center">
                 {[
@@ -127,7 +129,7 @@ export default async function FinOpsPage({ params }: Props) {
           <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
             <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-5 py-3">
               <h2 className="font-sans font-semibold text-[13px] text-[color:var(--dg-fg)]">
-                {t("recentReviews") ?? "Recent Cost Reviews"}
+                {t("finops.recentReviews") ?? "Recent Cost Reviews"}
               </h2>
             </div>
             <div className="divide-y divide-[color:var(--dg-border)]">
@@ -178,7 +180,7 @@ export default async function FinOpsPage({ params }: Props) {
           </div>
 
           <p className="font-sans text-[11px] text-[color:var(--dg-fg-subtle)]">
-            {t("disclaimer") ?? "Costs are estimates based on published list prices. Actual cloud billing may vary."}
+            {t("finops.disclaimer") ?? "Costs are estimates based on published list prices. Actual cloud billing may vary."}
           </p>
         </>
       )}
