@@ -1057,17 +1057,14 @@ async def _persist_finops_review(
             terraform_files=result.terraform_files,
             resource_costs=result.resource_costs,
             recommendations=[
-                {"title": r.title, "detail": r.detail, "severity": r.severity}
-                for r in result.recommendations
+                {"title": r.title, "detail": r.detail, "severity": r.severity} for r in result.recommendations
             ],
             risk_reasons=result.risk_reasons,
             ai_summary=getattr(result, "ai_summary", None),
         )
         db.add(review)
         for label, cents in result.resource_costs.items():
-            rc_match = next(
-                (rc for rc in result.resource_changes if rc.label == label), None
-            )
+            rc_match = next((rc for rc in result.resource_changes if rc.label == label), None)
             cost_row = FinOpsResourceCost(
                 id=str(uuid.uuid4()),
                 finops_review_id=review_id,
@@ -1079,6 +1076,15 @@ async def _persist_finops_review(
                 file_path=rc_match.file_path if rc_match else None,
             )
             db.add(cost_row)
+        # Propagate cost and risk metrics back to the parent Analysis record
+        from driftguard.db.models import Analysis as _Analysis
+
+        analysis_rec = await db.get(_Analysis, analysis_id)
+        if analysis_rec is not None:
+            if result.delta_monthly_cents != 0:
+                analysis_rec.cost_delta_cents = result.delta_monthly_cents
+            if result.risk_score > 0 and analysis_rec.risk_score is None:
+                analysis_rec.risk_score = result.risk_score
         await db.flush()
         return review_id
     except Exception:

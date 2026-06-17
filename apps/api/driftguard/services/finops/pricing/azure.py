@@ -30,8 +30,8 @@ VM_PRICING: dict[str, int] = {
 
 MANAGED_DISK_PRICING: dict[str, int] = {
     # Standard HDD
-    "standard_lrs_s4": 146,   # 32 GB
-    "standard_lrs_s6": 292,   # 64 GB
+    "standard_lrs_s4": 146,  # 32 GB
+    "standard_lrs_s6": 292,  # 64 GB
     "standard_lrs_s10": 730,  # 128 GB
     # Standard SSD
     "standardssd_lrs_e4": 300,
@@ -46,10 +46,10 @@ MANAGED_DISK_PRICING: dict[str, int] = {
 }
 
 MANAGED_DISK_CENTS_PER_GB: dict[str, int] = {
-    "standard_lrs": 5,    # ~$0.05/GB
-    "standardssd_lrs": 8, # ~$0.075/GB
-    "premium_lrs": 15,    # ~$0.15/GB
-    "ultrassd_lrs": 30,   # ~$0.30/GB
+    "standard_lrs": 5,  # ~$0.05/GB
+    "standardssd_lrs": 8,  # ~$0.075/GB
+    "premium_lrs": 15,  # ~$0.15/GB
+    "ultrassd_lrs": 30,  # ~$0.30/GB
 }
 
 AKS_CONTROL_PLANE_MONTHLY_CENTS: int = 7300  # $73/mo (non-free tier)
@@ -66,7 +66,7 @@ POSTGRESQL_FLEXIBLE_PRICING: dict[str, int] = {
 POSTGRESQL_STORAGE_CENTS_PER_GB: int = 12
 MYSQL_FLEXIBLE_PRICING = POSTGRESQL_FLEXIBLE_PRICING  # similar tier pricing
 
-STORAGE_ACCOUNT_CENTS_PER_GB: int = 2   # LRS hot tier
+STORAGE_ACCOUNT_CENTS_PER_GB: int = 2  # LRS hot tier
 APP_SERVICE_PLAN: dict[str, int] = {
     "free": 0,
     "shared": 730,
@@ -78,19 +78,33 @@ APP_SERVICE_PLAN: dict[str, int] = {
     "p1v3": 11680,
     "p2v3": 23360,
 }
-NAT_GATEWAY_MONTHLY_CENTS: int = 3650   # $36.50/mo base
+NAT_GATEWAY_MONTHLY_CENTS: int = 3650  # $36.50/mo base
+
 
 def vm_monthly_cents(size: str) -> int:
     return VM_PRICING.get(size.lower().replace("-", "_"), 0)
+
 
 def managed_disk_monthly_cents(sku: str, size_gb: int) -> int:
     rate = MANAGED_DISK_CENTS_PER_GB.get(sku.lower().replace("-", "_"), 8)
     return size_gb * rate
 
+
 def aks_node_monthly_cents(vm_size: str, node_count: int = 1) -> int:
     return vm_monthly_cents(vm_size) * node_count
 
+
 def postgresql_flexible_monthly_cents(sku: str, storage_gb: int = 32) -> int:
-    compute = POSTGRESQL_FLEXIBLE_PRICING.get(sku.lower().replace("-", "_"), 0)
+    normalized = sku.lower().replace("-", "_")
+    # Azure SKUs arrive as e.g. "GP_Standard_D2s_v3", "B_Standard_B1ms", "MO_Standard_E2ds_v4"
+    if normalized.startswith("gp_standard_"):
+        normalized = "standard_" + normalized[12:]
+    elif normalized.startswith("gp_"):
+        normalized = normalized[3:]
+    elif normalized.startswith("b_standard_"):
+        normalized = "burstable_" + normalized[11:]
+    elif normalized.startswith("mo_standard_"):
+        normalized = "memoryo_" + normalized[12:]
+    compute = POSTGRESQL_FLEXIBLE_PRICING.get(normalized, 0)
     storage = storage_gb * POSTGRESQL_STORAGE_CENTS_PER_GB
     return compute + storage

@@ -7,8 +7,8 @@ from ..parsers.terraform_diff import ResourceChange
 
 @dataclass
 class RiskResult:
-    level: str          # "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"
-    score: int          # 0-100
+    level: str  # "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"
+    score: int  # 0-100
     reasons: list[str]
 
 
@@ -43,7 +43,8 @@ def score(
 
     # New database penalty
     db_types = {
-        "aws_db_instance", "aws_rds_cluster",
+        "aws_db_instance",
+        "aws_rds_cluster",
         "google_sql_database_instance",
         "azurerm_postgresql_flexible_server",
         "azurerm_mysql_flexible_server",
@@ -54,7 +55,9 @@ def score(
 
     # New Kubernetes cluster penalty
     k8s_types = {
-        "aws_eks_cluster", "google_container_cluster", "azurerm_kubernetes_cluster",
+        "aws_eks_cluster",
+        "google_container_cluster",
+        "azurerm_kubernetes_cluster",
     }
     if rtypes & k8s_types:
         score_val += 25
@@ -81,12 +84,7 @@ def score(
         reasons.append("Production environment detected (+20)")
 
     score_val = min(score_val, 100)
-    level = (
-        "CRITICAL" if score_val >= 80
-        else "HIGH" if score_val >= 60
-        else "MEDIUM" if score_val >= 30
-        else "LOW"
-    )
+    level = "CRITICAL" if score_val >= 80 else "HIGH" if score_val >= 60 else "MEDIUM" if score_val >= 30 else "LOW"
     return RiskResult(level=level, score=score_val, reasons=reasons)
 
 

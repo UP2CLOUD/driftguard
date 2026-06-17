@@ -24,6 +24,19 @@ async def finops_dashboard(
     _auth: str = Depends(require_internal_auth),
 ) -> dict[str, Any]:
     """Return FinOps summary stats for the dashboard."""
+    # Aggregate stats over ALL reviews — not just the recent page
+    from sqlalchemy import func as sqlfunc
+
+    agg_stmt = select(
+        sqlfunc.count(FinOpsReview.id).label("total"),
+        sqlfunc.coalesce(sqlfunc.sum(FinOpsReview.delta_monthly_cents), 0).label("total_delta"),
+        sqlfunc.coalesce(sqlfunc.avg(FinOpsReview.delta_monthly_cents), 0).label("avg_delta"),
+        sqlfunc.coalesce(sqlfunc.max(FinOpsReview.risk_score), 0).label("highest_risk"),
+    ).where(FinOpsReview.installation_id == installation_id)
+    agg_result = await db.execute(agg_stmt)
+    agg = agg_result.one()
+
+    # Recent 20 reviews for the table display
     stmt = (
         select(FinOpsReview)
         .where(FinOpsReview.installation_id == installation_id)
@@ -33,10 +46,7 @@ async def finops_dashboard(
     result = await db.execute(stmt)
     reviews = result.scalars().all()
 
-    total_delta = sum(r.delta_monthly_cents for r in reviews)
-    avg_delta = total_delta / len(reviews) if reviews else 0
-    highest_risk = max((r.risk_score for r in reviews), default=0)
-
+    # Provider breakdown from recent reviews only (good enough for display)
     aws_total = gcp_total = azure_total = 0
     for review in reviews:
         costs: dict = review.resource_costs or {}
@@ -49,10 +59,10 @@ async def finops_dashboard(
                 azure_total += cents
 
     return {
-        "total_reviews": len(reviews),
-        "total_monthly_delta_cents": total_delta,
-        "average_monthly_delta_cents": int(avg_delta),
-        "highest_risk_score": highest_risk,
+        "total_reviews": agg.total,
+        "total_monthly_delta_cents": int(agg.total_delta),
+        "average_monthly_delta_cents": int(agg.avg_delta),
+        "highest_risk_score": int(agg.highest_risk),
         "provider_breakdown": {
             "aws": aws_total,
             "gcp": gcp_total,

@@ -1,6 +1,6 @@
 # Prices in USD cents per month
 EC2_PRICING: dict[str, int] = {
-    "t3.nano": 379,      # $3.796/mo
+    "t3.nano": 379,  # $3.796/mo
     "t3.micro": 758,
     "t3.small": 1518,
     "t3.medium": 3037,
@@ -61,21 +61,21 @@ RDS_PRICING: dict[str, int] = {
     "db.r6i.2xlarge": 73632,
 }
 
-RDS_STORAGE_CENTS_PER_GB: int = 14   # gp2 $0.138/GB-month → ~14 cents
+RDS_STORAGE_CENTS_PER_GB: int = 14  # gp2 $0.138/GB-month → ~14 cents
 
 EBS_PRICING_CENTS_PER_GB: dict[str, int] = {
-    "gp2": 10,   # $0.10/GB-month
-    "gp3": 8,    # $0.08
-    "io1": 13,   # $0.125 + IOPS
+    "gp2": 10,  # $0.10/GB-month
+    "gp3": 8,  # $0.08
+    "io1": 13,  # $0.125 + IOPS
     "io2": 13,
     "st1": 5,
     "sc1": 3,
     "standard": 5,
 }
 
-NAT_GATEWAY_MONTHLY_CENTS: int = 3285   # $32.85/mo base (730 h × $0.045)
-ALB_MONTHLY_CENTS: int = 1752           # $17.52/mo
-NLB_MONTHLY_CENTS: int = 1168          # $11.68/mo
+NAT_GATEWAY_MONTHLY_CENTS: int = 3285  # $32.85/mo base (730 h × $0.045)
+ALB_MONTHLY_CENTS: int = 1752  # $17.52/mo
+NLB_MONTHLY_CENTS: int = 1168  # $11.68/mo
 EKS_CONTROL_PLANE_MONTHLY_CENTS: int = 7300  # $73/mo
 ELASTICACHE_PRICING: dict[str, int] = {
     "cache.t3.micro": 1752,
@@ -90,17 +90,21 @@ S3_CENTS_PER_GB: int = 2  # $0.023/GB-month
 LAMBDA_FREE_REQUESTS: int = 1_000_000
 LAMBDA_CENTS_PER_MILLION_REQUESTS: int = 20  # $0.20
 
+
 def ec2_monthly_cents(instance_type: str) -> int:
     return EC2_PRICING.get(instance_type.lower(), 0)
+
 
 def rds_monthly_cents(instance_class: str, storage_gb: int = 20) -> int:
     compute = RDS_PRICING.get(instance_class.lower(), 0)
     storage = storage_gb * RDS_STORAGE_CENTS_PER_GB
     return compute + storage
 
+
 def ebs_monthly_cents(volume_type: str, size_gb: int) -> int:
     rate = EBS_PRICING_CENTS_PER_GB.get(volume_type.lower(), EBS_PRICING_CENTS_PER_GB["gp3"])
     return size_gb * rate
+
 
 def eks_node_group_monthly_cents(instance_type: str, desired_size: int = 1) -> int:
     return ec2_monthly_cents(instance_type) * desired_size

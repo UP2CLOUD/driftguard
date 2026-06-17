@@ -15,10 +15,10 @@ class ChangeType(StrEnum):
 
 @dataclass
 class ResourceChange:
-    resource_type: str          # e.g. "aws_instance"
-    resource_name: str          # logical name in .tf
+    resource_type: str  # e.g. "aws_instance"
+    resource_name: str  # logical name in .tf
     change_type: ChangeType
-    provider: str               # "aws" | "google" | "azurerm"
+    provider: str  # "aws" | "google" | "azurerm"
     attributes: dict[str, Any] = field(default_factory=dict)
     old_attributes: dict[str, Any] = field(default_factory=dict)
     file_path: str = ""
@@ -29,24 +29,43 @@ class ResourceChange:
         return f"{self.resource_type}.{self.resource_name}"
 
 
-_RESOURCE_BLOCK = re.compile(
-    r'^resource\s+"([^"]+)"\s+"([^"]+)"\s*\{', re.MULTILINE
-)
+_RESOURCE_BLOCK = re.compile(r'^resource\s+"([^"]+)"\s+"([^"]+)"\s*\{', re.MULTILINE)
 _ATTR_STRING = re.compile(r'^\s*(\w+)\s*=\s*"([^"]*)"', re.MULTILINE)
-_ATTR_NUMBER = re.compile(r'^\s*(\w+)\s*=\s*(\d+(?:\.\d+)?)\b', re.MULTILINE)
-_ATTR_BOOL = re.compile(r'^\s*(\w+)\s*=\s*(true|false)\b', re.MULTILINE)
-_TAG_BLOCK = re.compile(r'tags\s*=\s*\{([^}]*)\}', re.DOTALL)
+_ATTR_NUMBER = re.compile(r"^\s*(\w+)\s*=\s*(\d+(?:\.\d+)?)\b", re.MULTILINE)
+_ATTR_BOOL = re.compile(r"^\s*(\w+)\s*=\s*(true|false)\b", re.MULTILINE)
+_TAG_BLOCK = re.compile(r"(?:tags|labels)\s*=\s*\{([^}]*)\}", re.DOTALL)
 _TAG_ATTR = re.compile(r'(\w+)\s*=\s*"([^"]*)"')
+_LIST_ATTR = re.compile(r"^\s*(\w+)\s*=\s*\[([^\]]*)\]", re.MULTILINE)
+_LIST_ITEM = re.compile(r'"([^"]*)"')
 
 _COST_ATTRS = {
-    "instance_type", "db_instance_class", "node_type",
-    "instance_class", "machine_type", "vm_size", "size",
-    "allocated_storage", "storage_size_gb", "disk_size_gb",
-    "disk_size", "volume_size", "volume_type", "storage_type",
-    "desired_capacity", "min_size", "max_size", "desired_size",
-    "node_count", "initial_node_count", "replicas",
-    "engine_version", "engine", "multi_az",
-    "memory_size", "timeout",
+    "instance_type",
+    "db_instance_class",
+    "node_type",
+    "instance_class",
+    "machine_type",
+    "vm_size",
+    "size",
+    "instance_types",
+    "allocated_storage",
+    "storage_size_gb",
+    "disk_size_gb",
+    "disk_size",
+    "volume_size",
+    "volume_type",
+    "storage_type",
+    "desired_capacity",
+    "min_size",
+    "max_size",
+    "desired_size",
+    "node_count",
+    "initial_node_count",
+    "replicas",
+    "engine_version",
+    "engine",
+    "multi_az",
+    "memory_size",
+    "timeout",
 }
 
 _COST_TAGS = {"environment", "owner", "service", "application", "cost_center", "team"}
@@ -66,19 +85,29 @@ def _detect_provider(resource_type: str) -> str:
 
 
 def _extract_block_content(hcl: str, start: int) -> str:
-    """Extract the content of a { } block starting at `start`."""
+    """Extract the content of a { } block starting at `start`, string-aware."""
     depth = 0
     i = start
     start_idx = -1
+    in_string = False
+    escape = False
     while i < len(hcl):
-        if hcl[i] == "{":
-            depth += 1
-            if depth == 1:
-                start_idx = i
-        elif hcl[i] == "}":
-            depth -= 1
-            if depth == 0:
-                return hcl[start_idx + 1 : i]
+        char = hcl[i]
+        if char == '"' and not escape:
+            in_string = not in_string
+        if char == "\\" and in_string:
+            escape = not escape
+        else:
+            escape = False
+        if not in_string:
+            if char == "{":
+                depth += 1
+                if depth == 1:
+                    start_idx = i
+            elif char == "}":
+                depth -= 1
+                if depth == 0:
+                    return hcl[start_idx + 1 : i]
         i += 1
     return ""
 
@@ -87,7 +116,7 @@ def _parse_attributes(block: str) -> dict[str, Any]:
     attrs: dict[str, Any] = {}
     for m in _ATTR_STRING.finditer(block):
         key, val = m.group(1), m.group(2)
-        if key in _COST_ATTRS or key.startswith("tags"):
+        if key in _COST_ATTRS or key.startswith("tags") or key.startswith("labels"):
             attrs[key] = val
     for m in _ATTR_NUMBER.finditer(block):
         key, val = m.group(1), m.group(2)
@@ -97,7 +126,14 @@ def _parse_attributes(block: str) -> dict[str, Any]:
         key, val = m.group(1), m.group(2)
         if key in _COST_ATTRS:
             attrs[key] = val == "true"
-    # Extract tags sub-block
+    # Extract list attributes (e.g. instance_types = ["t3.medium"])
+    for m in _LIST_ATTR.finditer(block):
+        key = m.group(1)
+        if key in _COST_ATTRS:
+            items = _LIST_ITEM.findall(m.group(2))
+            if items:
+                attrs[key] = items
+    # Extract tags/labels sub-block (GCP uses labels, AWS/Azure use tags)
     tm = _TAG_BLOCK.search(block)
     if tm:
         tags: dict[str, str] = {}
@@ -141,11 +177,7 @@ def parse_terraform_files(
 
 def detect_terraform_files(file_paths: list[str]) -> list[str]:
     """Return subset of paths that are Terraform files."""
-    return [
-        p for p in file_paths
-        if p.endswith((".tf", ".tfvars", ".hcl"))
-        and not p.endswith(".terraform.lock.hcl")
-    ]
+    return [p for p in file_paths if p.endswith((".tf", ".tfvars", ".hcl")) and not p.endswith(".terraform.lock.hcl")]
 
 
 def has_terraform_files(file_paths: list[str]) -> bool:

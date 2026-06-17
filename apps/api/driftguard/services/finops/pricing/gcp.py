@@ -48,18 +48,22 @@ SSD_DISK_CENTS_PER_GB: int = 17
 CLOUD_RUN_CENTS_PER_MILLION_REQUESTS: int = 40
 STORAGE_CENTS_PER_GB: int = 2  # $0.020/GB-month
 
+
 def compute_monthly_cents(machine_type: str) -> int:
     return COMPUTE_PRICING.get(machine_type.lower(), 0)
+
 
 def cloud_sql_monthly_cents(tier: str, storage_gb: int = 10) -> int:
     compute = CLOUD_SQL_PRICING.get(tier.lower(), 0)
     storage = storage_gb * CLOUD_SQL_STORAGE_CENTS_PER_GB
     return compute + storage
 
+
 def persistent_disk_monthly_cents(disk_type: str, size_gb: int) -> int:
     if "ssd" in disk_type.lower() or "pd-ssd" in disk_type.lower():
         return size_gb * SSD_DISK_CENTS_PER_GB
     return size_gb * PERSISTENT_DISK_CENTS_PER_GB
+
 
 def gke_node_pool_monthly_cents(machine_type: str, node_count: int = 1) -> int:
     return compute_monthly_cents(machine_type) * node_count
