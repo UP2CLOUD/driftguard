@@ -4,11 +4,17 @@ import { useT } from "@/components/TranslationProvider";
 
 import { useEffect, useRef, useState } from "react";
 import { SectionHeader } from "./Architecture";
+import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 
-function useCount(target: number, duration = 1400, start: boolean) {
+function useCount(target: number, duration: number, start: boolean, reduced: boolean) {
   const [n, setN] = useState(0);
   useEffect(() => {
     if (!start) return;
+    // Reduced motion: show the final value immediately, no RAF loop.
+    if (reduced) {
+      setN(target);
+      return;
+    }
     const t0 = performance.now();
     let raf = 0;
     const step = (t: number) => {
@@ -19,7 +25,7 @@ function useCount(target: number, duration = 1400, start: boolean) {
     };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [target, duration, start]);
+  }, [target, duration, start, reduced]);
   return n;
 }
 
@@ -42,6 +48,7 @@ export function Metrics({ installationId }: { installationId?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const [start, setStart] = useState(false);
   const [live, setLive] = useState<LiveMetrics | null>(null);
+  const reduced = usePrefersReducedMotion();
 
   useEffect(() => {
     const el = ref.current;
@@ -70,10 +77,10 @@ export function Metrics({ installationId }: { installationId?: number }) {
   }, [installationId]);
 
   // If live data available, show real numbers; else show static capabilities
-  const m1 = useCount(live ? live.analyses_7d : STATIC_FALLBACK.checkov_rules, 1600, start);
-  const m2 = useCount(live ? live.open_incidents : STATIC_FALLBACK.compliance_controls, 1600, start);
-  const m3 = useCount(live ? live.memory_entries : STATIC_FALLBACK.memory_accuracy, 1600, start);
-  const m4 = useCount(live ? (live.avg_risk_7d ?? 0) : STATIC_FALLBACK.p99_latency, 1600, start);
+  const m1 = useCount(live ? live.analyses_7d : STATIC_FALLBACK.checkov_rules, 1600, start, reduced);
+  const m2 = useCount(live ? live.open_incidents : STATIC_FALLBACK.compliance_controls, 1600, start, reduced);
+  const m3 = useCount(live ? live.memory_entries : STATIC_FALLBACK.memory_accuracy, 1600, start, reduced);
+  const m4 = useCount(live ? (live.avg_risk_7d ?? 0) : STATIC_FALLBACK.p99_latency, 1600, start, reduced);
 
   const label1 = live ? t("landing.metrics.liveLabel1")   : t("landing.metrics.staticLabel1");
   const label2 = live ? t("landing.metrics.liveLabel2")   : t("landing.metrics.staticLabel2");

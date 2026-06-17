@@ -4,6 +4,7 @@ import { useT } from "@/components/TranslationProvider";
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { SectionHeader } from "./Architecture";
+import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 
 const STATIC_EVENTS = [
   { ts: "09:14:02.341", badge: "SCAN",   label: "text-[color:var(--dg-electric-bright)]", dot: "bg-[color:var(--dg-electric)] shadow-[0_0_6px_rgba(63,140,255,0.5)]", message: "PR #847 opened by cursor-agent — 23 resource changes", detail: "terraform plan: +12 ~8 -3", source: "cursor-agent" },
@@ -71,6 +72,7 @@ export function IncidentTimeline({ installationId }: { installationId?: number }
   const [isLive, setIsLive] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const reduced = usePrefersReducedMotion();
 
   // Intersection observer
   useEffect(() => {
@@ -84,17 +86,21 @@ export function IncidentTimeline({ installationId }: { installationId?: number }
     return () => obs.disconnect();
   }, []);
 
-  // Staggered static reveal
+  // Staggered static reveal (jump straight to full list under reduced motion)
   useEffect(() => {
     if (!visible || isLive) return;
+    if (reduced) {
+      setRevealCount(STATIC_EVENTS.length);
+      return;
+    }
     let i = 0;
     const id = setInterval(() => {
       i++;
       setRevealCount(i);
       if (i >= STATIC_EVENTS.length) clearInterval(id);
-    }, 280);
+    }, 240);
     return () => clearInterval(id);
-  }, [visible, isLive]);
+  }, [visible, isLive, reduced]);
 
   // Polling when installationId available
   const fetchEvents = useCallback(async () => {
@@ -171,7 +177,7 @@ export function IncidentTimeline({ installationId }: { installationId?: number }
               {displayEvents.map((e, i) => (
                 <div
                   key={i}
-                  className={`flex items-start gap-4 px-4 py-3.5 transition-all duration-300 ${
+                  className={`flex items-start gap-4 px-4 py-3.5 transition-[opacity,transform] duration-[260ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
                     i < revealCount ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
                   } ${e.badge === "BLOCK" || e.badge === "GATE" ? "bg-blocked/[0.03]" : ""}`}
                 >

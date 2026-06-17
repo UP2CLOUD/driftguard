@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 
 interface Props {
   children: React.ReactNode;
@@ -23,6 +24,7 @@ export function MotionSection({
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const reduced = usePrefersReducedMotion();
 
   useEffect(() => {
     const el = ref.current;
@@ -42,6 +44,15 @@ export function MotionSection({
     return () => obs.disconnect();
   }, [threshold, once]);
 
+  // Reduced motion: render fully shown, no transform/opacity animation.
+  if (reduced) {
+    return (
+      <div ref={ref} className={className}>
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div
       ref={ref}
@@ -50,7 +61,7 @@ export function MotionSection({
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(12px)",
         transition: visible
-          ? `opacity 600ms cubic-bezier(.16,1,.3,1) ${delay}ms, transform 600ms cubic-bezier(.16,1,.3,1) ${delay}ms`
+          ? `opacity var(--t-reveal, 560ms) var(--ease-out, cubic-bezier(.16,1,.3,1)) ${delay}ms, transform var(--t-reveal, 560ms) var(--ease-out, cubic-bezier(.16,1,.3,1)) ${delay}ms`
           : "none",
       }}
     >
