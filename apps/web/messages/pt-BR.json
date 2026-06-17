@@ -1453,7 +1453,8 @@
     "queuing": "na fila…",
     "scanning": "escaneando…",
     "scanError": "falhou — tente novamente",
-    "rescan": "↺ Re-executar análise"
+    "rescan": "↺ Re-executar análise",
+    "exportCsv": "Exportar CSV"
   },
   "about": {
     "eyebrow": "Empresa",

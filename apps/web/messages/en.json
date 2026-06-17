@@ -1453,7 +1453,8 @@
     "queuing": "queuing…",
     "scanning": "scanning…",
     "scanError": "failed — try again",
-    "rescan": "↺ Re-run scan"
+    "rescan": "↺ Re-run scan",
+    "exportCsv": "Export CSV"
   },
   "about": {
     "eyebrow": "Company",
