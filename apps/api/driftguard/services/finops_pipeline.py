@@ -1,9 +1,11 @@
 from __future__ import annotations
+
 import logging
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..services.finops.engine import FinOpsResult
 from ..db.models import Analysis
+from ..services.finops.engine import FinOpsResult
 
 log = logging.getLogger(__name__)
 

@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 import logging
 from dataclasses import dataclass, field
 
-from .parsers.terraform_diff import ResourceChange, parse_terraform_files, has_terraform_files
 from .estimators.dispatcher import estimate_cost
-from .recommendations.rules import Recommendation, generate as gen_recommendations
+from .parsers.terraform_diff import ResourceChange, parse_terraform_files
+from .recommendations.rules import Recommendation
+from .recommendations.rules import generate as gen_recommendations
 from .scoring.risk import score as compute_risk
 
 log = logging.getLogger(__name__)

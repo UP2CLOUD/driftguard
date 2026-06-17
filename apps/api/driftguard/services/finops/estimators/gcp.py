@@ -1,7 +1,7 @@
 from __future__ import annotations
+
 from ..parsers.terraform_diff import ResourceChange
 from ..pricing import gcp as pricing
-
 
 _GCP_RESOURCE_TYPES = {
     "google_compute_instance",

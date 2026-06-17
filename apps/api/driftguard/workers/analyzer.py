@@ -475,8 +475,8 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
                     continue
                 try:
                     _tf_file_contents[str(_tf_path.relative_to(root))] = _tf_path.read_text(errors="replace")
-                except Exception:
-                    pass
+                except Exception as _read_err:
+                    log.debug("finops_tf_read_failed", path=str(_tf_path), error=str(_read_err))
         except Exception as _tf_collect_err:
             log.debug("finops_tf_collect_failed", error=str(_tf_collect_err))
 
@@ -530,7 +530,6 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
     # FinOps cost analysis — non-blocking, best-effort
     try:
         from driftguard.services.finops.engine import FinOpsResult, run_finops_analysis
-        from driftguard.services.finops.github.comment import MARKER as FINOPS_MARKER
         from driftguard.services.finops.github.comment import render_comment as render_finops_comment
 
         _finops_result: FinOpsResult = run_finops_analysis(_tf_file_contents)
@@ -1035,7 +1034,7 @@ async def _persist_finops_review(
     installation_id: int,
     repo_full_name: str,
     pr_number: int,
-    result: "Any",
+    result: object,
 ) -> str | None:
     """Persist a FinOpsReview and its per-resource rows. Returns the review id."""
     from driftguard.db.models import FinOpsResourceCost, FinOpsReview

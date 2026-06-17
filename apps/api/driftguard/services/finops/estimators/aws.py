@@ -1,7 +1,7 @@
 from __future__ import annotations
-from ..parsers.terraform_diff import ResourceChange, ChangeType
-from ..pricing import aws as pricing
 
+from ..parsers.terraform_diff import ResourceChange
+from ..pricing import aws as pricing
 
 _AWS_RESOURCE_TYPES = {
     "aws_instance",

@@ -1,6 +1,7 @@
 from __future__ import annotations
+
 from ..parsers.terraform_diff import ResourceChange
-from . import aws, gcp, azure
+from . import aws, azure, gcp
 
 
 def estimate_cost(rc: ResourceChange) -> int:

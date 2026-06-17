@@ -68,7 +68,9 @@ class Analysis(Base):
     scan_errors: Mapped[list | None] = mapped_column(JSON, nullable=True)
     contact_email: Mapped[str | None] = mapped_column(String(255))
     policy_verdict: Mapped[str | None] = mapped_column(String(16))
-    finops_review: Mapped[Optional["FinOpsReview"]] = relationship("FinOpsReview", back_populates="analysis", uselist=False)
+    finops_review: Mapped[Optional["FinOpsReview"]] = relationship(
+        "FinOpsReview", back_populates="analysis", uselist=False
+    )
 
 
 class Finding(Base):
@@ -338,7 +340,9 @@ class FinOpsReview(Base):
     __tablename__ = "finops_reviews"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
-    analysis_id: Mapped[str] = mapped_column(String(36), ForeignKey("analyses.id", ondelete="CASCADE"), nullable=False, index=True)
+    analysis_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("analyses.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     installation_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
     repo_full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     pr_number: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -365,7 +369,9 @@ class FinOpsResourceCost(Base):
     __tablename__ = "finops_resource_costs"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
-    finops_review_id: Mapped[str] = mapped_column(String(36), ForeignKey("finops_reviews.id", ondelete="CASCADE"), nullable=False, index=True)
+    finops_review_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("finops_reviews.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     resource_label: Mapped[str] = mapped_column(String(255), nullable=False)
     resource_type: Mapped[str] = mapped_column(String(128), nullable=False)
     provider: Mapped[str] = mapped_column(String(20), nullable=False)

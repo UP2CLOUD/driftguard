@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 from ..parsers.terraform_diff import ResourceChange
 
 

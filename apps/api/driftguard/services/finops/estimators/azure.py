@@ -1,7 +1,7 @@
 from __future__ import annotations
+
 from ..parsers.terraform_diff import ResourceChange
 from ..pricing import azure as pricing
-
 
 _AZURE_RESOURCE_TYPES = {
     "azurerm_linux_virtual_machine",
