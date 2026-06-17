@@ -1436,7 +1436,16 @@
     "disclaimer": "成本为基于公开定价的估算，实际云账单可能有所不同。",
     "costTrend": "每月成本影响 — 近期 PR",
     "costIncrease": "费用增加",
-    "costDecrease": "费用减少"
+    "costDecrease": "费用减少",
+    "reviewDetail": "费用审查",
+    "currentMonthly": "当前月费用",
+    "newMonthly": "新月费用",
+    "monthlyDelta": "月度变化",
+    "annualDelta": "年度变化",
+    "resourceBreakdown": "资源费用明细",
+    "aiSummary": "AI费用分析",
+    "riskReasons": "风险因素",
+    "terraformFiles": "已分析的Terraform文件"
   },
   "analyses": {
     "eyebrow": "基础设施扫描器",

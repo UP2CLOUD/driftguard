@@ -1436,7 +1436,16 @@
     "disclaimer": "Os custos são estimativas com base nos preços de tabela publicados. A cobrança real da nuvem pode variar.",
     "costTrend": "Impacto mensal de custo — PRs recentes",
     "costIncrease": "Aumento de custo",
-    "costDecrease": "Redução de custo"
+    "costDecrease": "Redução de custo",
+    "reviewDetail": "Revisão de Custos",
+    "currentMonthly": "Mensal atual",
+    "newMonthly": "Novo mensal",
+    "monthlyDelta": "Variação mensal",
+    "annualDelta": "Variação anual",
+    "resourceBreakdown": "Detalhamento por recurso",
+    "aiSummary": "Análise de custos por IA",
+    "riskReasons": "Fatores de risco",
+    "terraformFiles": "Arquivos Terraform analisados"
   },
   "analyses": {
     "eyebrow": "Scanner de infraestrutura",

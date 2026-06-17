@@ -1436,7 +1436,16 @@
     "disclaimer": "التكاليف تقديرية بناءً على الأسعار المنشورة. قد تختلف فاتورة السحابة الفعلية.",
     "costTrend": "التأثير الشهري على التكلفة — أحدث PRs",
     "costIncrease": "زيادة التكلفة",
-    "costDecrease": "تخفيض التكلفة"
+    "costDecrease": "تخفيض التكلفة",
+    "reviewDetail": "مراجعة التكلفة",
+    "currentMonthly": "الشهري الحالي",
+    "newMonthly": "الشهري الجديد",
+    "monthlyDelta": "التغيير الشهري",
+    "annualDelta": "التغيير السنوي",
+    "resourceBreakdown": "تفاصيل تكلفة الموارد",
+    "aiSummary": "تحليل التكلفة بالذكاء الاصطناعي",
+    "riskReasons": "عوامل الخطر",
+    "terraformFiles": "ملفات Terraform المحللة"
   },
   "analyses": {
     "eyebrow": "ماسح البنية التحتية",

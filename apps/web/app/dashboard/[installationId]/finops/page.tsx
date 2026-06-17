@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
@@ -209,8 +210,9 @@ export default async function FinOpsPage({ params }: Props) {
             </div>
             <div className="divide-y divide-[color:var(--dg-border)]">
               {data.recent_reviews.map((review: FinOpsReview) => (
-                <div
+                <Link
                   key={review.id}
+                  href={`/dashboard/${installationId}/finops/${review.id}`}
                   className="flex items-center justify-between px-5 py-4 hover:bg-[color:var(--dg-surface-raised)] transition"
                 >
                   <div className="min-w-0 flex-1">
@@ -249,7 +251,7 @@ export default async function FinOpsPage({ params }: Props) {
                       </span>
                     )}
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>

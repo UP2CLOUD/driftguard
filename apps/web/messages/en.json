@@ -1436,7 +1436,16 @@
     "disclaimer": "Costs are estimates based on published list prices. Actual cloud billing may vary.",
     "costTrend": "Monthly Cost Impact — Recent PRs",
     "costIncrease": "Cost increase",
-    "costDecrease": "Cost decrease"
+    "costDecrease": "Cost decrease",
+    "reviewDetail": "Cost Review",
+    "currentMonthly": "Current monthly",
+    "newMonthly": "New monthly",
+    "monthlyDelta": "Monthly delta",
+    "annualDelta": "Annual delta",
+    "resourceBreakdown": "Resource cost breakdown",
+    "aiSummary": "AI cost analysis",
+    "riskReasons": "Risk factors",
+    "terraformFiles": "Terraform files analyzed"
   },
   "analyses": {
     "eyebrow": "Infrastructure scanner",
