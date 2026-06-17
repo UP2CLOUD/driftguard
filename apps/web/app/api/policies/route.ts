@@ -7,7 +7,13 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   let body: Record<string, unknown>;
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid request body" }, { status: 400 }); }
+  try {
+    const raw = await req.json();
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }
+    body = raw as Record<string, unknown>;
+  } catch { return NextResponse.json({ error: "Invalid request body" }, { status: 400 }); }
   const { installation_id, ...policy } = body;
 
   if (!installation_id) return NextResponse.json({ error: "installation_id required" }, { status: 400 });
