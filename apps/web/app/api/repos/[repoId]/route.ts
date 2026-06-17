@@ -10,7 +10,8 @@ export async function PATCH(
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { repoId } = await params;
-  const body = await req.json();
+  let body: unknown;
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid request body" }, { status: 400 }); }
 
   const { body: data, status } = await beProxy(`/api/v1/repos/${repoId}`, {
     method: "PATCH",
