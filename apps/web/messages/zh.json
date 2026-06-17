@@ -1425,7 +1425,10 @@
     "riskMedium": "中",
     "riskHigh": "高",
     "riskCritical": "严重",
-    "disclaimer": "成本为基于公开定价的估算，实际云账单可能有所不同。"
+    "disclaimer": "成本为基于公开定价的估算，实际云账单可能有所不同。",
+    "costTrend": "每月成本影响 — 近期 PR",
+    "costIncrease": "费用增加",
+    "costDecrease": "费用减少"
   },
   "analyses": {
     "eyebrow": "基础设施扫描器",

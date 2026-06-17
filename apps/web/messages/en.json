@@ -1425,7 +1425,10 @@
     "riskMedium": "Medium",
     "riskHigh": "High",
     "riskCritical": "Critical",
-    "disclaimer": "Costs are estimates based on published list prices. Actual cloud billing may vary."
+    "disclaimer": "Costs are estimates based on published list prices. Actual cloud billing may vary.",
+    "costTrend": "Monthly Cost Impact — Recent PRs",
+    "costIncrease": "Cost increase",
+    "costDecrease": "Cost decrease"
   },
   "analyses": {
     "eyebrow": "Infrastructure scanner",

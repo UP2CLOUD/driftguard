@@ -1425,7 +1425,10 @@
     "riskMedium": "Medio",
     "riskHigh": "Alto",
     "riskCritical": "Crítico",
-    "disclaimer": "Los costes son estimaciones basadas en precios de lista publicados. La facturación real en la nube puede variar."
+    "disclaimer": "Los costes son estimaciones basadas en precios de lista publicados. La facturación real en la nube puede variar.",
+    "costTrend": "Impacto mensual de coste — PRs recientes",
+    "costIncrease": "Aumento de coste",
+    "costDecrease": "Reducción de coste"
   },
   "analyses": {
     "eyebrow": "Escáner de infraestructura",
