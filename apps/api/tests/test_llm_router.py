@@ -46,9 +46,7 @@ class TestLlmComplete:
         from driftguard.core.config import settings
 
         fake_client = AsyncMock()
-        fake_client.messages.create = AsyncMock(
-            side_effect=APITimeoutError(request=MagicMock())
-        )
+        fake_client.messages.create = AsyncMock(side_effect=APITimeoutError(request=MagicMock()))
         monkeypatch.setattr("driftguard.ai.llm_router._anthropic", fake_client)
         monkeypatch.setattr(settings, "llm_fallback_enabled", False)
 
@@ -63,13 +61,9 @@ class TestLlmComplete:
         from driftguard.core.config import settings
 
         fake_claude = AsyncMock()
-        fake_claude.messages.create = AsyncMock(
-            side_effect=APITimeoutError(request=MagicMock())
-        )
+        fake_claude.messages.create = AsyncMock(side_effect=APITimeoutError(request=MagicMock()))
         fake_openai = AsyncMock()
-        fake_openai.chat.completions.create = AsyncMock(
-            return_value=_openai_response("OpenAI answer.")
-        )
+        fake_openai.chat.completions.create = AsyncMock(return_value=_openai_response("OpenAI answer."))
         monkeypatch.setattr("driftguard.ai.llm_router._anthropic", fake_claude)
         monkeypatch.setattr("driftguard.ai.llm_router._openai", fake_openai)
         monkeypatch.setattr(settings, "llm_fallback_enabled", True)
@@ -107,9 +101,7 @@ class TestLlmComplete:
         from driftguard.core.config import settings
 
         fake_client = AsyncMock()
-        fake_client.messages.create = AsyncMock(
-            side_effect=APITimeoutError(request=MagicMock())
-        )
+        fake_client.messages.create = AsyncMock(side_effect=APITimeoutError(request=MagicMock()))
         monkeypatch.setattr("driftguard.ai.llm_router._anthropic", fake_client)
         monkeypatch.setattr(settings, "llm_fallback_enabled", True)
         monkeypatch.setattr(settings, "openai_api_key", "")
@@ -128,9 +120,7 @@ class TestOpenAiFallback:
     async def test_openai_fallback_returns_response_text(self, monkeypatch):
         """_openai_fallback returns the first choice's message content."""
         fake_openai = AsyncMock()
-        fake_openai.chat.completions.create = AsyncMock(
-            return_value=_openai_response("OpenAI result.")
-        )
+        fake_openai.chat.completions.create = AsyncMock(return_value=_openai_response("OpenAI result."))
         monkeypatch.setattr("driftguard.ai.llm_router._openai", fake_openai)
 
         from driftguard.ai.llm_router import _openai_fallback
