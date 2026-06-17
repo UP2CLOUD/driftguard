@@ -13,7 +13,7 @@ type Props = {
 };
 
 function fmtCents(cents: number): string {
-  const sign = cents >= 0 ? "+" : "";
+  const sign = cents > 0 ? "+" : cents < 0 ? "-" : "";
   return `${sign}$${(Math.abs(cents) / 100).toFixed(2)}`;
 }
 
@@ -52,7 +52,7 @@ export default async function FinOpsReviewDetailPage({ params }: Props) {
 
   const preferences = await getUserPreferences();
   const [review, messages] = await Promise.all([
-    beGet<FinOpsReview>(`/api/v1/finops/reviews/${reviewId}`, { revalidate: 60, timeout: 10000 }),
+    beGet<FinOpsReview>(`/api/v1/finops/reviews/${reviewId}?installation_id=${installationId}`, { revalidate: 60, timeout: 10000 }),
     getMessages(preferences.locale),
   ]);
 
