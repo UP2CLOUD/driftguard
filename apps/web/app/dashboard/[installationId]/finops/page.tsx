@@ -6,6 +6,61 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import { beGet } from "@/lib/backend";
 import type { FinOpsDashboard, FinOpsReview } from "@/lib/api";
 
+function fmtCentsShort(cents: number): string {
+  const abs = Math.abs(cents) / 100;
+  if (abs >= 1000) return `$${(abs / 1000).toFixed(1)}k`;
+  return `$${abs.toFixed(0)}`;
+}
+
+function CostTrendChart({ reviews }: { reviews: FinOpsReview[] }) {
+  if (reviews.length < 2) return null;
+
+  const sorted = [...reviews]
+    .filter((r) => r.created_at)
+    .sort((a, b) => new Date(a.created_at!).getTime() - new Date(b.created_at!).getTime())
+    .slice(-20);
+
+  if (sorted.length < 2) return null;
+
+  const values = sorted.map((r) => r.delta_monthly_cents);
+  const maxAbs = Math.max(...values.map(Math.abs), 1);
+
+  const W = 600;
+  const H = 120;
+  const BAR_W = Math.floor((W - sorted.length * 2) / sorted.length);
+  const MID = H / 2;
+
+  return (
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      aria-label="Cost delta trend"
+      className="w-full h-auto"
+      style={{ maxHeight: 120 }}
+    >
+      {/* baseline */}
+      <line x1={0} y1={MID} x2={W} y2={MID} stroke="var(--dg-border)" strokeWidth={1} />
+      {sorted.map((r, i) => {
+        const ratio = r.delta_monthly_cents / maxAbs;
+        const barH = Math.max(Math.abs(ratio) * (MID - 6), 2);
+        const positive = r.delta_monthly_cents >= 0;
+        const x = i * (BAR_W + 2);
+        const y = positive ? MID - barH : MID;
+        const fill = positive ? "var(--dg-blocked, #ef4444)" : "var(--dg-allowed, #22c55e)";
+        return (
+          <g key={r.id}>
+            <rect x={x} y={y} width={BAR_W} height={barH} fill={fill} opacity={0.75} rx={1} />
+            <title>
+              {r.repo_full_name} #{r.pr_number} —{" "}
+              {r.delta_monthly_cents > 0 ? "+" : r.delta_monthly_cents < 0 ? "-" : ""}
+              {fmtCentsShort(r.delta_monthly_cents)}/mo
+            </title>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
 type Props = { params: Promise<{ installationId: string }> };
 
 async function fetchFinOpsDashboard(installationId: string): Promise<FinOpsDashboard | null> {
@@ -97,6 +152,26 @@ export default async function FinOpsPage({ params }: Props) {
               </p>
             </div>
           </div>
+
+          {/* Cost trend chart */}
+          {data.recent_reviews.length >= 2 && (
+            <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-5">
+              <h2 className="font-sans font-semibold text-[13px] text-[color:var(--dg-fg)] mb-4">
+                {t("finops.costTrend") ?? "Monthly Cost Impact — Recent PRs"}
+              </h2>
+              <CostTrendChart reviews={data.recent_reviews} />
+              <div className="mt-2 flex items-center gap-4 text-[10px] font-sans text-[color:var(--dg-fg-subtle)]">
+                <span className="flex items-center gap-1">
+                  <span className="inline-block w-2 h-2 rounded-sm opacity-75" style={{ backgroundColor: "var(--dg-blocked, #ef4444)" }} />
+                  {t("finops.costIncrease") ?? "Cost increase"}
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="inline-block w-2 h-2 rounded-sm opacity-75" style={{ backgroundColor: "var(--dg-allowed, #22c55e)" }} />
+                  {t("finops.costDecrease") ?? "Cost decrease"}
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Provider breakdown */}
           {(data.provider_breakdown.aws > 0 ||

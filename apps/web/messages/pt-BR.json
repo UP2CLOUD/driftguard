@@ -1425,7 +1425,10 @@
     "riskMedium": "Médio",
     "riskHigh": "Alto",
     "riskCritical": "Crítico",
-    "disclaimer": "Os custos são estimativas com base nos preços de tabela publicados. A cobrança real da nuvem pode variar."
+    "disclaimer": "Os custos são estimativas com base nos preços de tabela publicados. A cobrança real da nuvem pode variar.",
+    "costTrend": "Impacto mensal de custo — PRs recentes",
+    "costIncrease": "Aumento de custo",
+    "costDecrease": "Redução de custo"
   },
   "analyses": {
     "eyebrow": "Scanner de infraestrutura",
