@@ -159,6 +159,15 @@ export default async function AnalysisPage({
         </div>
         {/* Risk badge + actions */}
         <div className="flex items-center gap-3">
+          {findings.length > 0 && (
+            <a
+              href={`/api/analyses/${analysisId}/export`}
+              download
+              className="inline-flex items-center gap-1.5 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-1.5 font-sans font-semibold text-[11px] uppercase tracking-wide text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-fg-subtle)] transition"
+            >
+              ↓ {t("analyses.exportCsv") ?? "Export CSV"}
+            </a>
+          )}
           {data.repo_full_name && (
             <RescanButton
               installationId={installationId}
