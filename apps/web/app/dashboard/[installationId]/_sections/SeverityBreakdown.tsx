@@ -22,7 +22,7 @@ export async function SeverityBreakdownSection({
 }) {
   const overview = demoOverview ?? await getOverview(installationId);
   const breakdown: Record<string, number> = overview?.severity_breakdown ?? {};
-  const total = SEVERITY_CONFIG.reduce((s, { key }) => s + (breakdown[key] ?? 0), 0);
+  const total = SEVERITY_CONFIG.reduce((s, { key }) => s + (Number(breakdown[key]) || 0), 0);
 
   if (total === 0) return null;
 
@@ -37,17 +37,18 @@ export async function SeverityBreakdownSection({
         </span>
       </div>
 
-      {/* Stacked bar */}
-      <div className="h-2 rounded-full overflow-hidden flex mb-3">
-        {SEVERITY_CONFIG.map(({ key, color }) => {
-          const count = breakdown[key] ?? 0;
+      {/* Stacked bar — aria-hidden because the legend below is the accessible equivalent */}
+      <div className="h-2 rounded-full overflow-hidden flex mb-3" aria-hidden="true">
+        {SEVERITY_CONFIG.map(({ key, i18nKey, fallback, color }) => {
+          const count = Number(breakdown[key]) || 0;
           if (count === 0) return null;
           const pct = (count / total) * 100;
+          const label = t(i18nKey) ?? fallback;
           return (
             <div
               key={key}
               style={{ width: `${pct}%`, backgroundColor: color }}
-              title={`${key}: ${count}`}
+              title={`${label}: ${count}`}
             />
           );
         })}
@@ -56,7 +57,7 @@ export async function SeverityBreakdownSection({
       {/* Legend */}
       <div className="flex flex-wrap gap-x-5 gap-y-1.5">
         {SEVERITY_CONFIG.map(({ key, i18nKey, fallback, color }) => {
-          const count = breakdown[key] ?? 0;
+          const count = Number(breakdown[key]) || 0;
           if (count === 0) return null;
           const pct = Math.round((count / total) * 100);
           return (
