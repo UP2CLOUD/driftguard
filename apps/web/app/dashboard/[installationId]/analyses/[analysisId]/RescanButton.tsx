@@ -29,6 +29,7 @@ export function RescanButton({
           repo_full_name: repoFullName,
           ref: headSha ?? undefined,
         }),
+        signal: AbortSignal.timeout(35000),
       });
       const data = await res.json();
       if (res.ok && data.analysis_id) {
@@ -51,9 +52,12 @@ export function RescanButton({
     for (let i = 0; i < 36; i++) {
       await new Promise((r) => setTimeout(r, 5000));
       try {
-        const res = await fetch(`/api/scan/tasks/${taskId}`);
+        const res = await fetch(`/api/scan/tasks/${taskId}`, {
+          signal: AbortSignal.timeout(8000),
+        });
         if (!res.ok) continue;
-        const data = await res.json();
+        const data = await res.json().catch(() => null);
+        if (!data) continue;
         if (data.state === "completed" && data.analysis_id) {
           setStatus("done");
           router.push(`/dashboard/${installationId}/analyses/${data.analysis_id}`);

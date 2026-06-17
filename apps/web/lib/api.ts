@@ -145,12 +145,15 @@ export async function startCheckout(orgId: string, plan: string, installationId:
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ orgId, plan, installationId }),
+    signal: AbortSignal.timeout(15000),
   });
   if (!r.ok) {
     const errData = await r.json().catch(() => ({}));
     throw new Error(errData.error || "checkout failed");
   }
-  const { url } = await r.json();
+  const data = await r.json().catch(() => null);
+  const url = data?.url;
+  if (!url) throw new Error("checkout response missing redirect URL");
   return url;
 }
 
@@ -159,12 +162,15 @@ export async function openPortal(orgId: string, installationId: string): Promise
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ orgId, installationId }),
+    signal: AbortSignal.timeout(15000),
   });
   if (!r.ok) {
     const errData = await r.json().catch(() => ({}));
     throw new Error(errData.error || "portal failed");
   }
-  const { url } = await r.json();
+  const data = await r.json().catch(() => null);
+  const url = data?.url;
+  if (!url) throw new Error("portal response missing redirect URL");
   return url;
 }
 
@@ -183,7 +189,9 @@ export async function internalStartCheckout(
     signal: AbortSignal.timeout(15000),
   });
   if (!r.ok) await throwApiError(r, "Failed to start checkout");
-  const { url } = await r.json();
+  const data = await r.json().catch(() => null);
+  const url = data?.url;
+  if (!url) throw new Error("checkout response missing redirect URL");
   return url;
 }
 
@@ -198,7 +206,9 @@ export async function internalOpenPortal(orgId: string, email?: string | null): 
     signal: AbortSignal.timeout(15000),
   });
   if (!r.ok) await throwApiError(r, "Failed to open billing portal");
-  const { url } = await r.json();
+  const data = await r.json().catch(() => null);
+  const url = data?.url;
+  if (!url) throw new Error("portal response missing redirect URL");
   return url;
 }
 
