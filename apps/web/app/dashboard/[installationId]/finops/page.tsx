@@ -51,7 +51,7 @@ function CostTrendChart({ reviews }: { reviews: FinOpsReview[] }) {
             <rect x={x} y={y} width={BAR_W} height={barH} fill={fill} opacity={0.75} rx={1} />
             <title>
               {r.repo_full_name} #{r.pr_number} —{" "}
-              {r.delta_monthly_cents >= 0 ? "+" : ""}
+              {r.delta_monthly_cents > 0 ? "+" : r.delta_monthly_cents < 0 ? "-" : ""}
               {fmtCentsShort(r.delta_monthly_cents)}/mo
             </title>
           </g>
@@ -162,11 +162,11 @@ export default async function FinOpsPage({ params }: Props) {
               <CostTrendChart reviews={data.recent_reviews} />
               <div className="mt-2 flex items-center gap-4 text-[10px] font-sans text-[color:var(--dg-fg-subtle)]">
                 <span className="flex items-center gap-1">
-                  <span className="inline-block w-2 h-2 rounded-sm bg-red-500 opacity-75" />
+                  <span className="inline-block w-2 h-2 rounded-sm opacity-75" style={{ backgroundColor: "var(--dg-blocked, #ef4444)" }} />
                   {t("finops.costIncrease") ?? "Cost increase"}
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="inline-block w-2 h-2 rounded-sm bg-green-500 opacity-75" />
+                  <span className="inline-block w-2 h-2 rounded-sm opacity-75" style={{ backgroundColor: "var(--dg-allowed, #22c55e)" }} />
                   {t("finops.costDecrease") ?? "Cost decrease"}
                 </span>
               </div>
