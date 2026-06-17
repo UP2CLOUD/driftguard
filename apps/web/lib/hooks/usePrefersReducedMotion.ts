@@ -18,8 +18,14 @@ export function usePrefersReducedMotion(): boolean {
     const mql = window.matchMedia(QUERY);
     setReduced(mql.matches);
     const onChange = (e: MediaQueryListEvent) => setReduced(e.matches);
-    mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
+    // Safari < 14 lacks addEventListener on MediaQueryList; fall back to the
+    // deprecated addListener/removeListener API.
+    if (mql.addEventListener) {
+      mql.addEventListener("change", onChange);
+      return () => mql.removeEventListener("change", onChange);
+    }
+    mql.addListener(onChange);
+    return () => mql.removeListener(onChange);
   }, []);
 
   return reduced;
