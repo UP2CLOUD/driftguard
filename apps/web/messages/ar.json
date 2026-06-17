@@ -34,7 +34,8 @@
     "cmdSearchPlaceholder": "البحث في الأوامر…",
     "cmdNoResults": "لم يتم العثور على أوامر",
     "openCommandPalette": "فتح لوحة الأوامر",
-    "toggleMenu": "تبديل القائمة"
+    "toggleMenu": "تبديل القائمة",
+    "finops": "FinOps"
   },
   "auth": {
     "goToDashboard": "الانتقال إلى لوحة التحكم →",
@@ -1397,6 +1398,34 @@
     "time": "الوقت",
     "payload": "البيانات",
     "noMatch": "لا توجد أحداث تطابق هذا الفلتر."
+  },
+  "finops": {
+    "title": "مراجعة FinOps",
+    "subtitle": "تحليل تكاليف السحابة لطلبات السحب من Terraform",
+    "noReviews": "لا توجد مراجعات FinOps بعد. افتح طلب سحب مع تغييرات Terraform للحصول على تقديرات التكلفة.",
+    "totalDelta": "إجمالي التأثير الشهري",
+    "avgDelta": "متوسط التأثير الشهري",
+    "highestRisk": "أعلى درجة مخاطرة",
+    "recentReviews": "مراجعات التكلفة الأخيرة",
+    "riskLevel": "مستوى المخاطرة",
+    "monthlyCost": "التكلفة الشهرية",
+    "annualCost": "التأثير السنوي",
+    "currentCost": "التكلفة الحالية",
+    "newCost": "التكلفة الجديدة",
+    "difference": "الفرق",
+    "topDrivers": "أبرز محركات التكلفة",
+    "recommendations": "التوصيات",
+    "providerBreakdown": "توزيع حسب المزود",
+    "prNumber": "PR",
+    "repository": "المستودع",
+    "createdAt": "التاريخ",
+    "tfFiles": "ملفات Terraform",
+    "viewDetails": "عرض التفاصيل",
+    "riskLow": "منخفض",
+    "riskMedium": "متوسط",
+    "riskHigh": "مرتفع",
+    "riskCritical": "حرج",
+    "disclaimer": "التكاليف تقديرية بناءً على الأسعار المنشورة. قد تختلف فاتورة السحابة الفعلية."
   },
   "analyses": {
     "eyebrow": "ماسح البنية التحتية",

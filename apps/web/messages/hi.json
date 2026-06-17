@@ -34,7 +34,8 @@
     "cmdSearchPlaceholder": "कमांड खोजें…",
     "cmdNoResults": "कोई कमांड नहीं मिला",
     "openCommandPalette": "कमांड पैलेट खोलें",
-    "toggleMenu": "मेनू टॉगल करें"
+    "toggleMenu": "मेनू टॉगल करें",
+    "finops": "FinOps"
   },
   "auth": {
     "goToDashboard": "डैशबोर्ड पर जाएँ →",
@@ -1397,6 +1398,34 @@
     "time": "समय",
     "payload": "पेलोड",
     "noMatch": "इस फ़िल्टर से कोई इवेंट मेल नहीं खाता।"
+  },
+  "finops": {
+    "title": "FinOps समीक्षा",
+    "subtitle": "Terraform पुल रिक्वेस्ट के लिए क्लाउड लागत विश्लेषण",
+    "noReviews": "अभी तक कोई FinOps समीक्षा नहीं। लागत अनुमान प्राप्त करने के लिए Terraform परिवर्तनों के साथ एक पुल रिक्वेस्ट खोलें।",
+    "totalDelta": "कुल मासिक प्रभाव",
+    "avgDelta": "औसत मासिक प्रभाव",
+    "highestRisk": "सर्वोच्च जोखिम स्कोर",
+    "recentReviews": "हालिया लागत समीक्षाएं",
+    "riskLevel": "जोखिम स्तर",
+    "monthlyCost": "मासिक लागत",
+    "annualCost": "वार्षिक प्रभाव",
+    "currentCost": "वर्तमान लागत",
+    "newCost": "नई लागत",
+    "difference": "अंतर",
+    "topDrivers": "शीर्ष लागत कारक",
+    "recommendations": "सिफारिशें",
+    "providerBreakdown": "प्रदाता विवरण",
+    "prNumber": "PR",
+    "repository": "रिपॉजिटरी",
+    "createdAt": "दिनांक",
+    "tfFiles": "Terraform फ़ाइलें",
+    "viewDetails": "विवरण देखें",
+    "riskLow": "कम",
+    "riskMedium": "मध्यम",
+    "riskHigh": "उच्च",
+    "riskCritical": "गंभीर",
+    "disclaimer": "लागतें प्रकाशित सूची मूल्यों पर आधारित अनुमान हैं। वास्तविक क्लाउड बिलिंग भिन्न हो सकती है।"
   },
   "analyses": {
     "eyebrow": "इंफ्रास्ट्रक्चर स्कैनर",

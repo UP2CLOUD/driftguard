@@ -54,6 +54,7 @@ export default async function DashboardLayout({
           docs:                t("nav.docs")                  ?? "Docs",
           repos:               t("nav.repos")                 ?? "Repos",
           analyses:            t("nav.analyses")              ?? "Analyses",
+          finops:              t("nav.finops")                ?? "FinOps",
           incidents:           t("nav.incidents")             ?? "Incidents",
           policies:            t("nav.policies")              ?? "Policies",
           memory:              t("nav.memory")                ?? "Memory",
