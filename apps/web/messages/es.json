@@ -210,7 +210,7 @@
     "awsTitle": "Integración AWS",
     "awsDesc": "Concede acceso de solo lectura a DriftGuard para comparar el estado en vivo con los planes de Terraform. Sin credenciales almacenadas — STS AssumeRole con ID externo.",
     "billingDesc": "Administra tu suscripción y método de pago.",
-    "workspaceTitle": "Workspace",
+    "workspaceTitle": "Espacio de trabajo",
     "workspaceDesc": "Metadatos de solo lectura sobre esta instalación.",
     "installationId": "ID de instalación de GitHub",
     "organisationId": "ID de organización",
@@ -625,7 +625,7 @@
           "cta": "Auto-alojar →"
         },
         "team": {
-          "tier": "Team",
+          "tier": "Equipo",
           "badge": "Más popular",
           "desc": "Revisiones de PR de producción para colaboradores humanos y agentes.",
           "f1": "Análisis de PR ilimitados",
@@ -1174,7 +1174,7 @@
     "noRolesBody": "Contratamos cuando el producto lo necesita. Síguenos en LinkedIn.",
     "noRoleDesc": "Contratamos por habilidades, no por títulos. Envíanos tu perfil y lo que quieres construir.",
     "whyUs": "Por qué DriftGuard",
-    "remoteFirst": "Remote-first",
+    "remoteFirst": "Trabajo Remoto",
     "remoteFirstDesc": "Zona horaria EU preferida. Sin oficinas, sin desplazamientos.",
     "highOwn": "Alta responsabilidad",
     "highOwnDesc": "Equipo pequeño. Tienes tu superficie de principio a fin.",
@@ -1196,7 +1196,7 @@
     "subtitle": "Todos los cambios en la plataforma DriftGuard, los más recientes primero.",
     "new": "Nuevo",
     "fix": "Corrección",
-    "breaking": "Breaking",
+    "breaking": "Incompatible",
     "improved": "Mejorado",
     "note": "Las entradas técnicas se mantienen en inglés como registro canónico.",
     "meta": {
