@@ -160,7 +160,15 @@
     "firstPrStep1": "推送包含 *.tf 文件更改的分支",
     "firstPrStep2": "在 GitHub 上打开拉取请求",
     "firstPrStep3": "DriftGuard 扫描安全性、成本和策略违规",
-    "firstPrStep4": "结果作为 PR 评论显示，也在此仪表板中显示"
+    "firstPrStep4": "结果作为 PR 评论显示，也在此仪表板中显示",
+    "sev": {
+      "title": "按严重程度划分的发现",
+      "total": "总计",
+      "critical": "严重",
+      "high": "高",
+      "medium": "中",
+      "low": "低"
+    }
   },
   "waitlist": {
     "placeholder": "you@company.com",
