@@ -160,7 +160,15 @@
     "firstPrStep1": "ادفع فرعاً بتغييرات ملفات *.tf",
     "firstPrStep2": "افتح طلب سحب على GitHub",
     "firstPrStep3": "يفحص DriftGuard الأمان والتكلفة وانتهاكات السياسة",
-    "firstPrStep4": "تظهر النتائج كتعليق على طلب السحب وهنا في لوحة التحكم"
+    "firstPrStep4": "تظهر النتائج كتعليق على طلب السحب وهنا في لوحة التحكم",
+    "sev": {
+      "title": "النتائج حسب الخطورة",
+      "total": "الإجمالي",
+      "critical": "حرج",
+      "high": "عالٍ",
+      "medium": "متوسط",
+      "low": "منخفض"
+    }
   },
   "waitlist": {
     "placeholder": "you@company.com",

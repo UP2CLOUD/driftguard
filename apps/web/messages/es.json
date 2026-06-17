@@ -160,7 +160,15 @@
     "firstPrStep1": "Sube una rama con cambios en archivos *.tf",
     "firstPrStep2": "Abre un pull request en GitHub",
     "firstPrStep3": "DriftGuard analiza seguridad, costos y violaciones de política",
-    "firstPrStep4": "Los resultados aparecen como comentario en el PR y aquí en el panel"
+    "firstPrStep4": "Los resultados aparecen como comentario en el PR y aquí en el panel",
+    "sev": {
+      "title": "Hallazgos por severidad",
+      "total": "total",
+      "critical": "Crítico",
+      "high": "Alto",
+      "medium": "Medio",
+      "low": "Bajo"
+    }
   },
   "waitlist": {
     "placeholder": "you@company.com",
