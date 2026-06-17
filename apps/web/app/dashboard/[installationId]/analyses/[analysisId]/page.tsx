@@ -161,7 +161,7 @@ export default async function AnalysisPage({
         <div className="flex items-center gap-3">
           {findings.length > 0 && (
             <a
-              href={`/api/analyses/${analysisId}/export`}
+              href={`/api/analyses/${analysisId}/export?installation_id=${installationId}`}
               download
               className="inline-flex items-center gap-1.5 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-1.5 font-sans font-semibold text-[11px] uppercase tracking-wide text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-fg-subtle)] transition"
             >

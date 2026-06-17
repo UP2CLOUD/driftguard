@@ -1,10 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { BACKEND_URL, authHeaders } from "@/lib/backend";
+import { checkInstallationAccess } from "@/lib/auth-utils";
 
 function csvEscape(value: unknown): string {
   const str = value == null ? "" : String(value);
-  if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+  if (str.includes(",") || str.includes('"') || str.includes("\n") || str.includes("\r")) {
     return `"${str.replace(/"/g, '""')}"`;
   }
   return str;
@@ -15,11 +16,20 @@ function row(fields: unknown[]): string {
 }
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const installationId = req.nextUrl.searchParams.get("installation_id");
+  if (!installationId) {
+    return NextResponse.json({ error: "installation_id required" }, { status: 400 });
+  }
+  const { authorized } = await checkInstallationAccess(installationId);
+  if (!authorized) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   const { id } = await params;
 
