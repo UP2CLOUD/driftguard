@@ -34,7 +34,8 @@
     "cmdSearchPlaceholder": "Search commands…",
     "cmdNoResults": "No commands found",
     "openCommandPalette": "Open command palette",
-    "toggleMenu": "Toggle menu"
+    "toggleMenu": "Toggle menu",
+    "finops": "FinOps"
   },
   "auth": {
     "goToDashboard": "Go to Dashboard →",
@@ -1397,6 +1398,34 @@
     "time": "time",
     "payload": "payload",
     "noMatch": "No events match this filter."
+  },
+  "finops": {
+    "title": "FinOps Review",
+    "subtitle": "Cloud cost analysis for Terraform pull requests",
+    "noReviews": "No FinOps reviews yet. Open a pull request with Terraform changes to get cost estimates.",
+    "totalDelta": "Total Monthly Impact",
+    "avgDelta": "Avg Monthly Impact",
+    "highestRisk": "Highest Risk Score",
+    "recentReviews": "Recent Cost Reviews",
+    "riskLevel": "Risk Level",
+    "monthlyCost": "Monthly Cost",
+    "annualCost": "Annual Impact",
+    "currentCost": "Current Cost",
+    "newCost": "New Cost",
+    "difference": "Difference",
+    "topDrivers": "Top Cost Drivers",
+    "recommendations": "Recommendations",
+    "providerBreakdown": "Provider Breakdown",
+    "prNumber": "PR",
+    "repository": "Repository",
+    "createdAt": "Date",
+    "tfFiles": "Terraform Files",
+    "viewDetails": "View Details",
+    "riskLow": "Low",
+    "riskMedium": "Medium",
+    "riskHigh": "High",
+    "riskCritical": "Critical",
+    "disclaimer": "Costs are estimates based on published list prices. Actual cloud billing may vary."
   },
   "analyses": {
     "eyebrow": "Infrastructure scanner",

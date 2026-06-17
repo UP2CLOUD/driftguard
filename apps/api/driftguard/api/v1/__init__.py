@@ -6,6 +6,7 @@ from driftguard.api.v1 import (
     billing,
     dashboard,
     events,
+    finops,
     health,
     incidents,
     ingest,
@@ -39,3 +40,4 @@ router.include_router(policies.router, dependencies=[Depends(verify_api_key)])
 router.include_router(scans.router, tags=["scans"], dependencies=[Depends(verify_api_key)])
 router.include_router(tokens.router, tags=["tokens"])
 router.include_router(ws.router, tags=["ws"])
+router.include_router(finops.router, dependencies=[Depends(verify_api_key)])

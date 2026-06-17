@@ -34,7 +34,8 @@
     "cmdSearchPlaceholder": "Buscar comandos…",
     "cmdNoResults": "No se encontraron comandos",
     "openCommandPalette": "Abrir paleta de comandos",
-    "toggleMenu": "Alternar menú"
+    "toggleMenu": "Alternar menú",
+    "finops": "FinOps"
   },
   "auth": {
     "goToDashboard": "Ir al panel →",
@@ -1397,6 +1398,34 @@
     "time": "hora",
     "payload": "payload",
     "noMatch": "Ningún evento coincide con este filtro."
+  },
+  "finops": {
+    "title": "Revisión FinOps",
+    "subtitle": "Análisis de costes en la nube para pull requests de Terraform",
+    "noReviews": "Aún no hay revisiones FinOps. Abre un pull request con cambios en Terraform para obtener estimaciones de coste.",
+    "totalDelta": "Impacto Mensual Total",
+    "avgDelta": "Impacto Mensual Promedio",
+    "highestRisk": "Puntuación de Riesgo Más Alta",
+    "recentReviews": "Revisiones de Coste Recientes",
+    "riskLevel": "Nivel de Riesgo",
+    "monthlyCost": "Coste Mensual",
+    "annualCost": "Impacto Anual",
+    "currentCost": "Coste Actual",
+    "newCost": "Nuevo Coste",
+    "difference": "Diferencia",
+    "topDrivers": "Principales Factores de Coste",
+    "recommendations": "Recomendaciones",
+    "providerBreakdown": "Desglose por Proveedor",
+    "prNumber": "PR",
+    "repository": "Repositorio",
+    "createdAt": "Fecha",
+    "tfFiles": "Archivos Terraform",
+    "viewDetails": "Ver Detalles",
+    "riskLow": "Bajo",
+    "riskMedium": "Medio",
+    "riskHigh": "Alto",
+    "riskCritical": "Crítico",
+    "disclaimer": "Los costes son estimaciones basadas en precios de lista publicados. La facturación real en la nube puede variar."
   },
   "analyses": {
     "eyebrow": "Escáner de infraestructura",

@@ -467,6 +467,19 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
                 real_state=real_state,
             )
 
+        # Collect TF file contents for FinOps analysis (must happen inside workspace)
+        _tf_file_contents: dict[str, str] = {}
+        try:
+            for _tf_path in root.rglob("*.tf"):
+                if any(p in {".terraform", "node_modules", ".git"} for p in _tf_path.parts):
+                    continue
+                try:
+                    _tf_file_contents[str(_tf_path.relative_to(root))] = _tf_path.read_text(errors="replace")
+                except Exception as _read_err:
+                    log.debug("finops_tf_read_failed", path=str(_tf_path), error=str(_read_err))
+        except Exception as _tf_collect_err:
+            log.debug("finops_tf_collect_failed", error=str(_tf_collect_err))
+
     # Plan-based TF findings (Checkov + plan context) take precedence over
     # static TF findings; K8s and GHA findings from static scan are always kept.
     findings = _merge_findings(static_findings, plan_findings)
@@ -513,6 +526,34 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
         duration_ms=0,
     )
     log.info("analysis_early_persisted", analysis_id=analysis_id)
+
+    # FinOps cost analysis — non-blocking, best-effort
+    try:
+        from driftguard.services.finops.engine import FinOpsResult, run_finops_analysis
+        from driftguard.services.finops.github.comment import render_comment as render_finops_comment
+
+        _finops_result: FinOpsResult = run_finops_analysis(_tf_file_contents)
+        if _finops_result.has_terraform:
+            async with SessionLocal() as _fo_db:
+                await _persist_finops_review(
+                    _fo_db,
+                    analysis_id,
+                    installation_id,
+                    repo_full_name,
+                    pr_number,
+                    _finops_result,
+                )
+                await _fo_db.commit()
+            _finops_comment = render_finops_comment(_finops_result)
+            try:
+                await post_pr_comment(token, repo_full_name, pr_number, _finops_comment)
+            except Exception as _foc_err:
+                log.warning("finops_comment_post_failed", error=str(_foc_err))
+    except ImportError:
+        log.debug("finops_engine_not_available")
+    except Exception as _fo_err:
+        log.warning("finops_analysis_failed", error=str(_fo_err))
+        scan_errors.append(f"FinOps analysis error: {_fo_err}")
 
     try:
         review_md = await ai_review(findings, pr_ctx)
@@ -984,4 +1025,68 @@ def _safe_checkov(path: Path) -> list[dict] | None:
         return checkov.scan(str(path))
     except Exception as exc:
         log.warning("checkov_failed", error=str(exc))
+        return None
+
+
+async def _persist_finops_review(
+    db: "SessionLocal",  # type: ignore[type-arg]
+    analysis_id: str,
+    installation_id: int,
+    repo_full_name: str,
+    pr_number: int,
+    result: object,
+) -> str | None:
+    """Persist a FinOpsReview and its per-resource rows. Returns the review id."""
+    from driftguard.db.models import FinOpsResourceCost, FinOpsReview
+
+    try:
+        review_id = str(uuid.uuid4())
+        review = FinOpsReview(
+            id=review_id,
+            analysis_id=analysis_id,
+            installation_id=installation_id,
+            repo_full_name=repo_full_name,
+            pr_number=pr_number,
+            risk_level=result.risk_level,
+            risk_score=result.risk_score,
+            current_monthly_cents=result.current_monthly_cents,
+            new_monthly_cents=result.new_monthly_cents,
+            delta_monthly_cents=result.delta_monthly_cents,
+            delta_annual_cents=result.delta_annual_cents,
+            delta_pct=result.delta_pct,
+            terraform_files=result.terraform_files,
+            resource_costs=result.resource_costs,
+            recommendations=[
+                {"title": r.title, "detail": r.detail, "severity": r.severity} for r in result.recommendations
+            ],
+            risk_reasons=result.risk_reasons,
+            ai_summary=getattr(result, "ai_summary", None),
+        )
+        db.add(review)
+        for label, cents in result.resource_costs.items():
+            rc_match = next((rc for rc in result.resource_changes if rc.label == label), None)
+            cost_row = FinOpsResourceCost(
+                id=str(uuid.uuid4()),
+                finops_review_id=review_id,
+                resource_label=label,
+                resource_type=rc_match.resource_type if rc_match else label.split(".")[0],
+                provider=rc_match.provider if rc_match else "unknown",
+                change_type=rc_match.change_type.value if rc_match else "create",
+                monthly_cents=cents,
+                file_path=rc_match.file_path if rc_match else None,
+            )
+            db.add(cost_row)
+        # Propagate cost and risk metrics back to the parent Analysis record
+        from driftguard.db.models import Analysis as _Analysis
+
+        analysis_rec = await db.get(_Analysis, analysis_id)
+        if analysis_rec is not None:
+            if result.delta_monthly_cents != 0:
+                analysis_rec.cost_delta_cents = result.delta_monthly_cents
+            if result.risk_score > 0 and analysis_rec.risk_score is None:
+                analysis_rec.risk_score = result.risk_score
+        await db.flush()
+        return review_id
+    except Exception:
+        log.exception("finops_review_persist_failed")
         return None

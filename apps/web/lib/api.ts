@@ -76,6 +76,35 @@ export type Analysis = {
   errors?: string[];
 };
 
+export type FinOpsReview = {
+  id: string;
+  analysis_id: string;
+  repo_full_name: string;
+  pr_number: number;
+  risk_level: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+  risk_score: number;
+  current_monthly_cents: number;
+  new_monthly_cents: number;
+  delta_monthly_cents: number;
+  delta_annual_cents: number;
+  delta_pct: number;
+  terraform_files: string[];
+  resource_costs: Record<string, number>;
+  recommendations: Array<{ title: string; detail: string; severity: string }>;
+  risk_reasons: string[];
+  ai_summary: string | null;
+  created_at: string | null;
+};
+
+export type FinOpsDashboard = {
+  total_reviews: number;
+  total_monthly_delta_cents: number;
+  average_monthly_delta_cents: number;
+  highest_risk_score: number;
+  provider_breakdown: { aws: number; gcp: number; azure: number };
+  recent_reviews: FinOpsReview[];
+};
+
 export class ApiError extends Error {
   constructor(
     public readonly status: number,

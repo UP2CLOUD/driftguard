@@ -1,8 +1,9 @@
 from datetime import datetime
+from typing import Optional
 from uuid import uuid4
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import JSON, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 def _uuid() -> str:
@@ -67,6 +68,9 @@ class Analysis(Base):
     scan_errors: Mapped[list | None] = mapped_column(JSON, nullable=True)
     contact_email: Mapped[str | None] = mapped_column(String(255))
     policy_verdict: Mapped[str | None] = mapped_column(String(16))
+    finops_review: Mapped[Optional["FinOpsReview"]] = relationship(
+        "FinOpsReview", back_populates="analysis", uselist=False
+    )
 
 
 class Finding(Base):
@@ -325,3 +329,52 @@ class ProcessedGithubDelivery(Base):
     delivery_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     event_type: Mapped[str] = mapped_column(String(64))
     processed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
+
+
+# ── FinOps cost reviews ───────────────────────────────────────────────────────
+
+
+class FinOpsReview(Base):
+    """Cost impact review for a PR, derived from Terraform file analysis."""
+
+    __tablename__ = "finops_reviews"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    analysis_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("analyses.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    installation_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
+    repo_full_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    pr_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    risk_level: Mapped[str] = mapped_column(String(20), nullable=False)
+    risk_score: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    current_monthly_cents: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    new_monthly_cents: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    delta_monthly_cents: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    delta_annual_cents: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    delta_pct: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    terraform_files: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    resource_costs: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    recommendations: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    risk_reasons: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    ai_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    analysis: Mapped["Analysis"] = relationship("Analysis", back_populates="finops_review")
+
+
+class FinOpsResourceCost(Base):
+    """Per-resource cost breakdown row for a FinOpsReview."""
+
+    __tablename__ = "finops_resource_costs"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    finops_review_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("finops_reviews.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    resource_label: Mapped[str] = mapped_column(String(255), nullable=False)
+    resource_type: Mapped[str] = mapped_column(String(128), nullable=False)
+    provider: Mapped[str] = mapped_column(String(20), nullable=False)
+    change_type: Mapped[str] = mapped_column(String(20), nullable=False, default="create")
+    monthly_cents: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    file_path: Mapped[str | None] = mapped_column(String(512), nullable=True)

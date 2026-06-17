@@ -34,7 +34,8 @@
     "cmdSearchPlaceholder": "搜索命令…",
     "cmdNoResults": "未找到命令",
     "openCommandPalette": "打开命令面板",
-    "toggleMenu": "切换菜单"
+    "toggleMenu": "切换菜单",
+    "finops": "FinOps"
   },
   "auth": {
     "goToDashboard": "前往控制台 →",
@@ -1397,6 +1398,34 @@
     "time": "时间",
     "payload": "载荷",
     "noMatch": "没有符合此过滤条件的事件。"
+  },
+  "finops": {
+    "title": "FinOps 审查",
+    "subtitle": "Terraform 拉取请求的云成本分析",
+    "noReviews": "暂无 FinOps 审查。请提交包含 Terraform 变更的拉取请求以获取成本估算。",
+    "totalDelta": "总月度影响",
+    "avgDelta": "平均月度影响",
+    "highestRisk": "最高风险评分",
+    "recentReviews": "近期成本审查",
+    "riskLevel": "风险级别",
+    "monthlyCost": "月度成本",
+    "annualCost": "年度影响",
+    "currentCost": "当前成本",
+    "newCost": "新成本",
+    "difference": "差额",
+    "topDrivers": "主要成本驱动因素",
+    "recommendations": "建议",
+    "providerBreakdown": "提供商明细",
+    "prNumber": "PR",
+    "repository": "仓库",
+    "createdAt": "日期",
+    "tfFiles": "Terraform 文件",
+    "viewDetails": "查看详情",
+    "riskLow": "低",
+    "riskMedium": "中",
+    "riskHigh": "高",
+    "riskCritical": "严重",
+    "disclaimer": "成本为基于公开定价的估算，实际云账单可能有所不同。"
   },
   "analyses": {
     "eyebrow": "基础设施扫描器",
