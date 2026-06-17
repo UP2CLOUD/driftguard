@@ -119,7 +119,7 @@ export function Pricing() {
           {PLANS.map((p) => (
             <div
               key={p.key}
-              className={`relative flex flex-col rounded-md border p-6 transition-all ${
+              className={`relative flex flex-col rounded-md border p-6 transition-[border-color,box-shadow,background-color] duration-[180ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
                 p.highlighted
                   ? "border-[color:var(--dg-electric)]/40 bg-[color:var(--dg-electric)]/5 shadow-[0_0_40px_-10px_rgba(63,140,255,0.15)]"
                   : "border-[color:var(--dg-border)] bg-[color:var(--dg-surface)]"

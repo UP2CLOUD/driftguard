@@ -265,17 +265,27 @@ body {
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 :root {
-  /* Timing */
-  --t-fast:    120ms;
-  --t-base:    180ms;
-  --t-medium:  260ms;
-  --t-slow:    400ms;
-  --t-reveal:  600ms;
+  /* Timing — single source of truth for every transition/animation */
+  --t-instant: 80ms;   /* tactile press feedback */
+  --t-fast:    120ms;  /* hover colour/border feedback */
+  --t-base:    180ms;  /* standard interactive transitions */
+  --t-medium:  260ms;  /* tab/panel swaps */
+  --t-slow:    400ms;  /* bar fills, larger state changes */
+  --t-reveal:  560ms;  /* scroll-triggered section reveals */
   /* Easing */
   --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-in-out:  cubic-bezier(0.4, 0, 0.2, 1);
   --ease-linear:  linear;
+}
+
+/* ── Page / route enter (replays on every navigation via app/template.tsx) ── */
+@keyframes dg-page-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.dg-page-enter {
+  animation: dg-page-enter var(--t-reveal) var(--ease-out) backwards;
 }
 
 /* ── Slide-up reveal ────────────────────────────────── */
@@ -316,7 +326,7 @@ body {
 .dg-button-primary:active,
 .dg-button-ghost:active {
   transform: scale(0.97);
-  transition-duration: 80ms;
+  transition-duration: var(--t-instant);
 }
 .dg-button-primary:hover {
   box-shadow: 0 0 20px rgba(63, 140, 255, 0.3),
@@ -403,6 +413,7 @@ body {
   .dg-marquee,
   .dg-flow-dot,
   .dg-glow-pulse,
+  .dg-page-enter,
   .dg-shine-hover::after {
     animation: none !important;
   }
