@@ -49,7 +49,8 @@ export async function RiskTrendSection({
     } else {
       raw = (await getOrgAnalyses(installationId, 30)) as DataPoint[];
     }
-  } catch {
+  } catch (error) {
+    console.error("Failed to fetch organization analyses for RiskTrend:", error);
     return null;
   }
 
