@@ -65,7 +65,7 @@ export function FindingsClient({
           (f.file ?? "").toLowerCase().includes(q) ||
           (f.rule_id ?? "").toLowerCase().includes(q) ||
           (f.title ?? "").toLowerCase().includes(q) ||
-          f.message.toLowerCase().includes(q) ||
+          (f.message ?? "").toLowerCase().includes(q) ||
           (f.resource ?? "").toLowerCase().includes(q),
       );
     }
@@ -128,8 +128,8 @@ export function FindingsClient({
             <div key={i} className="px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition">
               {/* Top row */}
               <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest ${SEV_STYLE[f.severity] ?? SEV_STYLE.info}`}>
-                  {f.severity}
+                <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest ${SEV_STYLE[f.severity ?? "info"] ?? SEV_STYLE.info}`}>
+                  {f.severity ?? "info"}
                 </span>
                 {f.rule_id && (
                   <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">
@@ -159,7 +159,7 @@ export function FindingsClient({
               )}
 
               {/* Message (if different from title) */}
-              {f.title && f.message !== f.title && (
+              {f.title && f.message && f.message !== f.title && (
                 <p className="text-[12px] text-[color:var(--dg-fg-muted)] mb-2">{f.message}</p>
               )}
 
