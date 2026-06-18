@@ -11,6 +11,20 @@ import { beGet } from "@/lib/backend";
 import { formatDate } from "@/lib/format-date";
 import { ReposListClient, type RepoRow } from "./ReposListClient";
 
+function riskColor(score: number | null) {
+  if (score == null) return "text-[color:var(--dg-fg-subtle)]";
+  if (score >= 70) return "text-blocked";
+  if (score >= 40) return "text-warned";
+  return "text-allowed";
+}
+
+function riskBg(score: number | null) {
+  if (score == null) return "bg-[color:var(--dg-border)]/20";
+  if (score >= 70) return "bg-blocked/10";
+  if (score >= 40) return "bg-warned/10";
+  return "bg-allowed/10";
+}
+
 type PlanData = {
   is_premium: boolean;
   repos: { active: number; limit: number | null };

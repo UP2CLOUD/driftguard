@@ -99,9 +99,9 @@ export function ReposListClient({
   const filtered = useMemo(() => {
     let out = rows;
     if (riskFilter) out = out.filter((r) => riskBucket(r.riskScore) === riskFilter);
-    if (repoFilter.trim()) {
-      const q = repoFilter.toLowerCase();
-      out = out.filter((r) => r.full_name.toLowerCase().includes(q));
+    const query = repoFilter.trim().toLowerCase();
+    if (query) {
+      out = out.filter((r) => r.full_name.toLowerCase().includes(query));
     }
     return out;
   }, [rows, riskFilter, repoFilter]);
