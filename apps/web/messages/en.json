@@ -286,7 +286,16 @@
     "uploadScanBtn": "Upload & scan →",
     "uploadClickToSelect": "Click to select",
     "uploadRedirecting": "Redirecting to results…",
-    "uploadResult": "Score {score}/100 · {n} findings"
+    "uploadResult": "Score {score}/100 · {n} findings",
+    "filterPlaceholder": "Filter repositories…",
+    "riskAll": "All risk levels",
+    "riskHigh": "High ≥70",
+    "riskMedium": "Medium 40–69",
+    "riskLow": "Low <40",
+    "showing": "showing",
+    "of": "of",
+    "reposLabel": "repositories",
+    "noMatchFilter": "No repositories match this filter."
   },
   "settings": {
     "title": "Settings",

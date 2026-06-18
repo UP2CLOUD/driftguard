@@ -3,14 +3,13 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ScanTrigger } from "@/components/dashboard/ScanTrigger";
 import { UploadScan } from "@/components/dashboard/UploadScan";
-import { RepoQuickScan } from "@/components/dashboard/RepoQuickScan";
-import { RepoToggle } from "@/components/RepoToggle";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getGitHubAppInstallUrl } from "@/lib/github-app";
 import { beGet } from "@/lib/backend";
 import { formatDate } from "@/lib/format-date";
+import { ReposListClient, type RepoRow } from "./ReposListClient";
 
 type PlanData = {
   is_premium: boolean;
@@ -40,19 +39,6 @@ async function fetchAnalyses(orgId: string) {
   );
 }
 
-function riskColor(score: number | null) {
-  if (score == null) return "text-[color:var(--dg-fg-subtle)]";
-  if (score >= 70) return "text-blocked";
-  if (score >= 40) return "text-warned";
-  return "text-allowed";
-}
-
-function riskBg(score: number | null) {
-  if (score == null) return "bg-[color:var(--dg-border)]/20";
-  if (score >= 70) return "bg-blocked/10";
-  if (score >= 40) return "bg-warned/10";
-  return "bg-allowed/10";
-}
 
 export default async function ReposPage({
   params,
@@ -89,6 +75,25 @@ export default async function ReposPage({
       lastAnalysisByRepo[key] = a;
     }
   }
+
+  // Pre-compute row data for the client component (avoids passing raw API data)
+  const repoRows: RepoRow[] = repos.map((repo: any) => {
+    const last = lastAnalysisByRepo[repo.full_name];
+    return {
+      id: repo.id ?? null,
+      full_name: repo.full_name,
+      default_branch: repo.default_branch ?? null,
+      enabled: repo.enabled !== false,
+      riskScore: last?.risk_score ?? null,
+      lastDate: last?.created_at
+        ? formatDate(last.created_at, prefs.locale)
+        : repo.last_scanned_at
+          ? formatDate(repo.last_scanned_at, prefs.locale)
+          : null,
+      lastAnalysisId: last ? (last.id || last.analysis_id || null) : null,
+      atFreeLimit: !!atFreeLimit && repo.enabled === false,
+    };
+  });
 
   const installUrl = getGitHubAppInstallUrl();
 
@@ -155,13 +160,13 @@ export default async function ReposPage({
         {repos.length === 0 ? (
           <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-12 text-center">
             <div className="mb-3 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-              {t("repos.noReposConnected") ?? "No repositories connected"}
+              {t("repos.noReposConnected")}
             </div>
             <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
-              {t("repos.installAppToScan") ?? "Install the GitHub App to begin scanning"}
+              {t("repos.installAppToScan")}
             </p>
             <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto mb-6 leading-relaxed">
-              {t("repos.installAppDesc") ?? "DriftGuard reviews every Terraform pull request — detecting security misconfigs, cost drift, and policy violations before merge."}
+              {t("repos.installAppDesc")}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-2">
               <a
@@ -170,115 +175,50 @@ export default async function ReposPage({
                 rel="noreferrer"
                 className="rounded bg-[color:var(--dg-electric)] px-4 py-2 font-sans font-semibold text-[11px] uppercase tracking-wide text-white hover:brightness-110 transition"
               >
-                {t("repos.installGithubApp") ?? "Install GitHub App →"}
+                {t("repos.installGithubApp")}
               </a>
               <Link
                 href="/docs/install"
                 className="rounded border border-[color:var(--dg-border)] px-4 py-2 font-sans font-semibold text-[11px] uppercase tracking-wide text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] transition"
               >
-                {t("dashboard.setupGuide") ?? "Setup guide"}
+                {t("dashboard.setupGuide")}
               </Link>
             </div>
           </div>
         ) : (
-          <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
-            {/* Header */}
-            <div className="hidden sm:grid grid-cols-[1fr_80px_100px_100px_90px] gap-4 bg-[color:var(--dg-surface)] px-4 py-2">
-              <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.title") ?? "Repository"}</span>
-              <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.riskHeader") ?? "Risk"}</span>
-              <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.tableHeaderLastAnalyzed") ?? "Last analyzed"}</span>
-              <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.tableHeaderStatus") ?? "Status"}</span>
-              <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">{t("repos.tableHeaderActive") ?? "Active"}</span>
-            </div>
-
-            {repos.map((repo: any) => {
-              const last = lastAnalysisByRepo[repo.full_name];
-              const riskScore = last?.risk_score ?? null;
-              // repo.last_scanned_at is more accurate for repos with old analyses
-              // outside the 30-item window we fetched
-              const lastDate = last?.created_at
-                ? formatDate(last.created_at, prefs.locale)
-                : repo.last_scanned_at
-                  ? formatDate(repo.last_scanned_at, prefs.locale)
-                  : null;
-              const isEnabled = repo.enabled !== false;
-
-              return (
-                <div
-                  key={repo.id || repo.full_name}
-                  className="flex sm:grid sm:grid-cols-[1fr_80px_100px_100px_90px] items-center gap-4 px-4 py-3.5 hover:bg-[color:var(--dg-surface-raised)] transition"
-                >
-                  {/* Repo name */}
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${isEnabled ? "bg-allowed" : "bg-[color:var(--dg-fg-subtle)]"}`} />
-                    <div className="min-w-0">
-                      <code className={`font-mono text-[12px] truncate block ${isEnabled ? "text-[color:var(--dg-fg)]" : "text-[color:var(--dg-fg-muted)]"}`}>
-                        {repo.full_name}
-                      </code>
-                      <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-                        {repo.default_branch ?? "main"}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Risk score */}
-                  <div className={`hidden sm:flex w-12 h-8 rounded font-mono text-[12px] font-bold items-center justify-center ${riskBg(riskScore)} ${riskColor(riskScore)}`}>
-                    {riskScore ?? "—"}
-                  </div>
-
-                  {/* Last analyzed */}
-                  <div className="hidden sm:block font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-                    {lastDate ?? t("repos.never")}
-                  </div>
-
-                  {/* View latest / quick scan */}
-                  <div className="hidden sm:flex items-center gap-2">
-                    {last ? (
-                      <Link
-                        href={`/dashboard/${installationId}/analyses/${last.id || last.analysis_id}`}
-                        className="font-sans font-medium text-[10px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
-                      >
-                        {t("repos.viewLatest")}
-                      </Link>
-                    ) : (
-                      <RepoQuickScan
-                        installationId={installationId}
-                        repoFullName={repo.full_name}
-                        labels={{
-                          scan:     t("repos.quickScan")         ?? "scan →",
-                          queuing:  t("repos.quickScanQueuing")  ?? "queuing…",
-                          scanning: t("repos.quickScanScanning") ?? "scanning…",
-                          done:     t("repos.quickScanDone")     ?? "done ✓",
-                          failed:   t("repos.quickScanFailed")   ?? "failed ✗",
-                        }}
-                      />
-                    )}
-                  </div>
-
-                  {/* Active toggle */}
-                  <div className="hidden sm:flex items-center">
-                    {repo.id ? (
-                      <RepoToggle
-                        repoId={repo.id}
-                        initialEnabled={isEnabled}
-                        atFreeLimit={!!atFreeLimit && !isEnabled}
-                        labels={{
-                          enable:           t("repos.enable")           ?? "Enable",
-                          disable:          t("repos.disable")          ?? "Disable",
-                          repoLimitReached: t("repos.repoLimitReached") ?? "Repo limit reached. Disable another repo or upgrade.",
-                          planLimitReached: t("repos.planLimitReached") ?? "Plan limit reached. Upgrade to add more repositories.",
-                          toggleFailed:     t("repos.toggleFailed")     ?? "Failed to {action} repository.",
-                          networkError:     t("repos.networkError")     ?? "Network error. Try again.",
-                        }}
-                      />
-                    ) : (
-                      <span className="h-1.5 w-1.5 rounded-full bg-allowed" />
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <ReposListClient
+            rows={repoRows}
+            installationId={installationId}
+            labels={{
+              filterPlaceholder: t("repos.filterPlaceholder"),
+              riskAll:           t("repos.riskAll"),
+              riskHigh:          t("repos.riskHigh"),
+              riskMedium:        t("repos.riskMedium"),
+              riskLow:           t("repos.riskLow"),
+              showing:           t("repos.showing"),
+              of:                t("repos.of"),
+              repos:             t("repos.reposLabel"),
+              noMatch:           t("repos.noMatchFilter"),
+              colRepo:           t("repos.title"),
+              colRisk:           t("repos.riskHeader"),
+              colLastAnalyzed:   t("repos.tableHeaderLastAnalyzed"),
+              colStatus:         t("repos.tableHeaderStatus"),
+              colActive:         t("repos.tableHeaderActive"),
+              viewLatest:        t("repos.viewLatest"),
+              never:             t("repos.never"),
+              quickScan:         t("repos.quickScan"),
+              quickScanQueuing:  t("repos.quickScanQueuing"),
+              quickScanScanning: t("repos.quickScanScanning"),
+              quickScanDone:     t("repos.quickScanDone"),
+              quickScanFailed:   t("repos.quickScanFailed"),
+              enable:            t("repos.enable"),
+              disable:           t("repos.disable"),
+              repoLimitReached:  t("repos.repoLimitReached"),
+              planLimitReached:  t("repos.planLimitReached"),
+              toggleFailed:      t("repos.toggleFailed"),
+              networkError:      t("repos.networkError"),
+            }}
+          />
         )}
       </section>
 

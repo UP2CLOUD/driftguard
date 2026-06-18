@@ -357,7 +357,16 @@
     "uploadScanBtn": "अपलोड और स्कैन करें →",
     "uploadClickToSelect": "चुनने के लिए क्लिक करें",
     "uploadRedirecting": "परिणामों पर जा रहे हैं…",
-    "uploadResult": "स्कोर {score}/100 · {n} खोज"
+    "uploadResult": "स्कोर {score}/100 · {n} खोज",
+    "filterPlaceholder": "रिपॉज़िटरी फ़िल्टर करें…",
+    "riskAll": "सभी जोखिम स्तर",
+    "riskHigh": "उच्च ≥70",
+    "riskMedium": "मध्यम 40–69",
+    "riskLow": "निम्न <40",
+    "showing": "दिखा रहे हैं",
+    "of": "में से",
+    "reposLabel": "रिपॉज़िटरी",
+    "noMatchFilter": "इस फ़िल्टर से कोई रिपॉज़िटरी मेल नहीं खाती।"
   },
   "landing": {
     "ctaTitle": "अपने क्लाउड पर नियंत्रण वापस पाएं।",
