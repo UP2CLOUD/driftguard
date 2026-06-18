@@ -14,6 +14,18 @@ type Labels = {
   filesScanned: string;
 };
 
+interface Analysis {
+  id: string;
+  repo_full_name?: string | null;
+  risk_score?: number | null;
+  pr_number?: number | null;
+  head_sha?: string | null;
+  created_at?: string | null;
+  policy_verdict?: string | null;
+  status: string;
+  files_scanned?: number | null;
+}
+
 function riskColor(score: number | null) {
   if (score == null) return "text-[color:var(--dg-fg-subtle)]";
   if (score >= 70) return "text-blocked";
@@ -42,7 +54,7 @@ export function AnalysesListClient({
   labels: L,
   colLabels,
 }: {
-  rows: any[];
+  rows: Analysis[];
   installationId: string;
   locale: string;
   labels: Labels;
@@ -64,6 +76,7 @@ export function AnalysesListClient({
           value={repoFilter}
           onChange={(e) => setRepoFilter(e.target.value)}
           placeholder={L.filterPlaceholder}
+          aria-label={L.filterPlaceholder}
           className="flex-1 min-w-[220px] max-w-sm rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] outline-none focus:border-[color:var(--dg-electric)] placeholder:text-[color:var(--dg-fg-subtle)]"
         />
         {repoFilter.trim() && (
@@ -89,7 +102,7 @@ export function AnalysesListClient({
           </div>
 
           <div className="rounded-md sm:rounded-t-none border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
-            {filtered.map((a: any) => (
+            {filtered.map((a: Analysis) => (
               <Link
                 key={a.id}
                 href={`/dashboard/${installationId}/analyses/${a.id}`}
@@ -112,7 +125,7 @@ export function AnalysesListClient({
                     <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
                       {a.head_sha ? a.head_sha.slice(0, 7) : L.manual}
                       <span className="sm:hidden">
-                        {a.created_at ? ` · ${formatDate(a.created_at, locale as any)}` : ""}
+                        {a.created_at ? ` · ${formatDate(a.created_at, locale)}` : ""}
                       </span>
                     </span>
                     {a.policy_verdict && a.policy_verdict !== "pass" && (
@@ -137,9 +150,9 @@ export function AnalysesListClient({
 
                 <div className="hidden sm:flex items-center justify-between gap-2">
                   <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-                    {a.created_at ? formatDate(a.created_at, locale as any) : "—"}
+                    {a.created_at ? formatDate(a.created_at, locale) : "—"}
                   </span>
-                  <svg className="h-3 w-3 text-[color:var(--dg-fg-subtle)] opacity-0 group-hover:opacity-100 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg className="h-3 w-3 text-[color:var(--dg-fg-subtle)] opacity-0 group-hover:opacity-100 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
