@@ -82,11 +82,14 @@ export function AnalysesListClient({
   const [repoFilter, setRepoFilter] = useState("");
   const [riskFilter, setRiskFilter] = useState<RiskBucket>(null);
 
-  const riskCounts = useMemo(() => ({
-    high:   rows.filter((a) => riskBucket(a.risk_score ?? null) === "high").length,
-    medium: rows.filter((a) => riskBucket(a.risk_score ?? null) === "medium").length,
-    low:    rows.filter((a) => riskBucket(a.risk_score ?? null) === "low").length,
-  }), [rows]);
+  const riskCounts = useMemo(() => {
+    const counts = { high: 0, medium: 0, low: 0 };
+    for (const a of rows) {
+      const bucket = riskBucket(a.risk_score ?? null);
+      if (bucket) counts[bucket]++;
+    }
+    return counts;
+  }, [rows]);
 
   const filtered = useMemo(() => {
     let out = rows;
@@ -114,7 +117,7 @@ export function AnalysesListClient({
         >
           {L.riskAll}
         </button>
-        {(["high", "medium", "low"] as const).filter((b) => riskCounts[b] > 0).map((b) => (
+        {(["high", "medium", "low"] as const).filter((b) => riskCounts[b] > 0 || riskFilter === b).map((b) => (
           <button
             key={b}
             onClick={() => setRiskFilter(riskFilter === b ? null : b)}
