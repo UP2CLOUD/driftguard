@@ -1422,7 +1422,7 @@
     "newCost": "नई लागत",
     "difference": "अंतर",
     "topDrivers": "शीर्ष लागत कारक",
-    "recommendations": "सिफारिशें",
+    "recommendations": "अनुशंसाएँ",
     "providerBreakdown": "प्रदाता विवरण",
     "prNumber": "PR",
     "repository": "रिपॉजिटरी",
@@ -1436,7 +1436,16 @@
     "disclaimer": "लागतें प्रकाशित सूची मूल्यों पर आधारित अनुमान हैं। वास्तविक क्लाउड बिलिंग भिन्न हो सकती है।",
     "costTrend": "मासिक लागत प्रभाव — हालिया PRs",
     "costIncrease": "लागत वृद्धि",
-    "costDecrease": "लागत में कमी"
+    "costDecrease": "लागत में कमी",
+    "reviewDetail": "लागत समीक्षा",
+    "currentMonthly": "वर्तमान मासिक",
+    "newMonthly": "नई मासिक",
+    "monthlyDelta": "मासिक परिवर्तन",
+    "annualDelta": "वार्षिक परिवर्तन",
+    "resourceBreakdown": "संसाधन लागत विवरण",
+    "aiSummary": "AI लागत विश्लेषण",
+    "riskReasons": "जोखिम कारक",
+    "terraformFiles": "विश्लेषित Terraform फ़ाइलें"
   },
   "analyses": {
     "eyebrow": "इंफ्रास्ट्रक्चर स्कैनर",
