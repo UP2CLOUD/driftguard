@@ -29,8 +29,10 @@ export function CommandPalette({ installationId, open, onClose }: CommandPalette
   const commands: Command[] = [
     { label: t("nav.overview") ?? "Overview", description: t("nav.cmdDescOverview") ?? "Go to dashboard overview", action: () => router.push(base) },
     { label: t("nav.repos") ?? "Repos", description: t("nav.cmdDescRepos") ?? "Manage connected repositories", action: () => router.push(`${base}/repos`) },
+    { label: t("nav.analyses") ?? "Analyses", description: t("nav.cmdDescAnalyses") ?? "Browse infrastructure scan results", action: () => router.push(`${base}/analyses`) },
     { label: t("nav.incidents") ?? "Incidents", description: t("nav.cmdDescIncidents") ?? "View active incidents", action: () => router.push(`${base}/incidents`) },
     { label: t("nav.policies") ?? "Policies", description: t("nav.cmdDescPolicies") ?? "Configure policy rules", action: () => router.push(`${base}/policies`) },
+    { label: t("nav.finops") ?? "FinOps", description: t("nav.cmdDescFinOps") ?? "Review infrastructure cost trends", action: () => router.push(`${base}/finops`) },
     { label: t("nav.memory") ?? "Memory", description: t("nav.cmdDescMemory") ?? "Review AI memory decisions", action: () => router.push(`${base}/memory`) },
     { label: t("nav.settings") ?? "Settings", description: t("nav.cmdDescSettings") ?? "Workspace and billing settings", action: () => router.push(`${base}/settings`) },
     {
