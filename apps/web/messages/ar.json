@@ -1474,7 +1474,12 @@
     "scanning": "جارٍ الفحص…",
     "scanError": "فشل — أعد المحاولة",
     "rescan": "↺ إعادة الفحص",
-    "exportCsv": "تصدير CSV"
+    "exportCsv": "تصدير CSV",
+    "repoFilterPlaceholder": "تصفية حسب المستودع…",
+    "showing": "عرض",
+    "of": "من",
+    "analysesLabel": "تحليلات",
+    "noMatchRepo": "لا توجد تحليلات تطابق هذا المستودع."
   },
   "about": {
     "eyebrow": "الشركة",
