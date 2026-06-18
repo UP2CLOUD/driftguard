@@ -803,7 +803,10 @@
     "condSeverityDesc": "触发的最低严重性",
     "condResourcePatternDesc": "与资源地址匹配的正则表达式",
     "condMessageContainsDesc": "在发现消息中匹配的子字符串",
-    "condRuleIdPrefixDesc": "与规则 ID 匹配的前缀"
+    "condRuleIdPrefixDesc": "与规则 ID 匹配的前缀",
+    "filterPlaceholder": "筛选策略…",
+    "typeAll": "所有类型",
+    "noMatchFilter": "没有与此筛选器匹配的策略。"
   },
   "memory": {
     "title": "运行记忆",

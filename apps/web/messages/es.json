@@ -803,7 +803,10 @@
     "condSeverityDesc": "Severidad mínima para activar",
     "condResourcePatternDesc": "Regex comparado contra la dirección del recurso",
     "condMessageContainsDesc": "Subcadena comparada en el mensaje del hallazgo",
-    "condRuleIdPrefixDesc": "Prefijo comparado contra el ID de la regla"
+    "condRuleIdPrefixDesc": "Prefijo comparado contra el ID de la regla",
+    "filterPlaceholder": "Filtrar políticas…",
+    "typeAll": "Todos los tipos",
+    "noMatchFilter": "Ninguna política coincide con este filtro."
   },
   "memory": {
     "title": "Memoria operacional",

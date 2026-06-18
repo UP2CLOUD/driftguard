@@ -5,7 +5,7 @@ import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { beGet } from "@/lib/backend";
 import { PolicyCreateForm } from "@/components/PolicyCreateForm";
-import { PolicyCard } from "@/components/PolicyCard";
+import { PoliciesListClient } from "./PoliciesListClient";
 
 async function fetchPolicies(id: string) {
   return (
@@ -134,11 +134,18 @@ export default async function PoliciesPage({
               </a>
             </div>
           ) : (
-            <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
-              {policies.map((p: any) => (
-                <PolicyCard key={p.id} policy={p} installationId={installationId} />
-              ))}
-            </div>
+            <PoliciesListClient
+              policies={policies as any[]}
+              installationId={installationId}
+              labels={{
+                filterPlaceholder: t("policies.filterPlaceholder"),
+                typeAll:           t("policies.typeAll"),
+                typeBlock:         t("policies.block"),
+                typeWarn:          t("policies.warn"),
+                typeAlert:         t("policies.alert"),
+                noMatch:           t("policies.noMatchFilter"),
+              }}
+            />
           )}
 
           {/* API usage section */}
