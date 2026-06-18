@@ -17,7 +17,7 @@ async function fetchFinOpsDashboard(installationId: string): Promise<FinOpsDashb
 }
 
 function fmtCents(cents: number): string {
-  const sign = cents >= 0 ? "+" : "";
+  const sign = cents > 0 ? "+" : cents < 0 ? "-" : "";
   return `${sign}$${(Math.abs(cents) / 100).toFixed(2)}`;
 }
 

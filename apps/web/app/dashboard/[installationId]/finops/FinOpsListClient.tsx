@@ -22,7 +22,7 @@ const RISK_BADGE: Record<RiskBucket, string> = {
 };
 
 function fmtCents(cents: number): string {
-  const sign = cents >= 0 ? "+" : "";
+  const sign = cents > 0 ? "+" : cents < 0 ? "-" : "";
   return `${sign}$${(Math.abs(cents) / 100).toFixed(2)}`;
 }
 
@@ -143,9 +143,9 @@ export function FinOpsListClient({
               </div>
               <div className="ml-4 flex items-center gap-4 shrink-0">
                 <span
-                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${RISK_BADGE[review.risk_level as RiskBucket] ?? RISK_BADGE.LOW}`}
+                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${RISK_BADGE[(review.risk_level ?? "").toUpperCase() as RiskBucket] ?? RISK_BADGE.LOW}`}
                 >
-                  {RISK_LABEL[review.risk_level as RiskBucket] ?? review.risk_level}
+                  {RISK_LABEL[(review.risk_level ?? "").toUpperCase() as RiskBucket] ?? review.risk_level}
                 </span>
                 <span
                   className={`font-mono text-[12px] font-semibold ${
@@ -159,7 +159,7 @@ export function FinOpsListClient({
                   {fmtCents(review.delta_monthly_cents)}/mo
                 </span>
                 {review.created_at && (
-                  <span className="hidden sm:block font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
+                  <span suppressHydrationWarning className="hidden sm:block font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
                     {new Date(review.created_at).toLocaleDateString()}
                   </span>
                 )}
