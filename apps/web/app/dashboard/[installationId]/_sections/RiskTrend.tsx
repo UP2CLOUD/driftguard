@@ -1,6 +1,6 @@
 import { getOrgAnalyses } from "./api";
 
-type T = (key: string) => string | null | undefined;
+type TranslateFn = (key: string) => string | null | undefined;
 
 type DataPoint = { risk_score: number; created_at: string; repo_full_name?: string | null };
 
@@ -13,8 +13,8 @@ function riskDotFill(score: number): string {
 function computeTrend(pts: DataPoint[]): "improving" | "worsening" | "stable" {
   if (pts.length < 4) return "stable";
   const n = pts.length;
-  const recentAvg = (pts[n - 1].risk_score + pts[n - 2].risk_score + (pts[n - 3]?.risk_score ?? pts[n - 2].risk_score)) / 3;
-  const olderAvg = (pts[0].risk_score + (pts[1]?.risk_score ?? pts[0].risk_score) + (pts[2]?.risk_score ?? pts[0].risk_score)) / 3;
+  const recentAvg = (pts[n - 1].risk_score + pts[n - 2].risk_score + pts[n - 3].risk_score) / 3;
+  const olderAvg = (pts[0].risk_score + pts[1].risk_score + pts[2].risk_score) / 3;
   const delta = recentAvg - olderAvg;
   if (delta <= -5) return "improving";
   if (delta >= 5) return "worsening";
@@ -39,19 +39,25 @@ export async function RiskTrendSection({
   demoOverview,
 }: {
   installationId: string;
-  t: T;
-  demoOverview?: any;
+  t: TranslateFn;
+  demoOverview?: { recent_analyses?: DataPoint[] };
 }) {
-  let raw: DataPoint[];
-  if (demoOverview) {
-    raw = (demoOverview.recent_analyses ?? []) as DataPoint[];
-  } else {
-    raw = (await getOrgAnalyses(installationId, 30)) as DataPoint[];
+  let raw: DataPoint[] = [];
+  try {
+    if (demoOverview) {
+      raw = demoOverview.recent_analyses ?? [];
+    } else {
+      raw = (await getOrgAnalyses(installationId, 30)) as DataPoint[];
+    }
+  } catch {
+    return null;
   }
 
   const pts = raw
     .filter((a) => a.risk_score != null && a.created_at)
-    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .map((a) => ({ ...a, time: new Date(a.created_at).getTime() }))
+    .filter((a) => !isNaN(a.time))
+    .sort((a, b) => a.time - b.time)
     .slice(-20);
 
   if (pts.length < 2) return null;
@@ -113,10 +119,10 @@ export async function RiskTrendSection({
         style={{ maxHeight: 96 }}
         aria-hidden="true"
       >
-        {/* Risk band backgrounds */}
+        {/* Risk band backgrounds — extend to full SVG edges to avoid gaps */}
         <rect
-          x={0} y={toY(100)} width={W}
-          height={toY(70) - toY(100)}
+          x={0} y={0} width={W}
+          height={toY(70)}
           fill="var(--dg-blocked, #ef4444)" opacity={0.05}
         />
         <rect
@@ -126,7 +132,7 @@ export async function RiskTrendSection({
         />
         <rect
           x={0} y={toY(40)} width={W}
-          height={toY(0) - toY(40)}
+          height={H - toY(40)}
           fill="var(--dg-allowed, #22c55e)" opacity={0.05}
         />
 
