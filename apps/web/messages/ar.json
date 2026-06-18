@@ -1486,7 +1486,12 @@
     "showing": "عرض",
     "of": "من",
     "analysesLabel": "تحليلات",
-    "noMatchRepo": "لا توجد تحليلات تطابق هذا المستودع."
+    "noMatchRepo": "لا توجد تحليلات تطابق هذا المستودع.",
+    "findingsSearchPlaceholder": "البحث حسب الملف أو القاعدة أو الرسالة…",
+    "findingsLabel": "نتائج",
+    "noMatchFindings": "لا توجد نتائج تطابق هذا الفلتر.",
+    "allSeverities": "جميع الخطورات",
+    "suggestedFix": "إصلاح مقترح"
   },
   "about": {
     "eyebrow": "الشركة",

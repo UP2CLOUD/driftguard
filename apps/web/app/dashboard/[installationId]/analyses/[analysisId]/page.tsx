@@ -7,6 +7,7 @@ import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
 import { formatCostDeltaCentsForUser } from "@/lib/currency/format";
 import { RescanButton } from "./RescanButton";
+import { FindingsClient } from "./FindingsClient";
 
 async function fetchAnalysis(id: string) {
   return beGet<any>(`/api/v1/analyses/${id}`, { revalidate: 0, timeout: 15000 });
@@ -20,10 +21,6 @@ const SEV_STYLE: Record<string, string> = {
   info:     "text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border-[color:var(--dg-border)]",
 };
 
-const CAT_ICON: Record<string, string> = {
-  iam: "⚿", network: "⬡", encryption: "🔒", storage: "◫", compute: "⬜",
-  secrets: "★", kubernetes: "☸", github_actions: "⚡", best_practice: "◎", general: "◈",
-};
 
 
 function AiMarkdown({ content }: { content: string }) {
@@ -276,63 +273,18 @@ export default async function AnalysisPage({
           </p>
         </div>
       ) : (
-        <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
-          {findings.map((f: any, i: number) => (
-            <div key={i} className="px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition">
-              {/* Top row */}
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest ${SEV_STYLE[f.severity] ?? SEV_STYLE.info}`}>
-                  {f.severity}
-                </span>
-                <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">
-                  {f.rule_id}
-                </span>
-                <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-                  {CAT_ICON[f.category] ?? "◈"} {f.category}
-                </span>
-              </div>
-
-              {/* Title */}
-              <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg)] mb-1">
-                {f.title || f.message}
-              </p>
-
-              {/* File + line */}
-              {f.file && (
-                <p className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] mb-2">
-                  📄 {f.file}{f.line ? `:${f.line}` : ""}
-                  {f.resource && f.resource !== f.file && (
-                    <span className="ml-2 text-[color:var(--dg-fg-muted)]">· {f.resource}</span>
-                  )}
-                </p>
-              )}
-
-              {/* Message (if different from title) */}
-              {f.title && f.message !== f.title && (
-                <p className="text-[12px] text-[color:var(--dg-fg-muted)] mb-2">{f.message}</p>
-              )}
-
-              {/* Suggestion */}
-              {f.suggestion && (
-                <div className="mt-2 rounded border border-allowed/20 bg-allowed/5 px-3 py-2">
-                  <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-allowed mr-2">{t("incidents.suggestedFix")}</span>
-                  <span className="font-mono text-[11px] text-allowed">{f.suggestion}</span>
-                </div>
-              )}
-
-              {/* Controls */}
-              {f.controls?.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {f.controls.map((ctrl: string) => (
-                    <span key={ctrl} className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">
-                      {ctrl}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+        <FindingsClient
+          findings={findings}
+          labels={{
+            searchPlaceholder: t("analyses.findingsSearchPlaceholder") ?? "Search by file, rule, or message…",
+            showing:           t("analyses.showing")                   ?? "showing",
+            of:                t("analyses.of")                        ?? "of",
+            findings:          t("analyses.findingsLabel")             ?? "findings",
+            noMatch:           t("analyses.noMatchFindings")           ?? "No findings match this filter.",
+            allSeverities:     t("analyses.allSeverities")             ?? "All severities",
+            suggestedFix:      t("analyses.suggestedFix")              ?? "Suggested fix",
+          }}
+        />
       )}
 
       {/* Errors */}
