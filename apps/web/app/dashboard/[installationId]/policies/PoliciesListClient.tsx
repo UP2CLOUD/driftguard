@@ -32,22 +32,27 @@ export function PoliciesListClient({
   const [nameFilter, setNameFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState<RuleType | null>(null);
 
+  const safePolicies = useMemo(() => {
+    if (!Array.isArray(policies)) return [];
+    return policies.filter((p) => p && typeof p === "object");
+  }, [policies]);
+
   const typeCounts = useMemo(() => {
     const counts: Record<string, number> = { block: 0, warn: 0, alert: 0 };
-    for (const p of policies) {
-      const rt = (p.rule_type ?? "").toLowerCase();
+    for (const p of safePolicies) {
+      const rt = (p?.rule_type ?? "").toLowerCase();
       if (rt in counts) counts[rt]++;
     }
     return counts;
-  }, [policies]);
+  }, [safePolicies]);
 
   const filtered = useMemo(() => {
-    let out = policies;
-    if (typeFilter) out = out.filter((p) => (p.rule_type ?? "").toLowerCase() === typeFilter);
+    let out = safePolicies;
+    if (typeFilter) out = out.filter((p) => (p?.rule_type ?? "").toLowerCase() === typeFilter);
     const q = nameFilter.trim().toLowerCase();
-    if (q) out = out.filter((p) => (p.name ?? "").toLowerCase().includes(q));
+    if (q) out = out.filter((p) => (p?.name ?? "").toLowerCase().includes(q));
     return out;
-  }, [policies, typeFilter, nameFilter]);
+  }, [safePolicies, typeFilter, nameFilter]);
 
   const TYPE_ORDER: RuleType[] = ["block", "warn", "alert"];
   const TYPE_LABEL: Record<string, string> = {
