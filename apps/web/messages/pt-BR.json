@@ -198,6 +198,13 @@
       "high": "Alto",
       "medium": "Médio",
       "low": "Baixo"
+    },
+    "riskTrend": {
+      "title": "Tendência de risco",
+      "improving": "melhorando",
+      "worsening": "piorando",
+      "stable": "estável",
+      "last30": "Últimas {n} análises"
     }
   },
   "waitlist": {

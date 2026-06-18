@@ -168,6 +168,13 @@
       "high": "High",
       "medium": "Medium",
       "low": "Low"
+    },
+    "riskTrend": {
+      "title": "Risk trend",
+      "improving": "improving",
+      "worsening": "worsening",
+      "stable": "stable",
+      "last30": "Last {n} analyses"
     }
   },
   "waitlist": {

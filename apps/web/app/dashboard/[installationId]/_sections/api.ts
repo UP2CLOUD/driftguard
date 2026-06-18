@@ -33,3 +33,19 @@ export const getEvents = cache(
   (installationId: string) =>
     _fetch(`/api/v1/events?installation_id=${installationId}&limit=8`, 10)
 );
+
+export const getOrgAnalyses = cache(
+  async (installationId: string, limit = 30): Promise<any[]> => {
+    const org = await beGet<{ id: string }>(
+      `/api/v1/orgs/by-installation/${installationId}`,
+      { revalidate: 60, timeout: 5000 },
+    );
+    if (!org?.id) return [];
+    return (
+      (await beGet<any[]>(
+        `/api/v1/orgs/${org.id}/analyses?limit=${limit}&status=completed`,
+        { revalidate: 30, timeout: 8000 },
+      )) ?? []
+    );
+  }
+);
