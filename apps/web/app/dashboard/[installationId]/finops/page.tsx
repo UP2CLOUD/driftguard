@@ -4,7 +4,8 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { beGet } from "@/lib/backend";
-import type { FinOpsDashboard, FinOpsReview } from "@/lib/api";
+import type { FinOpsDashboard } from "@/lib/api";
+import { FinOpsListClient } from "./FinOpsListClient";
 
 type Props = { params: Promise<{ installationId: string }> };
 
@@ -18,22 +19,6 @@ async function fetchFinOpsDashboard(installationId: string): Promise<FinOpsDashb
 function fmtCents(cents: number): string {
   const sign = cents >= 0 ? "+" : "";
   return `${sign}$${(Math.abs(cents) / 100).toFixed(2)}`;
-}
-
-function RiskBadge({ level }: { level: string }) {
-  const colors: Record<string, string> = {
-    LOW: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-    MEDIUM: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
-    HIGH: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
-    CRITICAL: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-  };
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${colors[level] ?? colors.LOW}`}
-    >
-      {level}
-    </span>
-  );
 }
 
 export default async function FinOpsPage({ params }: Props) {
@@ -126,57 +111,22 @@ export default async function FinOpsPage({ params }: Props) {
           )}
 
           {/* Recent reviews table */}
-          <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
-            <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-5 py-3">
-              <h2 className="font-sans font-semibold text-[13px] text-[color:var(--dg-fg)]">
-                {t("finops.recentReviews") ?? "Recent Cost Reviews"}
-              </h2>
-            </div>
-            <div className="divide-y divide-[color:var(--dg-border)]">
-              {data.recent_reviews.map((review: FinOpsReview) => (
-                <div
-                  key={review.id}
-                  className="flex items-center justify-between px-5 py-4 hover:bg-[color:var(--dg-surface-raised)] transition"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-[12px] text-[color:var(--dg-fg)] truncate">
-                        {review.repo_full_name}
-                      </span>
-                      <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-                        #{review.pr_number}
-                      </span>
-                    </div>
-                    {review.terraform_files.length > 0 && (
-                      <p className="mt-0.5 font-mono text-[10px] text-[color:var(--dg-fg-subtle)] truncate">
-                        {review.terraform_files.slice(0, 2).join(", ")}
-                        {review.terraform_files.length > 2 &&
-                          ` +${review.terraform_files.length - 2} more`}
-                      </p>
-                    )}
-                  </div>
-                  <div className="ml-4 flex items-center gap-4 shrink-0">
-                    <RiskBadge level={review.risk_level} />
-                    <span
-                      className={`font-mono text-[12px] font-semibold ${
-                        review.delta_monthly_cents > 0
-                          ? "text-blocked"
-                          : review.delta_monthly_cents < 0
-                          ? "text-allowed"
-                          : "text-[color:var(--dg-fg-subtle)]"
-                      }`}
-                    >
-                      {fmtCents(review.delta_monthly_cents)}/mo
-                    </span>
-                    {review.created_at && (
-                      <span className="hidden sm:block font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-                        {new Date(review.created_at).toLocaleDateString()}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div>
+            <h2 className="mb-3 font-sans font-semibold text-[13px] text-[color:var(--dg-fg)]">
+              {t("finops.recentReviews")}
+            </h2>
+            <FinOpsListClient
+              reviews={data.recent_reviews}
+              labels={{
+                filterPlaceholder: t("finops.filterPlaceholder"),
+                riskAll:           t("finops.riskAll"),
+                riskCritical:      t("finops.riskCritical"),
+                riskHigh:          t("finops.riskHigh"),
+                riskMedium:        t("finops.riskMedium"),
+                riskLow:           t("finops.riskLow"),
+                noMatch:           t("finops.noMatchFilter"),
+              }}
+            />
           </div>
 
           <p className="font-sans text-[11px] text-[color:var(--dg-fg-subtle)]">

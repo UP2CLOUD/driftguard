@@ -1443,7 +1443,10 @@
     "riskMedium": "Medium",
     "riskHigh": "High",
     "riskCritical": "Critical",
-    "disclaimer": "Costs are estimates based on published list prices. Actual cloud billing may vary."
+    "disclaimer": "Costs are estimates based on published list prices. Actual cloud billing may vary.",
+    "filterPlaceholder": "Filter by repository...",
+    "riskAll": "All Risk Levels",
+    "noMatchFilter": "No reviews match the current filter."
   },
   "analyses": {
     "eyebrow": "Infrastructure scanner",

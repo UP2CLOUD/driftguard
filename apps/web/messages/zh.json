@@ -1443,7 +1443,10 @@
     "riskMedium": "中",
     "riskHigh": "高",
     "riskCritical": "严重",
-    "disclaimer": "成本为基于公开定价的估算，实际云账单可能有所不同。"
+    "disclaimer": "成本为基于公开定价的估算，实际云账单可能有所不同。",
+    "filterPlaceholder": "按仓库筛选...",
+    "riskAll": "所有风险级别",
+    "noMatchFilter": "没有符合当前筛选条件的审查。"
   },
   "analyses": {
     "eyebrow": "基础设施扫描器",
