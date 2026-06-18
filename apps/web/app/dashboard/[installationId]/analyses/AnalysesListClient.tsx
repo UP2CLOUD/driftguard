@@ -12,6 +12,10 @@ type Labels = {
   noMatch: string;
   manual: string;
   filesScanned: string;
+  riskAll: string;
+  riskHigh: string;
+  riskMedium: string;
+  riskLow: string;
 };
 
 interface Analysis {
@@ -26,6 +30,8 @@ interface Analysis {
   files_scanned?: number | null;
 }
 
+type RiskBucket = "high" | "medium" | "low" | null;
+
 function riskColor(score: number | null) {
   if (score == null) return "text-[color:var(--dg-fg-subtle)]";
   if (score >= 70) return "text-blocked";
@@ -39,6 +45,19 @@ function riskBg(score: number | null) {
   if (score >= 40) return "bg-warned/10";
   return "bg-allowed/10";
 }
+
+function riskBucket(score: number | null): RiskBucket {
+  if (score == null) return null;
+  if (score >= 70) return "high";
+  if (score >= 40) return "medium";
+  return "low";
+}
+
+const RISK_CHIP: Record<string, string> = {
+  high:   "text-blocked border-blocked/30 bg-blocked/10",
+  medium: "text-warned border-warned/30 bg-warned/10",
+  low:    "text-allowed border-allowed/30 bg-allowed/10",
+};
 
 const STATUS_BADGE: Record<string, string> = {
   completed: "text-allowed border-allowed/30 bg-allowed/5",
@@ -61,15 +80,55 @@ export function AnalysesListClient({
   colLabels: { risk: string; repo: string; status: string; files: string; date: string };
 }) {
   const [repoFilter, setRepoFilter] = useState("");
+  const [riskFilter, setRiskFilter] = useState<RiskBucket>(null);
+
+  const riskCounts = useMemo(() => ({
+    high:   rows.filter((a) => riskBucket(a.risk_score ?? null) === "high").length,
+    medium: rows.filter((a) => riskBucket(a.risk_score ?? null) === "medium").length,
+    low:    rows.filter((a) => riskBucket(a.risk_score ?? null) === "low").length,
+  }), [rows]);
 
   const filtered = useMemo(() => {
-    if (!repoFilter.trim()) return rows;
-    const q = repoFilter.toLowerCase();
-    return rows.filter((a) => (a.repo_full_name ?? "").toLowerCase().includes(q));
-  }, [rows, repoFilter]);
+    let out = rows;
+    if (riskFilter) out = out.filter((a) => riskBucket(a.risk_score ?? null) === riskFilter);
+    if (repoFilter.trim()) {
+      const q = repoFilter.toLowerCase();
+      out = out.filter((a) => (a.repo_full_name ?? "").toLowerCase().includes(q));
+    }
+    return out;
+  }, [rows, riskFilter, repoFilter]);
+
+  const isFiltered = !!repoFilter.trim() || !!riskFilter;
 
   return (
     <div className="space-y-3">
+      {/* Risk level filter chips */}
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          onClick={() => setRiskFilter(null)}
+          className={`rounded border px-2.5 py-1 font-sans font-medium text-[10px] uppercase tracking-widest transition ${
+            riskFilter === null
+              ? "border-[color:var(--dg-electric)] text-[color:var(--dg-fg)] bg-[color:var(--dg-electric)]/10"
+              : "border-[color:var(--dg-border)] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)]"
+          }`}
+        >
+          {L.riskAll}
+        </button>
+        {(["high", "medium", "low"] as const).filter((b) => riskCounts[b] > 0).map((b) => (
+          <button
+            key={b}
+            onClick={() => setRiskFilter(riskFilter === b ? null : b)}
+            className={`rounded border px-2.5 py-1 font-sans font-medium text-[10px] uppercase tracking-widest transition ${
+              riskFilter === b
+                ? RISK_CHIP[b]
+                : `${RISK_CHIP[b]} opacity-50 hover:opacity-100`
+            }`}
+          >
+            {riskCounts[b]} {b === "high" ? L.riskHigh : b === "medium" ? L.riskMedium : L.riskLow}
+          </button>
+        ))}
+      </div>
+
       {/* Repo filter input */}
       <div className="flex items-center gap-3 flex-wrap">
         <input
@@ -79,7 +138,7 @@ export function AnalysesListClient({
           aria-label={L.filterPlaceholder}
           className="flex-1 min-w-[220px] max-w-sm rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] outline-none focus:border-[color:var(--dg-electric)] placeholder:text-[color:var(--dg-fg-subtle)]"
         />
-        {repoFilter.trim() && (
+        {isFiltered && (
           <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] shrink-0">
             {L.showing} {filtered.length} {L.of} {rows.length} {L.analyses}
           </span>

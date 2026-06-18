@@ -172,6 +172,10 @@ export default async function AnalysesPage({
               noMatch: t("analyses.noMatchRepo") ?? "No analyses match this repository filter.",
               manual: t("analyses.manual") ?? "manual",
               filesScanned: t("analyses.filesScanned") ?? "{n} files",
+              riskAll: t("analyses.riskAll") ?? "All risk levels",
+              riskHigh: t("analyses.riskHigh") ?? "High ≥70",
+              riskMedium: t("analyses.riskMedium") ?? "Medium 40–69",
+              riskLow: t("analyses.riskLow") ?? "Low <40",
             }}
             colLabels={{
               risk: t("analyses.colRisk") ?? "Risk",
