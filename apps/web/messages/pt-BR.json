@@ -750,7 +750,13 @@
     "lastSeen": "Última ocorrência",
     "resolvedAt": "Resolvido",
     "recurrences": "Recorrências",
-    "fingerprintLabel": "Impressão digital"
+    "fingerprintLabel": "Impressão digital",
+    "sevAll": "Todas as severidades",
+    "sevCritical": "Crítico",
+    "sevHigh": "Alto",
+    "sevMedium": "Médio",
+    "sevLow": "Baixo",
+    "noMatchFilter": "Nenhum incidente corresponde a este filtro."
   },
   "policies": {
     "title": "Regras de política",

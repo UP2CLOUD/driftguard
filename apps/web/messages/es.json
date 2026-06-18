@@ -720,7 +720,13 @@
     "lastSeen": "Última vez visto",
     "resolvedAt": "Resuelto",
     "recurrences": "Recurrencias",
-    "fingerprintLabel": "Huella digital"
+    "fingerprintLabel": "Huella digital",
+    "sevAll": "Todas las severidades",
+    "sevCritical": "Crítico",
+    "sevHigh": "Alto",
+    "sevMedium": "Medio",
+    "sevLow": "Bajo",
+    "noMatchFilter": "Ningún incidente coincide con este filtro."
   },
   "policies": {
     "title": "Reglas de política",

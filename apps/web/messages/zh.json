@@ -720,7 +720,13 @@
     "lastSeen": "最近发现",
     "resolvedAt": "已解决",
     "recurrences": "重复次数",
-    "fingerprintLabel": "指纹"
+    "fingerprintLabel": "指纹",
+    "sevAll": "所有严重级别",
+    "sevCritical": "严重",
+    "sevHigh": "高",
+    "sevMedium": "中",
+    "sevLow": "低",
+    "noMatchFilter": "没有与此过滤器匹配的事件。"
   },
   "policies": {
     "title": "策略规则",
