@@ -295,7 +295,11 @@
     "showing": "mostrando",
     "of": "de",
     "reposLabel": "repositórios",
-    "noMatchFilter": "Nenhum repositório corresponde a este filtro."
+    "noMatchFilter": "Nenhum repositório corresponde a este filtro.",
+    "statusAll": "Todos os Status",
+    "statusCompleted": "Concluído",
+    "statusFailed": "Falhou",
+    "analysesNoMatch": "Nenhuma análise corresponde ao filtro atual."
   },
   "settings": {
     "title": "Configurações",

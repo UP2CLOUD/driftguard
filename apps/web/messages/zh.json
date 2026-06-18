@@ -366,7 +366,11 @@
     "showing": "显示",
     "of": "/",
     "reposLabel": "个仓库",
-    "noMatchFilter": "没有与此筛选器匹配的仓库。"
+    "noMatchFilter": "没有与此筛选器匹配的仓库。",
+    "statusAll": "所有状态",
+    "statusCompleted": "已完成",
+    "statusFailed": "失败",
+    "analysesNoMatch": "没有符合当前筛选条件的分析。"
   },
   "landing": {
     "ctaTitle": "重新掌控您的云基础设施。",

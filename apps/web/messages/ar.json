@@ -366,7 +366,11 @@
     "showing": "عرض",
     "of": "من",
     "reposLabel": "مستودعات",
-    "noMatchFilter": "لا توجد مستودعات تطابق هذا الفلتر."
+    "noMatchFilter": "لا توجد مستودعات تطابق هذا الفلتر.",
+    "statusAll": "جميع الحالات",
+    "statusCompleted": "مكتمل",
+    "statusFailed": "فشل",
+    "analysesNoMatch": "لا تحليلات تطابق الفلتر الحالي."
   },
   "landing": {
     "ctaTitle": "استعد السيطرة على بنيتك السحابية.",

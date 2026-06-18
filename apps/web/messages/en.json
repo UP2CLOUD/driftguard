@@ -295,7 +295,11 @@
     "showing": "showing",
     "of": "of",
     "reposLabel": "repositories",
-    "noMatchFilter": "No repositories match this filter."
+    "noMatchFilter": "No repositories match this filter.",
+    "statusAll": "All Statuses",
+    "statusCompleted": "Completed",
+    "statusFailed": "Failed",
+    "analysesNoMatch": "No analyses match the current filter."
   },
   "settings": {
     "title": "Settings",
