@@ -1486,7 +1486,12 @@
     "showing": "mostrando",
     "of": "de",
     "analysesLabel": "análises",
-    "noMatchRepo": "Nenhuma análise corresponde a este filtro de repositório."
+    "noMatchRepo": "Nenhuma análise corresponde a este filtro de repositório.",
+    "findingsSearchPlaceholder": "Pesquisar por arquivo, regra ou mensagem…",
+    "findingsLabel": "ocorrências",
+    "noMatchFindings": "Nenhuma ocorrência corresponde a este filtro.",
+    "allSeverities": "Todas as gravidades",
+    "suggestedFix": "Correção sugerida"
   },
   "about": {
     "eyebrow": "Empresa",

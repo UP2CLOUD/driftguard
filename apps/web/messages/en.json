@@ -1486,7 +1486,12 @@
     "showing": "showing",
     "of": "of",
     "analysesLabel": "analyses",
-    "noMatchRepo": "No analyses match this repository filter."
+    "noMatchRepo": "No analyses match this repository filter.",
+    "findingsSearchPlaceholder": "Search by file, rule, or message…",
+    "findingsLabel": "findings",
+    "noMatchFindings": "No findings match this filter.",
+    "allSeverities": "All severities",
+    "suggestedFix": "Suggested fix"
   },
   "about": {
     "eyebrow": "Company",

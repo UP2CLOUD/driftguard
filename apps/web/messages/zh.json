@@ -1486,7 +1486,12 @@
     "showing": "显示",
     "of": "共",
     "analysesLabel": "个分析",
-    "noMatchRepo": "没有与此仓库过滤器匹配的分析。"
+    "noMatchRepo": "没有与此仓库过滤器匹配的分析。",
+    "findingsSearchPlaceholder": "按文件、规则或消息搜索…",
+    "findingsLabel": "个发现",
+    "noMatchFindings": "没有与此过滤器匹配的发现。",
+    "allSeverities": "所有严重性",
+    "suggestedFix": "建议修复"
   },
   "about": {
     "eyebrow": "公司",
