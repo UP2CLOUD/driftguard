@@ -168,6 +168,13 @@
       "high": "高",
       "medium": "中",
       "low": "低"
+    },
+    "riskTrend": {
+      "title": "风险趋势",
+      "improving": "改善中",
+      "worsening": "恶化中",
+      "stable": "稳定",
+      "last30": "最近{n}次分析"
     }
   },
   "waitlist": {

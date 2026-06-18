@@ -168,6 +168,13 @@
       "high": "عالٍ",
       "medium": "متوسط",
       "low": "منخفض"
+    },
+    "riskTrend": {
+      "title": "اتجاه المخاطر",
+      "improving": "تحسُّن",
+      "worsening": "تدهور",
+      "stable": "مستقر",
+      "last30": "آخر {n} تحليل"
     }
   },
   "waitlist": {
