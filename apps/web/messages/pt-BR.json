@@ -1474,7 +1474,12 @@
     "scanning": "escaneando…",
     "scanError": "falhou — tente novamente",
     "rescan": "↺ Re-executar análise",
-    "exportCsv": "Exportar CSV"
+    "exportCsv": "Exportar CSV",
+    "repoFilterPlaceholder": "Filtrar por repositório…",
+    "showing": "mostrando",
+    "of": "de",
+    "analysesLabel": "análises",
+    "noMatchRepo": "Nenhuma análise corresponde a este filtro de repositório."
   },
   "about": {
     "eyebrow": "Empresa",
