@@ -17,7 +17,7 @@ type Labels = {
   recurrenceBadge: string;
 };
 
-interface Incident {
+export interface Incident {
   id: string;
   title: string;
   description?: string | null;
@@ -98,6 +98,7 @@ export function IncidentsListClient({
       <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={() => setSevFilter(null)}
+          aria-pressed={sevFilter === null}
           className={`rounded border px-2.5 py-1 font-sans font-medium text-[10px] uppercase tracking-widest transition cursor-pointer ${
             sevFilter === null
               ? "border-[color:var(--dg-electric)] text-[color:var(--dg-fg)] bg-[color:var(--dg-electric)]/10"
@@ -110,6 +111,7 @@ export function IncidentsListClient({
           <button
             key={s}
             onClick={() => setSevFilter(sevFilter === s ? null : s)}
+            aria-pressed={sevFilter === s}
             className={`rounded border px-2.5 py-1 font-sans font-medium text-[10px] uppercase tracking-widest transition cursor-pointer ${
               sevFilter === s
                 ? SEV_CHIP[s]

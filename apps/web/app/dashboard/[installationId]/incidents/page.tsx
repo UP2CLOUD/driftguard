@@ -4,12 +4,12 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { beGet } from "@/lib/backend";
-import { IncidentsListClient } from "./IncidentsListClient";
+import { IncidentsListClient, type Incident } from "./IncidentsListClient";
 
 async function fetchIncidents(id: string, status?: string) {
   const q = status ? `&status=${status}` : "";
   return (
-    (await beGet<unknown[]>(
+    (await beGet<Incident[]>(
       `/api/v1/incidents?installation_id=${id}&limit=50${q}`,
       { revalidate: 15, timeout: 3000 },
     )) ?? []
@@ -125,7 +125,7 @@ export default async function IncidentsPage({
         </div>
       ) : (
         <IncidentsListClient
-          incidents={filtered as any[]}
+          incidents={filtered}
           installationId={installationId}
           locale={preferences.locale}
           labels={{
