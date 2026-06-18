@@ -1443,7 +1443,10 @@
     "riskMedium": "Medio",
     "riskHigh": "Alto",
     "riskCritical": "Crítico",
-    "disclaimer": "Los costes son estimaciones basadas en precios de lista publicados. La facturación real en la nube puede variar."
+    "disclaimer": "Los costes son estimaciones basadas en precios de lista publicados. La facturación real en la nube puede variar.",
+    "filterPlaceholder": "Filtrar por repositorio...",
+    "riskAll": "Todos los Niveles de Riesgo",
+    "noMatchFilter": "Ninguna revisión coincide con el filtro actual."
   },
   "analyses": {
     "eyebrow": "Escáner de infraestructura",
