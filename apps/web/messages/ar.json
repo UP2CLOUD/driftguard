@@ -788,7 +788,10 @@
     "condSeverityDesc": "الحد الأدنى للخطورة للتفعيل",
     "condResourcePatternDesc": "تعبير نمطي مقارن بعنوان المورد",
     "condMessageContainsDesc": "سلسلة فرعية مقارنة في رسالة النتيجة",
-    "condRuleIdPrefixDesc": "بادئة مقارنة بمعرف القاعدة"
+    "condRuleIdPrefixDesc": "بادئة مقارنة بمعرف القاعدة",
+    "filterPlaceholder": "تصفية السياسات…",
+    "typeAll": "جميع الأنواع",
+    "noMatchFilter": "لا توجد سياسات تطابق هذا الفلتر."
   },
   "memory": {
     "title": "الذاكرة التشغيلية",

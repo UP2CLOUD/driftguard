@@ -788,7 +788,10 @@
     "condSeverityDesc": "ट्रिगर करने की न्यूनतम गंभीरता",
     "condResourcePatternDesc": "संसाधन पते के विरुद्ध मिलाया गया रेजेक्स",
     "condMessageContainsDesc": "निष्कर्ष संदेश में मिलाई गई सबस्ट्रिंग",
-    "condRuleIdPrefixDesc": "नियम ID के विरुद्ध मिलाया गया उपसर्ग"
+    "condRuleIdPrefixDesc": "नियम ID के विरुद्ध मिलाया गया उपसर्ग",
+    "filterPlaceholder": "नीतियाँ फ़िल्टर करें…",
+    "typeAll": "सभी प्रकार",
+    "noMatchFilter": "इस फ़िल्टर से कोई नीति मेल नहीं खाती।"
   },
   "memory": {
     "title": "परिचालन स्मृति",

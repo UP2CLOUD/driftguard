@@ -818,7 +818,10 @@
     "condSeverityDesc": "Minimum severity to trigger",
     "condResourcePatternDesc": "Regex matched against resource address",
     "condMessageContainsDesc": "Substring matched in finding message",
-    "condRuleIdPrefixDesc": "Prefix matched against rule ID"
+    "condRuleIdPrefixDesc": "Prefix matched against rule ID",
+    "filterPlaceholder": "Filter policies…",
+    "typeAll": "All types",
+    "noMatchFilter": "No policies match this filter."
   },
   "memory": {
     "title": "Operational memory",
