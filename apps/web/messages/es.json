@@ -366,7 +366,11 @@
     "showing": "mostrando",
     "of": "de",
     "reposLabel": "repositorios",
-    "noMatchFilter": "Ningún repositorio coincide con este filtro."
+    "noMatchFilter": "Ningún repositorio coincide con este filtro.",
+    "statusAll": "Todos los Estados",
+    "statusCompleted": "Completado",
+    "statusFailed": "Fallido",
+    "analysesNoMatch": "Ningún análisis coincide con el filtro actual."
   },
   "landing": {
     "ctaTitle": "Recupera el control de tu cloud.",
