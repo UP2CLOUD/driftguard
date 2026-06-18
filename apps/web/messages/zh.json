@@ -357,7 +357,16 @@
     "uploadScanBtn": "上传并扫描 →",
     "uploadClickToSelect": "点击选择文件",
     "uploadRedirecting": "正在跳转到结果…",
-    "uploadResult": "得分 {score}/100 · {n} 个发现"
+    "uploadResult": "得分 {score}/100 · {n} 个发现",
+    "filterPlaceholder": "筛选仓库…",
+    "riskAll": "所有风险级别",
+    "riskHigh": "高 ≥70",
+    "riskMedium": "中 40–69",
+    "riskLow": "低 <40",
+    "showing": "显示",
+    "of": "/",
+    "reposLabel": "个仓库",
+    "noMatchFilter": "没有与此筛选器匹配的仓库。"
   },
   "landing": {
     "ctaTitle": "重新掌控您的云基础设施。",

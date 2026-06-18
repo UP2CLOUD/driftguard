@@ -286,7 +286,16 @@
     "uploadScanBtn": "Enviar e analisar →",
     "uploadClickToSelect": "Clique para selecionar",
     "uploadRedirecting": "Redirecionando para resultados…",
-    "uploadResult": "Pontuação {score}/100 · {n} achados"
+    "uploadResult": "Pontuação {score}/100 · {n} achados",
+    "filterPlaceholder": "Filtrar repositórios…",
+    "riskAll": "Todos os níveis de risco",
+    "riskHigh": "Alto ≥70",
+    "riskMedium": "Médio 40–69",
+    "riskLow": "Baixo <40",
+    "showing": "mostrando",
+    "of": "de",
+    "reposLabel": "repositórios",
+    "noMatchFilter": "Nenhum repositório corresponde a este filtro."
   },
   "settings": {
     "title": "Configurações",

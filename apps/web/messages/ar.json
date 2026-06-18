@@ -357,7 +357,16 @@
     "uploadScanBtn": "رفع وفحص ←",
     "uploadClickToSelect": "انقر للاختيار",
     "uploadRedirecting": "جارٍ التوجيه للنتائج…",
-    "uploadResult": "النتيجة {score}/100 · {n} نتيجة"
+    "uploadResult": "النتيجة {score}/100 · {n} نتيجة",
+    "filterPlaceholder": "تصفية المستودعات…",
+    "riskAll": "جميع مستويات المخاطر",
+    "riskHigh": "عالٍ ≥70",
+    "riskMedium": "متوسط 40–69",
+    "riskLow": "منخفض <40",
+    "showing": "عرض",
+    "of": "من",
+    "reposLabel": "مستودعات",
+    "noMatchFilter": "لا توجد مستودعات تطابق هذا الفلتر."
   },
   "landing": {
     "ctaTitle": "استعد السيطرة على بنيتك السحابية.",

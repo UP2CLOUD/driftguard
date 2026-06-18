@@ -357,7 +357,16 @@
     "uploadScanBtn": "Subir y analizar →",
     "uploadClickToSelect": "Haz clic para seleccionar",
     "uploadRedirecting": "Redirigiendo a resultados…",
-    "uploadResult": "Puntuación {score}/100 · {n} hallazgos"
+    "uploadResult": "Puntuación {score}/100 · {n} hallazgos",
+    "filterPlaceholder": "Filtrar repositorios…",
+    "riskAll": "Todos los niveles de riesgo",
+    "riskHigh": "Alto ≥70",
+    "riskMedium": "Medio 40–69",
+    "riskLow": "Bajo <40",
+    "showing": "mostrando",
+    "of": "de",
+    "reposLabel": "repositorios",
+    "noMatchFilter": "Ningún repositorio coincide con este filtro."
   },
   "landing": {
     "ctaTitle": "Recupera el control de tu cloud.",
