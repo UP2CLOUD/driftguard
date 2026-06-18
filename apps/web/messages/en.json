@@ -750,7 +750,13 @@
     "lastSeen": "Last seen",
     "resolvedAt": "Resolved",
     "recurrences": "Recurrences",
-    "fingerprintLabel": "Fingerprint"
+    "fingerprintLabel": "Fingerprint",
+    "sevAll": "All severities",
+    "sevCritical": "Critical",
+    "sevHigh": "High",
+    "sevMedium": "Medium",
+    "sevLow": "Low",
+    "noMatchFilter": "No incidents match this filter."
   },
   "policies": {
     "title": "Policy rules",

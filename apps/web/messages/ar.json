@@ -720,7 +720,13 @@
     "lastSeen": "آخر ظهور",
     "resolvedAt": "تم الحل",
     "recurrences": "التكرارات",
-    "fingerprintLabel": "البصمة"
+    "fingerprintLabel": "البصمة",
+    "sevAll": "جميع مستويات الخطورة",
+    "sevCritical": "حرج",
+    "sevHigh": "عالٍ",
+    "sevMedium": "متوسط",
+    "sevLow": "منخفض",
+    "noMatchFilter": "لا توجد حوادث تطابق هذا الفلتر."
   },
   "policies": {
     "title": "قواعد السياسة",

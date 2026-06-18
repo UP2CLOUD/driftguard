@@ -720,7 +720,13 @@
     "lastSeen": "अंतिम बार देखा",
     "resolvedAt": "हल किया गया",
     "recurrences": "पुनरावृत्ति",
-    "fingerprintLabel": "फिंगरप्रिंट"
+    "fingerprintLabel": "फिंगरप्रिंट",
+    "sevAll": "सभी गंभीरताएँ",
+    "sevCritical": "अति गंभीर",
+    "sevHigh": "उच्च",
+    "sevMedium": "मध्यम",
+    "sevLow": "निम्न",
+    "noMatchFilter": "इस फ़िल्टर से कोई घटना मेल नहीं खाती।"
   },
   "policies": {
     "title": "नीति नियम",
