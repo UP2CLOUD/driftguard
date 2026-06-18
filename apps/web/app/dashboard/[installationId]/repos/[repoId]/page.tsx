@@ -50,11 +50,13 @@ const TREND_COLOR: Record<TrendDir, string> = {
 
 function RepoRiskChart({
   pts,
+  titleLabel,
   trendLabel,
   lastNLabel,
   trendDir,
 }: {
   pts: { risk_score: number; created_at: string }[];
+  titleLabel: string;
   trendLabel: string;
   lastNLabel: string;
   trendDir: TrendDir;
@@ -78,7 +80,7 @@ function RepoRiskChart({
     <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] p-4">
       <div className="flex items-center justify-between mb-3">
         <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-          Risk trend
+          {titleLabel}
         </span>
         <div className="flex items-center gap-3">
           <span className="font-mono text-[11px] font-semibold" style={{ color: TREND_COLOR[trendDir] }}>
@@ -216,8 +218,9 @@ export default async function RepoPage({
           <RepoRiskChart
             pts={scored}
             trendDir={trendDir}
-            trendLabel={t(`dashboard.riskTrend.${trendDir}`) ?? trendDir}
-            lastNLabel={(t("dashboard.riskTrend.last30") ?? "Last {n} analyses").replace("{n}", String(scored.length))}
+            titleLabel={t("dashboard.riskTrend.title")}
+            trendLabel={t(`dashboard.riskTrend.${trendDir}`)}
+            lastNLabel={t("dashboard.riskTrend.last30", { n: scored.length })}
           />
         );
       })()}
