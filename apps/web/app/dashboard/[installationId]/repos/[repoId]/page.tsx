@@ -202,7 +202,7 @@ export default async function RepoPage({
       {(() => {
         const scored = analysesList
           .filter((a) => a.risk_score != null && a.created_at && a.status === "completed")
-          .map((a) => ({ risk_score: a.risk_score as number, created_at: a.created_at as string, _time: new Date(a.created_at).getTime() }))
+          .map((a) => ({ risk_score: a.risk_score as number, created_at: a.created_at as string, _time: new Date(a.created_at as string).getTime() }))
           .filter((a) => !isNaN(a._time))
           .sort((a, b) => a._time - b._time)
           .slice(-20);

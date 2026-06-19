@@ -117,6 +117,7 @@ export default async function FinOpsPage({ params }: Props) {
             </h2>
             <FinOpsListClient
               reviews={data.recent_reviews}
+              locale={preferences.locale}
               labels={{
                 filterPlaceholder: t("finops.filterPlaceholder"),
                 riskAll:           t("finops.riskAll"),

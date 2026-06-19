@@ -70,7 +70,7 @@ function exportFindingsToCsv(rows: FindingRow[], filename: string) {
         .join(",")
     ),
   ];
-  const blob = new Blob(["﻿", lines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+  const blob = new Blob(["\ufeff",  lines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -115,7 +115,9 @@ export function FindingsListClient({
         (f.title ?? "").toLowerCase().includes(q) ||
         (f.rule_id ?? "").toLowerCase().includes(q) ||
         (f.message ?? "").toLowerCase().includes(q) ||
-        (f.file ?? "").toLowerCase().includes(q)
+        (f.file ?? "").toLowerCase().includes(q) ||
+        (f.resource ?? "").toLowerCase().includes(q) ||
+        (f.suggestion ?? "").toLowerCase().includes(q)
       );
     }
     return out;

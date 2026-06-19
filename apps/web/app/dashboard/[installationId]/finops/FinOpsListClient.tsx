@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import type { FinOpsReview } from "@/lib/api";
+import { formatDate } from "@/lib/format-date";
 
 type RiskBucket = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
 
@@ -38,9 +39,11 @@ type Labels = {
 
 export function FinOpsListClient({
   reviews,
+  locale,
   labels: L,
 }: {
   reviews: FinOpsReview[];
+  locale?: string;
   labels: Labels;
 }) {
   const [repoFilter, setRepoFilter] = useState("");
@@ -159,8 +162,8 @@ export function FinOpsListClient({
                   {fmtCents(review.delta_monthly_cents)}/mo
                 </span>
                 {review.created_at && (
-                  <span suppressHydrationWarning className="hidden sm:block font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-                    {new Date(review.created_at).toLocaleDateString()}
+                  <span className="hidden sm:block font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
+                    {formatDate(review.created_at, locale ?? "en")}
                   </span>
                 )}
               </div>
