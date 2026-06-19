@@ -866,7 +866,10 @@
     "sev_high": "High",
     "sev_medium": "Medium",
     "sev_low": "Low",
-    "viewAnalysis": "View analysis →"
+    "viewAnalysis": "View analysis →",
+    "filterPlaceholder": "Filter by repository…",
+    "outcomeAll": "All outcomes",
+    "noMatchFilter": "No memory entries match this filter."
   },
   "docs": {
     "eyebrow": "Documentation",

@@ -836,7 +836,10 @@
     "sev_high": "Alto",
     "sev_medium": "Medio",
     "sev_low": "Bajo",
-    "viewAnalysis": "Ver análisis →"
+    "viewAnalysis": "Ver análisis →",
+    "filterPlaceholder": "Filtrar por repositorio…",
+    "outcomeAll": "Todos los resultados",
+    "noMatchFilter": "Ninguna entrada de memoria coincide con este filtro."
   },
   "docs": {
     "eyebrow": "Documentación",

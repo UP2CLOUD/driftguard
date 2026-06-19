@@ -7,6 +7,7 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import { beGet } from "@/lib/backend";
 import { formatDate } from "@/lib/format-date";
 import { MemorySearch } from "./MemorySearch";
+import { MemoryListClient, type MemoryRow } from "./MemoryListClient";
 
 const PAGE_SIZE = 20;
 
@@ -29,19 +30,6 @@ const OUT_COLOR: Record<string, string> = {
   approved: "text-allowed",
   warned:   "text-warned",
   merged:   "text-[color:var(--dg-electric-bright)]",
-};
-
-const OUT_BADGE: Record<string, string> = {
-  blocked:  "border-blocked/30 bg-blocked/5 text-blocked",
-  approved: "border-allowed/30 bg-allowed/5 text-allowed",
-  warned:   "border-warned/30 bg-warned/5 text-warned",
-  merged:   "border-[color:var(--dg-electric)]/30 bg-[color:var(--dg-electric)]/5 text-[color:var(--dg-electric-bright)]",
-};
-
-const BLAST_COLOR: Record<string, string> = {
-  high:   "text-blocked",
-  medium: "text-warned",
-  low:    "text-[color:var(--dg-fg-subtle)]",
 };
 
 const SEV_COLOR: Record<string, string> = {
@@ -70,6 +58,18 @@ export default async function MemoryPage({
   const t = createTranslator(messages);
 
   const { entries, hasNext, stats } = await fetchMemory(installationId, offset);
+
+  const memoryRows: MemoryRow[] = entries.map((e: any) => ({
+    id: e.id ?? String(Math.random()),
+    repo_full_name: e.repo_full_name ?? null,
+    pr_number: e.pr_number ?? null,
+    outcome: e.outcome ?? null,
+    severity: e.severity ?? null,
+    blast_radius: e.blast_radius ?? null,
+    intent_text: e.intent_text ?? null,
+    analysis_id: e.analysis_id ?? null,
+    date: e.created_at ? formatDate(e.created_at, preferences.locale) : null,
+  }));
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-8">
@@ -136,61 +136,20 @@ export default async function MemoryPage({
           </p>
         </div>
       ) : (
-        <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
-          {entries.map((e: any) => (
-            <Link
-              key={e.id}
-              href={e.analysis_id ? `/dashboard/${installationId}/analyses/${e.analysis_id}` : "#"}
-              className="flex items-start gap-4 px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition"
-            >
-              <div className="flex-1 min-w-0">
-                {/* Top row: repo + outcome badge */}
-                <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                  <code className="font-mono text-[12px] text-[color:var(--dg-fg)]">
-                    {e.repo_full_name}
-                    {e.pr_number ? <span className="text-[color:var(--dg-fg-muted)]">#{e.pr_number}</span> : null}
-                  </code>
-                  {e.outcome && (
-                    <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest ${OUT_BADGE[e.outcome] ?? "border-[color:var(--dg-border)] text-[color:var(--dg-fg-subtle)]"}`}>
-                      {e.outcome}
-                    </span>
-                  )}
-                  {e.severity && (
-                    <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] uppercase tracking-widest">
-                      {e.severity}
-                    </span>
-                  )}
-                  {e.blast_radius && (
-                    <span className={`font-sans font-medium text-[10px] uppercase tracking-widest ${BLAST_COLOR[e.blast_radius] ?? ""}`}>
-                      blast:{e.blast_radius}
-                    </span>
-                  )}
-                </div>
-
-                {/* Intent summary */}
-                {e.intent_text && (
-                  <p className="text-[12px] text-[color:var(--dg-fg-muted)] line-clamp-2 mb-1.5">
-                    {e.intent_text}
-                  </p>
-                )}
-
-                {/* Footer: date + analysis link */}
-                <div className="flex items-center gap-3">
-                  {e.created_at && (
-                    <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-                      {formatDate(e.created_at, preferences.locale)}
-                    </span>
-                  )}
-                  {e.analysis_id && (
-                    <span className="font-sans font-medium text-[10px] text-[color:var(--dg-electric)]">
-                      {t("memory.viewAnalysis") ?? "View analysis →"}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <MemoryListClient
+          entries={memoryRows}
+          installationId={installationId}
+          labels={{
+            filterPlaceholder: t("memory.filterPlaceholder"),
+            outcomeAll:        t("memory.outcomeAll"),
+            outcomeBlocked:    t("memory.blocked"),
+            outcomeApproved:   t("memory.approved"),
+            outcomeWarned:     t("memory.warned"),
+            outcomeMerged:     t("memory.merged"),
+            noMatch:           t("memory.noMatchFilter"),
+            viewAnalysis:      t("memory.viewAnalysis"),
+          }}
+        />
       )}
 
       {(page > 1 || hasNext) && (
