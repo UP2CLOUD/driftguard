@@ -149,7 +149,7 @@ export function FindingsListClient({
       ) : (
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
           {filtered.map((f, i) => (
-            <div key={i} className="px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition">
+            <div key={`${f.rule_id ?? ""}-${f.file ?? ""}-${f.line ?? ""}-${i}`} className="px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition">
               {/* Severity + rule + category */}
               <div className="flex flex-wrap items-center gap-2 mb-2">
                 <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest ${SEV_CHIP[(f.severity ?? "info").toLowerCase() as SevBucket] ?? SEV_CHIP.info}`}>
@@ -162,7 +162,7 @@ export function FindingsListClient({
                 )}
                 {f.category && (
                   <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-                    {CAT_ICON[f.category] ?? "◈"} {f.category}
+                    {CAT_ICON[f.category.toLowerCase()] ?? "◈"} {f.category}
                   </span>
                 )}
               </div>

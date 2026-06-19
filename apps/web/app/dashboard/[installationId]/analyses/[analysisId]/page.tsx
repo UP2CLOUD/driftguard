@@ -104,7 +104,7 @@ export default async function AnalysisPage({
 
   const rawFindings: any[] = Array.isArray(data.findings) ? data.findings : [];
   const bySeverity = ["critical","high","medium","low","info"].map(s => ({
-    s, count: rawFindings.filter((f: any) => f.severity === s).length,
+    s, count: rawFindings.filter((f: any) => (f.severity ?? "").toLowerCase() === s).length,
   })).filter(x => x.count > 0);
 
   const findingRows: FindingRow[] = rawFindings.map((f: any) => ({
@@ -205,7 +205,7 @@ export default async function AnalysisPage({
       <div className={`mb-8 grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] grid-cols-2 ${costDeltaDisplay ? "sm:grid-cols-5" : "sm:grid-cols-4"}`}>
         {[
           { label: t("dashboard.filesScanned"),  val: data.files_scanned },
-          { label: t("dashboard.totalFindings"), val: findings.length },
+          { label: t("dashboard.totalFindings"), val: rawFindings.length },
           { label: t("dashboard.criticalHigh"),  val: (data.critical ?? 0) + (data.high ?? 0) },
           { label: t("dashboard.duration"),      val: data.duration_ms ? `${(data.duration_ms/1000).toFixed(1)}s` : "—" },
           ...(costDeltaDisplay ? [{ label: t("dashboard.costDelta") ?? "Cost delta", val: costDeltaDisplay, cost: data.cost_delta_cents as number }] : []),
