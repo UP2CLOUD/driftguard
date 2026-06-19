@@ -55,7 +55,7 @@ export function FinOpsListClient({
     const counts: Record<string, number> = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
     for (const r of safeReviews) {
       const rl = (r?.risk_level ?? "").toUpperCase();
-      if (rl in counts) counts[rl]++;
+      if (rl === "CRITICAL" || rl === "HIGH" || rl === "MEDIUM" || rl === "LOW") counts[rl]++;
     }
     return counts;
   }, [safeReviews]);

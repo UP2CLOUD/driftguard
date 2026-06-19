@@ -89,7 +89,7 @@ export function RepoAnalysesClient({
     const counts: Record<string, number> = { completed: 0, failed: 0 };
     for (const a of safeAnalyses) {
       const s = (a?.status ?? "").toLowerCase();
-      if (s in counts) counts[s]++;
+      if (s === "completed" || s === "failed") counts[s]++;
     }
     return counts;
   }, [safeAnalyses]);

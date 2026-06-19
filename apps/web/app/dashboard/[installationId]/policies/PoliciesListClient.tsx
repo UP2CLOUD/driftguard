@@ -41,7 +41,7 @@ export function PoliciesListClient({
     const counts: Record<string, number> = { block: 0, warn: 0, alert: 0 };
     for (const p of safePolicies) {
       const rt = (p?.rule_type ?? "").toLowerCase();
-      if (rt in counts) counts[rt]++;
+      if (rt === "block" || rt === "warn" || rt === "alert") counts[rt]++;
     }
     return counts;
   }, [safePolicies]);

@@ -64,7 +64,7 @@ function exportFindingsToCsv(rows: FindingRow[], filename: string) {
         String(f.line ?? ""),
         f.resource ?? "",
         f.suggestion ?? "",
-        f.controls.join("; "),
+        (f.controls ?? []).join("; "),
       ]
         .map(esc)
         .join(",")
@@ -76,7 +76,7 @@ function exportFindingsToCsv(rows: FindingRow[], filename: string) {
   a.href = url;
   a.download = filename;
   a.click();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 100);
 }
 
 export function FindingsListClient({
@@ -261,7 +261,7 @@ export function FindingsListClient({
               )}
 
               {/* Controls */}
-              {f.controls.length > 0 && (
+              {f.controls?.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1">
                   {f.controls.map((ctrl, j) => (
                     <span
