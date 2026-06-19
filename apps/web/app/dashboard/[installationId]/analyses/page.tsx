@@ -145,7 +145,7 @@ export default async function AnalysesPage({
       </div>
 
       {/* List */}
-      {all.length === 0 ? (
+      {all.length === 0 && !activeFilter ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
           <div className="mb-3 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
             {t("analyses.noTitle")}

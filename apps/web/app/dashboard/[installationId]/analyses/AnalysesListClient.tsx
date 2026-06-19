@@ -213,9 +213,13 @@ export function AnalysesListClient({
                 </div>
 
                 <div className="hidden sm:flex items-center">
-                  <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest ${STATUS_BADGE[a.status ?? ""] ?? "text-[color:var(--dg-fg-subtle)] border-[color:var(--dg-border)]"}`}>
-                    {a.status}
-                  </span>
+                  {a.status ? (
+                    <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest ${STATUS_BADGE[a.status] ?? "text-[color:var(--dg-fg-subtle)] border-[color:var(--dg-border)]"}`}>
+                      {a.status}
+                    </span>
+                  ) : (
+                    <span className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">—</span>
+                  )}
                 </div>
 
                 <div className="hidden sm:block font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">
