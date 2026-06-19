@@ -7,6 +7,7 @@ import { formatDate } from "@/lib/format-date";
 type SevBucket = "critical" | "high" | "medium" | "low";
 
 type Labels = {
+  filterPlaceholder: string;
   sevAll: string;
   sevCritical: string;
   sevHigh: string;
@@ -69,21 +70,27 @@ export function IncidentsListClient({
   locale: string;
   labels: Labels;
 }) {
+  const [titleFilter, setTitleFilter] = useState("");
   const [sevFilter, setSevFilter] = useState<SevBucket | null>(null);
 
   const sevCounts = useMemo(() => {
-    const counts: Record<string, number> = { critical: 0, high: 0, medium: 0, low: 0 };
+    const counts: Record<SevBucket, number> = { critical: 0, high: 0, medium: 0, low: 0 };
     for (const inc of incidents) {
       const s = (inc.severity ?? "").toLowerCase();
-      if (s in counts) counts[s]++;
+      if (s === "critical" || s === "high" || s === "medium" || s === "low") {
+        counts[s as SevBucket]++;
+      }
     }
     return counts;
   }, [incidents]);
 
   const filtered = useMemo(() => {
-    if (!sevFilter) return incidents;
-    return incidents.filter((inc) => (inc.severity ?? "").toLowerCase() === sevFilter);
-  }, [incidents, sevFilter]);
+    let out = incidents;
+    if (sevFilter) out = out.filter((inc) => (inc.severity ?? "").toLowerCase() === sevFilter);
+    const q = titleFilter.trim().toLowerCase();
+    if (q) out = out.filter((inc) => (inc.title ?? "").toLowerCase().includes(q));
+    return out;
+  }, [incidents, sevFilter, titleFilter]);
 
   const SEV_LABEL: Record<string, string> = {
     critical: L.sevCritical,
@@ -94,7 +101,7 @@ export function IncidentsListClient({
 
   return (
     <div className="space-y-3">
-      {/* Severity filter chips */}
+      {/* Severity chips + title search */}
       <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={() => setSevFilter(null)}
@@ -122,6 +129,14 @@ export function IncidentsListClient({
           </button>
         ))}
       </div>
+
+      <input
+        value={titleFilter}
+        onChange={(e) => setTitleFilter(e.target.value)}
+        placeholder={L.filterPlaceholder}
+        aria-label={L.filterPlaceholder}
+        className="w-full max-w-sm rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] outline-none focus:border-[color:var(--dg-electric)] placeholder:text-[color:var(--dg-fg-subtle)]"
+      />
 
       {filtered.length === 0 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-10 text-center">

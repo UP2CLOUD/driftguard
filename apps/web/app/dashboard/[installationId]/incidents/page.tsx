@@ -129,6 +129,7 @@ export default async function IncidentsPage({
           installationId={installationId}
           locale={preferences.locale}
           labels={{
+            filterPlaceholder: t("incidents.filterPlaceholder"),
             sevAll: t("incidents.sevAll"),
             sevCritical: t("incidents.sevCritical"),
             sevHigh: t("incidents.sevHigh"),

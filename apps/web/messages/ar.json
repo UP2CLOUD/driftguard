@@ -734,6 +734,7 @@
     "resolvedAt": "تم الحل",
     "recurrences": "التكرارات",
     "fingerprintLabel": "البصمة",
+    "filterPlaceholder": "البحث بالعنوان…",
     "sevAll": "جميع مستويات الخطورة",
     "sevCritical": "حرج",
     "sevHigh": "عالٍ",

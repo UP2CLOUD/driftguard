@@ -734,6 +734,7 @@
     "resolvedAt": "Resuelto",
     "recurrences": "Recurrencias",
     "fingerprintLabel": "Huella digital",
+    "filterPlaceholder": "Buscar por título…",
     "sevAll": "Todas las severidades",
     "sevCritical": "Crítico",
     "sevHigh": "Alto",
