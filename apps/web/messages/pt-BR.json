@@ -764,6 +764,7 @@
     "resolvedAt": "Resolvido",
     "recurrences": "Recorrências",
     "fingerprintLabel": "Impressão digital",
+    "filterPlaceholder": "Pesquisar por título…",
     "sevAll": "Todas as severidades",
     "sevCritical": "Crítico",
     "sevHigh": "Alto",

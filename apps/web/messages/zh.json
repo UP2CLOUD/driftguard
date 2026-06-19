@@ -734,6 +734,7 @@
     "resolvedAt": "已解决",
     "recurrences": "重复次数",
     "fingerprintLabel": "指纹",
+    "filterPlaceholder": "按标题搜索…",
     "sevAll": "所有严重级别",
     "sevCritical": "严重",
     "sevHigh": "高",

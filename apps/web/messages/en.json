@@ -764,6 +764,7 @@
     "resolvedAt": "Resolved",
     "recurrences": "Recurrences",
     "fingerprintLabel": "Fingerprint",
+    "filterPlaceholder": "Search by title…",
     "sevAll": "All severities",
     "sevCritical": "Critical",
     "sevHigh": "High",
