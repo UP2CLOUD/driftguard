@@ -9,6 +9,12 @@ primary_region = "fra"   # Frankfurt — closest to Portugal/EU
 kill_signal = "SIGINT"
 kill_timeout = "30s"
 
+[deploy]
+  # Run DB migrations in a temporary release container before the new
+  # version goes live.  The [processes] section starts uvicorn directly,
+  # bypassing start.sh, so without this the schema drifts behind the code.
+  release_command = "alembic upgrade head"
+
 [build]
   dockerfile = "Dockerfile"
 
@@ -51,4 +57,4 @@ kill_timeout = "30s"
 # Two processes share the same image: API server + Celery worker
 [processes]
   app    = "uvicorn driftguard.main:app --host 0.0.0.0 --port 8000 --workers 1"
-  worker = "celery -A driftguard.worker.celery_app worker --loglevel=info --concurrency=2"
+  worker = "celery -A driftguard.worker.app:celery_app worker --loglevel=info --concurrency=2"
