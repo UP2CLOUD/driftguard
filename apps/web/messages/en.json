@@ -1501,7 +1501,8 @@
     "findingsNoMatch": "No findings match this filter.",
     "findingsShowing": "Showing",
     "findingsOf": "of",
-    "findingsLabel": "findings"
+    "findingsLabel": "findings",
+    "findingsExportCsv": "Export CSV"
   },
   "about": {
     "eyebrow": "Company",

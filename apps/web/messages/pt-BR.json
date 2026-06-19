@@ -1501,7 +1501,8 @@
     "findingsNoMatch": "Nenhum achado corresponde a este filtro.",
     "findingsShowing": "Mostrando",
     "findingsOf": "de",
-    "findingsLabel": "achados"
+    "findingsLabel": "achados",
+    "findingsExportCsv": "Exportar CSV"
   },
   "about": {
     "eyebrow": "Empresa",

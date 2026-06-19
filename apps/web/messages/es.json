@@ -1501,7 +1501,8 @@
     "findingsNoMatch": "Ningún hallazgo coincide con este filtro.",
     "findingsShowing": "Mostrando",
     "findingsOf": "de",
-    "findingsLabel": "hallazgos"
+    "findingsLabel": "hallazgos",
+    "findingsExportCsv": "Exportar CSV"
   },
   "about": {
     "eyebrow": "Empresa",

@@ -1501,7 +1501,8 @@
     "findingsNoMatch": "इस फ़िल्टर से मेल खाने वाला कोई निष्कर्ष नहीं।",
     "findingsShowing": "दिखा रहे हैं",
     "findingsOf": "में से",
-    "findingsLabel": "निष्कर्ष"
+    "findingsLabel": "निष्कर्ष",
+    "findingsExportCsv": "CSV निर्यात करें"
   },
   "about": {
     "eyebrow": "कंपनी",

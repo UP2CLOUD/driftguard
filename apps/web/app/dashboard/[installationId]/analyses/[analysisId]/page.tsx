@@ -291,6 +291,7 @@ export default async function AnalysisPage({
             showing:          t("analyses.findingsShowing"),
             of:               t("analyses.findingsOf"),
             findingsLabel:    t("analyses.findingsLabel"),
+            exportCsv:        t("analyses.findingsExportCsv"),
           }}
         />
       )}
