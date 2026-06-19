@@ -70,7 +70,7 @@ function exportFindingsToCsv(rows: FindingRow[], filename: string) {
         .join(",")
     ),
   ];
-  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const blob = new Blob(["﻿", lines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -133,13 +133,16 @@ export function FindingsListClient({
 
   const handleExport = useCallback(() => {
     setExporting(true);
-    try {
-      const sev = sevFilter ?? "all";
-      const q = query.trim() ? `-${query.trim().slice(0, 20)}` : "";
-      exportFindingsToCsv(filtered, `findings-${sev}${q}.csv`);
-    } finally {
-      setExporting(false);
-    }
+    setTimeout(() => {
+      try {
+        const sev = sevFilter ?? "all";
+        const sanitizedQuery = query.trim().replace(/[^a-zA-Z0-9-_]/g, "_");
+        const q = sanitizedQuery ? `-${sanitizedQuery.slice(0, 20)}` : "";
+        exportFindingsToCsv(filtered, `findings-${sev}${q}.csv`);
+      } finally {
+        setExporting(false);
+      }
+    }, 0);
   }, [filtered, sevFilter, query]);
 
   return (
