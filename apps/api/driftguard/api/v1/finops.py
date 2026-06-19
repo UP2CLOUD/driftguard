@@ -89,6 +89,7 @@ async def finops_dashboard(
 @router.get("/reviews/{review_id}")
 async def get_finops_review(
     review_id: str,
+    installation_id: int | None = Query(default=None),
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> dict[str, Any]:
@@ -96,6 +97,8 @@ async def get_finops_review(
     review = await db.get(FinOpsReview, review_id)
     if not review:
         raise HTTPException(status_code=404, detail="FinOps review not found")
+    if installation_id is not None and review.installation_id != installation_id:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
     rc_stmt = (
         select(FinOpsResourceCost)

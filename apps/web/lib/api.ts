@@ -76,6 +76,15 @@ export type Analysis = {
   errors?: string[];
 };
 
+export type FinOpsResourceCostDetail = {
+  resource_label: string;
+  resource_type: string;
+  provider: string;
+  change_type: "add" | "change" | "destroy" | string;
+  monthly_cents: number;
+  file_path: string | null;
+};
+
 export type FinOpsReview = {
   id: string;
   analysis_id: string;
@@ -94,6 +103,7 @@ export type FinOpsReview = {
   risk_reasons: string[];
   ai_summary: string | null;
   created_at: string | null;
+  resource_cost_details?: FinOpsResourceCostDetail[];
 };
 
 export type FinOpsDashboard = {

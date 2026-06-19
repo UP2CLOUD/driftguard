@@ -13,6 +13,8 @@ import { RecentAnalysesSection } from "./_sections/RecentAnalyses";
 import { IncidentsSection } from "./_sections/Incidents";
 import { EventsSection } from "./_sections/Events";
 import { ReadinessChecklistSection } from "./_sections/ReadinessChecklist";
+import { SeverityBreakdownSection } from "./_sections/SeverityBreakdown";
+import { RiskTrendSection } from "./_sections/RiskTrend";
 
 export default async function DashboardPage({
   params,
@@ -39,6 +41,18 @@ export default async function DashboardPage({
         <Suspense fallback={<StatsStripFallback />}>
           <StatsStripSection installationId={installationId} t={t} demoOverview={demoOverview} />
         </Suspense>
+
+        <div className="mt-5">
+          <Suspense fallback={null}>
+            <SeverityBreakdownSection installationId={installationId} t={t} demoOverview={demoOverview} />
+          </Suspense>
+        </div>
+
+        <div className="mt-5">
+          <Suspense fallback={null}>
+            <RiskTrendSection installationId={installationId} t={t} demoOverview={demoOverview} />
+          </Suspense>
+        </div>
 
         {!demoMode && (
           <div className="mt-5">
