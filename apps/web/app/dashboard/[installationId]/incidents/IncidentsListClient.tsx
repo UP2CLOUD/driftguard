@@ -131,11 +131,12 @@ export function IncidentsListClient({
       </div>
 
       <input
+        type="search"
         value={titleFilter}
         onChange={(e) => setTitleFilter(e.target.value)}
         placeholder={L.filterPlaceholder}
         aria-label={L.filterPlaceholder}
-        className="w-full max-w-sm rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] outline-none focus:border-[color:var(--dg-electric)] placeholder:text-[color:var(--dg-fg-subtle)]"
+        className="w-full max-w-sm rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-2 font-sans text-sm text-[color:var(--dg-fg)] outline-none focus:border-[color:var(--dg-electric)] placeholder:text-[color:var(--dg-fg-subtle)]"
       />
 
       {filtered.length === 0 ? (
