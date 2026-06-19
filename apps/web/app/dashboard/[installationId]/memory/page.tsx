@@ -59,8 +59,8 @@ export default async function MemoryPage({
 
   const { entries, hasNext, stats } = await fetchMemory(installationId, offset);
 
-  const memoryRows: MemoryRow[] = entries.map((e: any) => ({
-    id: e.id ?? String(Math.random()),
+  const memoryRows: MemoryRow[] = entries.map((e: any, index: number) => ({
+    id: e.id ?? `fallback-${index}`,
     repo_full_name: e.repo_full_name ?? null,
     pr_number: e.pr_number ?? null,
     outcome: e.outcome ?? null,

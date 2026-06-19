@@ -75,10 +75,12 @@ export function MemoryListClient({
   }, [entries]);
 
   const outcomeCounts = useMemo(() => {
-    const counts: Record<string, number> = { blocked: 0, warned: 0, approved: 0, merged: 0 };
+    const counts: Record<Outcome, number> = { blocked: 0, warned: 0, approved: 0, merged: 0 };
     for (const e of safeEntries) {
       const o = (e?.outcome ?? "").toLowerCase();
-      if (o in counts) counts[o]++;
+      if (o === "blocked" || o === "warned" || o === "approved" || o === "merged") {
+        counts[o as Outcome]++;
+      }
     }
     return counts;
   }, [safeEntries]);
