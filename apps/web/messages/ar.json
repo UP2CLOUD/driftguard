@@ -1490,7 +1490,18 @@
     "queuing": "في قائمة الانتظار…",
     "scanning": "جارٍ الفحص…",
     "scanError": "فشل — أعد المحاولة",
-    "rescan": "↺ إعادة الفحص"
+    "rescan": "↺ إعادة الفحص",
+    "findingsSevAll": "الكل",
+    "findingsSevCritical": "حرج",
+    "findingsSevHigh": "مرتفع",
+    "findingsSevMedium": "متوسط",
+    "findingsSevLow": "منخفض",
+    "findingsSevInfo": "معلومات",
+    "findingsSearchPlaceholder": "البحث بالعنوان أو القاعدة أو الملف…",
+    "findingsNoMatch": "لا نتائج تطابق هذا الفلتر.",
+    "findingsShowing": "عرض",
+    "findingsOf": "من",
+    "findingsLabel": "نتائج"
   },
   "about": {
     "eyebrow": "الشركة",

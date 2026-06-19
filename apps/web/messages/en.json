@@ -1490,7 +1490,18 @@
     "queuing": "queuing…",
     "scanning": "scanning…",
     "scanError": "failed — try again",
-    "rescan": "↺ Re-run scan"
+    "rescan": "↺ Re-run scan",
+    "findingsSevAll": "All",
+    "findingsSevCritical": "Critical",
+    "findingsSevHigh": "High",
+    "findingsSevMedium": "Medium",
+    "findingsSevLow": "Low",
+    "findingsSevInfo": "Info",
+    "findingsSearchPlaceholder": "Search by title, rule, or file…",
+    "findingsNoMatch": "No findings match this filter.",
+    "findingsShowing": "Showing",
+    "findingsOf": "of",
+    "findingsLabel": "findings"
   },
   "about": {
     "eyebrow": "Company",

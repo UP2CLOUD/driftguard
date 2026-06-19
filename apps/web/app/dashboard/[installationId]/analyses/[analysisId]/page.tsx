@@ -7,6 +7,7 @@ import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
 import { formatCostDeltaCentsForUser } from "@/lib/currency/format";
 import { RescanButton } from "./RescanButton";
+import { FindingsListClient, type FindingRow } from "./FindingsListClient";
 
 async function fetchAnalysis(id: string) {
   return beGet<any>(`/api/v1/analyses/${id}`, { revalidate: 0, timeout: 15000 });
@@ -18,11 +19,6 @@ const SEV_STYLE: Record<string, string> = {
   medium:   "text-warned    bg-warned/10    border-warned/30",
   low:      "text-[color:var(--dg-fg-muted)] bg-[color:var(--dg-surface)] border-[color:var(--dg-border)]",
   info:     "text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border-[color:var(--dg-border)]",
-};
-
-const CAT_ICON: Record<string, string> = {
-  iam: "⚿", network: "⬡", encryption: "🔒", storage: "◫", compute: "⬜",
-  secrets: "★", kubernetes: "☸", github_actions: "⚡", best_practice: "◎", general: "◈",
 };
 
 
@@ -106,10 +102,23 @@ export default async function AnalysisPage({
     );
   }
 
-  const findings: any[] = data.findings ?? [];
+  const rawFindings: any[] = Array.isArray(data.findings) ? data.findings : [];
   const bySeverity = ["critical","high","medium","low","info"].map(s => ({
-    s, count: findings.filter((f: any) => f.severity === s).length,
+    s, count: rawFindings.filter((f: any) => (f.severity ?? "").toLowerCase() === s).length,
   })).filter(x => x.count > 0);
+
+  const findingRows: FindingRow[] = rawFindings.map((f: any) => ({
+    severity: f.severity ?? null,
+    rule_id: f.rule_id ?? null,
+    category: f.category ?? null,
+    title: f.title ?? null,
+    message: f.message ?? null,
+    file: f.file ?? null,
+    line: f.line ?? null,
+    resource: f.resource ?? null,
+    suggestion: f.suggestion ?? null,
+    controls: Array.isArray(f.controls) ? f.controls : [],
+  }));
 
   const costDeltaDisplay = data.cost_delta_cents != null
     ? await formatCostDeltaCentsForUser(data.cost_delta_cents, prefs.currency, prefs.locale)
@@ -196,7 +205,7 @@ export default async function AnalysisPage({
       <div className={`mb-8 grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] grid-cols-2 ${costDeltaDisplay ? "sm:grid-cols-5" : "sm:grid-cols-4"}`}>
         {[
           { label: t("dashboard.filesScanned"),  val: data.files_scanned },
-          { label: t("dashboard.totalFindings"), val: findings.length },
+          { label: t("dashboard.totalFindings"), val: rawFindings.length },
           { label: t("dashboard.criticalHigh"),  val: (data.critical ?? 0) + (data.high ?? 0) },
           { label: t("dashboard.duration"),      val: data.duration_ms ? `${(data.duration_ms/1000).toFixed(1)}s` : "—" },
           ...(costDeltaDisplay ? [{ label: t("dashboard.costDelta") ?? "Cost delta", val: costDeltaDisplay, cost: data.cost_delta_cents as number }] : []),
@@ -256,7 +265,7 @@ export default async function AnalysisPage({
       )}
 
       {/* Findings list */}
-      {findings.length === 0 ? (
+      {rawFindings.length === 0 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
           <div className="text-2xl mb-3">✓</div>
           <p className="font-sans text-[14px] font-medium text-allowed mb-1">{t("dashboard.noFindings")}</p>
@@ -267,63 +276,23 @@ export default async function AnalysisPage({
           </p>
         </div>
       ) : (
-        <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
-          {findings.map((f: any, i: number) => (
-            <div key={i} className="px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition">
-              {/* Top row */}
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest ${SEV_STYLE[f.severity] ?? SEV_STYLE.info}`}>
-                  {f.severity}
-                </span>
-                <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">
-                  {f.rule_id}
-                </span>
-                <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-                  {CAT_ICON[f.category] ?? "◈"} {f.category}
-                </span>
-              </div>
-
-              {/* Title */}
-              <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg)] mb-1">
-                {f.title || f.message}
-              </p>
-
-              {/* File + line */}
-              {f.file && (
-                <p className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] mb-2">
-                  📄 {f.file}{f.line ? `:${f.line}` : ""}
-                  {f.resource && f.resource !== f.file && (
-                    <span className="ml-2 text-[color:var(--dg-fg-muted)]">· {f.resource}</span>
-                  )}
-                </p>
-              )}
-
-              {/* Message (if different from title) */}
-              {f.title && f.message !== f.title && (
-                <p className="text-[12px] text-[color:var(--dg-fg-muted)] mb-2">{f.message}</p>
-              )}
-
-              {/* Suggestion */}
-              {f.suggestion && (
-                <div className="mt-2 rounded border border-allowed/20 bg-allowed/5 px-3 py-2">
-                  <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-allowed mr-2">{t("incidents.suggestedFix")}</span>
-                  <span className="font-mono text-[11px] text-allowed">{f.suggestion}</span>
-                </div>
-              )}
-
-              {/* Controls */}
-              {f.controls?.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {f.controls.map((ctrl: string) => (
-                    <span key={ctrl} className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border border-[color:var(--dg-border)] rounded px-1.5 py-0.5">
-                      {ctrl}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+        <FindingsListClient
+          findings={findingRows}
+          labels={{
+            sevAll:           t("analyses.findingsSevAll"),
+            sevCritical:      t("analyses.findingsSevCritical"),
+            sevHigh:          t("analyses.findingsSevHigh"),
+            sevMedium:        t("analyses.findingsSevMedium"),
+            sevLow:           t("analyses.findingsSevLow"),
+            sevInfo:          t("analyses.findingsSevInfo"),
+            searchPlaceholder: t("analyses.findingsSearchPlaceholder"),
+            noMatch:          t("analyses.findingsNoMatch"),
+            suggestedFix:     t("incidents.suggestedFix"),
+            showing:          t("analyses.findingsShowing"),
+            of:               t("analyses.findingsOf"),
+            findingsLabel:    t("analyses.findingsLabel"),
+          }}
+        />
       )}
 
       {/* Errors */}
