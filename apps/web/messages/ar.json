@@ -836,7 +836,10 @@
     "sev_high": "عالي",
     "sev_medium": "متوسط",
     "sev_low": "منخفض",
-    "viewAnalysis": "عرض التحليل →"
+    "viewAnalysis": "عرض التحليل →",
+    "filterPlaceholder": "تصفية حسب المستودع…",
+    "outcomeAll": "جميع النتائج",
+    "noMatchFilter": "لا توجد إدخالات ذاكرة تطابق هذا الفلتر."
   },
   "docs": {
     "eyebrow": "التوثيق",

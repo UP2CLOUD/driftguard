@@ -836,7 +836,10 @@
     "sev_high": "उच्च",
     "sev_medium": "मध्यम",
     "sev_low": "निम्न",
-    "viewAnalysis": "विश्लेषण देखें →"
+    "viewAnalysis": "विश्लेषण देखें →",
+    "filterPlaceholder": "रिपॉजिटरी द्वारा फ़िल्टर करें…",
+    "outcomeAll": "सभी परिणाम",
+    "noMatchFilter": "इस फ़िल्टर से कोई मेमोरी प्रविष्टि मेल नहीं खाती।"
   },
   "docs": {
     "eyebrow": "दस्तावेज़",
