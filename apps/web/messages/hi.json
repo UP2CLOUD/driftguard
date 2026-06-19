@@ -1478,7 +1478,18 @@
     "queuing": "कतार में…",
     "scanning": "स्कैन हो रहा है…",
     "scanError": "विफल — पुनः प्रयास करें",
-    "rescan": "↺ पुनः स्कैन करें"
+    "rescan": "↺ पुनः स्कैन करें",
+    "findingsSevAll": "सभी",
+    "findingsSevCritical": "अत्यधिक",
+    "findingsSevHigh": "उच्च",
+    "findingsSevMedium": "मध्यम",
+    "findingsSevLow": "निम्न",
+    "findingsSevInfo": "जानकारी",
+    "findingsSearchPlaceholder": "शीर्षक, नियम या फ़ाइल द्वारा खोजें…",
+    "findingsNoMatch": "इस फ़िल्टर से मेल खाने वाला कोई निष्कर्ष नहीं।",
+    "findingsShowing": "दिखा रहे हैं",
+    "findingsOf": "में से",
+    "findingsLabel": "निष्कर्ष"
   },
   "about": {
     "eyebrow": "कंपनी",

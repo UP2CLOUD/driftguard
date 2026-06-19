@@ -1478,7 +1478,18 @@
     "queuing": "排队中…",
     "scanning": "扫描中…",
     "scanError": "失败 — 请重试",
-    "rescan": "↺ 重新扫描"
+    "rescan": "↺ 重新扫描",
+    "findingsSevAll": "全部",
+    "findingsSevCritical": "严重",
+    "findingsSevHigh": "高",
+    "findingsSevMedium": "中",
+    "findingsSevLow": "低",
+    "findingsSevInfo": "信息",
+    "findingsSearchPlaceholder": "按标题、规则或文件搜索…",
+    "findingsNoMatch": "没有匹配此过滤器的发现。",
+    "findingsShowing": "显示",
+    "findingsOf": "/",
+    "findingsLabel": "个发现"
   },
   "about": {
     "eyebrow": "公司",

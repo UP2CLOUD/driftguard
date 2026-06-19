@@ -1478,7 +1478,18 @@
     "queuing": "na fila…",
     "scanning": "escaneando…",
     "scanError": "falhou — tente novamente",
-    "rescan": "↺ Re-executar análise"
+    "rescan": "↺ Re-executar análise",
+    "findingsSevAll": "Todos",
+    "findingsSevCritical": "Crítico",
+    "findingsSevHigh": "Alto",
+    "findingsSevMedium": "Médio",
+    "findingsSevLow": "Baixo",
+    "findingsSevInfo": "Info",
+    "findingsSearchPlaceholder": "Pesquisar por título, regra ou arquivo…",
+    "findingsNoMatch": "Nenhum achado corresponde a este filtro.",
+    "findingsShowing": "Mostrando",
+    "findingsOf": "de",
+    "findingsLabel": "achados"
   },
   "about": {
     "eyebrow": "Empresa",
