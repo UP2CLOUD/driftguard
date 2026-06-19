@@ -1,0 +1,56 @@
+# Render.com Blueprint — DriftGuard API
+# Deploy at: https://dashboard.render.com/select-repo
+# Click "New Blueprint Instance", select this repo, fill in env vars below.
+#
+# Render free tier: 512 MB RAM, spins down after 15 min idle (cold start ~30s).
+# Upgrade to Starter ($7/mo) to keep it always-on.
+
+services:
+  - type: web
+    name: driftguard-api
+    runtime: docker
+    dockerfilePath: apps/api/Dockerfile
+    dockerContext: apps/api
+    region: frankfurt
+    plan: free
+    healthCheckPath: /api/v1/health
+    # Run migrations before serving traffic
+    # Render runs this command before routing traffic to a new deploy.
+    # Uses a one-off job so the main server starts only after schema is ready.
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: PORT
+        value: "8000"
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: PYTHONDONTWRITEBYTECODE
+        value: "1"
+      # --- fill these in Render dashboard → Environment ---
+      - key: DATABASE_URL
+        sync: false   # prompts for value in UI
+      - key: REDIS_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: GITHUB_APP_ID
+        sync: false
+      - key: GITHUB_APP_PRIVATE_KEY
+        sync: false
+      - key: GITHUB_WEBHOOK_SECRET
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      # Optional
+      - key: ANTHROPIC_MODEL
+        value: claude-haiku-4-5-20251001
+      - key: INFRACOST_API_KEY
+        sync: false
+      - key: STRIPE_API_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
