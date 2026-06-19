@@ -1501,7 +1501,8 @@
     "findingsNoMatch": "没有匹配此过滤器的发现。",
     "findingsShowing": "显示",
     "findingsOf": "/",
-    "findingsLabel": "个发现"
+    "findingsLabel": "个发现",
+    "findingsExportCsv": "导出 CSV"
   },
   "about": {
     "eyebrow": "公司",

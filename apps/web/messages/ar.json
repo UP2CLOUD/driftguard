@@ -1501,7 +1501,8 @@
     "findingsNoMatch": "لا نتائج تطابق هذا الفلتر.",
     "findingsShowing": "عرض",
     "findingsOf": "من",
-    "findingsLabel": "نتائج"
+    "findingsLabel": "نتائج",
+    "findingsExportCsv": "تصدير CSV"
   },
   "about": {
     "eyebrow": "الشركة",

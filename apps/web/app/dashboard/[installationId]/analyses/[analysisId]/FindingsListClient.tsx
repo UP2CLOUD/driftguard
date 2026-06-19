@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 type SevBucket = "critical" | "high" | "medium" | "low" | "info";
 
@@ -45,7 +45,39 @@ type Labels = {
   showing: string;
   of: string;
   findingsLabel: string;
+  exportCsv: string;
 };
+
+function exportFindingsToCsv(rows: FindingRow[], filename: string) {
+  const headers = ["severity", "rule_id", "category", "title", "message", "file", "line", "resource", "suggestion", "controls"];
+  const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
+  const lines = [
+    headers.join(","),
+    ...rows.map((f) =>
+      [
+        f.severity ?? "",
+        f.rule_id ?? "",
+        f.category ?? "",
+        f.title ?? "",
+        f.message ?? "",
+        f.file ?? "",
+        String(f.line ?? ""),
+        f.resource ?? "",
+        f.suggestion ?? "",
+        f.controls.join("; "),
+      ]
+        .map(esc)
+        .join(",")
+    ),
+  ];
+  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export function FindingsListClient({
   findings,
@@ -56,6 +88,7 @@ export function FindingsListClient({
 }) {
   const [sevFilter, setSevFilter] = useState<SevBucket | null>(null);
   const [query, setQuery] = useState("");
+  const [exporting, setExporting] = useState(false);
 
   const safeFindings = useMemo(() => {
     if (!Array.isArray(findings)) return [];
@@ -98,6 +131,17 @@ export function FindingsListClient({
 
   const isFiltered = !!sevFilter || !!query.trim();
 
+  const handleExport = useCallback(() => {
+    setExporting(true);
+    try {
+      const sev = sevFilter ?? "all";
+      const q = query.trim() ? `-${query.trim().slice(0, 20)}` : "";
+      exportFindingsToCsv(filtered, `findings-${sev}${q}.csv`);
+    } finally {
+      setExporting(false);
+    }
+  }, [filtered, sevFilter, query]);
+
   return (
     <div className="space-y-3">
       {/* Severity filter chips + search */}
@@ -133,14 +177,30 @@ export function FindingsListClient({
         )}
       </div>
 
-      <input
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder={L.searchPlaceholder}
-        aria-label={L.searchPlaceholder}
-        className="w-full max-w-sm rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-2 font-sans text-sm text-[color:var(--dg-fg)] outline-none focus:border-[color:var(--dg-electric)] placeholder:text-[color:var(--dg-fg-subtle)]"
-      />
+      <div className="flex items-center gap-2">
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={L.searchPlaceholder}
+          aria-label={L.searchPlaceholder}
+          className="flex-1 min-w-0 max-w-sm rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-2 font-sans text-sm text-[color:var(--dg-fg)] outline-none focus:border-[color:var(--dg-electric)] placeholder:text-[color:var(--dg-fg-subtle)]"
+        />
+        {filtered.length > 0 && (
+          <button
+            onClick={handleExport}
+            disabled={exporting}
+            aria-label={L.exportCsv}
+            className="shrink-0 flex items-center gap-1.5 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-2 font-sans text-[11px] font-medium text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-fg-subtle)] transition cursor-pointer disabled:opacity-50"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
+              <path d="M8.75 2.75a.75.75 0 0 0-1.5 0v5.69L5.03 6.22a.75.75 0 0 0-1.06 1.06l3.5 3.5a.75.75 0 0 0 1.06 0l3.5-3.5a.75.75 0 0 0-1.06-1.06L8.75 8.44V2.75Z" />
+              <path d="M3.5 9.75a.75.75 0 0 0-1.5 0v1.5A2.75 2.75 0 0 0 4.75 14h6.5A2.75 2.75 0 0 0 14 11.25v-1.5a.75.75 0 0 0-1.5 0v1.5c0 .69-.56 1.25-1.25 1.25h-6.5c-.69 0-1.25-.56-1.25-1.25v-1.5Z" />
+            </svg>
+            {L.exportCsv}
+          </button>
+        )}
+      </div>
 
       {filtered.length === 0 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-10 text-center">
