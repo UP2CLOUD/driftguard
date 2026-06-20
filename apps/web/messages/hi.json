@@ -24,10 +24,8 @@
     "cmdConnectGitHub": "GitHub कनेक्ट करें",
     "cmdDescOverview": "डैशबोर्ड अवलोकन पर जाएं",
     "cmdDescRepos": "कनेक्टेड रिपॉजिटरी प्रबंधित करें",
-    "cmdDescAnalyses": "इंफ्रास्ट्रक्चर स्कैन परिणाम देखें",
     "cmdDescIncidents": "सक्रिय घटनाएं देखें",
     "cmdDescPolicies": "नीति नियम कॉन्फ़िगर करें",
-    "cmdDescFinOps": "इंफ्रास्ट्रक्चर लागत रुझान देखें",
     "cmdDescMemory": "AI मेमोरी निर्णयों की समीक्षा करें",
     "cmdDescSettings": "कार्यस्थान और बिलिंग सेटिंग्स",
     "cmdDescConnectGitHub": "अपने संगठन पर GitHub App इंस्टॉल करें",
@@ -162,22 +160,7 @@
     "firstPrStep1": "*.tf फ़ाइल परिवर्तनों के साथ एक शाखा पुश करें",
     "firstPrStep2": "GitHub पर एक पुल अनुरोध खोलें",
     "firstPrStep3": "DriftGuard सुरक्षा, लागत और नीति उल्लंघनों की जांच करता है",
-    "firstPrStep4": "परिणाम PR टिप्पणी के रूप में और यहाँ डैशबोर्ड में दिखाई देते हैं",
-    "sev": {
-      "title": "गंभीरता के अनुसार निष्कर्ष",
-      "total": "कुल",
-      "critical": "गंभीर",
-      "high": "उच्च",
-      "medium": "मध्यम",
-      "low": "निम्न"
-    },
-    "riskTrend": {
-      "title": "जोखिम प्रवृत्ति",
-      "improving": "सुधर रहा है",
-      "worsening": "बिगड़ रहा है",
-      "stable": "स्थिर",
-      "last30": "पिछले {n} विश्लेषण"
-    }
+    "firstPrStep4": "परिणाम PR टिप्पणी के रूप में और यहाँ डैशबोर्ड में दिखाई देते हैं"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -374,7 +357,20 @@
     "uploadScanBtn": "अपलोड और स्कैन करें →",
     "uploadClickToSelect": "चुनने के लिए क्लिक करें",
     "uploadRedirecting": "परिणामों पर जा रहे हैं…",
-    "uploadResult": "स्कोर {score}/100 · {n} खोज"
+    "uploadResult": "स्कोर {score}/100 · {n} खोज",
+    "filterPlaceholder": "रिपॉज़िटरी फ़िल्टर करें…",
+    "riskAll": "सभी जोखिम स्तर",
+    "riskHigh": "उच्च ≥70",
+    "riskMedium": "मध्यम 40–69",
+    "riskLow": "निम्न <40",
+    "showing": "दिखा रहे हैं",
+    "of": "में से",
+    "reposLabel": "रिपॉज़िटरी",
+    "noMatchFilter": "इस फ़िल्टर से कोई रिपॉज़िटरी मेल नहीं खाती।",
+    "statusAll": "सभी स्थितियाँ",
+    "statusCompleted": "पूर्ण",
+    "statusFailed": "विफल",
+    "analysesNoMatch": "वर्तमान फ़िल्टर से कोई विश्लेषण मेल नहीं खाता।"
   },
   "landing": {
     "ctaTitle": "अपने क्लाउड पर नियंत्रण वापस पाएं।",
@@ -737,7 +733,14 @@
     "lastSeen": "अंतिम बार देखा",
     "resolvedAt": "हल किया गया",
     "recurrences": "पुनरावृत्ति",
-    "fingerprintLabel": "फिंगरप्रिंट"
+    "fingerprintLabel": "फिंगरप्रिंट",
+    "filterPlaceholder": "शीर्षक द्वारा खोजें…",
+    "sevAll": "सभी गंभीरताएँ",
+    "sevCritical": "अति गंभीर",
+    "sevHigh": "उच्च",
+    "sevMedium": "मध्यम",
+    "sevLow": "निम्न",
+    "noMatchFilter": "इस फ़िल्टर से कोई घटना मेल नहीं खाती।"
   },
   "policies": {
     "title": "नीति नियम",
@@ -805,7 +808,10 @@
     "condSeverityDesc": "ट्रिगर करने की न्यूनतम गंभीरता",
     "condResourcePatternDesc": "संसाधन पते के विरुद्ध मिलाया गया रेजेक्स",
     "condMessageContainsDesc": "निष्कर्ष संदेश में मिलाई गई सबस्ट्रिंग",
-    "condRuleIdPrefixDesc": "नियम ID के विरुद्ध मिलाया गया उपसर्ग"
+    "condRuleIdPrefixDesc": "नियम ID के विरुद्ध मिलाया गया उपसर्ग",
+    "filterPlaceholder": "नीतियाँ फ़िल्टर करें…",
+    "typeAll": "सभी प्रकार",
+    "noMatchFilter": "इस फ़िल्टर से कोई नीति मेल नहीं खाती।"
   },
   "memory": {
     "title": "परिचालन स्मृति",
@@ -831,7 +837,10 @@
     "sev_high": "उच्च",
     "sev_medium": "मध्यम",
     "sev_low": "निम्न",
-    "viewAnalysis": "विश्लेषण देखें →"
+    "viewAnalysis": "विश्लेषण देखें →",
+    "filterPlaceholder": "रिपॉजिटरी द्वारा फ़िल्टर करें…",
+    "outcomeAll": "सभी परिणाम",
+    "noMatchFilter": "इस फ़िल्टर से कोई मेमोरी प्रविष्टि मेल नहीं खाती।"
   },
   "docs": {
     "eyebrow": "दस्तावेज़",
@@ -1431,7 +1440,7 @@
     "newCost": "नई लागत",
     "difference": "अंतर",
     "topDrivers": "शीर्ष लागत कारक",
-    "recommendations": "अनुशंसाएँ",
+    "recommendations": "सिफारिशें",
     "providerBreakdown": "प्रदाता विवरण",
     "prNumber": "PR",
     "repository": "रिपॉजिटरी",
@@ -1443,18 +1452,9 @@
     "riskHigh": "उच्च",
     "riskCritical": "गंभीर",
     "disclaimer": "लागतें प्रकाशित सूची मूल्यों पर आधारित अनुमान हैं। वास्तविक क्लाउड बिलिंग भिन्न हो सकती है।",
-    "costTrend": "मासिक लागत प्रभाव — हालिया PRs",
-    "costIncrease": "लागत वृद्धि",
-    "costDecrease": "लागत में कमी",
-    "reviewDetail": "लागत समीक्षा",
-    "currentMonthly": "वर्तमान मासिक",
-    "newMonthly": "नई मासिक",
-    "monthlyDelta": "मासिक परिवर्तन",
-    "annualDelta": "वार्षिक परिवर्तन",
-    "resourceBreakdown": "संसाधन लागत विवरण",
-    "aiSummary": "AI लागत विश्लेषण",
-    "riskReasons": "जोखिम कारक",
-    "terraformFiles": "विश्लेषित Terraform फ़ाइलें"
+    "filterPlaceholder": "रिपॉजिटरी द्वारा फ़िल्टर करें...",
+    "riskAll": "सभी जोखिम स्तर",
+    "noMatchFilter": "वर्तमान फ़िल्टर से कोई समीक्षा मेल नहीं खाती।"
   },
   "analyses": {
     "eyebrow": "इंफ्रास्ट्रक्चर स्कैनर",
@@ -1468,6 +1468,14 @@
     "noBody": "Terraform PR खुलने पर विश्लेषण स्वचालित रूप से बनाए जाते हैं।",
     "noBodySub": "आप रिपोजिटरी पेज से मैन्युअल स्कैन भी ट्रिगर कर सकते हैं।",
     "goToRepos": "रिपोजिटरी पर जाएं →",
+    "filterPlaceholder": "रिपोजिटरी द्वारा फ़िल्टर करें…",
+    "riskAll": "सभी",
+    "riskHigh": "उच्च",
+    "riskMedium": "मध्यम",
+    "riskLow": "निम्न",
+    "showing": "दिखा रहे हैं",
+    "of": "में से",
+    "analysesLabel": "विश्लेषण",
     "noMatchFilter": "इस फ़िल्टर से मेल खाने वाला कोई विश्लेषण नहीं।",
     "colRisk": "जोखिम",
     "colRepo": "रिपोजिटरी / PR",
@@ -1483,21 +1491,18 @@
     "scanning": "स्कैन हो रहा है…",
     "scanError": "विफल — पुनः प्रयास करें",
     "rescan": "↺ पुनः स्कैन करें",
-    "exportCsv": "CSV निर्यात करें",
-    "repoFilterPlaceholder": "रिपॉजिटरी के अनुसार फ़िल्टर करें…",
-    "showing": "दिखा रहे हैं",
-    "of": "में से",
-    "analysesLabel": "विश्लेषण",
-    "noMatchRepo": "इस रिपॉजिटरी फ़िल्टर से मेल खाने वाला कोई विश्लेषण नहीं।",
-    "riskAll": "सभी जोखिम स्तर",
-    "riskHigh": "उच्च ≥70",
-    "riskMedium": "मध्यम 40–69",
-    "riskLow": "निम्न <40",
-    "findingsSearchPlaceholder": "फ़ाइल, नियम या संदेश द्वारा खोजें…",
+    "findingsSevAll": "सभी",
+    "findingsSevCritical": "अत्यधिक",
+    "findingsSevHigh": "उच्च",
+    "findingsSevMedium": "मध्यम",
+    "findingsSevLow": "निम्न",
+    "findingsSevInfo": "जानकारी",
+    "findingsSearchPlaceholder": "शीर्षक, नियम या फ़ाइल द्वारा खोजें…",
+    "findingsNoMatch": "इस फ़िल्टर से मेल खाने वाला कोई निष्कर्ष नहीं।",
+    "findingsShowing": "दिखा रहे हैं",
+    "findingsOf": "में से",
     "findingsLabel": "निष्कर्ष",
-    "noMatchFindings": "इस फ़िल्टर से मेल खाने वाला कोई निष्कर्ष नहीं।",
-    "allSeverities": "सभी गंभीरताएँ",
-    "suggestedFix": "सुझाया गया सुधार"
+    "findingsExportCsv": "CSV निर्यात करें"
   },
   "about": {
     "eyebrow": "कंपनी",

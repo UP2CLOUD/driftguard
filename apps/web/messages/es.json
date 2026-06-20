@@ -24,10 +24,8 @@
     "cmdConnectGitHub": "Conectar GitHub",
     "cmdDescOverview": "Ir al resumen del panel",
     "cmdDescRepos": "Gestionar repositorios conectados",
-    "cmdDescAnalyses": "Explorar resultados de escaneos de infraestructura",
     "cmdDescIncidents": "Ver incidentes activos",
     "cmdDescPolicies": "Configurar reglas de política",
-    "cmdDescFinOps": "Revisar tendencias de costes de infraestructura",
     "cmdDescMemory": "Revisar decisiones de memoria de IA",
     "cmdDescSettings": "Ajustes del espacio de trabajo y facturación",
     "cmdDescConnectGitHub": "Instalar la GitHub App en tu organización",
@@ -162,22 +160,7 @@
     "firstPrStep1": "Sube una rama con cambios en archivos *.tf",
     "firstPrStep2": "Abre un pull request en GitHub",
     "firstPrStep3": "DriftGuard analiza seguridad, costos y violaciones de política",
-    "firstPrStep4": "Los resultados aparecen como comentario en el PR y aquí en el panel",
-    "sev": {
-      "title": "Hallazgos por severidad",
-      "total": "total",
-      "critical": "Crítico",
-      "high": "Alto",
-      "medium": "Medio",
-      "low": "Bajo"
-    },
-    "riskTrend": {
-      "title": "Tendencia de riesgo",
-      "improving": "mejorando",
-      "worsening": "empeorando",
-      "stable": "estable",
-      "last30": "Últimos {n} análisis"
-    }
+    "firstPrStep4": "Los resultados aparecen como comentario en el PR y aquí en el panel"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -374,7 +357,20 @@
     "uploadScanBtn": "Subir y analizar →",
     "uploadClickToSelect": "Haz clic para seleccionar",
     "uploadRedirecting": "Redirigiendo a resultados…",
-    "uploadResult": "Puntuación {score}/100 · {n} hallazgos"
+    "uploadResult": "Puntuación {score}/100 · {n} hallazgos",
+    "filterPlaceholder": "Filtrar repositorios…",
+    "riskAll": "Todos los niveles de riesgo",
+    "riskHigh": "Alto ≥70",
+    "riskMedium": "Medio 40–69",
+    "riskLow": "Bajo <40",
+    "showing": "mostrando",
+    "of": "de",
+    "reposLabel": "repositorios",
+    "noMatchFilter": "Ningún repositorio coincide con este filtro.",
+    "statusAll": "Todos los Estados",
+    "statusCompleted": "Completado",
+    "statusFailed": "Fallido",
+    "analysesNoMatch": "Ningún análisis coincide con el filtro actual."
   },
   "landing": {
     "ctaTitle": "Recupera el control de tu cloud.",
@@ -737,7 +733,14 @@
     "lastSeen": "Última vez visto",
     "resolvedAt": "Resuelto",
     "recurrences": "Recurrencias",
-    "fingerprintLabel": "Huella digital"
+    "fingerprintLabel": "Huella digital",
+    "filterPlaceholder": "Buscar por título…",
+    "sevAll": "Todas las severidades",
+    "sevCritical": "Crítico",
+    "sevHigh": "Alto",
+    "sevMedium": "Medio",
+    "sevLow": "Bajo",
+    "noMatchFilter": "Ningún incidente coincide con este filtro."
   },
   "policies": {
     "title": "Reglas de política",
@@ -805,7 +808,10 @@
     "condSeverityDesc": "Severidad mínima para activar",
     "condResourcePatternDesc": "Regex comparado contra la dirección del recurso",
     "condMessageContainsDesc": "Subcadena comparada en el mensaje del hallazgo",
-    "condRuleIdPrefixDesc": "Prefijo comparado contra el ID de la regla"
+    "condRuleIdPrefixDesc": "Prefijo comparado contra el ID de la regla",
+    "filterPlaceholder": "Filtrar políticas…",
+    "typeAll": "Todos los tipos",
+    "noMatchFilter": "Ninguna política coincide con este filtro."
   },
   "memory": {
     "title": "Memoria operacional",
@@ -831,7 +837,10 @@
     "sev_high": "Alto",
     "sev_medium": "Medio",
     "sev_low": "Bajo",
-    "viewAnalysis": "Ver análisis →"
+    "viewAnalysis": "Ver análisis →",
+    "filterPlaceholder": "Filtrar por repositorio…",
+    "outcomeAll": "Todos los resultados",
+    "noMatchFilter": "Ninguna entrada de memoria coincide con este filtro."
   },
   "docs": {
     "eyebrow": "Documentación",
@@ -1443,18 +1452,9 @@
     "riskHigh": "Alto",
     "riskCritical": "Crítico",
     "disclaimer": "Los costes son estimaciones basadas en precios de lista publicados. La facturación real en la nube puede variar.",
-    "costTrend": "Impacto mensual de coste — PRs recientes",
-    "costIncrease": "Aumento de coste",
-    "costDecrease": "Reducción de coste",
-    "reviewDetail": "Revisión de Costos",
-    "currentMonthly": "Mensual actual",
-    "newMonthly": "Nuevo mensual",
-    "monthlyDelta": "Variación mensual",
-    "annualDelta": "Variación anual",
-    "resourceBreakdown": "Desglose por recurso",
-    "aiSummary": "Análisis de costos por IA",
-    "riskReasons": "Factores de riesgo",
-    "terraformFiles": "Archivos Terraform analizados"
+    "filterPlaceholder": "Filtrar por repositorio...",
+    "riskAll": "Todos los Niveles de Riesgo",
+    "noMatchFilter": "Ninguna revisión coincide con el filtro actual."
   },
   "analyses": {
     "eyebrow": "Escáner de infraestructura",
@@ -1468,6 +1468,14 @@
     "noBody": "Los análisis se crean automáticamente cuando se abre un PR de Terraform.",
     "noBodySub": "También puedes activar un escaneo manual desde la página de Repositorios.",
     "goToRepos": "Ir a Repositorios →",
+    "filterPlaceholder": "Filtrar por repositorio…",
+    "riskAll": "Todos",
+    "riskHigh": "Alto",
+    "riskMedium": "Medio",
+    "riskLow": "Bajo",
+    "showing": "Mostrando",
+    "of": "de",
+    "analysesLabel": "análisis",
     "noMatchFilter": "No hay análisis que coincidan con este filtro.",
     "colRisk": "Riesgo",
     "colRepo": "Repositorio / PR",
@@ -1483,21 +1491,18 @@
     "scanning": "escaneando…",
     "scanError": "error — intenta de nuevo",
     "rescan": "↺ Repetir análisis",
-    "exportCsv": "Exportar CSV",
-    "repoFilterPlaceholder": "Filtrar por repositorio…",
-    "showing": "mostrando",
-    "of": "de",
-    "analysesLabel": "análisis",
-    "noMatchRepo": "Ningún análisis coincide con este filtro de repositorio.",
-    "riskAll": "Todos los niveles de riesgo",
-    "riskHigh": "Alto ≥70",
-    "riskMedium": "Medio 40–69",
-    "riskLow": "Bajo <40",
-    "findingsSearchPlaceholder": "Buscar por archivo, regla o mensaje…",
+    "findingsSevAll": "Todos",
+    "findingsSevCritical": "Crítico",
+    "findingsSevHigh": "Alto",
+    "findingsSevMedium": "Medio",
+    "findingsSevLow": "Bajo",
+    "findingsSevInfo": "Info",
+    "findingsSearchPlaceholder": "Buscar por título, regla o archivo…",
+    "findingsNoMatch": "Ningún hallazgo coincide con este filtro.",
+    "findingsShowing": "Mostrando",
+    "findingsOf": "de",
     "findingsLabel": "hallazgos",
-    "noMatchFindings": "Ningún hallazgo coincide con este filtro.",
-    "allSeverities": "Todas las gravedades",
-    "suggestedFix": "Corrección sugerida"
+    "findingsExportCsv": "Exportar CSV"
   },
   "about": {
     "eyebrow": "Empresa",

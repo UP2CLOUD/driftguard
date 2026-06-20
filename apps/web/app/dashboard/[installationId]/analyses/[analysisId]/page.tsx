@@ -7,7 +7,7 @@ import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
 import { formatCostDeltaCentsForUser } from "@/lib/currency/format";
 import { RescanButton } from "./RescanButton";
-import { FindingsClient } from "./FindingsClient";
+import { FindingsListClient, type FindingRow } from "./FindingsListClient";
 
 async function fetchAnalysis(id: string) {
   return beGet<any>(`/api/v1/analyses/${id}`, { revalidate: 0, timeout: 15000 });
@@ -20,7 +20,6 @@ const SEV_STYLE: Record<string, string> = {
   low:      "text-[color:var(--dg-fg-muted)] bg-[color:var(--dg-surface)] border-[color:var(--dg-border)]",
   info:     "text-[color:var(--dg-fg-subtle)] bg-[color:var(--dg-surface)] border-[color:var(--dg-border)]",
 };
-
 
 
 function AiMarkdown({ content }: { content: string }) {
@@ -103,10 +102,23 @@ export default async function AnalysisPage({
     );
   }
 
-  const findings: any[] = data.findings ?? [];
+  const rawFindings: any[] = Array.isArray(data.findings) ? data.findings : [];
   const bySeverity = ["critical","high","medium","low","info"].map(s => ({
-    s, count: findings.filter((f: any) => f.severity === s).length,
+    s, count: rawFindings.filter((f: any) => (f.severity ?? "").toLowerCase() === s).length,
   })).filter(x => x.count > 0);
+
+  const findingRows: FindingRow[] = rawFindings.map((f: any) => ({
+    severity: f.severity ?? null,
+    rule_id: f.rule_id ?? null,
+    category: f.category ?? null,
+    title: f.title ?? null,
+    message: f.message ?? null,
+    file: f.file ?? null,
+    line: f.line ?? null,
+    resource: f.resource ?? null,
+    suggestion: f.suggestion ?? null,
+    controls: Array.isArray(f.controls) ? f.controls : [],
+  }));
 
   const costDeltaDisplay = data.cost_delta_cents != null
     ? await formatCostDeltaCentsForUser(data.cost_delta_cents, prefs.currency, prefs.locale)
@@ -156,15 +168,6 @@ export default async function AnalysisPage({
         </div>
         {/* Risk badge + actions */}
         <div className="flex items-center gap-3">
-          {findings.length > 0 && (
-            <a
-              href={`/api/analyses/${analysisId}/export?installation_id=${installationId}`}
-              download
-              className="inline-flex items-center gap-1.5 rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-3 py-1.5 font-sans font-semibold text-[11px] uppercase tracking-wide text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-fg)] hover:border-[color:var(--dg-fg-subtle)] transition"
-            >
-              ↓ {t("analyses.exportCsv") ?? "Export CSV"}
-            </a>
-          )}
           {data.repo_full_name && (
             <RescanButton
               installationId={installationId}
@@ -202,7 +205,7 @@ export default async function AnalysisPage({
       <div className={`mb-8 grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] grid-cols-2 ${costDeltaDisplay ? "sm:grid-cols-5" : "sm:grid-cols-4"}`}>
         {[
           { label: t("dashboard.filesScanned"),  val: data.files_scanned },
-          { label: t("dashboard.totalFindings"), val: findings.length },
+          { label: t("dashboard.totalFindings"), val: rawFindings.length },
           { label: t("dashboard.criticalHigh"),  val: (data.critical ?? 0) + (data.high ?? 0) },
           { label: t("dashboard.duration"),      val: data.duration_ms ? `${(data.duration_ms/1000).toFixed(1)}s` : "—" },
           ...(costDeltaDisplay ? [{ label: t("dashboard.costDelta") ?? "Cost delta", val: costDeltaDisplay, cost: data.cost_delta_cents as number }] : []),
@@ -262,7 +265,7 @@ export default async function AnalysisPage({
       )}
 
       {/* Findings list */}
-      {findings.length === 0 ? (
+      {rawFindings.length === 0 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
           <div className="text-2xl mb-3">✓</div>
           <p className="font-sans text-[14px] font-medium text-allowed mb-1">{t("dashboard.noFindings")}</p>
@@ -273,16 +276,22 @@ export default async function AnalysisPage({
           </p>
         </div>
       ) : (
-        <FindingsClient
-          findings={findings}
+        <FindingsListClient
+          findings={findingRows}
           labels={{
-            searchPlaceholder: t("analyses.findingsSearchPlaceholder") ?? "Search by file, rule, or message…",
-            showing:           t("analyses.showing")                   ?? "showing",
-            of:                t("analyses.of")                        ?? "of",
-            findings:          t("analyses.findingsLabel")             ?? "findings",
-            noMatch:           t("analyses.noMatchFindings")           ?? "No findings match this filter.",
-            allSeverities:     t("analyses.allSeverities")             ?? "All severities",
-            suggestedFix:      t("analyses.suggestedFix")              ?? "Suggested fix",
+            sevAll:           t("analyses.findingsSevAll"),
+            sevCritical:      t("analyses.findingsSevCritical"),
+            sevHigh:          t("analyses.findingsSevHigh"),
+            sevMedium:        t("analyses.findingsSevMedium"),
+            sevLow:           t("analyses.findingsSevLow"),
+            sevInfo:          t("analyses.findingsSevInfo"),
+            searchPlaceholder: t("analyses.findingsSearchPlaceholder"),
+            noMatch:          t("analyses.findingsNoMatch"),
+            suggestedFix:     t("incidents.suggestedFix"),
+            showing:          t("analyses.findingsShowing"),
+            of:               t("analyses.findingsOf"),
+            findingsLabel:    t("analyses.findingsLabel"),
+            exportCsv:        t("analyses.findingsExportCsv"),
           }}
         />
       )}

@@ -24,10 +24,8 @@
     "cmdConnectGitHub": "连接 GitHub",
     "cmdDescOverview": "前往仪表板概览",
     "cmdDescRepos": "管理已连接的仓库",
-    "cmdDescAnalyses": "浏览基础设施扫描结果",
     "cmdDescIncidents": "查看活跃事件",
     "cmdDescPolicies": "配置策略规则",
-    "cmdDescFinOps": "查看基础设施成本趋势",
     "cmdDescMemory": "审查 AI 内存决策",
     "cmdDescSettings": "工作区和计费设置",
     "cmdDescConnectGitHub": "在您的组织上安装 GitHub 应用",
@@ -162,22 +160,7 @@
     "firstPrStep1": "推送包含 *.tf 文件更改的分支",
     "firstPrStep2": "在 GitHub 上打开拉取请求",
     "firstPrStep3": "DriftGuard 扫描安全性、成本和策略违规",
-    "firstPrStep4": "结果作为 PR 评论显示，也在此仪表板中显示",
-    "sev": {
-      "title": "按严重程度划分的发现",
-      "total": "总计",
-      "critical": "严重",
-      "high": "高",
-      "medium": "中",
-      "low": "低"
-    },
-    "riskTrend": {
-      "title": "风险趋势",
-      "improving": "改善中",
-      "worsening": "恶化中",
-      "stable": "稳定",
-      "last30": "最近{n}次分析"
-    }
+    "firstPrStep4": "结果作为 PR 评论显示，也在此仪表板中显示"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -374,7 +357,20 @@
     "uploadScanBtn": "上传并扫描 →",
     "uploadClickToSelect": "点击选择文件",
     "uploadRedirecting": "正在跳转到结果…",
-    "uploadResult": "得分 {score}/100 · {n} 个发现"
+    "uploadResult": "得分 {score}/100 · {n} 个发现",
+    "filterPlaceholder": "筛选仓库…",
+    "riskAll": "所有风险级别",
+    "riskHigh": "高 ≥70",
+    "riskMedium": "中 40–69",
+    "riskLow": "低 <40",
+    "showing": "显示",
+    "of": "/",
+    "reposLabel": "个仓库",
+    "noMatchFilter": "没有与此筛选器匹配的仓库。",
+    "statusAll": "所有状态",
+    "statusCompleted": "已完成",
+    "statusFailed": "失败",
+    "analysesNoMatch": "没有符合当前筛选条件的分析。"
   },
   "landing": {
     "ctaTitle": "重新掌控您的云基础设施。",
@@ -737,7 +733,14 @@
     "lastSeen": "最近发现",
     "resolvedAt": "已解决",
     "recurrences": "重复次数",
-    "fingerprintLabel": "指纹"
+    "fingerprintLabel": "指纹",
+    "filterPlaceholder": "按标题搜索…",
+    "sevAll": "所有严重级别",
+    "sevCritical": "严重",
+    "sevHigh": "高",
+    "sevMedium": "中",
+    "sevLow": "低",
+    "noMatchFilter": "没有与此过滤器匹配的事件。"
   },
   "policies": {
     "title": "策略规则",
@@ -805,7 +808,10 @@
     "condSeverityDesc": "触发的最低严重性",
     "condResourcePatternDesc": "与资源地址匹配的正则表达式",
     "condMessageContainsDesc": "在发现消息中匹配的子字符串",
-    "condRuleIdPrefixDesc": "与规则 ID 匹配的前缀"
+    "condRuleIdPrefixDesc": "与规则 ID 匹配的前缀",
+    "filterPlaceholder": "筛选策略…",
+    "typeAll": "所有类型",
+    "noMatchFilter": "没有与此筛选器匹配的策略。"
   },
   "memory": {
     "title": "运行记忆",
@@ -831,7 +837,10 @@
     "sev_high": "高",
     "sev_medium": "中",
     "sev_low": "低",
-    "viewAnalysis": "查看分析 →"
+    "viewAnalysis": "查看分析 →",
+    "filterPlaceholder": "按仓库筛选…",
+    "outcomeAll": "所有结果",
+    "noMatchFilter": "没有内存条目匹配此过滤器。"
   },
   "docs": {
     "eyebrow": "文档",
@@ -1443,18 +1452,9 @@
     "riskHigh": "高",
     "riskCritical": "严重",
     "disclaimer": "成本为基于公开定价的估算，实际云账单可能有所不同。",
-    "costTrend": "每月成本影响 — 近期 PR",
-    "costIncrease": "费用增加",
-    "costDecrease": "费用减少",
-    "reviewDetail": "费用审查",
-    "currentMonthly": "当前月费用",
-    "newMonthly": "新月费用",
-    "monthlyDelta": "月度变化",
-    "annualDelta": "年度变化",
-    "resourceBreakdown": "资源费用明细",
-    "aiSummary": "AI费用分析",
-    "riskReasons": "风险因素",
-    "terraformFiles": "已分析的Terraform文件"
+    "filterPlaceholder": "按仓库筛选...",
+    "riskAll": "所有风险级别",
+    "noMatchFilter": "没有符合当前筛选条件的审查。"
   },
   "analyses": {
     "eyebrow": "基础设施扫描器",
@@ -1468,6 +1468,14 @@
     "noBody": "当 Terraform PR 开启时，分析会自动创建。",
     "noBodySub": "您也可以从存储库页面触发手动扫描。",
     "goToRepos": "前往存储库 →",
+    "filterPlaceholder": "按存储库筛选…",
+    "riskAll": "全部",
+    "riskHigh": "高",
+    "riskMedium": "中",
+    "riskLow": "低",
+    "showing": "显示",
+    "of": "/",
+    "analysesLabel": "个分析",
     "noMatchFilter": "没有匹配此过滤器的分析。",
     "colRisk": "风险",
     "colRepo": "存储库 / PR",
@@ -1483,21 +1491,18 @@
     "scanning": "扫描中…",
     "scanError": "失败 — 请重试",
     "rescan": "↺ 重新扫描",
-    "exportCsv": "导出 CSV",
-    "repoFilterPlaceholder": "按仓库过滤…",
-    "showing": "显示",
-    "of": "共",
-    "analysesLabel": "个分析",
-    "noMatchRepo": "没有与此仓库过滤器匹配的分析。",
-    "riskAll": "所有风险级别",
-    "riskHigh": "高 ≥70",
-    "riskMedium": "中 40–69",
-    "riskLow": "低 <40",
-    "findingsSearchPlaceholder": "按文件、规则或消息搜索…",
+    "findingsSevAll": "全部",
+    "findingsSevCritical": "严重",
+    "findingsSevHigh": "高",
+    "findingsSevMedium": "中",
+    "findingsSevLow": "低",
+    "findingsSevInfo": "信息",
+    "findingsSearchPlaceholder": "按标题、规则或文件搜索…",
+    "findingsNoMatch": "没有匹配此过滤器的发现。",
+    "findingsShowing": "显示",
+    "findingsOf": "/",
     "findingsLabel": "个发现",
-    "noMatchFindings": "没有与此过滤器匹配的发现。",
-    "allSeverities": "所有严重性",
-    "suggestedFix": "建议修复"
+    "findingsExportCsv": "导出 CSV"
   },
   "about": {
     "eyebrow": "公司",

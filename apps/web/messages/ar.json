@@ -24,10 +24,8 @@
     "cmdConnectGitHub": "ربط GitHub",
     "cmdDescOverview": "الانتقال إلى نظرة عامة على لوحة التحكم",
     "cmdDescRepos": "إدارة المستودعات المتصلة",
-    "cmdDescAnalyses": "استعراض نتائج فحص البنية التحتية",
     "cmdDescIncidents": "عرض الحوادث النشطة",
     "cmdDescPolicies": "تكوين قواعد السياسة",
-    "cmdDescFinOps": "مراجعة اتجاهات تكاليف البنية التحتية",
     "cmdDescMemory": "مراجعة قرارات ذاكرة الذكاء الاصطناعي",
     "cmdDescSettings": "إعدادات مساحة العمل والفوترة",
     "cmdDescConnectGitHub": "تثبيت تطبيق GitHub على مؤسستك",
@@ -162,22 +160,7 @@
     "firstPrStep1": "ادفع فرعاً بتغييرات ملفات *.tf",
     "firstPrStep2": "افتح طلب سحب على GitHub",
     "firstPrStep3": "يفحص DriftGuard الأمان والتكلفة وانتهاكات السياسة",
-    "firstPrStep4": "تظهر النتائج كتعليق على طلب السحب وهنا في لوحة التحكم",
-    "sev": {
-      "title": "النتائج حسب الخطورة",
-      "total": "الإجمالي",
-      "critical": "حرج",
-      "high": "عالٍ",
-      "medium": "متوسط",
-      "low": "منخفض"
-    },
-    "riskTrend": {
-      "title": "اتجاه المخاطر",
-      "improving": "تحسُّن",
-      "worsening": "تدهور",
-      "stable": "مستقر",
-      "last30": "آخر {n} تحليل"
-    }
+    "firstPrStep4": "تظهر النتائج كتعليق على طلب السحب وهنا في لوحة التحكم"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -374,7 +357,20 @@
     "uploadScanBtn": "رفع وفحص ←",
     "uploadClickToSelect": "انقر للاختيار",
     "uploadRedirecting": "جارٍ التوجيه للنتائج…",
-    "uploadResult": "النتيجة {score}/100 · {n} نتيجة"
+    "uploadResult": "النتيجة {score}/100 · {n} نتيجة",
+    "filterPlaceholder": "تصفية المستودعات…",
+    "riskAll": "جميع مستويات المخاطر",
+    "riskHigh": "عالٍ ≥70",
+    "riskMedium": "متوسط 40–69",
+    "riskLow": "منخفض <40",
+    "showing": "عرض",
+    "of": "من",
+    "reposLabel": "مستودعات",
+    "noMatchFilter": "لا توجد مستودعات تطابق هذا الفلتر.",
+    "statusAll": "جميع الحالات",
+    "statusCompleted": "مكتمل",
+    "statusFailed": "فشل",
+    "analysesNoMatch": "لا تحليلات تطابق الفلتر الحالي."
   },
   "landing": {
     "ctaTitle": "استعد السيطرة على بنيتك السحابية.",
@@ -737,7 +733,14 @@
     "lastSeen": "آخر ظهور",
     "resolvedAt": "تم الحل",
     "recurrences": "التكرارات",
-    "fingerprintLabel": "البصمة"
+    "fingerprintLabel": "البصمة",
+    "filterPlaceholder": "البحث بالعنوان…",
+    "sevAll": "جميع مستويات الخطورة",
+    "sevCritical": "حرج",
+    "sevHigh": "عالٍ",
+    "sevMedium": "متوسط",
+    "sevLow": "منخفض",
+    "noMatchFilter": "لا توجد حوادث تطابق هذا الفلتر."
   },
   "policies": {
     "title": "قواعد السياسة",
@@ -805,7 +808,10 @@
     "condSeverityDesc": "الحد الأدنى للخطورة للتفعيل",
     "condResourcePatternDesc": "تعبير نمطي مقارن بعنوان المورد",
     "condMessageContainsDesc": "سلسلة فرعية مقارنة في رسالة النتيجة",
-    "condRuleIdPrefixDesc": "بادئة مقارنة بمعرف القاعدة"
+    "condRuleIdPrefixDesc": "بادئة مقارنة بمعرف القاعدة",
+    "filterPlaceholder": "تصفية السياسات…",
+    "typeAll": "جميع الأنواع",
+    "noMatchFilter": "لا توجد سياسات تطابق هذا الفلتر."
   },
   "memory": {
     "title": "الذاكرة التشغيلية",
@@ -831,7 +837,10 @@
     "sev_high": "عالي",
     "sev_medium": "متوسط",
     "sev_low": "منخفض",
-    "viewAnalysis": "عرض التحليل →"
+    "viewAnalysis": "عرض التحليل →",
+    "filterPlaceholder": "تصفية حسب المستودع…",
+    "outcomeAll": "جميع النتائج",
+    "noMatchFilter": "لا توجد إدخالات ذاكرة تطابق هذا الفلتر."
   },
   "docs": {
     "eyebrow": "التوثيق",
@@ -1443,18 +1452,9 @@
     "riskHigh": "مرتفع",
     "riskCritical": "حرج",
     "disclaimer": "التكاليف تقديرية بناءً على الأسعار المنشورة. قد تختلف فاتورة السحابة الفعلية.",
-    "costTrend": "التأثير الشهري على التكلفة — أحدث PRs",
-    "costIncrease": "زيادة التكلفة",
-    "costDecrease": "تخفيض التكلفة",
-    "reviewDetail": "مراجعة التكلفة",
-    "currentMonthly": "الشهري الحالي",
-    "newMonthly": "الشهري الجديد",
-    "monthlyDelta": "التغيير الشهري",
-    "annualDelta": "التغيير السنوي",
-    "resourceBreakdown": "تفاصيل تكلفة الموارد",
-    "aiSummary": "تحليل التكلفة بالذكاء الاصطناعي",
-    "riskReasons": "عوامل الخطر",
-    "terraformFiles": "ملفات Terraform المحللة"
+    "filterPlaceholder": "تصفية حسب المستودع...",
+    "riskAll": "جميع مستويات المخاطر",
+    "noMatchFilter": "لا توجد مراجعات تطابق الفلتر الحالي."
   },
   "analyses": {
     "eyebrow": "ماسح البنية التحتية",
@@ -1468,6 +1468,14 @@
     "noBody": "يتم إنشاء التحليلات تلقائياً عند فتح PR Terraform.",
     "noBodySub": "يمكنك أيضاً تشغيل فحص يدوي من صفحة المستودعات.",
     "goToRepos": "انتقل إلى المستودعات →",
+    "filterPlaceholder": "تصفية حسب المستودع…",
+    "riskAll": "الكل",
+    "riskHigh": "مرتفع",
+    "riskMedium": "متوسط",
+    "riskLow": "منخفض",
+    "showing": "عرض",
+    "of": "من",
+    "analysesLabel": "تحليلات",
     "noMatchFilter": "لا تحليلات تطابق هذا الفلتر.",
     "colRisk": "المخاطر",
     "colRepo": "المستودع / PR",
@@ -1483,21 +1491,18 @@
     "scanning": "جارٍ الفحص…",
     "scanError": "فشل — أعد المحاولة",
     "rescan": "↺ إعادة الفحص",
-    "exportCsv": "تصدير CSV",
-    "repoFilterPlaceholder": "تصفية حسب المستودع…",
-    "showing": "عرض",
-    "of": "من",
-    "analysesLabel": "تحليلات",
-    "noMatchRepo": "لا توجد تحليلات تطابق هذا المستودع.",
-    "riskAll": "جميع مستويات الخطر",
-    "riskHigh": "مرتفع ≥70",
-    "riskMedium": "متوسط 40–69",
-    "riskLow": "منخفض <40",
-    "findingsSearchPlaceholder": "البحث حسب الملف أو القاعدة أو الرسالة…",
+    "findingsSevAll": "الكل",
+    "findingsSevCritical": "حرج",
+    "findingsSevHigh": "مرتفع",
+    "findingsSevMedium": "متوسط",
+    "findingsSevLow": "منخفض",
+    "findingsSevInfo": "معلومات",
+    "findingsSearchPlaceholder": "البحث بالعنوان أو القاعدة أو الملف…",
+    "findingsNoMatch": "لا نتائج تطابق هذا الفلتر.",
+    "findingsShowing": "عرض",
+    "findingsOf": "من",
     "findingsLabel": "نتائج",
-    "noMatchFindings": "لا توجد نتائج تطابق هذا الفلتر.",
-    "allSeverities": "جميع الخطورات",
-    "suggestedFix": "إصلاح مقترح"
+    "findingsExportCsv": "تصدير CSV"
   },
   "about": {
     "eyebrow": "الشركة",

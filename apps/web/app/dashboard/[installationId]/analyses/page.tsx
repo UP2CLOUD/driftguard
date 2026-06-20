@@ -5,7 +5,8 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
-import { AnalysesListClient } from "./AnalysesListClient";
+import { formatDate } from "@/lib/format-date";
+import { AnalysesListClient, type AnalysisRow } from "./AnalysesListClient";
 
 const PAGE_SIZE = 50;
 
@@ -60,6 +61,18 @@ export default async function AnalysesPage({
     filter === "running" ? running :
     all
   );
+
+  const analysisRows: AnalysisRow[] = filtered.map((a: any) => ({
+    id: a.id,
+    repo_full_name: a.repo_full_name ?? null,
+    pr_number: a.pr_number ?? null,
+    risk_score: a.risk_score ?? null,
+    status: a.status ?? null,
+    policy_verdict: a.policy_verdict ?? null,
+    head_sha: a.head_sha ?? null,
+    files_scanned: a.files_scanned ?? null,
+    date: a.created_at ? formatDate(a.created_at, prefs.locale) : null,
+  }));
 
   const activeTab = filter ?? "all";
 
@@ -132,57 +145,46 @@ export default async function AnalysesPage({
       </div>
 
       {/* List */}
-      {filtered.length === 0 ? (
+      {all.length === 0 && !activeFilter ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
-          {all.length === 0 ? (
-            <>
-              <div className="mb-3 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                {t("analyses.noTitle") ?? "No analyses yet"}
-              </div>
-              <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
-                {t("analyses.noBody") ?? "Analyses are created automatically when a Terraform PR is opened."}
-              </p>
-              <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto leading-relaxed mb-5">
-                {t("analyses.noBodySub") ?? "You can also trigger a manual scan from the Repositories page."}
-              </p>
-              <Link
-                href={`/dashboard/${installationId}/repos`}
-                className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
-              >
-                {t("analyses.goToRepos") ?? "Go to Repositories →"}
-              </Link>
-            </>
-          ) : (
-            <p className="text-[13px] text-[color:var(--dg-fg-muted)]">
-              {t("analyses.noMatchFilter") ?? "No analyses match this filter."}
-            </p>
-          )}
+          <div className="mb-3 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+            {t("analyses.noTitle")}
+          </div>
+          <p className="font-sans text-[13px] font-medium text-[color:var(--dg-fg-muted)] mb-2">
+            {t("analyses.noBody")}
+          </p>
+          <p className="text-[12px] text-[color:var(--dg-fg-subtle)] max-w-sm mx-auto leading-relaxed mb-5">
+            {t("analyses.noBodySub")}
+          </p>
+          <Link
+            href={`/dashboard/${installationId}/repos`}
+            className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
+          >
+            {t("analyses.goToRepos")}
+          </Link>
         </div>
       ) : (
         <>
           <AnalysesListClient
-            rows={filtered}
+            rows={analysisRows}
             installationId={installationId}
-            locale={prefs.locale}
             labels={{
-              filterPlaceholder: t("analyses.repoFilterPlaceholder") ?? "Filter by repository…",
-              showing: t("analyses.showing") ?? "showing",
-              of: t("analyses.of") ?? "of",
-              analyses: t("analyses.analysesLabel") ?? "analyses",
-              noMatch: t("analyses.noMatchFilter") ?? "No analyses match this filter.",
-              manual: t("analyses.manual") ?? "manual",
-              filesScanned: t("analyses.filesScanned") ?? "{n} files",
-              riskAll: t("analyses.riskAll") ?? "All risk levels",
-              riskHigh: t("analyses.riskHigh") ?? "High ≥70",
-              riskMedium: t("analyses.riskMedium") ?? "Medium 40–69",
-              riskLow: t("analyses.riskLow") ?? "Low <40",
-            }}
-            colLabels={{
-              risk: t("analyses.colRisk") ?? "Risk",
-              repo: t("analyses.colRepo") ?? "Repository / PR",
-              status: t("analyses.colStatus") ?? "Status",
-              files: t("analyses.colFiles") ?? "Files",
-              date: t("analyses.colDate") ?? "Date",
+              filterPlaceholder: t("analyses.filterPlaceholder"),
+              riskAll: t("analyses.riskAll"),
+              riskHigh: t("analyses.riskHigh"),
+              riskMedium: t("analyses.riskMedium"),
+              riskLow: t("analyses.riskLow"),
+              noMatch: t("analyses.noMatchFilter"),
+              colRisk: t("analyses.colRisk"),
+              colRepo: t("analyses.colRepo"),
+              colStatus: t("analyses.colStatus"),
+              colFiles: t("analyses.colFiles"),
+              colDate: t("analyses.colDate"),
+              manual: t("analyses.manual"),
+              filesScanned: t("analyses.filesScanned"),
+              showing: t("analyses.showing"),
+              of: t("analyses.of"),
+              analysesLabel: t("analyses.analysesLabel"),
             }}
           />
 
@@ -193,18 +195,18 @@ export default async function AnalysesPage({
                   href={pageHref(activeTab, page - 1)}
                   className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
                 >
-                  {t("analyses.previous") ?? "← Previous"}
+                  {t("analyses.previous")}
                 </Link>
               ) : <span />}
               <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-                {(t("analyses.page") ?? "Page {n}").replace("{n}", String(page))}
+                {t("analyses.page").replace("{n}", String(page))}
               </span>
               {hasNext ? (
                 <Link
                   href={pageHref(activeTab, page + 1)}
                   className="font-mono text-[11px] text-[color:var(--dg-electric)] hover:text-[color:var(--dg-electric-bright)] transition"
                 >
-                  {t("analyses.next") ?? "Next →"}
+                  {t("analyses.next")}
                 </Link>
               ) : <span />}
             </div>

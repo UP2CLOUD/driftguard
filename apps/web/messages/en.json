@@ -24,10 +24,8 @@
     "cmdConnectGitHub": "Connect GitHub",
     "cmdDescOverview": "Go to dashboard overview",
     "cmdDescRepos": "Manage connected repositories",
-    "cmdDescAnalyses": "Browse infrastructure scan results",
     "cmdDescIncidents": "View active incidents",
     "cmdDescPolicies": "Configure policy rules",
-    "cmdDescFinOps": "Review infrastructure cost trends",
     "cmdDescMemory": "Review AI memory decisions",
     "cmdDescSettings": "Workspace and billing settings",
     "cmdDescConnectGitHub": "Install GitHub App on your organization",
@@ -162,22 +160,7 @@
     "firstPrStep1": "Push a branch with *.tf file changes",
     "firstPrStep2": "Open a pull request on GitHub",
     "firstPrStep3": "DriftGuard scans for security, cost & policy violations",
-    "firstPrStep4": "Results appear as a PR comment and here in the dashboard",
-    "sev": {
-      "title": "Findings by severity",
-      "total": "total",
-      "critical": "Critical",
-      "high": "High",
-      "medium": "Medium",
-      "low": "Low"
-    },
-    "riskTrend": {
-      "title": "Risk trend",
-      "improving": "improving",
-      "worsening": "worsening",
-      "stable": "stable",
-      "last30": "Last {n} analyses"
-    }
+    "firstPrStep4": "Results appear as a PR comment and here in the dashboard"
   },
   "waitlist": {
     "placeholder": "you@company.com",
@@ -303,7 +286,20 @@
     "uploadScanBtn": "Upload & scan →",
     "uploadClickToSelect": "Click to select",
     "uploadRedirecting": "Redirecting to results…",
-    "uploadResult": "Score {score}/100 · {n} findings"
+    "uploadResult": "Score {score}/100 · {n} findings",
+    "filterPlaceholder": "Filter repositories…",
+    "riskAll": "All risk levels",
+    "riskHigh": "High ≥70",
+    "riskMedium": "Medium 40–69",
+    "riskLow": "Low <40",
+    "showing": "showing",
+    "of": "of",
+    "reposLabel": "repositories",
+    "noMatchFilter": "No repositories match this filter.",
+    "statusAll": "All Statuses",
+    "statusCompleted": "Completed",
+    "statusFailed": "Failed",
+    "analysesNoMatch": "No analyses match the current filter."
   },
   "settings": {
     "title": "Settings",
@@ -767,7 +763,14 @@
     "lastSeen": "Last seen",
     "resolvedAt": "Resolved",
     "recurrences": "Recurrences",
-    "fingerprintLabel": "Fingerprint"
+    "fingerprintLabel": "Fingerprint",
+    "filterPlaceholder": "Search by title…",
+    "sevAll": "All severities",
+    "sevCritical": "Critical",
+    "sevHigh": "High",
+    "sevMedium": "Medium",
+    "sevLow": "Low",
+    "noMatchFilter": "No incidents match this filter."
   },
   "policies": {
     "title": "Policy rules",
@@ -835,7 +838,10 @@
     "condSeverityDesc": "Minimum severity to trigger",
     "condResourcePatternDesc": "Regex matched against resource address",
     "condMessageContainsDesc": "Substring matched in finding message",
-    "condRuleIdPrefixDesc": "Prefix matched against rule ID"
+    "condRuleIdPrefixDesc": "Prefix matched against rule ID",
+    "filterPlaceholder": "Filter policies…",
+    "typeAll": "All types",
+    "noMatchFilter": "No policies match this filter."
   },
   "memory": {
     "title": "Operational memory",
@@ -861,7 +867,10 @@
     "sev_high": "High",
     "sev_medium": "Medium",
     "sev_low": "Low",
-    "viewAnalysis": "View analysis →"
+    "viewAnalysis": "View analysis →",
+    "filterPlaceholder": "Filter by repository…",
+    "outcomeAll": "All outcomes",
+    "noMatchFilter": "No memory entries match this filter."
   },
   "docs": {
     "eyebrow": "Documentation",
@@ -1443,18 +1452,9 @@
     "riskHigh": "High",
     "riskCritical": "Critical",
     "disclaimer": "Costs are estimates based on published list prices. Actual cloud billing may vary.",
-    "costTrend": "Monthly Cost Impact — Recent PRs",
-    "costIncrease": "Cost increase",
-    "costDecrease": "Cost decrease",
-    "reviewDetail": "Cost Review",
-    "currentMonthly": "Current monthly",
-    "newMonthly": "New monthly",
-    "monthlyDelta": "Monthly delta",
-    "annualDelta": "Annual delta",
-    "resourceBreakdown": "Resource cost breakdown",
-    "aiSummary": "AI cost analysis",
-    "riskReasons": "Risk factors",
-    "terraformFiles": "Terraform files analyzed"
+    "filterPlaceholder": "Filter by repository...",
+    "riskAll": "All Risk Levels",
+    "noMatchFilter": "No reviews match the current filter."
   },
   "analyses": {
     "eyebrow": "Infrastructure scanner",
@@ -1468,6 +1468,14 @@
     "noBody": "Analyses are created automatically when a Terraform PR is opened.",
     "noBodySub": "You can also trigger a manual scan from the Repositories page.",
     "goToRepos": "Go to Repositories →",
+    "filterPlaceholder": "Filter by repository…",
+    "riskAll": "All",
+    "riskHigh": "High",
+    "riskMedium": "Medium",
+    "riskLow": "Low",
+    "showing": "Showing",
+    "of": "of",
+    "analysesLabel": "analyses",
     "noMatchFilter": "No analyses match this filter.",
     "colRisk": "Risk",
     "colRepo": "Repository / PR",
@@ -1483,21 +1491,18 @@
     "scanning": "scanning…",
     "scanError": "failed — try again",
     "rescan": "↺ Re-run scan",
-    "exportCsv": "Export CSV",
-    "repoFilterPlaceholder": "Filter by repository…",
-    "showing": "showing",
-    "of": "of",
-    "analysesLabel": "analyses",
-    "noMatchRepo": "No analyses match this repository filter.",
-    "riskAll": "All risk levels",
-    "riskHigh": "High ≥70",
-    "riskMedium": "Medium 40–69",
-    "riskLow": "Low <40",
-    "findingsSearchPlaceholder": "Search by file, rule, or message…",
+    "findingsSevAll": "All",
+    "findingsSevCritical": "Critical",
+    "findingsSevHigh": "High",
+    "findingsSevMedium": "Medium",
+    "findingsSevLow": "Low",
+    "findingsSevInfo": "Info",
+    "findingsSearchPlaceholder": "Search by title, rule, or file…",
+    "findingsNoMatch": "No findings match this filter.",
+    "findingsShowing": "Showing",
+    "findingsOf": "of",
     "findingsLabel": "findings",
-    "noMatchFindings": "No findings match this filter.",
-    "allSeverities": "All severities",
-    "suggestedFix": "Suggested fix"
+    "findingsExportCsv": "Export CSV"
   },
   "about": {
     "eyebrow": "Company",
