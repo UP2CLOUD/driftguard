@@ -207,6 +207,7 @@ export function AnalysesListClient({
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
                             className="shrink-0 font-mono text-[11px] text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-electric)] transition inline-flex items-center gap-0.5"
                             aria-label={`Open PR #${a.pr_number} on GitHub`}
                           >

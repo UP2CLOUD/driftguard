@@ -219,6 +219,7 @@ export function RepoAnalysesClient({
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}
                         className="inline-flex items-center gap-0.5 font-sans text-[10px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-electric)] transition"
                         aria-label={`Open PR #${a.pr_number} on GitHub`}
                       >
