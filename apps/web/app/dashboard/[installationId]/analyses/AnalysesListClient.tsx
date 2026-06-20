@@ -76,14 +76,16 @@ export function AnalysesListClient({
   rows,
   installationId,
   labels: L,
+  initialRisk,
 }: {
   rows: AnalysisRow[];
   installationId: string;
   labels: Labels;
+  initialRisk?: RiskBucket | null;
 }) {
   const router = useRouter();
   const [repoFilter, setRepoFilter] = useState("");
-  const [riskFilter, setRiskFilter] = useState<RiskBucket | null>(null);
+  const [riskFilter, setRiskFilter] = useState<RiskBucket | null>(initialRisk ?? null);
 
   const safeRows = useMemo(() => {
     if (!Array.isArray(rows)) return [];
