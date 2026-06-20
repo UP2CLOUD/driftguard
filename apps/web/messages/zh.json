@@ -1504,7 +1504,9 @@
     "findingsShowing": "显示",
     "findingsOf": "/",
     "findingsLabel": "个发现",
-    "findingsExportCsv": "导出 CSV"
+    "findingsExportCsv": "导出 CSV",
+    "findingsCopyFix": "复制修复",
+    "findingsCopied": "已复制！"
   },
   "about": {
     "eyebrow": "公司",

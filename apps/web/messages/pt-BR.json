@@ -1504,7 +1504,9 @@
     "findingsShowing": "Mostrando",
     "findingsOf": "de",
     "findingsLabel": "achados",
-    "findingsExportCsv": "Exportar CSV"
+    "findingsExportCsv": "Exportar CSV",
+    "findingsCopyFix": "Copiar correção",
+    "findingsCopied": "Copiado!"
   },
   "about": {
     "eyebrow": "Empresa",

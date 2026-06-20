@@ -288,6 +288,8 @@ export default async function AnalysisPage({
             searchPlaceholder: t("analyses.findingsSearchPlaceholder"),
             noMatch:          t("analyses.findingsNoMatch"),
             suggestedFix:     t("incidents.suggestedFix"),
+            copyFix:          t("analyses.findingsCopyFix") ?? "Copy fix",
+            copied:           t("analyses.findingsCopied") ?? "Copied!",
             showing:          t("analyses.findingsShowing"),
             of:               t("analyses.findingsOf"),
             findingsLabel:    t("analyses.findingsLabel"),

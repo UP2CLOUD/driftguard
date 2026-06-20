@@ -1504,7 +1504,9 @@
     "findingsShowing": "Showing",
     "findingsOf": "of",
     "findingsLabel": "findings",
-    "findingsExportCsv": "Export CSV"
+    "findingsExportCsv": "Export CSV",
+    "findingsCopyFix": "Copy fix",
+    "findingsCopied": "Copied!"
   },
   "about": {
     "eyebrow": "Company",

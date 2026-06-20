@@ -1504,7 +1504,9 @@
     "findingsShowing": "عرض",
     "findingsOf": "من",
     "findingsLabel": "نتائج",
-    "findingsExportCsv": "تصدير CSV"
+    "findingsExportCsv": "تصدير CSV",
+    "findingsCopyFix": "نسخ الإصلاح",
+    "findingsCopied": "تم النسخ!"
   },
   "about": {
     "eyebrow": "الشركة",

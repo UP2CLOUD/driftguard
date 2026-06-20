@@ -1504,7 +1504,9 @@
     "findingsShowing": "दिखा रहे हैं",
     "findingsOf": "में से",
     "findingsLabel": "निष्कर्ष",
-    "findingsExportCsv": "CSV निर्यात करें"
+    "findingsExportCsv": "CSV निर्यात करें",
+    "findingsCopyFix": "सुधार कॉपी करें",
+    "findingsCopied": "कॉपी हो गया!"
   },
   "about": {
     "eyebrow": "कंपनी",

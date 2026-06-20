@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 
 type SevBucket = "critical" | "high" | "medium" | "low" | "info";
 
@@ -42,6 +42,8 @@ type Labels = {
   searchPlaceholder: string;
   noMatch: string;
   suggestedFix: string;
+  copyFix: string;
+  copied: string;
   showing: string;
   of: string;
   findingsLabel: string;
@@ -89,6 +91,16 @@ export function FindingsListClient({
   const [sevFilter, setSevFilter] = useState<SevBucket | null>(null);
   const [query, setQuery] = useState("");
   const [exporting, setExporting] = useState(false);
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleCopyFix = useCallback((suggestion: string, idx: number) => {
+    navigator.clipboard.writeText(suggestion).then(() => {
+      setCopiedIdx(idx);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopiedIdx(null), 2000);
+    }).catch(() => {});
+  }, []);
 
   const safeFindings = useMemo(() => {
     if (!Array.isArray(findings)) return [];
@@ -239,10 +251,13 @@ export function FindingsListClient({
 
               {/* File + line */}
               {f.file && (
-                <p className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] mb-2">
-                  📄 {f.file}{f.line ? `:${f.line}` : ""}
+                <p className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)] mb-2 flex items-center gap-1.5">
+                  <svg className="h-3 w-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                  </svg>
+                  <span>{f.file}{f.line ? `:${f.line}` : ""}</span>
                   {f.resource && f.resource !== f.file && (
-                    <span className="ml-2 text-[color:var(--dg-fg-muted)]">· {f.resource}</span>
+                    <span className="text-[color:var(--dg-fg-muted)]">· {f.resource}</span>
                   )}
                 </p>
               )}
@@ -254,11 +269,30 @@ export function FindingsListClient({
 
               {/* Suggestion */}
               {f.suggestion && (
-                <div className="mt-2 rounded border border-allowed/20 bg-allowed/5 px-3 py-2">
-                  <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-allowed mr-2">
-                    {L.suggestedFix}
-                  </span>
-                  <span className="font-mono text-[11px] text-allowed">{f.suggestion}</span>
+                <div className="mt-2 rounded border border-allowed/20 bg-allowed/5 px-3 py-2 flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-allowed mr-2">
+                      {L.suggestedFix}
+                    </span>
+                    <span className="font-mono text-[11px] text-allowed">{f.suggestion}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyFix(f.suggestion!, i)}
+                    aria-label={copiedIdx === i ? L.copied : L.copyFix}
+                    className="shrink-0 p-1 rounded text-allowed/60 hover:text-allowed hover:bg-allowed/10 transition cursor-pointer"
+                    title={copiedIdx === i ? L.copied : L.copyFix}
+                  >
+                    {copiedIdx === i ? (
+                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                    ) : (
+                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+                      </svg>
+                    )}
+                  </button>
                 </div>
               )}
 
