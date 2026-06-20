@@ -155,6 +155,7 @@ export default async function AuditLogPage({
               time: t("auditLog.time") ?? "time",
               payload: t("auditLog.payload") ?? "payload",
               noMatch: t("auditLog.noMatch") ?? "No events match this filter.",
+              actionAll: t("auditLog.actionAll") ?? "All actions",
             }}
           />
           {(page > 1 || hasNext) && (

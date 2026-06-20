@@ -5,7 +5,7 @@ import type { AuditEntry } from "./page";
 
 type Labels = Record<
   | "filterPlaceholder" | "showing" | "of" | "events" | "actor"
-  | "action" | "target" | "time" | "payload" | "noMatch",
+  | "action" | "target" | "time" | "payload" | "noMatch" | "actionAll",
   string
 >;
 
@@ -19,18 +19,31 @@ export function AuditLogClient({
   labels: Labels;
 }) {
   const [filter, setFilter] = useState("");
+  const [actionFilter, setActionFilter] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
+  const actionTypes = useMemo(() => {
+    const seen = new Set<string>();
+    for (const e of entries) {
+      if (e.action) seen.add(e.action);
+    }
+    return Array.from(seen).sort();
+  }, [entries]);
+
   const filtered = useMemo(() => {
-    if (!filter.trim()) return entries;
-    const q = filter.toLowerCase();
-    return entries.filter(
-      (e) =>
-        e.actor?.toLowerCase().includes(q) ||
-        e.action?.toLowerCase().includes(q) ||
-        e.target?.toLowerCase().includes(q)
-    );
-  }, [entries, filter]);
+    let out = entries;
+    if (actionFilter) out = out.filter((e) => e.action === actionFilter);
+    if (filter.trim()) {
+      const q = filter.toLowerCase();
+      out = out.filter(
+        (e) =>
+          e.actor?.toLowerCase().includes(q) ||
+          e.action?.toLowerCase().includes(q) ||
+          e.target?.toLowerCase().includes(q)
+      );
+    }
+    return out;
+  }, [entries, filter, actionFilter]);
 
   const toggle = (id: string) =>
     setExpanded((s) => {
@@ -41,7 +54,39 @@ export function AuditLogClient({
 
   return (
     <div className="space-y-3">
-      {/* Filter + count */}
+      {/* Action-type chips */}
+      {actionTypes.length > 1 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setActionFilter(null)}
+            aria-pressed={actionFilter === null}
+            className={`rounded border px-2.5 py-1 font-sans font-medium text-[10px] uppercase tracking-widest transition cursor-pointer ${
+              actionFilter === null
+                ? "border-[color:var(--dg-electric)] text-[color:var(--dg-fg)] bg-[color:var(--dg-electric)]/10"
+                : "border-[color:var(--dg-border)] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)]"
+            }`}
+          >
+            {L.actionAll}
+          </button>
+          {actionTypes.map((a) => {
+            const cls = actionColors[a] ?? "text-[color:var(--dg-fg-muted)]";
+            return (
+              <button
+                key={a}
+                onClick={() => setActionFilter(actionFilter === a ? null : a)}
+                aria-pressed={actionFilter === a}
+                className={`rounded border px-2.5 py-1 font-sans font-medium text-[10px] uppercase tracking-widest transition cursor-pointer border-[color:var(--dg-border)] ${cls} ${
+                  actionFilter === a ? "opacity-100 bg-[color:var(--dg-surface)]" : "opacity-50 hover:opacity-100"
+                }`}
+              >
+                {a}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Text filter + count */}
       <div className="flex items-center gap-3 flex-wrap">
         <input
           value={filter}

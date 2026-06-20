@@ -1423,7 +1423,8 @@
     "target": "الهدف",
     "time": "الوقت",
     "payload": "البيانات",
-    "noMatch": "لا توجد أحداث تطابق هذا الفلتر."
+    "noMatch": "لا توجد أحداث تطابق هذا الفلتر.",
+    "actionAll": "All actions"
   },
   "finops": {
     "title": "مراجعة FinOps",

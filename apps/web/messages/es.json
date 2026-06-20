@@ -1423,7 +1423,8 @@
     "target": "destino",
     "time": "hora",
     "payload": "payload",
-    "noMatch": "Ningún evento coincide con este filtro."
+    "noMatch": "Ningún evento coincide con este filtro.",
+    "actionAll": "All actions"
   },
   "finops": {
     "title": "Revisión FinOps",
