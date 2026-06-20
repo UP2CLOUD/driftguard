@@ -1423,7 +1423,8 @@
     "target": "目标",
     "time": "时间",
     "payload": "载荷",
-    "noMatch": "没有符合此过滤条件的事件。"
+    "noMatch": "没有符合此过滤条件的事件。",
+    "actionAll": "所有操作"
   },
   "finops": {
     "title": "FinOps 审查",

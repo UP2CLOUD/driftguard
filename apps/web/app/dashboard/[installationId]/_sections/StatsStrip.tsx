@@ -8,6 +8,7 @@ type Cell = {
   value: string | number;
   color: string;
   hint: string | null;
+  href?: string;
   progress?: number;
 };
 
@@ -50,36 +51,42 @@ export async function StatsStripSection({
       value: repoValue,
       color: repoColor,
       hint: repos === 0 ? (t("dashboard.statsHintConnectGitHub") ?? "Connect GitHub") : null,
+      href: `/dashboard/${installationId}/repos`,
     },
     {
       label: t("repos.statsAnalyses") ?? "Analyses 7d",
       value: analyses7d,
       color: "",
       hint: analyses7d === 0 ? (t("dashboard.statsHintOpenPr") ?? "Open a PR") : null,
+      href: `/dashboard/${installationId}/analyses`,
     },
     {
       label: t("dashboard.avgRisk") ?? "Avg risk",
       value: avgRisk != null ? `${avgRisk}` : "—",
       color: avgRisk != null && avgRisk >= 70 ? "text-blocked" : avgRisk != null && avgRisk >= 40 ? "text-warned" : "",
       hint: avgRisk == null ? (t("dashboard.statsHintNoBaseline") ?? "No baseline") : null,
+      href: `/dashboard/${installationId}/analyses`,
     },
     {
       label: t("dashboard.openIncidents") ?? "Open incidents",
       value: openInc,
       color: openInc > 0 ? "text-blocked" : "",
       hint: openInc === 0 ? (t("dashboard.statsHintNoneActive") ?? "None active") : null,
+      href: `/dashboard/${installationId}/incidents`,
     },
     {
       label: t("dashboard.critical") ?? "Critical",
       value: criticalInc,
       color: criticalInc > 0 ? "text-blocked" : "",
       hint: criticalInc === 0 ? (t("dashboard.statsHintClean") ?? "Clean") : null,
+      href: `/dashboard/${installationId}/incidents`,
     },
     {
       label: t("dashboard.memoryEntries") ?? "Memory",
       value: memoryCount,
       color: "",
       hint: memoryCount === 0 ? (t("dashboard.statsHintNoDecisionsYet") ?? "No decisions yet") : null,
+      href: `/dashboard/${installationId}/memory`,
     },
   ];
 
@@ -98,25 +105,40 @@ export async function StatsStripSection({
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)]">
-        {cells.map(({ label, value, color, hint, progress }) => (
-          <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
-            <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">{label}</div>
-            <div className={`font-mono text-xl font-bold tabular-nums ${color || "text-[color:var(--dg-fg)]"}`}>{value}</div>
-            {hint && (
-              <div className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5 truncate">{hint}</div>
-            )}
-            {progress != null && (
-              <div className="mt-2 h-0.5 rounded-full bg-[color:var(--dg-border)] overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all ${
-                    progress >= 1 ? "bg-blocked" : progress >= 0.8 ? "bg-warned" : "bg-allowed"
-                  }`}
-                  style={{ width: `${Math.min(100, progress * 100)}%` }}
-                />
-              </div>
-            )}
-          </div>
-        ))}
+        {cells.map(({ label, value, color, hint, href, progress }) => {
+          const inner = (
+            <>
+              <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] mb-1">{label}</div>
+              <div className={`font-mono text-xl font-bold tabular-nums ${color || "text-[color:var(--dg-fg)]"}`}>{value}</div>
+              {hint && (
+                <div className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5 truncate">{hint}</div>
+              )}
+              {progress != null && (
+                <div className="mt-2 h-0.5 rounded-full bg-[color:var(--dg-border)] overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all ${
+                      progress >= 1 ? "bg-blocked" : progress >= 0.8 ? "bg-warned" : "bg-allowed"
+                    }`}
+                    style={{ width: `${Math.min(100, progress * 100)}%` }}
+                  />
+                </div>
+              )}
+            </>
+          );
+          return href ? (
+            <Link
+              key={label}
+              href={href}
+              className="bg-[color:var(--dg-canvas)] px-4 py-4 hover:bg-[color:var(--dg-surface-raised)] transition group cursor-pointer"
+            >
+              {inner}
+            </Link>
+          ) : (
+            <div key={label} className="bg-[color:var(--dg-canvas)] px-4 py-4">
+              {inner}
+            </div>
+          );
+        })}
       </div>
 
       {/* Soft upgrade nudge for engaged free users not yet at limit */}

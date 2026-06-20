@@ -1423,7 +1423,8 @@
     "target": "target",
     "time": "time",
     "payload": "payload",
-    "noMatch": "No events match this filter."
+    "noMatch": "No events match this filter.",
+    "actionAll": "All actions"
   },
   "finops": {
     "title": "FinOps Review",

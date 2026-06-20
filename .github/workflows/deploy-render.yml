@@ -1,0 +1,74 @@
+name: deploy-render
+
+# Triggers a Render.com deploy hook whenever the API changes on main.
+# One-time setup (no CLI needed):
+#   1. Go to https://dashboard.render.com/select-repo and connect this repo
+#   2. Render reads render.yaml and creates the driftguard-api service
+#   3. Fill in env vars in the Render dashboard (see render.yaml for the list)
+#   4. In the Render dashboard → Settings → Deploy Hook, copy the hook URL
+#   5. In GitHub → Settings → Secrets → Actions, add: RENDER_DEPLOY_HOOK_URL
+#
+# After that, every push to main that touches apps/api/** triggers a deploy.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/api/**"
+      - "render.yaml"
+      - ".github/workflows/deploy-render.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check deploy hook configured
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "::error::RENDER_DEPLOY_HOOK_URL secret is not set."
+            echo "::error::See .github/workflows/deploy-render.yml for setup instructions."
+            exit 1
+          fi
+
+      - name: Trigger Render deploy
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          RESPONSE=$(curl -fsSL -X POST "$RENDER_DEPLOY_HOOK_URL" \
+            -H "Accept: application/json" \
+            -w "\n%{http_code}")
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "Render response ($HTTP_CODE): $BODY"
+          if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+            echo "::error::Deploy hook returned HTTP $HTTP_CODE"
+            exit 1
+          fi
+          echo "Deploy triggered. Track progress at: https://dashboard.render.com"
+
+      - name: Wait for health check
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          # Give Render ~3 min to build and start, then probe the health endpoint.
+          # RENDER_API_URL is optional — skip the smoke test if not configured.
+          if [ -z "${{ vars.RENDER_API_URL }}" ]; then
+            echo "RENDER_API_URL not set — skipping smoke test (set it in GitHub vars)"
+            exit 0
+          fi
+          echo "Waiting 180s for Render to build..."
+          sleep 180
+          URL="${{ vars.RENDER_API_URL }}/api/v1/health"
+          echo "Probing $URL"
+          for i in 1 2 3 4 5; do
+            if curl -fsS "$URL" | grep -q '"status"'; then
+              echo "Health check passed!"
+              exit 0
+            fi
+            echo "Attempt $i/5 failed — retrying in 30s"
+            sleep 30
+          done
+          echo "::warning::Health check timed out — the deploy may still be in progress"
