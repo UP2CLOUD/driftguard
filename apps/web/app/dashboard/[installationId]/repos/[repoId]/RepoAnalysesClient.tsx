@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 
 type RiskBucket = "high" | "medium" | "low";
 
@@ -63,12 +63,15 @@ type Labels = {
 export function RepoAnalysesClient({
   analyses,
   installationId,
+  repoFullName,
   labels: L,
 }: {
   analyses: AnalysisRow[];
   installationId: string;
+  repoFullName?: string | null;
   labels: Labels;
 }) {
+  const router = useRouter();
   const [riskFilter, setRiskFilter] = useState<RiskBucket | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
@@ -185,61 +188,86 @@ export function RepoAnalysesClient({
         </div>
       ) : (
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
-          {filtered.map((a) => (
-            <Link
-              key={a.id}
-              href={`/dashboard/${installationId}/analyses/${a.id}`}
-              className="flex items-center gap-4 px-4 py-3.5 hover:bg-[color:var(--dg-surface-raised)] transition group"
-            >
+          {filtered.map((a) => {
+            const analysisHref = `/dashboard/${installationId}/analyses/${a.id}`;
+            const githubPrHref = a.pr_number && repoFullName
+              ? `https://github.com/${repoFullName}/pull/${a.pr_number}`
+              : null;
+            return (
               <div
-                className={`w-10 h-10 rounded font-mono text-[13px] font-bold flex items-center justify-center shrink-0 ${riskBg(a.risk_score)} ${riskColor(a.risk_score)}`}
+                key={a.id}
+                role="link"
+                tabIndex={0}
+                onClick={() => router.push(analysisHref)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") router.push(analysisHref); }}
+                className="flex items-center gap-4 px-4 py-3.5 hover:bg-[color:var(--dg-surface-raised)] transition group cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[color:var(--dg-electric)]"
               >
-                {a.risk_score ?? "—"}
-              </div>
+                <div
+                  className={`w-10 h-10 rounded font-mono text-[13px] font-bold flex items-center justify-center shrink-0 ${riskBg(a.risk_score)} ${riskColor(a.risk_score)}`}
+                >
+                  {a.risk_score ?? "—"}
+                </div>
 
-              <div className="flex-1 min-w-0">
-                <p className="font-mono text-[12px] text-[color:var(--dg-fg)]">
-                  {a.pr_number ? `PR #${a.pr_number}` : L.manualScan}
-                </p>
-                <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
-                  {a.head_sha ? `${a.head_sha.slice(0, 7)} · ` : ""}
-                  {a.date ?? ""}
-                </p>
-              </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-mono text-[12px] text-[color:var(--dg-fg)]">
+                      {a.pr_number ? `PR #${a.pr_number}` : L.manualScan}
+                    </span>
+                    {githubPrHref && (
+                      <a
+                        href={githubPrHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-0.5 font-sans text-[10px] text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-electric)] transition"
+                        aria-label={`Open PR #${a.pr_number} on GitHub`}
+                      >
+                        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
+                    )}
+                  </div>
+                  <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
+                    {a.head_sha ? `${a.head_sha.slice(0, 7)} · ` : ""}
+                    {a.date ?? ""}
+                  </p>
+                </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                {a.policy_verdict && a.policy_verdict !== "pass" && (
-                  <span className={`font-sans font-medium text-[9px] uppercase tracking-widest rounded px-1 py-0.5 ${
-                    a.policy_verdict === "block"
-                      ? "text-blocked bg-blocked/10"
-                      : "text-warned bg-warned/10"
-                  }`}>
-                    {a.policy_verdict}
+                <div className="flex items-center gap-2 shrink-0">
+                  {a.policy_verdict && a.policy_verdict !== "pass" && (
+                    <span className={`font-sans font-medium text-[9px] uppercase tracking-widest rounded px-1 py-0.5 ${
+                      a.policy_verdict === "block"
+                        ? "text-blocked bg-blocked/10"
+                        : "text-warned bg-warned/10"
+                    }`}>
+                      {a.policy_verdict}
+                    </span>
+                  )}
+                  <span
+                    className={`font-sans font-medium text-[10px] uppercase tracking-widest px-2 py-0.5 rounded border ${
+                      a.status === "completed"
+                        ? "text-allowed border-allowed/30 bg-allowed/5"
+                        : a.status === "failed"
+                          ? "text-blocked border-blocked/30 bg-blocked/5"
+                          : "text-warned border-warned/30 bg-warned/5"
+                    }`}
+                  >
+                    {a.status}
                   </span>
-                )}
-                <span
-                  className={`font-sans font-medium text-[10px] uppercase tracking-widest px-2 py-0.5 rounded border ${
-                    a.status === "completed"
-                      ? "text-allowed border-allowed/30 bg-allowed/5"
-                      : a.status === "failed"
-                        ? "text-blocked border-blocked/30 bg-blocked/5"
-                        : "text-warned border-warned/30 bg-warned/5"
-                  }`}
-                >
-                  {a.status}
-                </span>
-                <svg
-                  className="h-3 w-3 text-[color:var(--dg-fg-subtle)] opacity-0 group-hover:opacity-100 transition"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
+                  <svg
+                    className="h-3 w-3 text-[color:var(--dg-fg-subtle)] opacity-0 group-hover:opacity-100 transition"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
               </div>
-            </Link>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

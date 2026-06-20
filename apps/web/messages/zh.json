@@ -311,6 +311,7 @@
     "noAnalysesTrigger": "在此仓库中打开 Terraform pull request 以触发首次分析。",
     "defaultBranch": "默认分支：",
     "connected": "已连接",
+    "viewOnGitHub": "在 GitHub 上查看",
     "never": "从未",
     "viewLatest": "查看 →",
     "connectedRepos": "已连接的仓库",

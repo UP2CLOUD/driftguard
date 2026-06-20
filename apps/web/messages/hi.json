@@ -311,6 +311,7 @@
     "noAnalysesTrigger": "पहला विश्लेषण शुरू करने के लिए इस रिपॉज़िटरी में एक Terraform pull request खोलें।",
     "defaultBranch": "डिफ़ॉल्ट शाखा:",
     "connected": "जुड़ा हुआ",
+    "viewOnGitHub": "GitHub पर देखें",
     "never": "कभी नहीं",
     "viewLatest": "देखें →",
     "connectedRepos": "कनेक्टेड रिपॉजिटरी",

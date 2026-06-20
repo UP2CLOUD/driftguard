@@ -311,6 +311,7 @@
     "noAnalysesTrigger": "افتح طلب سحب Terraform في هذا المستودع لبدء أول تحليل.",
     "defaultBranch": "الفرع الافتراضي:",
     "connected": "متصل",
+    "viewOnGitHub": "عرض على GitHub",
     "never": "أبدًا",
     "viewLatest": "عرض →",
     "connectedRepos": "المستودعات المتصلة",

@@ -240,6 +240,7 @@
     "noAnalysesTrigger": "Open a Terraform pull request in this repository to trigger the first analysis.",
     "defaultBranch": "default branch:",
     "connected": "Connected",
+    "viewOnGitHub": "View on GitHub",
     "never": "Never",
     "viewLatest": "View →",
     "connectedRepos": "Connected repositories",
