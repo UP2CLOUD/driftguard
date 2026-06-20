@@ -1424,7 +1424,7 @@
     "time": "hora",
     "payload": "payload",
     "noMatch": "Nenhum evento corresponde a este filtro.",
-    "actionAll": "All actions"
+    "actionAll": "Todas as ações"
   },
   "finops": {
     "title": "Revisão FinOps",

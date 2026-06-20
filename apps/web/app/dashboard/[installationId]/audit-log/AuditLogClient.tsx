@@ -37,9 +37,9 @@ export function AuditLogClient({
       const q = filter.toLowerCase();
       out = out.filter(
         (e) =>
-          e.actor?.toLowerCase().includes(q) ||
-          e.action?.toLowerCase().includes(q) ||
-          e.target?.toLowerCase().includes(q)
+          e.actor?.toLowerCase()?.includes(q) ||
+          e.action?.toLowerCase()?.includes(q) ||
+          e.target?.toLowerCase()?.includes(q)
       );
     }
     return out;
@@ -70,13 +70,19 @@ export function AuditLogClient({
           </button>
           {actionTypes.map((a) => {
             const cls = actionColors[a] ?? "text-[color:var(--dg-fg-muted)]";
+            const isActive = actionFilter === a;
+            const isAnyActive = actionFilter !== null;
             return (
               <button
                 key={a}
-                onClick={() => setActionFilter(actionFilter === a ? null : a)}
-                aria-pressed={actionFilter === a}
+                onClick={() => setActionFilter(isActive ? null : a)}
+                aria-pressed={isActive}
                 className={`rounded border px-2.5 py-1 font-sans font-medium text-[10px] uppercase tracking-widest transition cursor-pointer border-[color:var(--dg-border)] ${cls} ${
-                  actionFilter === a ? "opacity-100 bg-[color:var(--dg-surface)]" : "opacity-50 hover:opacity-100"
+                  isActive
+                    ? "opacity-100 bg-[color:var(--dg-surface)]"
+                    : isAnyActive
+                    ? "opacity-40 hover:opacity-100"
+                    : "opacity-100"
                 }`}
               >
                 {a}

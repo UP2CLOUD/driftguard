@@ -1424,7 +1424,7 @@
     "time": "الوقت",
     "payload": "البيانات",
     "noMatch": "لا توجد أحداث تطابق هذا الفلتر.",
-    "actionAll": "All actions"
+    "actionAll": "جميع الإجراءات"
   },
   "finops": {
     "title": "مراجعة FinOps",

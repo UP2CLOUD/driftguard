@@ -1424,7 +1424,7 @@
     "time": "समय",
     "payload": "पेलोड",
     "noMatch": "इस फ़िल्टर से कोई इवेंट मेल नहीं खाता।",
-    "actionAll": "All actions"
+    "actionAll": "सभी एक्शन"
   },
   "finops": {
     "title": "FinOps समीक्षा",
