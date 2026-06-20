@@ -6,6 +6,7 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
+import { formatDate } from "@/lib/format-date";
 import { RepoAnalysesClient, type AnalysisRow } from "./RepoAnalysesClient";
 
 function riskDotFill(score: number): string {
@@ -138,6 +139,7 @@ export default async function RepoPage({
     pr_number: a.pr_number ?? null,
     head_sha: a.head_sha ?? null,
     created_at: a.created_at ?? null,
+    date: a.created_at ? formatDate(a.created_at, prefs.locale) : null,
   }));
   const critHigh = analysesList.filter((a) => (a.risk_score ?? 0) >= 70).length;
   const avgRisk = analysesList.length

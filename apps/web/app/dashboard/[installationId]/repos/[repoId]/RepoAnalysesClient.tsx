@@ -45,6 +45,7 @@ export type AnalysisRow = {
   pr_number: number | null;
   head_sha: string | null;
   created_at: string | null;
+  date: string | null;
 };
 
 type Labels = {
@@ -202,7 +203,7 @@ export function RepoAnalysesClient({
                 </p>
                 <p className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)] mt-0.5">
                   {a.head_sha ? `${a.head_sha.slice(0, 7)} · ` : ""}
-                  {a.created_at ? new Date(a.created_at).toLocaleDateString() : ""}
+                  {a.date ?? ""}
                 </p>
               </div>
 
