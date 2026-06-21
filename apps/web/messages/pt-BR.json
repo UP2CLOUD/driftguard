@@ -1506,7 +1506,9 @@
     "findingsLabel": "achados",
     "findingsExportCsv": "Exportar CSV",
     "findingsCopyFix": "Copiar correção",
-    "findingsCopied": "Copiado!"
+    "findingsCopied": "Copiado!",
+    "shareLink": "Copiar link",
+    "shareLinkCopied": "Copiado!"
   },
   "about": {
     "eyebrow": "Empresa",

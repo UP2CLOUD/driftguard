@@ -1506,7 +1506,9 @@
     "findingsLabel": "निष्कर्ष",
     "findingsExportCsv": "CSV निर्यात करें",
     "findingsCopyFix": "सुधार कॉपी करें",
-    "findingsCopied": "कॉपी हो गया!"
+    "findingsCopied": "कॉपी हो गया!",
+    "shareLink": "लिंक कॉपी करें",
+    "shareLinkCopied": "कॉपी हो गया!"
   },
   "about": {
     "eyebrow": "कंपनी",

@@ -1506,7 +1506,9 @@
     "findingsLabel": "نتائج",
     "findingsExportCsv": "تصدير CSV",
     "findingsCopyFix": "نسخ الإصلاح",
-    "findingsCopied": "تم النسخ!"
+    "findingsCopied": "تم النسخ!",
+    "shareLink": "نسخ الرابط",
+    "shareLinkCopied": "تم النسخ!"
   },
   "about": {
     "eyebrow": "الشركة",

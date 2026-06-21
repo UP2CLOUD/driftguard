@@ -7,6 +7,7 @@ import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
 import { formatCostDeltaCentsForUser } from "@/lib/currency/format";
 import { RescanButton } from "./RescanButton";
+import { ShareButton } from "./ShareButton";
 import { FindingsListClient, type FindingRow } from "./FindingsListClient";
 
 async function fetchAnalysis(id: string) {
@@ -176,6 +177,10 @@ export default async function AnalysisPage({
         </div>
         {/* Risk badge + actions */}
         <div className="flex items-center gap-3">
+          <ShareButton
+            label={t("analyses.shareLink") ?? "Copy link"}
+            copiedLabel={t("analyses.shareLinkCopied") ?? "Copied!"}
+          />
           {data.repo_full_name && (
             <RescanButton
               installationId={installationId}
@@ -265,8 +270,11 @@ export default async function AnalysisPage({
       {data.ai_summary && (
         <div className="mb-6 rounded-md border border-[color:var(--dg-electric)]/20 bg-[color:var(--dg-electric)]/5 p-5">
           <div className="flex items-center gap-2 mb-3">
-            <span className="font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
-              ⬡ {t("dashboard.aiReview")}
+            <span className="inline-flex items-center gap-1.5 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
+              <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+              </svg>
+              {t("dashboard.aiReview")}
             </span>
             <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">{t("dashboard.aiReviewDesc")}</span>
           </div>

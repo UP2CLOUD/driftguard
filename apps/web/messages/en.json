@@ -1506,7 +1506,9 @@
     "findingsLabel": "findings",
     "findingsExportCsv": "Export CSV",
     "findingsCopyFix": "Copy fix",
-    "findingsCopied": "Copied!"
+    "findingsCopied": "Copied!",
+    "shareLink": "Copy link",
+    "shareLinkCopied": "Copied!"
   },
   "about": {
     "eyebrow": "Company",
