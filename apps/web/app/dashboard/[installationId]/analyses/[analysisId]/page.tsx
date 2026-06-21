@@ -56,10 +56,15 @@ function renderInline(text: string): React.ReactNode {
   });
 }
 
+type SevBucket = "critical" | "high" | "medium" | "low" | "info";
+const SEV_BUCKETS: SevBucket[] = ["critical", "high", "medium", "low", "info"];
+
 export default async function AnalysisPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ installationId: string; analysisId: string }>;
+  searchParams: Promise<{ sev?: string }>;
 }) {
   const prefs = await getUserPreferences();
   const msgs  = await getMessages(prefs.locale);
@@ -69,6 +74,9 @@ export default async function AnalysisPage({
   if (!session) redirect("/");
 
   const { installationId, analysisId } = await params;
+  const { sev } = await searchParams;
+  const initialSev: SevBucket | null =
+    sev && SEV_BUCKETS.includes(sev as SevBucket) ? (sev as SevBucket) : null;
   const data = await fetchAnalysis(analysisId);
 
   if (!data) {
@@ -221,14 +229,25 @@ export default async function AnalysisPage({
         })}
       </div>
 
-      {/* Severity breakdown + policy verdict */}
+      {/* Severity breakdown — chips are links that pre-filter the findings list below */}
       {(bySeverity.length > 0 || data.policy_verdict) && (
         <div className="mb-6 flex flex-wrap gap-2">
-          {bySeverity.map(({ s, count }) => (
-            <span key={s} className={`rounded border px-2.5 py-1 font-sans font-medium text-[10px] uppercase tracking-widest ${SEV_STYLE[s]}`}>
-              {count} {s}
-            </span>
-          ))}
+          {bySeverity.map(({ s, count }) => {
+            const isActive = initialSev === s;
+            const href = isActive ? "?" : `?sev=${s}`;
+            return (
+              <Link
+                key={s}
+                href={href}
+                title={isActive ? "Clear filter" : `Filter findings by ${s}`}
+                className={`rounded border px-2.5 py-1 font-sans font-medium text-[10px] uppercase tracking-widest transition-opacity hover:opacity-80 ${
+                  SEV_STYLE[s]
+                } ${isActive ? "ring-1 ring-current ring-offset-1 ring-offset-[color:var(--dg-canvas)]" : ""}`}
+              >
+                {count} {s}
+              </Link>
+            );
+          })}
           {data.policy_verdict && (
             <span className={`rounded border px-2.5 py-1 font-sans font-medium text-[10px] uppercase tracking-widest ${
               data.policy_verdict === "block" ? "text-blocked border-blocked/30 bg-blocked/10" :
@@ -267,7 +286,9 @@ export default async function AnalysisPage({
       {/* Findings list */}
       {rawFindings.length === 0 ? (
         <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-6 py-14 text-center">
-          <div className="text-2xl mb-3">✓</div>
+          <svg className="h-8 w-8 text-allowed mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
           <p className="font-sans text-[14px] font-medium text-allowed mb-1">{t("dashboard.noFindings")}</p>
           <p className="text-[12px] text-[color:var(--dg-fg-subtle)]">
             {data.files_scanned === 0
@@ -278,6 +299,7 @@ export default async function AnalysisPage({
       ) : (
         <FindingsListClient
           findings={findingRows}
+          initialSev={initialSev}
           labels={{
             sevAll:           t("analyses.findingsSevAll"),
             sevCritical:      t("analyses.findingsSevCritical"),

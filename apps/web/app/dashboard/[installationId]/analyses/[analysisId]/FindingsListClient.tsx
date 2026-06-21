@@ -84,11 +84,13 @@ function exportFindingsToCsv(rows: FindingRow[], filename: string) {
 export function FindingsListClient({
   findings,
   labels: L,
+  initialSev,
 }: {
   findings: FindingRow[];
   labels: Labels;
+  initialSev?: SevBucket | null;
 }) {
-  const [sevFilter, setSevFilter] = useState<SevBucket | null>(null);
+  const [sevFilter, setSevFilter] = useState<SevBucket | null>(initialSev ?? null);
   const [query, setQuery] = useState("");
   const [exporting, setExporting] = useState(false);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
