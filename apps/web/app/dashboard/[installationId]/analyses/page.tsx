@@ -27,18 +27,24 @@ async function fetchOrgAnalyses(installationId: string, offset: number, status?:
 }
 
 
+type RiskBucket = "high" | "medium" | "low";
+
 export default async function AnalysesPage({
   params,
   searchParams,
 }: {
   params: Promise<{ installationId: string }>;
-  searchParams: Promise<{ filter?: string; page?: string }>;
+  searchParams: Promise<{ filter?: string; page?: string; risk?: string }>;
 }) {
   const session = await auth();
   if (!session) redirect("/");
 
   const { installationId } = await params;
-  const { filter, page: pageStr } = await searchParams;
+  const { filter, page: pageStr, risk } = await searchParams;
+  const initialRisk: RiskBucket | null =
+    risk && (["high", "medium", "low"] as const).includes(risk as RiskBucket)
+      ? (risk as RiskBucket)
+      : null;
   const page = Math.max(1, parseInt(pageStr ?? "1", 10) || 1);
   const offset = (page - 1) * PAGE_SIZE;
 
@@ -168,6 +174,7 @@ export default async function AnalysesPage({
           <AnalysesListClient
             rows={analysisRows}
             installationId={installationId}
+            initialRisk={initialRisk}
             labels={{
               filterPlaceholder: t("analyses.filterPlaceholder"),
               riskAll: t("analyses.riskAll"),

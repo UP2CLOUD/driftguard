@@ -311,6 +311,7 @@
     "noAnalysesTrigger": "在此仓库中打开 Terraform pull request 以触发首次分析。",
     "defaultBranch": "默认分支：",
     "connected": "已连接",
+    "viewOnGitHub": "在 GitHub 上查看",
     "never": "从未",
     "viewLatest": "查看 →",
     "connectedRepos": "已连接的仓库",
@@ -1503,7 +1504,11 @@
     "findingsShowing": "显示",
     "findingsOf": "/",
     "findingsLabel": "个发现",
-    "findingsExportCsv": "导出 CSV"
+    "findingsExportCsv": "导出 CSV",
+    "findingsCopyFix": "复制修复",
+    "findingsCopied": "已复制！",
+    "shareLink": "复制链接",
+    "shareLinkCopied": "已复制！"
   },
   "about": {
     "eyebrow": "公司",

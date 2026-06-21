@@ -311,6 +311,7 @@
     "noAnalysesTrigger": "पहला विश्लेषण शुरू करने के लिए इस रिपॉज़िटरी में एक Terraform pull request खोलें।",
     "defaultBranch": "डिफ़ॉल्ट शाखा:",
     "connected": "जुड़ा हुआ",
+    "viewOnGitHub": "GitHub पर देखें",
     "never": "कभी नहीं",
     "viewLatest": "देखें →",
     "connectedRepos": "कनेक्टेड रिपॉजिटरी",
@@ -1503,7 +1504,11 @@
     "findingsShowing": "दिखा रहे हैं",
     "findingsOf": "में से",
     "findingsLabel": "निष्कर्ष",
-    "findingsExportCsv": "CSV निर्यात करें"
+    "findingsExportCsv": "CSV निर्यात करें",
+    "findingsCopyFix": "सुधार कॉपी करें",
+    "findingsCopied": "कॉपी हो गया!",
+    "shareLink": "लिंक कॉपी करें",
+    "shareLinkCopied": "कॉपी हो गया!"
   },
   "about": {
     "eyebrow": "कंपनी",

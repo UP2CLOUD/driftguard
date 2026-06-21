@@ -240,6 +240,7 @@
     "noAnalysesTrigger": "Abre um pull request de Terraform neste repositório para desencadear a primeira análise.",
     "defaultBranch": "branch padrão:",
     "connected": "Conectado",
+    "viewOnGitHub": "Ver no GitHub",
     "never": "Nunca",
     "viewLatest": "Ver →",
     "connectedRepos": "Repositórios conectados",
@@ -1503,7 +1504,11 @@
     "findingsShowing": "Mostrando",
     "findingsOf": "de",
     "findingsLabel": "achados",
-    "findingsExportCsv": "Exportar CSV"
+    "findingsExportCsv": "Exportar CSV",
+    "findingsCopyFix": "Copiar correção",
+    "findingsCopied": "Copiado!",
+    "shareLink": "Copiar link",
+    "shareLinkCopied": "Copiado!"
   },
   "about": {
     "eyebrow": "Empresa",

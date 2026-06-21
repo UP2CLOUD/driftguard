@@ -311,6 +311,7 @@
     "noAnalysesTrigger": "افتح طلب سحب Terraform في هذا المستودع لبدء أول تحليل.",
     "defaultBranch": "الفرع الافتراضي:",
     "connected": "متصل",
+    "viewOnGitHub": "عرض على GitHub",
     "never": "أبدًا",
     "viewLatest": "عرض →",
     "connectedRepos": "المستودعات المتصلة",
@@ -1503,7 +1504,11 @@
     "findingsShowing": "عرض",
     "findingsOf": "من",
     "findingsLabel": "نتائج",
-    "findingsExportCsv": "تصدير CSV"
+    "findingsExportCsv": "تصدير CSV",
+    "findingsCopyFix": "نسخ الإصلاح",
+    "findingsCopied": "تم النسخ!",
+    "shareLink": "نسخ الرابط",
+    "shareLinkCopied": "تم النسخ!"
   },
   "about": {
     "eyebrow": "الشركة",

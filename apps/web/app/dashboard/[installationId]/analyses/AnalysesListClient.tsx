@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type RiskBucket = "high" | "medium" | "low";
 
@@ -76,13 +76,16 @@ export function AnalysesListClient({
   rows,
   installationId,
   labels: L,
+  initialRisk,
 }: {
   rows: AnalysisRow[];
   installationId: string;
   labels: Labels;
+  initialRisk?: RiskBucket | null;
 }) {
+  const router = useRouter();
   const [repoFilter, setRepoFilter] = useState("");
-  const [riskFilter, setRiskFilter] = useState<RiskBucket | null>(null);
+  const [riskFilter, setRiskFilter] = useState<RiskBucket | null>(initialRisk ?? null);
 
   const safeRows = useMemo(() => {
     if (!Array.isArray(rows)) return [];
@@ -176,72 +179,98 @@ export function AnalysesListClient({
           </div>
 
           <div className="rounded-md sm:rounded-t-none border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
-            {filtered.map((a) => (
-              <Link
-                key={a.id}
-                href={`/dashboard/${installationId}/analyses/${a.id}`}
-                className="flex sm:grid sm:grid-cols-[44px_1fr_90px_100px_110px] items-center gap-3 sm:gap-4 px-4 py-3.5 hover:bg-[color:var(--dg-surface-raised)] transition group"
-              >
+            {filtered.map((a) => {
+              const analysisHref = `/dashboard/${installationId}/analyses/${a.id}`;
+              const githubPrHref = a.pr_number && a.repo_full_name
+                ? `https://github.com/${a.repo_full_name}/pull/${a.pr_number}`
+                : null;
+              return (
                 <div
-                  className={`w-10 h-10 sm:w-10 sm:h-9 rounded font-mono text-[12px] font-bold flex items-center justify-center shrink-0 ${riskBg(a.risk_score)} ${riskColor(a.risk_score)}`}
+                  key={a.id}
+                  role="link"
+                  tabIndex={0}
+                  onClick={() => router.push(analysisHref)}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") router.push(analysisHref); }}
+                  className="flex sm:grid sm:grid-cols-[44px_1fr_90px_100px_110px] items-center gap-3 sm:gap-4 px-4 py-3.5 hover:bg-[color:var(--dg-surface-raised)] transition group cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[color:var(--dg-electric)]"
                 >
-                  {a.risk_score ?? "—"}
-                </div>
+                  <div
+                    className={`w-10 h-10 sm:w-10 sm:h-9 rounded font-mono text-[12px] font-bold flex items-center justify-center shrink-0 ${riskBg(a.risk_score)} ${riskColor(a.risk_score)}`}
+                  >
+                    {a.risk_score ?? "—"}
+                  </div>
 
-                <div className="flex-1 min-w-0">
-                  <p className="font-mono text-[12px] text-[color:var(--dg-fg)] truncate">
-                    {a.repo_full_name || "—"}
-                    {a.pr_number ? (
-                      <span className="text-[color:var(--dg-fg-muted)]">#{a.pr_number}</span>
-                    ) : null}
-                  </p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
-                      {a.head_sha ? a.head_sha.slice(0, 7) : L.manual}
-                      <span className="sm:hidden">
-                        {a.date ? ` · ${a.date}` : ""}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-mono text-[12px] text-[color:var(--dg-fg)] truncate flex items-center gap-1">
+                      <span className="truncate">{a.repo_full_name || "—"}</span>
+                      {a.pr_number ? (
+                        githubPrHref ? (
+                          <a
+                            href={githubPrHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
+                            className="shrink-0 font-mono text-[11px] text-[color:var(--dg-fg-muted)] hover:text-[color:var(--dg-electric)] transition inline-flex items-center gap-0.5"
+                            aria-label={`Open PR #${a.pr_number} on GitHub`}
+                          >
+                            #{a.pr_number}
+                            <svg className="h-2.5 w-2.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </a>
+                        ) : (
+                          <span className="shrink-0 text-[color:var(--dg-fg-muted)]">#{a.pr_number}</span>
+                        )
+                      ) : null}
+                    </p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="font-mono text-[10px] text-[color:var(--dg-fg-subtle)]">
+                        {a.head_sha ? a.head_sha.slice(0, 7) : L.manual}
+                        <span className="sm:hidden">
+                          {a.date ? ` · ${a.date}` : ""}
+                        </span>
                       </span>
-                    </span>
-                    {a.policy_verdict && a.policy_verdict !== "pass" && (
-                      <span className={`font-sans font-medium text-[9px] uppercase tracking-widest rounded px-1 py-0.5 ${
-                        a.policy_verdict === "block" ? "text-blocked bg-blocked/10" : "text-warned bg-warned/10"
-                      }`}>
-                        {a.policy_verdict}
+                      {a.policy_verdict && a.policy_verdict !== "pass" && (
+                        <span className={`font-sans font-medium text-[9px] uppercase tracking-widest rounded px-1 py-0.5 ${
+                          a.policy_verdict === "block" ? "text-blocked bg-blocked/10" : "text-warned bg-warned/10"
+                        }`}>
+                          {a.policy_verdict}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="hidden sm:flex items-center">
+                    {a.status ? (
+                      <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest ${STATUS_BADGE[a.status] ?? "text-[color:var(--dg-fg-subtle)] border-[color:var(--dg-border)]"}`}>
+                        {a.status}
                       </span>
+                    ) : (
+                      <span className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">—</span>
                     )}
                   </div>
-                </div>
 
-                <div className="hidden sm:flex items-center">
-                  {a.status ? (
-                    <span className={`rounded border px-1.5 py-0.5 font-sans font-medium text-[10px] uppercase tracking-widest ${STATUS_BADGE[a.status] ?? "text-[color:var(--dg-fg-subtle)] border-[color:var(--dg-border)]"}`}>
-                      {a.status}
+                  <div className="hidden sm:block font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">
+                    {a.files_scanned != null ? L.filesScanned.replace("{n}", String(a.files_scanned)) : "—"}
+                  </div>
+
+                  <div className="hidden sm:flex items-center justify-between gap-2">
+                    <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
+                      {a.date ?? "—"}
                     </span>
-                  ) : (
-                    <span className="font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">—</span>
-                  )}
+                    <svg
+                      className="h-3 w-3 text-[color:var(--dg-fg-subtle)] opacity-0 group-hover:opacity-100 transition"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </div>
-
-                <div className="hidden sm:block font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">
-                  {a.files_scanned != null ? L.filesScanned.replace("{n}", String(a.files_scanned)) : "—"}
-                </div>
-
-                <div className="hidden sm:flex items-center justify-between gap-2">
-                  <span className="font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-                    {a.date ?? "—"}
-                  </span>
-                  <svg
-                    className="h-3 w-3 text-[color:var(--dg-fg-subtle)] opacity-0 group-hover:opacity-100 transition"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </Link>
-            ))}
+              );
+            })}
           </div>
         </>
       )}
