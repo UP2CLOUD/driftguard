@@ -41,7 +41,9 @@ class TestWebSocketAuth:
         ):
             with TestClient(app) as client:
                 with pytest.raises(WebSocketDisconnect) as exc_info:
-                    with client.websocket_connect("/api/v1/ws/events/org-B?token=dg_live_x"):
+                    with client.websocket_connect(
+                        "/api/v1/ws/events/org-B?token=dg_live_x"
+                    ):
                         pass
         assert exc_info.value.code == 1008
 
@@ -49,6 +51,7 @@ class TestWebSocketAuth:
 @pytest.mark.asyncio
 async def test_ws_router_mounted():
     """ws/events endpoint is reachable (route exists)."""
+
     def collect_paths(routes):
         paths = []
         for r in routes:
@@ -57,13 +60,17 @@ async def test_ws_router_mounted():
                 paths.append(path)
             # _IncludedRouter (FastAPI internal) nests via original_router
             orig = getattr(r, "original_router", None)
-            inner = getattr(orig, "routes", None) if orig else getattr(r, "routes", None)
+            inner = (
+                getattr(orig, "routes", None) if orig else getattr(r, "routes", None)
+            )
             if inner:
                 paths.extend(collect_paths(inner))
         return paths
 
     all_paths = collect_paths(app.routes)
-    assert any("ws/events" in p for p in all_paths), f"ws/events not in routes: {all_paths}"
+    assert any(
+        "ws/events" in p for p in all_paths
+    ), f"ws/events not in routes: {all_paths}"
 
 
 class TestConnectionManager:
