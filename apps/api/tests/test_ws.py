@@ -49,8 +49,21 @@ class TestWebSocketAuth:
 @pytest.mark.asyncio
 async def test_ws_router_mounted():
     """ws/events endpoint is reachable (route exists)."""
-    routes = [r.path for r in app.routes]
-    assert any("ws/events" in p for p in routes), f"ws/events not in routes: {routes}"
+    def collect_paths(routes):
+        paths = []
+        for r in routes:
+            path = getattr(r, "path", None)
+            if path:
+                paths.append(path)
+            # _IncludedRouter (FastAPI internal) nests via original_router
+            orig = getattr(r, "original_router", None)
+            inner = getattr(orig, "routes", None) if orig else getattr(r, "routes", None)
+            if inner:
+                paths.extend(collect_paths(inner))
+        return paths
+
+    all_paths = collect_paths(app.routes)
+    assert any("ws/events" in p for p in all_paths), f"ws/events not in routes: {all_paths}"
 
 
 class TestConnectionManager:
