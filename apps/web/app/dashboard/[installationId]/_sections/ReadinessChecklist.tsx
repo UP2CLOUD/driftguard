@@ -55,8 +55,8 @@ export async function ReadinessChecklistSection({
       <div className="rounded-md border border-warned/30 bg-warned/5 px-4 py-3 flex items-start gap-3">
         <span className="mt-0.5 shrink-0 text-warned">⚠</span>
         <div className="font-mono text-[12px] text-warned leading-relaxed">
-          <span className="font-bold">Backend temporarily unavailable (HTTP 503).</span>{" "}
-          The API service is starting up or temporarily offline. Dashboard data will load once the backend is reachable.
+          <span className="font-bold">{t("dashboard.error503Title") ?? "Backend temporarily unavailable (HTTP 503)."}</span>{" "}
+          {t("dashboard.error503Body") ?? "The API service is starting up or temporarily offline. Dashboard data will load once the backend is reachable."}
         </div>
       </div>
     );

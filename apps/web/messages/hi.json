@@ -133,6 +133,8 @@
     "readinessCtaViewMemory": "स्मृति देखें",
     "readinessDone": "DriftGuard सक्रिय है। अगली समीक्षा ट्रिगर करने के लिए किसी कनेक्टेड रिपॉजिटरी में Terraform पुल रिक्वेस्ट खोलें।",
     "setupComplete": "सेटअप पूर्ण।",
+    "error503Title": "बैकएंड अस्थायी रूप से अनुपलब्ध (HTTP 503)।",
+    "error503Body": "API सेवा प्रारंभ हो रही है या अस्थायी रूप से ऑफलाइन है। बैकएंड उपलब्ध होने पर डैशबोर्ड डेटा लोड हो जाएगा।",
     "openCount": "{n} खुला",
     "statsHintConnectGitHub": "GitHub कनेक्ट करें",
     "statsHintOpenPr": "PR खोलें",
