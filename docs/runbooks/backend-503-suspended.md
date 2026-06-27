@@ -28,8 +28,8 @@ process itself is alive.
 curl -s -o /dev/null -w "%{http_code}\n" https://driftguard-vozi.onrender.com/api/v1/health
 curl -s https://driftguard-vozi.onrender.com/api/v1/health   # read the body
 
-# Readiness — database & Redis connectivity
-curl -s https://driftguard-vozi.onrender.com/api/v1/ready
+# Readiness — database & Redis connectivity (-i shows the HTTP status line)
+curl -i -s https://driftguard-vozi.onrender.com/api/v1/ready
 ```
 
 | Observation | Meaning | Fix |
@@ -56,7 +56,7 @@ or any CI action — those have no authority over billing.
 
 ### Option B — Migrate to a new host (if the Render account is gone)
 Requires the secrets that currently live only in the Render dashboard:
-`DATABASE_URL`, `SECRET_KEY`, `GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY`,
+`DATABASE_URL`, `REDIS_URL`, `SECRET_KEY`, `GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY`,
 `GITHUB_WEBHOOK_SECRET`, `ANTHROPIC_API_KEY` (see `render.yaml` for the full list).
 
 1. Deploy `apps/api` (Dockerfile) to the new host with those env vars set.
