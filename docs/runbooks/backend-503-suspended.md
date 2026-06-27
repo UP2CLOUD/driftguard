@@ -18,11 +18,18 @@ and is inlined at build time. The backend and its secrets live on **Render**.
 
 ## Diagnosis
 
-Probe the backend directly:
+Probe the backend directly. Use `/health` for liveness (is the process up?) and
+`/ready` for readiness (can it reach the database and Redis?). `/ready` returns
+`503` with `"status": "degraded"` when a dependency check fails, even if the
+process itself is alive.
 
 ```bash
+# Liveness — is the process running at all?
 curl -s -o /dev/null -w "%{http_code}\n" https://driftguard-vozi.onrender.com/api/v1/health
 curl -s https://driftguard-vozi.onrender.com/api/v1/health   # read the body
+
+# Readiness — database & Redis connectivity
+curl -s https://driftguard-vozi.onrender.com/api/v1/ready
 ```
 
 | Observation | Meaning | Fix |
@@ -30,6 +37,7 @@ curl -s https://driftguard-vozi.onrender.com/api/v1/health   # read the body
 | Body: `This service has been suspended` + fast `503` | **Render account/billing suspension** | Resume the service (below). A redeploy will NOT clear this. |
 | Slow first response (~30 s) then `200` | Free-tier cold start (spun down after 15 min idle) | None needed; consider keep-warm or paid plan. |
 | Connection refused / timeout | Service crashed or deleted | Redeploy / recreate. |
+| `/health` is `200` but `/ready` is `503` with `"status": "degraded"` | Process is up but **database or Redis is unreachable** | Check the dependency (`DATABASE_URL`, `REDIS_URL`) status and credentials. |
 | `200` from backend but dashboard still 503 | Vercel `NEXT_PUBLIC_API_URL` points elsewhere | Fix the Vercel env var, redeploy. |
 
 The "suspended" body with an immediate 503 is an **account-level state on Render**, not a
@@ -48,11 +56,12 @@ or any CI action — those have no authority over billing.
 
 ### Option B — Migrate to a new host (if the Render account is gone)
 Requires the secrets that currently live only in the Render dashboard:
-`DATABASE_URL`, `SECRET_KEY`, `GITHUB_APP_PRIVATE_KEY`, `GITHUB_WEBHOOK_SECRET`,
-`ANTHROPIC_API_KEY` (see `render.yaml` for the full list).
+`DATABASE_URL`, `SECRET_KEY`, `GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY`,
+`GITHUB_WEBHOOK_SECRET`, `ANTHROPIC_API_KEY` (see `render.yaml` for the full list).
 
 1. Deploy `apps/api` (Dockerfile) to the new host with those env vars set.
-2. Point the **GitHub App webhook URL** at the new backend.
+2. Point the **GitHub App webhook URL** (GitHub → Settings → Developer settings →
+   GitHub Apps → your app → General → Webhook URL) at the new backend.
 3. Set **Vercel `NEXT_PUBLIC_API_URL`** to the new backend URL and redeploy the web app.
 4. Re-probe `/api/v1/health` → expect `200`.
 
