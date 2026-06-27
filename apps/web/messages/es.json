@@ -133,6 +133,8 @@
     "readinessCtaViewMemory": "Ver memoria",
     "readinessDone": "DriftGuard está activo. Abre un pull request de Terraform en un repositorio conectado para activar tu próxima revisión.",
     "setupComplete": "Configuración completa.",
+    "error503Title": "Backend temporalmente no disponible (HTTP 503).",
+    "error503Body": "El servicio de API se está iniciando o está temporalmente fuera de línea. Los datos del panel se cargarán una vez que el backend esté disponible.",
     "openCount": "{n} abierto(s)",
     "statsHintConnectGitHub": "Conectar GitHub",
     "statsHintOpenPr": "Abrir un PR",

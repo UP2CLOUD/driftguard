@@ -133,6 +133,8 @@
     "readinessCtaViewMemory": "查看记忆",
     "readinessDone": "DriftGuard 已激活。在已连接的仓库中打开 Terraform Pull Request 以触发下一次审查。",
     "setupComplete": "设置完成。",
+    "error503Title": "后端暂时不可用 (HTTP 503)。",
+    "error503Body": "API 服务正在启动或暂时离线。后端可访问后，仪表板数据将会加载。",
     "openCount": "{n} 个开放",
     "statsHintConnectGitHub": "连接 GitHub",
     "statsHintOpenPr": "创建 PR",

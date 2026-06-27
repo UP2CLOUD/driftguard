@@ -133,6 +133,8 @@
     "readinessCtaViewMemory": "عرض الذاكرة",
     "readinessDone": "DriftGuard نشط. افتح طلب سحب Terraform في مستودع متصل لتشغيل المراجعة التالية.",
     "setupComplete": "اكتمل الإعداد.",
+    "error503Title": "الخدمة الخلفية غير متاحة مؤقتاً (HTTP 503).",
+    "error503Body": "خدمة API تبدأ أو غير متصلة بالشبكة مؤقتاً. ستُحمَّل بيانات لوحة التحكم بمجرد أن يصبح الخادم متاحاً.",
     "openCount": "{n} مفتوح",
     "statsHintConnectGitHub": "ربط GitHub",
     "statsHintOpenPr": "فتح PR",
