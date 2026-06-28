@@ -13,7 +13,14 @@ export async function DashboardFooter() {
     <footer className="border-t border-[color:var(--dg-border)] mt-auto">
       <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-4 sm:px-6 py-4 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] flex-wrap">
         <div className="flex items-center gap-4 flex-wrap">
-          <span>© 2026 UP2CLOUD</span>
+          <a
+            href="https://up2cloud.tech/"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-[color:var(--dg-fg)] transition"
+          >
+            © 2026 UP2CLOUD
+          </a>
           <span className="opacity-40">·</span>
           <Link href="/docs" className="hover:text-[color:var(--dg-fg)] transition">{t("common.docs")}</Link>
           <span className="opacity-40">·</span>
