@@ -55,6 +55,21 @@
     "waitlistSubtitle": "早期访问向 50 个平台团队开放。前 20 名终身享受 50% 折扣。"
   },
   "dashboard": {
+    "sev": {
+      "title": "按严重程度划分的发现",
+      "total": "总计",
+      "critical": "严重",
+      "high": "高",
+      "medium": "中",
+      "low": "低"
+    },
+    "riskTrend": {
+      "title": "风险趋势",
+      "improving": "改善中",
+      "worsening": "恶化中",
+      "stable": "稳定",
+      "last30": "最近 {n} 次分析"
+    },
     "selectOrg": "选择组织",
     "connectGithub": "连接 GitHub",
     "title": "仪表板",

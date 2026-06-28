@@ -11,7 +11,17 @@ export async function MarketingFooter() {
   return (
     <footer className="border-t border-border bg-canvas py-6">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 font-mono text-2xs text-fg-subtle">
-        <div>© 2026 Driftguard · UP2CLOUD</div>
+        <div>
+          © 2026 Driftguard ·{" "}
+          <a
+            href="https://up2cloud.tech/"
+            target="_blank"
+            rel="noreferrer"
+            className="transition hover:text-fg-muted"
+          >
+            UP2CLOUD
+          </a>
+        </div>
         <div className="flex gap-4">
           <a href="https://github.com/UP2CLOUD/driftguard" className="transition hover:text-fg-muted">
             GitHub

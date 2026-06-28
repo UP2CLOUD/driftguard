@@ -55,6 +55,21 @@
     "waitlistSubtitle": "الوصول المبكر لـ 50 فريق منصة. أول 20 يحصلون على خصم 50% مدى الحياة."
   },
   "dashboard": {
+    "sev": {
+      "title": "النتائج حسب الخطورة",
+      "total": "الإجمالي",
+      "critical": "حرج",
+      "high": "عالٍ",
+      "medium": "متوسط",
+      "low": "منخفض"
+    },
+    "riskTrend": {
+      "title": "اتجاه المخاطر",
+      "improving": "يتحسن",
+      "worsening": "يتفاقم",
+      "stable": "مستقر",
+      "last30": "آخر {n} تحليلات"
+    },
     "selectOrg": "اختر المؤسسة",
     "connectGithub": "الاتصال بـ GitHub",
     "title": "لوحة التحكم",
