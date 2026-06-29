@@ -55,6 +55,21 @@
     "waitlistSubtitle": "Acceso anticipado para 50 equipos de plataforma. Los 20 primeros obtienen 50% de por vida."
   },
   "dashboard": {
+    "sev": {
+      "title": "Hallazgos por severidad",
+      "total": "total",
+      "critical": "Crítico",
+      "high": "Alto",
+      "medium": "Medio",
+      "low": "Bajo"
+    },
+    "riskTrend": {
+      "title": "Tendencia de riesgo",
+      "improving": "mejorando",
+      "worsening": "empeorando",
+      "stable": "estable",
+      "last30": "Últimos {n} análisis"
+    },
     "selectOrg": "Seleccionar organización",
     "connectGithub": "Conectar con GitHub",
     "title": "Panel",

@@ -55,6 +55,21 @@
     "waitlistSubtitle": "Early access opens to 50 platform teams. First 20 get lifetime 50% off."
   },
   "dashboard": {
+    "sev": {
+      "title": "Findings by severity",
+      "total": "total",
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "riskTrend": {
+      "title": "Risk trend",
+      "improving": "improving",
+      "worsening": "worsening",
+      "stable": "stable",
+      "last30": "Last {n} analyses"
+    },
     "selectOrg": "Select Organization",
     "connectGithub": "Connect to GitHub",
     "title": "Dashboard",
