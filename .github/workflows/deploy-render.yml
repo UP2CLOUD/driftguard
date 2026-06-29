@@ -27,16 +27,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check deploy hook configured
+        id: check
         env:
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
           if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
-            echo "::error::RENDER_DEPLOY_HOOK_URL secret is not set."
-            echo "::error::See .github/workflows/deploy-render.yml for setup instructions."
-            exit 1
+            echo "::warning::RENDER_DEPLOY_HOOK_URL secret is not set — skipping Render deploy."
+            echo "::warning::See .github/workflows/deploy-render.yml for setup instructions."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Trigger Render deploy
+        if: steps.check.outputs.configured == 'true'
         env:
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
@@ -53,6 +57,7 @@ jobs:
           echo "Deploy triggered. Track progress at: https://dashboard.render.com"
 
       - name: Wait for health check
+        if: steps.check.outputs.configured == 'true'
         env:
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
