@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useT } from "@/components/I18nProvider";
-import { CONSENT_KEY } from "@/lib/consent";
+import { CONSENT_KEY, setConsent } from "@/lib/consent";
 
 export function CookieBanner() {
   const t = useT();
@@ -16,7 +16,7 @@ export function CookieBanner() {
   }, []);
 
   function accept() {
-    localStorage.setItem(CONSENT_KEY, "accepted");
+    setConsent("accepted"); // persists + notifies Google Consent Mode
     setVisible(false);
     // Initialise PostHog now that consent is granted
     const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
@@ -38,7 +38,7 @@ export function CookieBanner() {
   }
 
   function decline() {
-    localStorage.setItem(CONSENT_KEY, "declined");
+    setConsent("declined"); // persists + notifies Google Consent Mode
     setVisible(false);
     import("posthog-js").then(({ default: posthog }) => {
       if (posthog.__loaded) posthog.opt_out_capturing();

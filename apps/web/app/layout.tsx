@@ -14,6 +14,7 @@ import { type Locale } from "@/i18n/config";
 import { JsonLd } from "@/components/JsonLd";
 import { NavigationTransition } from "@/components/NavigationTransition";
 import { CookieBanner } from "@/components/CookieBanner";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import "./globals.css";
 
 const inter = Inter({
@@ -95,6 +96,9 @@ export async function generateMetadata(): Promise<Metadata> {
       apple:    "/icon.svg",
     },
     alternates: hreflangAlternates("/"),
+    verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+      : undefined,
     other: {
       "content-language": locale,
     },
@@ -126,6 +130,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </I18nProvider>
         <Analytics />
         <SpeedInsights />
+        <GoogleAnalytics />
       </body>
     </html>
   );
