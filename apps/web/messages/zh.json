@@ -1,4 +1,12 @@
 {
+  "login": {
+    "eyebrow": "访问控制台",
+    "title": "初始化 DriftGuard",
+    "subtitle": "使用 GitHub 进行身份验证，以管理您的自主基础设施集群。",
+    "githubCta": "使用 GitHub 登录",
+    "terms": "继续即表示您同意我们的",
+    "backHome": "返回首页"
+  },
   "nav": {
     "features": "功能",
     "pricing": "定价",
