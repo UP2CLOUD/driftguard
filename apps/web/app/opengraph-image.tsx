@@ -26,13 +26,13 @@ export default async function Image() {
       >
         {/* Top: logo + status */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <svg width="32" height="32" viewBox="0 0 20 20" fill="none">
-              <path d="M2 3 L10 7 L18 3 L18 13 L10 17 L2 13 Z" stroke="#3F8CFF" strokeWidth="1.4" />
-              <path d="M10 7 L10 17" stroke="#3F8CFF" strokeWidth="1.4" opacity="0.4" />
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+              <rect x="4" y="4" width="26" height="26" rx="5" stroke="#62a0ff" strokeWidth="2" opacity="0.7" />
+              <rect x="12" y="12" width="10" height="10" rx="2" fill="#3F8CFF" />
             </svg>
-            <span style={{ fontSize: 26, fontWeight: 700, color: "#e8eaed", letterSpacing: "-0.02em" }}>
-              driftguard
+            <span style={{ fontSize: 26, fontWeight: 700, color: "#e8eaed", letterSpacing: "0.14em", fontFamily: "monospace" }}>
+              DRIFTGUARD
             </span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "#9aa0a6" }}>
@@ -59,8 +59,8 @@ export default async function Image() {
 
         {/* Bottom: stats strip */}
         <div style={{ display: "flex", marginTop: 56, gap: 48, fontSize: 14 }}>
-          <Stat label="P99 review" value="<2s" />
-          <Stat label="Memory" value="384-d" />
+          <Stat label="Scope" value="Terraform · OpenTofu" />
+          <Stat label="Reviews" value="Cost · Security · Drift" />
           <Stat label="Compliance" value="DORA / NIS2 / ISO 27001" />
         </div>
       </div>

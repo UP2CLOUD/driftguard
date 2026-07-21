@@ -64,11 +64,11 @@ export async function GET(req: NextRequest) {
         }} />
         {/* Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <svg width="32" height="32" viewBox="0 0 20 20" fill="none">
-            <path d="M2 3 L10 7 L18 3 L18 13 L10 17 L2 13 Z" stroke={BRAND} strokeWidth="1.5" strokeLinejoin="round" />
-            <path d="M10 7 L10 17" stroke={BRAND} strokeWidth="1.5" strokeOpacity="0.4" strokeLinecap="round" />
+          <svg width="30" height="30" viewBox="0 0 34 34" fill="none">
+            <rect x="4" y="4" width="26" height="26" rx="5" stroke="#62a0ff" strokeWidth="2" strokeOpacity="0.7" />
+            <rect x="12" y="12" width="10" height="10" rx="2" fill={BRAND} />
           </svg>
-          <span style={{ fontSize: 22, fontWeight: 700, color: FG, letterSpacing: -0.5 }}>DriftGuard</span>
+          <span style={{ fontSize: 22, fontWeight: 700, color: FG, letterSpacing: 2, fontFamily: "monospace" }}>DRIFTGUARD</span>
         </div>
         {/* Title */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 48, flex: 1 }}>

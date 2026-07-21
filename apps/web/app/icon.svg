@@ -2,12 +2,8 @@
   <!-- Background -->
   <rect width="32" height="32" rx="7" fill="#07080a"/>
 
-  <!-- DriftGuard logo — same paths as MarketingNav/DashboardNav
-       Original viewBox 0 0 20 20, centered in 32x32 → translate(6,6) -->
-  <g transform="translate(6,6)" fill="none" stroke="#3F8CFF" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
-    <!-- Outer diamond shape: M2 3 L10 7 L18 3 L18 13 L10 17 L2 13 Z -->
-    <path d="M2 3 L10 7 L18 3 L18 13 L10 17 L2 13 Z"/>
-    <!-- Center dividing line -->
-    <path d="M10 7 L10 17" stroke-opacity="0.4"/>
-  </g>
+  <!-- DriftGuard identity mark — matches CommandNav / DashboardNav / login:
+       an outer square with a centered inner square. -->
+  <rect x="8.5" y="8.5" width="15" height="15" rx="2.5" fill="none" stroke="#62a0ff" stroke-width="1.5" opacity="0.7"/>
+  <rect x="12.75" y="12.75" width="6.5" height="6.5" rx="1.5" fill="#3f8cff"/>
 </svg>

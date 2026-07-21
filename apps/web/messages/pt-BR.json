@@ -1226,9 +1226,9 @@
     }
   },
   "customers": {
-    "eyebrow": "Clientes",
-    "title": "Confiado por engenheiros de plataforma",
-    "subtitle": "Equipas que usam o DriftGuard para governar Terraform escrito por IA e por humanos.",
+    "eyebrow": "Casos de uso",
+    "title": "Feito para infraestrutura escrita por IA",
+    "subtitle": "Como as equipes colocam o DriftGuard entre seu Terraform — escrito por humanos ou agentes — e a produção.",
     "yourTeam": "Sua equipe a seguir",
     "ctaTitle": "Começa a rever PRs em 30 segundos",
     "ctaBody": "Sem cartão de crédito. Sem alterações de infra. Funciona com qualquer repo Terraform ou OpenTofu no GitHub.",
@@ -1241,7 +1241,9 @@
     "meta": {
       "title": "Clientes — DriftGuard",
       "description": "Equipas que usam DriftGuard para governar código de infraestrutura gerado por IA."
-    }
+    },
+    "earlyAccessNote": "O DriftGuard está em acesso antecipado. Os cenários abaixo são exemplos ilustrativos do que ele revisa em um pull request — não são depoimentos de clientes nem garantias de desempenho.",
+    "scenariosLabel": "Exemplos de revisão"
   },
   "careers": {
     "eyebrow": "Carreiras",

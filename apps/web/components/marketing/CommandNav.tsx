@@ -40,22 +40,26 @@ export function CommandNav() {
         </div>
         <Link href="/" className="font-mono text-[13px] font-medium tracking-[0.2em] text-white flex flex-col">
           <span>DRIFTGUARD</span>
-          <span className="text-[8px] text-[color:var(--dg-fg-subtle)] tracking-widest mt-0.5">RUNTIME_LAYER</span>
+          <span className="text-[8px] text-[color:var(--dg-fg-subtle)] tracking-widest mt-0.5">RUNTIME SAFETY</span>
         </Link>
       </div>
 
       <div className="hidden md:flex items-center gap-8 font-mono text-[10px] uppercase tracking-[0.15em] text-[color:var(--dg-fg-subtle)]">
-        <Link href="#product" className="hover:text-white transition-colors relative group">
+        <Link href="/#demo" className="hover:text-white transition-colors relative group">
           <span className="absolute -inset-x-2 -inset-y-1 bg-[color:var(--dg-surface)] opacity-0 group-hover:opacity-100 rounded transition-opacity" />
-          <span className="relative">Governance</span>
+          <span className="relative">How it works</span>
         </Link>
-        <Link href="#architecture" className="hover:text-white transition-colors relative group">
+        <Link href="/#architecture" className="hover:text-white transition-colors relative group">
           <span className="absolute -inset-x-2 -inset-y-1 bg-[color:var(--dg-surface)] opacity-0 group-hover:opacity-100 rounded transition-opacity" />
           <span className="relative">Architecture</span>
         </Link>
-        <Link href="#compliance" className="hover:text-white transition-colors relative group">
+        <Link href="/#compliance" className="hover:text-white transition-colors relative group">
           <span className="absolute -inset-x-2 -inset-y-1 bg-[color:var(--dg-surface)] opacity-0 group-hover:opacity-100 rounded transition-opacity" />
           <span className="relative">Compliance</span>
+        </Link>
+        <Link href="/pricing" className="hover:text-white transition-colors relative group">
+          <span className="absolute -inset-x-2 -inset-y-1 bg-[color:var(--dg-surface)] opacity-0 group-hover:opacity-100 rounded transition-opacity" />
+          <span className="relative">Pricing</span>
         </Link>
         <Link href="/docs" className="hover:text-white transition-colors relative group">
           <span className="absolute -inset-x-2 -inset-y-1 bg-[color:var(--dg-surface)] opacity-0 group-hover:opacity-100 rounded transition-opacity" />
@@ -70,7 +74,7 @@ export function CommandNav() {
         >
           <div className="absolute inset-0 bg-[color:var(--dg-electric)] opacity-0 group-hover:opacity-10 transition-opacity" />
           <span className="relative flex items-center gap-2">
-            Initialize <span className="opacity-50">→</span>
+            Sign in <span className="opacity-50">→</span>
           </span>
         </Link>
       </div>
