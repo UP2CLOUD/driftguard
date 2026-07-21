@@ -1,122 +1,56 @@
-import { auth } from "@/auth";
-import { getInstallations } from "@/lib/installations";
-import { getMessages } from "@/i18n/get-locale";
-import { createTranslator } from "@/i18n/translator";
-import { getUserPreferences } from "@/lib/preferences/server";
-import Link from "next/link";
-import { SignInButton } from "@/components/SignInButton";
-import { StatusBar } from "@/components/landing/StatusBar";
-import { MarketingNav } from "@/components/landing/MarketingNav";
-import { Hero } from "@/components/landing/Hero";
-import { TrustBar } from "@/components/landing/TrustBar";
-import { DriftPreview } from "@/components/landing/DriftPreview";
-import { Architecture } from "@/components/landing/Architecture";
-import { SemanticMemory } from "@/components/landing/SemanticMemory";
-import { IncidentTimeline } from "@/components/landing/IncidentTimeline";
-import { FeatureGrid } from "@/components/landing/FeatureGrid";
-import { Metrics } from "@/components/landing/Metrics";
-import { CodeIntegration } from "@/components/landing/CodeIntegration";
-import { Pricing } from "@/components/landing/Pricing";
-import { CtaSection } from "@/components/landing/CtaSection";
-import { Footer } from "@/components/landing/Footer";
-import { HashScroll } from "@/components/HashScroll";
-import { JsonLd } from "@/components/JsonLd";
-import { MotionSection } from "@/components/MotionSection";
 import { TranslationProvider } from "@/components/TranslationProvider";
+import { getMessages } from "@/i18n/get-locale";
+import { getUserPreferences } from "@/lib/preferences/server";
+import { JsonLd } from "@/components/JsonLd";
 import { jsonLdSoftware, jsonLdOrg } from "@/lib/seo";
 
+import { CommandNav } from "@/components/marketing/CommandNav";
+import { HeroMissionControl } from "@/components/marketing/HeroMissionControl";
+import { PolicySimulatorDemo } from "@/components/marketing/PolicySimulatorDemo";
+import { RuntimeArchitectureMap } from "@/components/marketing/RuntimeArchitectureMap";
+import { ComplianceHeatmap } from "@/components/marketing/ComplianceHeatmap";
+
 export default async function Page() {
-  const session = await auth();
-  const isLoggedIn = !!session;
-  // Resolve first installation for live data in Metrics + IncidentTimeline
-  const installations = isLoggedIn ? await getInstallations(session) : [];
-  const installationId = installations[0]?.id ?? undefined;
   const preferences = await getUserPreferences();
   const messages = await getMessages(preferences.locale);
-  const t = createTranslator(messages);
-
-  const cta = (
-    <SignInButton className="dg-button dg-button-primary text-[12px] sm:text-[13px]">
-      {t("landing.hero.cta_start")}
-    </SignInButton>
-  );
 
   return (
     <TranslationProvider messages={messages as Record<string, unknown>}>
-    <>
-      <HashScroll />
-      <JsonLd data={[jsonLdSoftware(), jsonLdOrg()]} />
-      <StatusBar />
-      <MarketingNav isLoggedIn={isLoggedIn} cta={!isLoggedIn ? cta : undefined} initialPreferences={preferences} />
+      <>
+        <JsonLd data={[jsonLdSoftware(), jsonLdOrg()]} />
+        
+        <CommandNav />
 
-      {/* 1. Hook — what we do and why it matters */}
-      <Hero
-        ctaPrimary={
-          !isLoggedIn ? (
-            <SignInButton
-              className="dg-button dg-button-primary text-[13px] px-5 py-2.5"
-              dataTransition="github"
-            >
-              {t("landing.hero.cta_install")}
-            </SignInButton>
-          ) : (
-            <Link
-              href="/dashboard"
-              data-transition="dashboard"
-              className="dg-button dg-button-primary text-[13px] px-5 py-2.5"
-            >
-              {t("landing.hero.cta_dashboard")}
-            </Link>
-          )
-        }
-        ctaSecondary={
-          <Link href="/docs/install" className="dg-button dg-button-ghost text-[12px]">
-            {t("landing.hero.cta_docs")}
-          </Link>
-        }
-      />
+        {/* Global Particle/Network Background */}
+        <div className="fixed inset-0 pointer-events-none z-[-1] dg-grid dg-grain opacity-50" />
+        <div className="fixed inset-0 pointer-events-none z-[-1] dg-vignette" />
 
-      {/* 2. Social proof */}
-      <MotionSection><TrustBar /></MotionSection>
+        <main className="min-h-screen">
+          <section id="hero" className="w-full">
+            <HeroMissionControl />
+          </section>
 
-      {/* 3. The aha moment — interactive PR review table */}
-      <MotionSection delay={60}><DriftPreview /></MotionSection>
+          <section id="demo" className="w-full border-t border-[color:var(--dg-border-strong)] bg-black/40 backdrop-blur-md">
+            <PolicySimulatorDemo />
+          </section>
 
-      {/* 4. How it prevents incidents — live event feed */}
-      <MotionSection delay={80}><IncidentTimeline installationId={installationId} /></MotionSection>
+          <section id="architecture" className="w-full border-t border-[color:var(--dg-border-strong)]">
+            <RuntimeArchitectureMap />
+          </section>
 
-      {/* 5. How the system works architecturally */}
-      <MotionSection delay={60}><Architecture /></MotionSection>
+          <section id="compliance" className="w-full border-t border-[color:var(--dg-border-strong)] bg-black/40 backdrop-blur-md">
+            <ComplianceHeatmap />
+          </section>
 
-      {/* 6. The differentiator — semantic memory */}
-      <MotionSection delay={60}><SemanticMemory /></MotionSection>
-
-      {/* 7. Feature breakdown */}
-      <FeatureGrid />
-
-      {/* 8. Scale signals */}
-      <MotionSection delay={80}><Metrics installationId={installationId} /></MotionSection>
-
-      {/* 9. Integration — how easy it is */}
-      <MotionSection delay={60}><CodeIntegration /></MotionSection>
-
-      {/* 10. Pricing */}
-      <Pricing />
-
-      {/* 11. CTA */}
-      <CtaSection
-        cta={
-          <SignInButton
-            className="dg-button dg-button-primary text-[14px] px-6 py-3"
-            dataTransition="github"
-          >
-            {t("landing.ctaButton")}
-          </SignInButton>
-        }
-      />
-
-      <Footer />
-    </>
+          {/* Simple CTA Footer for now */}
+          <section className="w-full border-t border-[color:var(--dg-border-strong)] py-24 text-center">
+            <h2 className="text-3xl font-medium text-white mb-8">Ready to govern your autonomous fleet?</h2>
+            <a href="/login" className="inline-block px-8 py-4 bg-[color:var(--dg-electric)] text-white font-mono text-[11px] uppercase tracking-widest rounded hover:bg-[color:var(--dg-electric-bright)] transition-colors">
+              Initialize DriftGuard
+            </a>
+          </section>
+        </main>
+      </>
     </TranslationProvider>
   );
 }
