@@ -1,4 +1,12 @@
 {
+  "login": {
+    "eyebrow": "Console de acesso",
+    "title": "Inicializar o DriftGuard",
+    "subtitle": "Autentique-se com o GitHub para governar sua frota de infraestrutura autônoma.",
+    "githubCta": "Entrar com GitHub",
+    "terms": "Ao continuar, você concorda com nossos",
+    "backHome": "Voltar ao início"
+  },
   "common": {
     "privacy": "Privacidade",
     "terms": "Termos",

@@ -70,13 +70,13 @@ export function DashboardNav({
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-4 sm:px-6 py-3">
           {/* Left: logo + nav */}
           <div className="flex items-center gap-5">
-            <Link href="/" className="flex items-center gap-2 shrink-0">
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="text-[color:var(--dg-electric)]">
-                <path d="M2 3 L10 7 L18 3 L18 13 L10 17 L2 13 Z" stroke="currentColor" strokeWidth="1.4" />
-                <path d="M10 7 L10 17" stroke="currentColor" strokeWidth="1.4" opacity="0.4" />
-              </svg>
-              <span className="font-sans text-[13px] font-semibold tracking-tight text-[color:var(--dg-fg)] hidden sm:inline">
-                driftguard
+            <Link href="/" className="flex items-center gap-2.5 shrink-0">
+              <span className="relative flex items-center justify-center w-5 h-5">
+                <span className="absolute inset-0 border border-[color:var(--dg-electric-bright)] rounded-sm animate-pulse opacity-50" />
+                <span className="w-2 h-2 bg-[color:var(--dg-electric)] rounded-sm shadow-[0_0_8px_var(--dg-electric-bright)]" />
+              </span>
+              <span className="font-mono text-[12px] font-medium tracking-[0.2em] text-[color:var(--dg-fg)] hidden sm:inline">
+                DRIFTGUARD
               </span>
             </Link>
 
