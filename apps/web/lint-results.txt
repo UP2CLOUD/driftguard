@@ -1,0 +1,5 @@
+
+> driftguard-web@0.1.0 lint /Users/admin.cesar.a.nogueira/Desktop/driftguard/driftguard/apps/web
+> next lint
+
+ ELIFECYCLE  Command failed with exit code 1.

@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-08T00:00:00Z",
+  "title": "Design System: DriftGuard",
+  "extensions": {
+    "colorMeta": {
+      "canvas":               { "role": "neutral",   "displayName": "Void Black",           "canonical": "#07080a", "tonalRamp": ["#07080a","#0c0e12","#11141a","#161a20","#1a1e25","#262b34","#3a414d","#525c6b"] },
+      "surface":              { "role": "neutral",   "displayName": "Terminal Surface",      "canonical": "#0c0e12", "tonalRamp": ["#07080a","#0c0e12","#11141a","#161a20","#1a1e25","#262b34","#3a414d","#525c6b"] },
+      "surface-raised":       { "role": "neutral",   "displayName": "Lifted Surface",        "canonical": "#11141a", "tonalRamp": ["#07080a","#0c0e12","#11141a","#161a20","#1a1e25","#262b34","#3a414d","#525c6b"] },
+      "surface-overlay":      { "role": "neutral",   "displayName": "Overlay Surface",       "canonical": "#161a20", "tonalRamp": ["#07080a","#0c0e12","#11141a","#161a20","#1a1e25","#262b34","#3a414d","#525c6b"] },
+      "border":               { "role": "neutral",   "displayName": "Grid Line",             "canonical": "#1a1e25", "tonalRamp": ["#07080a","#0c0e12","#11141a","#1a1e25","#262b34","#3a414d","#525c6b","#9aa0a6"] },
+      "border-strong":        { "role": "neutral",   "displayName": "Structure Border",      "canonical": "#262b34", "tonalRamp": ["#07080a","#11141a","#1a1e25","#262b34","#3a414d","#525c6b","#9aa0a6","#e8eaed"] },
+      "border-bright":        { "role": "neutral",   "displayName": "Bright Border",         "canonical": "#3a414d", "tonalRamp": ["#07080a","#11141a","#1a1e25","#262b34","#3a414d","#525c6b","#9aa0a6","#e8eaed"] },
+      "fg":                   { "role": "neutral",   "displayName": "Primary Foreground",    "canonical": "#e8eaed", "tonalRamp": ["#3a3f48","#525c6b","#6b737e","#9aa0a6","#b8bfc7","#cdd2d8","#dde0e4","#e8eaed"] },
+      "fg-muted":             { "role": "neutral",   "displayName": "Muted Foreground",      "canonical": "#9aa0a6", "tonalRamp": ["#3a3f48","#525c6b","#6b737e","#9aa0a6","#b8bfc7","#cdd2d8","#dde0e4","#e8eaed"] },
+      "fg-subtle":            { "role": "neutral",   "displayName": "Subtle Foreground",     "canonical": "#525c6b", "tonalRamp": ["#3a3f48","#525c6b","#6b737e","#9aa0a6","#b8bfc7","#cdd2d8","#dde0e4","#e8eaed"] },
+      "alert-electric":       { "role": "primary",   "displayName": "Alert Electric",        "canonical": "#3f8cff", "tonalRamp": ["#0a1a3a","#0f2454","#1a3a7a","#1e4d8e","#2a68c8","#3f8cff","#62a0ff","#a8c8ff"] },
+      "alert-electric-bright":{ "role": "primary",   "displayName": "Alert Electric Bright", "canonical": "#62a0ff", "tonalRamp": ["#0a1a3a","#0f2454","#1a3a7a","#1e4d8e","#2a68c8","#3f8cff","#62a0ff","#a8c8ff"] },
+      "alert-electric-dim":   { "role": "primary",   "displayName": "Alert Electric Dim",    "canonical": "#1e4d8e", "tonalRamp": ["#0a1a3a","#0f2454","#1a3a7a","#1e4d8e","#2a68c8","#3f8cff","#62a0ff","#a8c8ff"] },
+      "cyan":                 { "role": "secondary", "displayName": "Info Cyan",             "canonical": "#06b6d4", "tonalRamp": ["#021a1e","#043038","#064e58","#086e7c","#0a94a4","#06b6d4","#38d0ec","#a0edf7"] },
+      "purple":               { "role": "tertiary",  "displayName": "Semantic Purple",       "canonical": "#a78bfa", "tonalRamp": ["#1a0a3a","#2e1260","#4a1e8e","#6630b8","#8a5ae0","#a78bfa","#c4b0fc","#e4dcfe"] },
+      "severity-critical":    { "role": "semantic",  "displayName": "Critical Red",          "canonical": "#ff4757", "tonalRamp": ["#2a0009","#4d0012","#7a0020","#a80030","#cc0038","#ff4757","#ff7a86","#ffb8be"] },
+      "severity-high":        { "role": "semantic",  "displayName": "High Orange",           "canonical": "#ff8800", "tonalRamp": ["#2a1400","#4d2400","#7a3c00","#a85200","#cc6a00","#ff8800","#ffae4d","#ffd9a0"] },
+      "severity-medium":      { "role": "semantic",  "displayName": "Medium Amber",          "canonical": "#ffb020", "tonalRamp": ["#2a1c00","#4d3300","#7a5200","#a87000","#cc9000","#ffb020","#ffcc70","#ffe8b8"] },
+      "severity-low":         { "role": "semantic",  "displayName": "Low Gray",              "canonical": "#525c6b", "tonalRamp": ["#1a1e25","#262b34","#3a414d","#525c6b","#6b737e","#9aa0a6","#cdd2d8","#e8eaed"] },
+      "signal-allowed":       { "role": "semantic",  "displayName": "Allow Green",           "canonical": "#22d38d", "tonalRamp": ["#02200f","#053d1e","#0a5c2e","#107a3d","#18a854","#22d38d","#5be8b0","#a8f5d8"] }
+    },
+    "typographyMeta": {
+      "display":  { "displayName": "Display",  "purpose": "Landing page hero headings only. Never used inside the dashboard." },
+      "headline": { "displayName": "Headline", "purpose": "Page titles, section headings, modal titles." },
+      "title":    { "displayName": "Title",    "purpose": "Card headings, panel titles, table column headers." },
+      "body":     { "displayName": "Body",     "purpose": "All descriptive text, finding messages, incident descriptions. 65–75ch max line length." },
+      "label":    { "displayName": "Label",    "purpose": "Section identifiers, field labels. Geist Mono uppercase. Never prose." },
+      "mono":     { "displayName": "Mono",     "purpose": "Rule IDs (TF013), file paths, commit SHAs. Geist Mono uppercase. Classifies, never narrates." }
+    },
+    "shadows": [
+      {
+        "name": "card-hover-glow",
+        "value": "0 8px 32px -8px rgba(63,140,255,0.12)",
+        "purpose": "Interactive card hover state only. Paired with border shift to rgba(63,140,255,0.25). Never on resting surfaces."
+      },
+      {
+        "name": "button-primary-bloom",
+        "value": "0 0 0 1px rgba(63,140,255,0.4), 0 8px 24px -6px rgba(63,140,255,0.4)",
+        "purpose": "Always-on ambient ring on .dg-button-primary. Communicates importance, not depth."
+      },
+      {
+        "name": "button-primary-hover-bloom",
+        "value": "0 0 20px rgba(63,140,255,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
+        "purpose": "Replaces default bloom on .dg-button-primary:hover. Brighter glow + inner highlight."
+      },
+      {
+        "name": "panel-inset",
+        "value": "0 1px 0 0 var(--dg-border) inset",
+        "purpose": "Subtle bottom-border on panel elements. Structural, 1px only."
+      }
+    ],
+    "motion": [
+      { "name": "t-fast",    "value": "120ms",                              "purpose": "Icon swaps, badge state changes." },
+      { "name": "t-base",    "value": "180ms",                              "purpose": "Default interaction transitions (button, border, background)." },
+      { "name": "t-medium",  "value": "260ms",                              "purpose": "Panel hover lift, dropdown open." },
+      { "name": "t-slow",    "value": "400ms",                              "purpose": "Bar fills, progress animations." },
+      { "name": "t-reveal",  "value": "600ms",                              "purpose": "Slide-up reveal on scroll-triggered elements." },
+      { "name": "ease-out",  "value": "cubic-bezier(0.16, 1, 0.3, 1)",     "purpose": "Default easing. Exponential out — fast start, gradual settle." },
+      { "name": "ease-in-out","value": "cubic-bezier(0.4, 0, 0.2, 1)",     "purpose": "Scan animations, continuous loops." },
+      { "name": "ease-spring","value": "cubic-bezier(0.34, 1.56, 0.64, 1)","purpose": "Micro-interactions only (logo pulse). No bounce on layout elements." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary CTA. Alert Electric background. Use for the single most important action on a surface.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M3 8h10M9 4l4 4-4 4\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>Install DriftGuard</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 6px; background: #3f8cff; color: white; font-family: Inter, ui-sans-serif, system-ui; font-size: 13px; font-weight: 500; line-height: 1; padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; box-shadow: 0 0 0 1px rgba(63,140,255,0.4), 0 8px 24px -6px rgba(63,140,255,0.4); transition: background 150ms cubic-bezier(0.16,1,0.3,1), box-shadow 150ms cubic-bezier(0.16,1,0.3,1), transform 80ms cubic-bezier(0.16,1,0.3,1); position: relative; overflow: hidden; white-space: nowrap; } .ds-btn-primary:hover { background: #62a0ff; box-shadow: 0 0 20px rgba(63,140,255,0.3), inset 0 1px 0 rgba(255,255,255,0.12); } .ds-btn-primary:active { transform: scale(0.97); transition-duration: 80ms; } .ds-btn-primary:focus-visible { outline: 2px solid #3f8cff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action. Transparent background with structural border. Appears alongside or below primary.",
+      "html": "<button class=\"ds-btn-ghost\">View findings</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: #e8eaed; font-family: Inter, ui-sans-serif, system-ui; font-size: 13px; font-weight: 500; line-height: 1; padding: 8px 14px; border-radius: 6px; border: 1px solid #262b34; cursor: pointer; transition: border-color 150ms cubic-bezier(0.16,1,0.3,1), background 150ms cubic-bezier(0.16,1,0.3,1), transform 80ms; white-space: nowrap; } .ds-btn-ghost:hover { border-color: #3a414d; background: #0c0e12; } .ds-btn-ghost:active { transform: scale(0.97); transition-duration: 80ms; } .ds-btn-ghost:focus-visible { outline: 2px solid #3f8cff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Base container. Terminal Surface background with Grid Line border. Used for all dashboard cards.",
+      "html": "<div class=\"ds-panel\"><div class=\"ds-panel-label\">LAST ANALYSIS</div><div class=\"ds-panel-value\">2 minutes ago</div><div class=\"ds-panel-meta\">UP2CLOUD/driftguard-test-iac · PR #4</div></div>",
+      "css": ".ds-panel { background: #0c0e12; border: 1px solid #1a1e25; border-radius: 4px; padding: 16px; font-family: Inter, ui-sans-serif, system-ui; color: #e8eaed; transition: border-color 180ms cubic-bezier(0.16,1,0.3,1), box-shadow 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1); } .ds-panel:hover { transform: translateY(-2px); box-shadow: 0 8px 32px -8px rgba(63,140,255,0.12); border-color: rgba(63,140,255,0.25); } .ds-panel-label { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.18em; color: #525c6b; margin-bottom: 6px; } .ds-panel-value { font-size: 15px; font-weight: 500; color: #e8eaed; margin-bottom: 4px; } .ds-panel-meta { font-size: 12px; color: #9aa0a6; }"
+    },
+    {
+      "name": "Severity Badges",
+      "kind": "chip",
+      "refersTo": "severity-badge-critical",
+      "description": "Finding classification. Tinted background (15% opacity severity color), full-opacity text. Four states: critical / high / medium / low.",
+      "html": "<div class=\"ds-badges-demo\"><span class=\"ds-badge ds-badge-critical\">CRITICAL</span><span class=\"ds-badge ds-badge-high\">HIGH</span><span class=\"ds-badge ds-badge-medium\">MEDIUM</span><span class=\"ds-badge ds-badge-low\">LOW</span></div>",
+      "css": ".ds-badges-demo { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; } .ds-badge { display: inline-flex; align-items: center; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; padding: 2px 6px; border-radius: 2px; line-height: 1.5; white-space: nowrap; } .ds-badge-critical { background: rgba(255,71,87,0.15); color: #ff4757; } .ds-badge-high { background: rgba(255,136,0,0.15); color: #ff8800; } .ds-badge-medium { background: rgba(255,176,32,0.15); color: #ffb020; } .ds-badge-low { background: rgba(82,92,107,0.25); color: #9aa0a6; }"
+    },
+    {
+      "name": "Finding Row",
+      "kind": "custom",
+      "refersTo": "panel",
+      "description": "Signature component. Dense data row: badge | rule-id | message | file:line. The most-read component in the dashboard.",
+      "html": "<div class=\"ds-findings\"><div class=\"ds-finding-row\"><span class=\"ds-badge ds-badge-critical\">CRITICAL</span><span class=\"ds-rule-id\">TF013</span><span class=\"ds-finding-msg\">S3 bucket has public ACL — allows unrestricted read access</span><span class=\"ds-file-ref\">main.tf:12</span></div><div class=\"ds-finding-row\"><span class=\"ds-badge ds-badge-high\">HIGH</span><span class=\"ds-rule-id\">GHA001</span><span class=\"ds-finding-msg\">Unpinned action ref — use commit SHA instead of branch tag</span><span class=\"ds-file-ref\">.github/workflows/ci.yml:18</span></div><div class=\"ds-finding-row\"><span class=\"ds-badge ds-badge-medium\">MEDIUM</span><span class=\"ds-rule-id\">K8S002</span><span class=\"ds-finding-msg\">Container missing CPU and memory resource limits</span><span class=\"ds-file-ref\">k8s/deployment.yaml:34</span></div></div>",
+      "css": ".ds-findings { background: #0c0e12; border: 1px solid #1a1e25; border-radius: 4px; overflow: hidden; font-family: Inter, ui-sans-serif, system-ui; } .ds-finding-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid #1a1e25; transition: background 120ms linear; } .ds-finding-row:last-child { border-bottom: none; } .ds-finding-row:hover { background: #11141a; } .ds-badge { display: inline-flex; align-items: center; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; padding: 2px 6px; border-radius: 2px; line-height: 1.5; white-space: nowrap; flex-shrink: 0; } .ds-badge-critical { background: rgba(255,71,87,0.15); color: #ff4757; } .ds-badge-high { background: rgba(255,136,0,0.15); color: #ff8800; } .ds-badge-medium { background: rgba(255,176,32,0.15); color: #ffb020; } .ds-rule-id { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: #525c6b; white-space: nowrap; flex-shrink: 0; min-width: 48px; } .ds-finding-msg { font-size: 13px; color: #e8eaed; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-file-ref { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: #525c6b; white-space: nowrap; flex-shrink: 0; }"
+    },
+    {
+      "name": "Mono Label",
+      "kind": "chip",
+      "refersTo": "panel",
+      "description": "Operational classifier. Geist Mono uppercase. Never prose — only rule codes, status identifiers, field labels.",
+      "html": "<div class=\"ds-mono-demo\"><span class=\"ds-mono-label\">ANALYSIS STATUS</span><span class=\"ds-mono-label\">TF013</span><span class=\"ds-mono-label\">main.tf:12</span></div>",
+      "css": ".ds-mono-demo { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; background: #0c0e12; padding: 16px; border-radius: 4px; } .ds-mono-label { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.18em; color: #525c6b; white-space: nowrap; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Zero-Noise Terminal",
+    "overview": "DriftGuard is a tool that speaks like a senior engineer: no noise, high signal. Every pixel earns its place by reducing time-to-decision. The visual system is built from the terminal outward — a near-void canvas, surfaces that stack in tonal layers, and a single electric accent that fires only when something needs attention. When the accent appears, it is the finding. When the surface is dark and still, the system is waiting.\n\nTypography is information-first: Inter at tight weights for structure, Geist Mono in uppercase for operational labels (rule IDs, severity codes, file paths). The monospace layer is the second voice of the system — it never decorates, it classifies. Density is a feature.\n\nThis system explicitly rejects the compliance-portal aesthetic: stiff data tables, navy/corporate palettes, copy written for auditors rather than engineers. DriftGuard is a live operational instrument, not a report generator.",
+    "keyCharacteristics": [
+      "Dark-native: calibrated for terminal environments, not retrofitted from a light theme",
+      "Tonal depth: five surface layers with no shadows as structure",
+      "Electric accent as operational signal: appears on active states, primary actions, and live indicators only",
+      "Severity palette as a second signal system: critical/high/medium/low each carry their own unmistakable hue",
+      "Mono labels as a classification layer: uppercase Geist Mono at 10–11px for rule IDs, statuses, file references",
+      "Motion is sparse and purposeful: slide-up reveals, glow pulses, scan animations — never decorative"
+    ],
+    "rules": [
+      { "name": "The One Voice Rule",          "body": "Alert Electric is used on ≤10% of any given screen surface. It signals action and live state. If everything is electric, nothing is.",                                                              "section": "colors" },
+      { "name": "The Severity Exclusivity Rule","body": "Severity colors appear only on severity badges, finding rows, and severity-scoped charts. Never repurposed as decorative accents, hover states, or branding elements.",              "section": "colors" },
+      { "name": "The Mono Classification Rule", "body": "Geist Mono in uppercase never carries prose. It identifies: rule codes, file references, severity levels, timestamps. If it would read as a sentence, it is wrong.",               "section": "typography" },
+      { "name": "The Base-14 Rule",             "body": "Body text is 14px minimum. 12px appears only in secondary mono labels where uppercase and tracking compensate for reduced size.",                                                 "section": "typography" },
+      { "name": "The Flat-By-Default Rule",     "body": "Shadows appear only as state responses (hover, active) or as importance signals (primary button). A surface at rest casts no shadow. Use a tonal layer instead.",               "section": "elevation" }
+    ],
+    "dos": [
+      "Do use Alert Electric exclusively for actionable and live-state signals. Its rarity is its meaning.",
+      "Do use Geist Mono uppercase for all machine-readable identifiers: rule IDs, file paths, commit SHAs, severity codes.",
+      "Do express depth through tonal surface layers. When you need 'deeper', use surface-raised; when you need 'floating', use overlay + blur.",
+      "Do use severity colors only in their designated role: findings, badges, severity-scoped charts.",
+      "Do keep finding row hover state as a background transition only — dense data tables do not lift physically on hover.",
+      "Do include prefers-reduced-motion fallbacks for every animation.",
+      "Do size primary buttons at 13px font-weight 500 with px-3.5 py-2.",
+      "Do use text-wrap: balance on headings and text-wrap: pretty on multi-line body paragraphs."
+    ],
+    "donts": [
+      "Don't use the compliance-portal aesthetic: no navy/corporate palette, no stiff audit-table layouts, no copy written for regulators.",
+      "Don't use gradient text (background-clip: text with a gradient). Severity and status are communicated through solid color.",
+      "Don't add structural box-shadows to resting surfaces. Shadows are state-only or importance-only.",
+      "Don't use border-left greater than 1px as a colored stripe on cards or list items.",
+      "Don't put glassmorphism on anything except the nav-transition overlay and modals.",
+      "Don't use chart overload. Surface the 3–5 metrics that change a decision.",
+      "Don't use eyebrows (small uppercase tracked text) as default section scaffolding inside the app.",
+      "Don't soften severity. Critical findings are #ff4757. They are not amber. They are not orange.",
+      "Don't use Alert Electric on decorative or ambient elements. It signals action. Dilution destroys the signal."
+    ]
+  }
+}
