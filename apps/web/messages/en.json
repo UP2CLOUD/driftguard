@@ -1226,9 +1226,9 @@
     }
   },
   "customers": {
-    "eyebrow": "Customers",
-    "title": "Trusted by platform engineers",
-    "subtitle": "Teams using DriftGuard to govern AI-written and human-written Terraform at scale.",
+    "eyebrow": "Use cases",
+    "title": "Built for AI-authored infrastructure",
+    "subtitle": "How teams put DriftGuard between their Terraform — human- or agent-written — and production.",
     "yourTeam": "Your team next",
     "ctaTitle": "Start reviewing PRs in 30 seconds",
     "ctaBody": "No credit card. No infra changes. Works with any Terraform or OpenTofu repo on GitHub.",
@@ -1241,7 +1241,9 @@
     "meta": {
       "title": "Customers — DriftGuard",
       "description": "Teams using DriftGuard to govern AI-generated infrastructure code."
-    }
+    },
+    "earlyAccessNote": "DriftGuard is in early access. The scenarios below are illustrative examples of what it reviews on a pull request — not customer testimonials or performance guarantees.",
+    "scenariosLabel": "Example reviews"
   },
   "careers": {
     "eyebrow": "Careers",

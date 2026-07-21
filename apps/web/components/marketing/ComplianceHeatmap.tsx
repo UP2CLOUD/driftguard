@@ -1,74 +1,73 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 
-const CONTROLS = [
-  "SOC2-CC6.1", "SOC2-CC6.8", "DORA-Art.9", "NIS2-Art.21",
-  "ISO-27001-A.9", "HIPAA-164.312", "PCI-DSS-1.2", "GDPR-Art.32"
+// Illustrative mapping of the checks DriftGuard runs on a Terraform/OpenTofu PR
+// to the control families of the frameworks it supports. Deterministic — this
+// is an example of coverage, not live tenant data.
+const FRAMEWORKS = ["DORA", "NIS2", "ISO 27001", "SOC 2"];
+const CHECKS = ["Security", "Cost", "Drift", "IAM", "Encryption", "Network"];
+
+// coverage: 2 = evidence emitted, 1 = partial / advisory, 0 = not applicable
+const COVERAGE: Record<string, number[]> = {
+  Security:   [2, 2, 2, 2],
+  Cost:       [1, 0, 1, 1],
+  Drift:      [2, 2, 2, 1],
+  IAM:        [2, 2, 2, 2],
+  Encryption: [1, 2, 2, 2],
+  Network:    [2, 2, 1, 1],
+};
+
+const CELL = [
+  "bg-[color:var(--dg-surface-raised)] border border-[color:var(--dg-border)]",       // 0
+  "bg-[color:var(--dg-warned)]/15 border border-[color:var(--dg-warned)]/50",          // 1
+  "bg-[color:var(--dg-allowed)]/15 border border-[color:var(--dg-allowed)]/50",        // 2
 ];
 
-const SECTORS = ["FinServ", "Health", "Gov", "Retail", "Tech", "Energy"];
-
-function generateHeatmapData() {
-  return SECTORS.map(() => 
-    CONTROLS.map(() => Math.random() > 0.7 ? "blocked" : Math.random() > 0.4 ? "warned" : "allowed")
-  );
-}
-
 export function ComplianceHeatmap() {
-  const [data, setData] = useState<string[][]>([]);
-
-  useEffect(() => {
-    setData(generateHeatmapData());
-    const interval = setInterval(() => {
-      setData(generateHeatmapData());
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
+  const reduceMotion = useReducedMotion();
 
   return (
     <div className="w-full max-w-6xl mx-auto px-6 py-24">
       <div className="mb-12 text-center">
         <h2 className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] mb-4">
-          Continuous Compliance
+          Continuous compliance
         </h2>
-        <h3 className="text-3xl font-medium text-white mb-4">Automated Framework Mapping</h3>
+        <h3 className="text-3xl font-medium text-white mb-4">Evidence on every pull request</h3>
         <p className="text-[color:var(--dg-fg-muted)] max-w-2xl mx-auto">
-          Every runtime action is instantly mapped to major compliance frameworks. Generate auditor-ready evidence automatically as DriftGuard enforces policies across your autonomous fleet.
+          Each analysis DriftGuard runs on a Terraform or OpenTofu change emits control evidence,
+          so DORA, NIS2, ISO 27001 and SOC 2 audit trails are a by-product of normal review — not a
+          separate spreadsheet exercise.
         </p>
       </div>
 
       <div className="overflow-x-auto">
-        <div className="min-w-[800px] border border-[color:var(--dg-border-strong)] rounded-lg bg-[color:var(--dg-surface)] p-6">
-          <div className="flex mb-4">
-            <div className="w-24"></div>
-            {CONTROLS.map(c => (
-              <div key={c} className="flex-1 font-mono text-[10px] text-[color:var(--dg-fg-subtle)] uppercase text-center -rotate-45 transform origin-bottom-left ml-4">
-                {c}
+        <div className="min-w-[640px] border border-[color:var(--dg-border-strong)] rounded-lg bg-[color:var(--dg-surface)] p-6">
+          {/* Column headers */}
+          <div className="flex items-end gap-2 pl-28 mb-3">
+            {FRAMEWORKS.map((f) => (
+              <div key={f} className="flex-1 text-center font-mono text-[11px] uppercase tracking-wider text-[color:var(--dg-fg-subtle)]">
+                {f}
               </div>
             ))}
           </div>
-          
+
           <div className="space-y-2">
-            {SECTORS.map((sector, i) => (
-              <div key={sector} className="flex items-center gap-4">
-                <div className="w-24 font-mono text-[11px] text-[color:var(--dg-fg-muted)] uppercase text-right">
-                  {sector}
+            {CHECKS.map((check, i) => (
+              <div key={check} className="flex items-center gap-2">
+                <div className="w-28 shrink-0 font-mono text-[11px] uppercase text-right text-[color:var(--dg-fg-muted)]">
+                  {check}
                 </div>
-                <div className="flex-1 flex gap-2">
-                  {data[i]?.map((status, j) => (
+                <div className="flex flex-1 gap-2">
+                  {COVERAGE[check].map((level, j) => (
                     <motion.div
                       key={j}
-                      layout
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.5, delay: j * 0.05 }}
-                      className={`h-8 flex-1 rounded ${
-                        status === 'blocked' ? 'bg-[color:var(--dg-blocked)]/20 border border-[color:var(--dg-blocked)]' :
-                        status === 'warned' ? 'bg-[color:var(--dg-warned)]/20 border border-[color:var(--dg-warned)]' :
-                        'bg-[color:var(--dg-allowed)]/10 border border-[color:var(--dg-allowed)]/30'
-                      }`}
+                      initial={reduceMotion ? false : { opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.3, delay: (i * FRAMEWORKS.length + j) * 0.02 }}
+                      className={`h-8 flex-1 rounded ${CELL[level]}`}
+                      aria-label={`${check} × ${FRAMEWORKS[j]}: ${["not applicable", "partial", "evidence"][level]}`}
                     />
                   ))}
                 </div>
@@ -76,10 +75,11 @@ export function ComplianceHeatmap() {
             ))}
           </div>
 
-          <div className="mt-8 flex items-center justify-center gap-8 font-mono text-[10px] text-[color:var(--dg-fg-subtle)] uppercase">
-            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-[color:var(--dg-allowed)]/10 border border-[color:var(--dg-allowed)]/30"></span> Compliant</div>
-            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-[color:var(--dg-warned)]/20 border border-[color:var(--dg-warned)]"></span> Warned</div>
-            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-[color:var(--dg-blocked)]/20 border border-[color:var(--dg-blocked)]"></span> Blocked & Logged</div>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 font-mono text-[10px] text-[color:var(--dg-fg-subtle)] uppercase">
+            <div className="flex items-center gap-2"><span className={`w-3 h-3 rounded ${CELL[2]}`} /> Evidence emitted</div>
+            <div className="flex items-center gap-2"><span className={`w-3 h-3 rounded ${CELL[1]}`} /> Partial / advisory</div>
+            <div className="flex items-center gap-2"><span className={`w-3 h-3 rounded ${CELL[0]}`} /> Not applicable</div>
+            <span className="opacity-60">Illustrative coverage</span>
           </div>
         </div>
       </div>

@@ -37,7 +37,7 @@ export default async function LoginPage() {
           <span className="font-mono text-[15px] font-medium tracking-[0.2em] text-white flex flex-col leading-none">
             DRIFTGUARD
             <span className="text-[8px] text-[color:var(--dg-fg-subtle)] tracking-widest mt-1">
-              RUNTIME_LAYER
+              RUNTIME SAFETY
             </span>
           </span>
         </Link>

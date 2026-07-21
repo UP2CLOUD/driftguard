@@ -1196,9 +1196,9 @@
     }
   },
   "customers": {
-    "eyebrow": "客户",
-    "title": "受平台工程师信赖",
-    "subtitle": "使用 DriftGuard 管理 AI 和人类编写的 Terraform 的团队。",
+    "eyebrow": "使用场景",
+    "title": "为 AI 编写的基础设施而构建",
+    "subtitle": "团队如何将 DriftGuard 置于其 Terraform（由人类或代理编写）与生产环境之间。",
     "yourTeam": "您的团队是下一个",
     "ctaTitle": "30秒内开始审查 PR",
     "ctaBody": "无需信用卡，无需更改基础设施，适用于 GitHub 上任何 Terraform 或 OpenTofu 仓库。",
@@ -1211,7 +1211,9 @@
     "meta": {
       "title": "客户 — DriftGuard",
       "description": "使用 DriftGuard 管理 AI 生成基础设施代码的团队。"
-    }
+    },
+    "earlyAccessNote": "DriftGuard 处于早期访问阶段。以下场景是其在拉取请求上审查内容的示例说明，并非客户评价或性能保证。",
+    "scenariosLabel": "审查示例"
   },
   "careers": {
     "eyebrow": "职业机会",

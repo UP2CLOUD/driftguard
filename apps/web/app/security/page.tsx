@@ -14,7 +14,7 @@ const CONTROLS: { key: string; value: string }[] = [
   { key: "auth",              value: "GitHub OAuth 2.0 + JWT (RS256)" },
   { key: "secrets",           value: "GCP Secret Manager — never in env or source" },
   { key: "dataResid",         value: "EU-WEST-1 + EU-CENTRAL-1 (Frankfurt, Eemshaven)" },
-  { key: "auditLog",          value: "Append-only, cryptographically signed events" },
+  { key: "auditLog",          value: "Append-only, tamper-evident event log" },
   { key: "webhookVerif",      value: "HMAC-SHA256 (GitHub X-Hub-Signature-256)" },
   { key: "awsCreds",          value: "STS AssumeRole only — no long-lived keys stored" },
   { key: "depScan",           value: "Dependabot + Snyk on every PR" },

@@ -108,26 +108,29 @@ export function RuntimeArchitectureMap() {
     <div className="w-full max-w-7xl mx-auto px-6 py-24 flex flex-col lg:flex-row items-center gap-12">
       <div className="flex-1 w-full">
         <h2 className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] mb-4">
-          Runtime Digital Twin
+          Architecture
         </h2>
         <h3 className="text-4xl font-medium text-white mb-6 leading-tight">
-          Live Governance Graph
+          Six analyses, one merge verdict
         </h3>
         <p className="text-[color:var(--dg-fg-muted)] mb-8">
-          DriftGuard constructs a real-time digital twin of your entire autonomous architecture. Watch agents authenticate, policies evaluate, and risks mitigate at sub-millisecond speeds. No static rules. Only live enforcement.
+          When a pull request opens, DriftGuard parses the Terraform or OpenTofu plan and runs its
+          analyses in parallel — cost, security, drift, and compliance — recalls related past
+          incidents from semantic memory, evaluates your policy, and posts a single allow / warn /
+          block result as a GitHub Check.
         </p>
         <ul className="space-y-4 font-mono text-[11px] text-[color:var(--dg-fg-subtle)] uppercase tracking-widest">
           <li className="flex items-center gap-3">
             <span className="w-1.5 h-1.5 bg-[color:var(--dg-electric)] rounded-full"></span>
-            Agent Lineage Tracking
+            Parallel analysis engines
           </li>
           <li className="flex items-center gap-3">
             <span className="w-1.5 h-1.5 bg-[color:var(--dg-electric)] rounded-full"></span>
-            Cross-Agent Investigation
+            Semantic incident recall
           </li>
           <li className="flex items-center gap-3">
             <span className="w-1.5 h-1.5 bg-[color:var(--dg-electric)] rounded-full"></span>
-            Drift Replay & Forensics
+            Deterministic policy gating
           </li>
         </ul>
       </div>
@@ -137,7 +140,7 @@ export function RuntimeArchitectureMap() {
         
         {/* Terminal Overlay */}
         <div className="absolute top-4 right-4 bg-black/80 backdrop-blur border border-[color:var(--dg-border)] rounded px-3 py-2 font-mono text-[10px] text-[color:var(--dg-electric-bright)] uppercase tracking-widest">
-          [ 42,019 events / sec ]
+          [ plan → analyses → policy → check ]
         </div>
       </div>
     </div>

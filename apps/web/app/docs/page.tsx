@@ -114,7 +114,7 @@ compliance:
         </div>
         <pre className="overflow-x-auto p-5 font-mono text-[12.5px] leading-relaxed text-[color:var(--dg-fg)]">{QUICKSTART}</pre>
         <div className="border-t border-[color:var(--dg-border)] px-4 py-2.5 flex items-center justify-between font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-          <span>config.driftguard.yml ▪ committed to repo</span>
+          <span>.github/driftguard.yml ▪ committed to repo</span>
           <a href={installUrl}
             className="text-[color:var(--dg-electric-bright)] hover:underline">
             ▸ install now
