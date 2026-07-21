@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
-  tier: string;            // "oss" | "team" | "enterprise" (lowercase keys from PLANS)
+  tier: "oss" | "team" | "enterprise"; // lowercase keys from PLANS
   href: string;            // fallback for non-checkout plans
   external?: boolean;
   className: string;
@@ -28,7 +28,7 @@ export function PricingCta({ tier, href, external, className, label }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   // Non-Team plans → straight link
-  if (tier.toLowerCase() !== "team") {
+  if (tier !== "team") {
     return (
       <a
         href={href}

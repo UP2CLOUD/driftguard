@@ -1,7 +1,7 @@
 "use client";
 
 import { useT } from "@/components/TranslationProvider";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { PricingCta } from "./PricingCta";
 import { getGitHubAppInstallUrl } from "@/lib/github-app";
 
@@ -26,9 +26,9 @@ export function Pricing() {
   const t = useT();
   const [annual, setAnnual] = useState(false);
 
-  const PLANS = [
+  const PLANS = useMemo(() => [
     {
-      key: "oss",
+      key: "oss" as const,
       tier: t("landing.pricing.plans.oss.tier"),
       monthlyPrice: null,
       annualPrice: null,
@@ -45,7 +45,7 @@ export function Pricing() {
       external: true,
     },
     {
-      key: "team",
+      key: "team" as const,
       tier: t("landing.pricing.plans.team.tier"),
       monthlyPrice: 29,
       annualPrice: 23,
@@ -65,7 +65,7 @@ export function Pricing() {
       badge: t("landing.pricing.plans.team.badge"),
     },
     {
-      key: "enterprise",
+      key: "enterprise" as const,
       tier: t("landing.pricing.plans.enterprise.tier"),
       monthlyPrice: null,
       annualPrice: null,
@@ -83,7 +83,7 @@ export function Pricing() {
       href: "mailto:sales@driftguard.io",
       external: true,
     },
-  ];
+  ], [t]);
 
   return (
     <section id="pricing" className="relative py-24 sm:py-32">
