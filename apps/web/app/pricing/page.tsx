@@ -1,9 +1,6 @@
 import { type Locale } from "@/i18n/config";
-import { auth } from "@/auth";
-import { SignInButton } from "@/components/SignInButton";
-import { StatusBar } from "@/components/landing/StatusBar";
-import { MarketingNav } from "@/components/landing/MarketingNav";
-import { Footer } from "@/components/landing/Footer";
+import { CommandNav } from "@/components/marketing/CommandNav";
+import { MarketingFooter } from "@/components/MarketingFooter";
 import { Pricing } from "@/components/landing/Pricing";
 import type { Metadata } from "next";
 import { localizedPageMeta, jsonLdFaq } from "@/lib/seo";
@@ -33,7 +30,6 @@ export default async function PricingPage() {
   const messages = await getMessages(locale);
   const t        = createTranslator(messages);
 
-    const session = await auth();
   const faqData = jsonLdFaq([
     { question: t("pricing.faq.q1"), answer: t("pricing.faq.a1") },
     { question: t("pricing.faq.q2"), answer: t("pricing.faq.a2") },
@@ -46,22 +42,11 @@ export default async function PricingPage() {
     <TranslationProvider messages={messages as Record<string, unknown>}>
       <>
         <JsonLd data={faqData} />
-        <StatusBar />
-        <MarketingNav
-          isLoggedIn={!!session}
-          initialPreferences={prefs}
-          cta={
-            !session ? (
-              <SignInButton className="dg-button dg-button-primary text-[12px] sm:text-[13px]">
-                {t("common.getStarted")}
-              </SignInButton>
-            ) : undefined
-          }
-        />
+        <CommandNav />
         <main className="bg-[color:var(--dg-canvas)]">
           <Pricing />
         </main>
-        <Footer />
+        <MarketingFooter />
       </>
     </TranslationProvider>
   );

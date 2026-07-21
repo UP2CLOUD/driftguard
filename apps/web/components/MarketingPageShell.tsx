@@ -1,9 +1,7 @@
-import { auth } from "@/auth";
 import { JsonLd } from "@/components/JsonLd";
 import { TranslationProvider } from "@/components/TranslationProvider";
-import { StatusBar } from "@/components/landing/StatusBar";
-import { MarketingNav } from "@/components/landing/MarketingNav";
-import { Footer } from "@/components/landing/Footer";
+import { CommandNav } from "@/components/marketing/CommandNav";
+import { MarketingFooter } from "@/components/MarketingFooter";
 import { getMessages } from "@/i18n/get-locale";
 import { getUserPreferences } from "@/lib/preferences/server";
 
@@ -22,18 +20,14 @@ export async function MarketingPageShell({
   narrow?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }) {
-  const [session, preferences] = await Promise.all([
-    auth(),
-    getUserPreferences(),
-  ]);
+  const preferences = await getUserPreferences();
   const messages = await getMessages(preferences.locale);
 
   return (
     <TranslationProvider messages={messages as Record<string, unknown>}>
       <main className="min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
         {jsonLd && <JsonLd data={jsonLd} />}
-        <StatusBar />
-        <MarketingNav isLoggedIn={!!session} initialPreferences={preferences} />
+        <CommandNav />
         <div className={`mx-auto ${narrow ? "max-w-3xl" : "max-w-[1400px]"} px-4 sm:px-6 py-12 sm:py-16`}>
           {(eyebrow || title || subtitle) && (
             <div className="mb-12 sm:mb-16 border-b border-[color:var(--dg-border)] pb-10">
@@ -57,7 +51,7 @@ export async function MarketingPageShell({
           )}
           {children}
         </div>
-        <Footer />
+        <MarketingFooter />
       </main>
     </TranslationProvider>
   );

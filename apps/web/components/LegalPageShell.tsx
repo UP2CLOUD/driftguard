@@ -1,8 +1,6 @@
-import { auth } from "@/auth";
 import { TranslationProvider } from "@/components/TranslationProvider";
-import { StatusBar } from "@/components/landing/StatusBar";
-import { MarketingNav } from "@/components/landing/MarketingNav";
-import { Footer } from "@/components/landing/Footer";
+import { CommandNav } from "@/components/marketing/CommandNav";
+import { MarketingFooter } from "@/components/MarketingFooter";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
@@ -14,15 +12,14 @@ type LegalPageShellProps = {
 };
 
 export async function LegalPageShell({ children, active }: LegalPageShellProps) {
-  const [session, preferences] = await Promise.all([auth(), getUserPreferences()]);
+  const preferences = await getUserPreferences();
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
 
   return (
     <TranslationProvider messages={messages as Record<string, unknown>}>
       <main className="min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
-        <StatusBar />
-        <MarketingNav isLoggedIn={!!session} initialPreferences={preferences} />
+        <CommandNav />
 
         <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10 sm:py-14">
           <nav
@@ -56,7 +53,7 @@ export async function LegalPageShell({ children, active }: LegalPageShellProps) 
           {children}
         </div>
 
-        <Footer />
+        <MarketingFooter />
       </main>
     </TranslationProvider>
   );
