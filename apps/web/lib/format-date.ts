@@ -14,10 +14,17 @@ function intlLocale(locale: string): string {
   return LOCALE_MAP[locale as Locale] ?? locale;
 }
 
+function parse(iso: string): Date | null {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
 export function formatDate(iso: string | null | undefined, locale: string): string {
   if (!iso) return "";
+  const d = parse(iso);
+  if (!d) return iso; // unparseable — show the raw value rather than "Invalid Date"
   try {
-    return new Date(iso).toLocaleDateString(intlLocale(locale));
+    return d.toLocaleDateString(intlLocale(locale));
   } catch {
     return iso;
   }
@@ -25,8 +32,10 @@ export function formatDate(iso: string | null | undefined, locale: string): stri
 
 export function formatDateTime(iso: string | null | undefined, locale: string): string {
   if (!iso) return "";
+  const d = parse(iso);
+  if (!d) return iso;
   try {
-    return new Date(iso).toLocaleString(intlLocale(locale));
+    return d.toLocaleString(intlLocale(locale));
   } catch {
     return iso;
   }
@@ -34,8 +43,10 @@ export function formatDateTime(iso: string | null | undefined, locale: string): 
 
 export function formatTime(iso: string | null | undefined, locale: string): string {
   if (!iso) return "";
+  const d = parse(iso);
+  if (!d) return iso;
   try {
-    return new Date(iso).toLocaleTimeString(intlLocale(locale));
+    return d.toLocaleTimeString(intlLocale(locale));
   } catch {
     return iso;
   }
