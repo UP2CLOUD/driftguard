@@ -31,8 +31,9 @@ export default async function Policies() {
       jsonLd={jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Docs", path: "/docs" }, { name: "Policy engine", path: "/docs/policies" }])}
       eyebrow={t("docs.policies.eyebrow")} title={t("docs.policies.title")} subtitle={t("docs.policies.subtitle")} narrow>
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
-        <div><h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-2">driftguard.yml config</h2>
-        <pre className="overflow-x-auto rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-4 font-mono text-[12px] text-[color:var(--dg-fg)]">{`policy:
+        <div><h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-2">.github/driftguard.yml config</h2>
+        <pre className="overflow-x-auto rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-4 font-mono text-[12px] text-[color:var(--dg-fg)]">{`# .github/driftguard.yml
+policy:
   # These patterns will BLOCK the PR (exit 1 in CI)
   block:
     - aws_rds_cluster.*.delete         # never delete prod databases
