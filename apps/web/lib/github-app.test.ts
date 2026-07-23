@@ -17,7 +17,7 @@ describe("getGitHubAppInstallUrl", () => {
   it("falls back to the default slug-based install URL", () => {
     clearEnv();
     expect(getGitHubAppInstallUrl()).toBe(
-      "https://github.com/apps/driftguard-app/installations/new",
+      "https://github.com/apps/driftguard-reviews/installations/new",
     );
   });
 

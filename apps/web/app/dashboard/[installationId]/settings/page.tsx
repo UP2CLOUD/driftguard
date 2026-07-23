@@ -106,7 +106,7 @@ export default async function Settings({
               {org ? t("settings.connected") : t("settings.notConnected")}
             </span>
           </div>
-          <Row label={t("settings.githubApp")} value={process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-app"} mono />
+          <Row label={t("settings.githubApp")} value={process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || "driftguard-reviews"} mono />
           <CopyField label={t("settings.githubInstallationRow")} value={installationId} />
           {process.env.NEXT_PUBLIC_API_URL ? (
             <CopyField
