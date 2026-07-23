@@ -121,8 +121,8 @@ services:
       AUTH_SECRET:                      ${AUTH_SECRET:-dev-nextauth-secret-change-in-production}
       AUTH_GITHUB_ID:                   ${AUTH_GITHUB_ID:-}
       AUTH_GITHUB_SECRET:               ${AUTH_GITHUB_SECRET:-}
-      NEXT_PUBLIC_GITHUB_APP_SLUG:      ${GITHUB_APP_SLUG:-driftguard-dev}
-      NEXT_PUBLIC_GITHUB_APP_INSTALL_URL: ${GITHUB_APP_INSTALL_URL:-https://github.com/apps/driftguard-dev/installations/new}
+      NEXT_PUBLIC_GITHUB_APP_SLUG:      ${GITHUB_APP_SLUG:-driftguard-reviews}
+      NEXT_PUBLIC_GITHUB_APP_INSTALL_URL: ${GITHUB_APP_INSTALL_URL:-https://github.com/apps/driftguard-reviews/installations/new}
       SECRET_KEY:                       ${SECRET_KEY:-dev-secret-key-change-in-production-!!}
 
   # ── Dev tools (optional) ────────────────────────────────────────────────────
