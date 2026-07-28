@@ -14,7 +14,12 @@ services:
 
   # ── Infrastructure ──────────────────────────────────────────────────────────
   postgres:
-    image: postgres:16-alpine
+    # pgvector/pgvector:pg16 is a drop-in postgres:16 image with the `vector`
+    # extension preinstalled — required by migration 002 (incident_embeddings).
+    # Plain postgres:16-alpine fails `alembic upgrade head` with
+    # "extension \"vector\" is not available", which blocks the api service's
+    # startup command (`alembic upgrade head && uvicorn ...`) entirely.
+    image: pgvector/pgvector:pg16
     restart: unless-stopped
     environment:
       POSTGRES_USER:     driftguard
