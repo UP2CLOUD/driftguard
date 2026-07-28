@@ -51,43 +51,39 @@ export default async function RateLimits() {
     >
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Quotas</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.rateLimits.quotasTitle")}</h2>
           <p>
-            The <a href="/docs/api" className="text-[color:var(--dg-electric-bright)] hover:underline">REST API</a> is
-            rate-limited per organization and per API key using a sliding window. Health and readiness probes
+            {t("docs.rateLimits.quotasBodyIntro")} <a href="/docs/api" className="text-[color:var(--dg-electric-bright)] hover:underline">REST API</a> {t("docs.rateLimits.quotasBodyMiddle")}
             (<code className="font-mono text-[color:var(--dg-electric-bright)]">/api/v1/health</code>,{" "}
-            <code className="font-mono text-[color:var(--dg-electric-bright)]">/api/v1/ready</code>) are exempt.
-            Webhook delivery from GitHub is not counted against your API quota.
+            <code className="font-mono text-[color:var(--dg-electric-bright)]">/api/v1/ready</code>){t("docs.rateLimits.quotasBodyOutro")}
           </p>
           <ul className="mt-3 list-disc space-y-1 pl-5">
-            <li>Default: <span className="font-mono text-[color:var(--dg-fg)]">120 requests / minute</span> per API key.</li>
-            <li>Memory recall (<code className="font-mono text-[color:var(--dg-electric-bright)]">POST /api/v1/memory/recall</code>) is metered separately as it is compute-heavy.</li>
-            <li>Limits are advisory during early access and may be adjusted — contact support to raise them.</li>
+            <li>{t("docs.rateLimits.bullet1Prefix")} <span className="font-mono text-[color:var(--dg-fg)]">{t("docs.rateLimits.bullet1Value")}</span> {t("docs.rateLimits.bullet1Suffix")}</li>
+            <li>{t("docs.rateLimits.bullet2Prefix")}<code className="font-mono text-[color:var(--dg-electric-bright)]">POST /api/v1/memory/recall</code>{t("docs.rateLimits.bullet2Suffix")}</li>
+            <li>{t("docs.rateLimits.bullet3")}</li>
           </ul>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Reading the headers</h2>
-          <p>Every response carries the current window state so you can throttle before hitting the limit:</p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.rateLimits.headersTitle")}</h2>
+          <p>{t("docs.rateLimits.headersBody")}</p>
           <div className="mt-3">
             <CodeBlock code={HEADERS} filename="response-headers.txt" />
           </div>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Handling 429s</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.rateLimits.handling429Title")}</h2>
           <p>
-            When you exceed the limit the API returns <code className="font-mono text-[color:var(--dg-electric-bright)]">429</code> with a
-            <code className="font-mono text-[color:var(--dg-electric-bright)]"> Retry-After</code> header. Wait that many seconds, then
-            retry with exponential backoff and jitter:
+            {t("docs.rateLimits.handling429BodyIntro")} <code className="font-mono text-[color:var(--dg-electric-bright)]">429</code> {t("docs.rateLimits.handling429BodyMiddle")}
+            <code className="font-mono text-[color:var(--dg-electric-bright)]"> Retry-After</code> {t("docs.rateLimits.handling429BodyOutro")}
           </p>
           <div className="mt-3">
             <CodeBlock code={THROTTLED} filename="429.txt" />
           </div>
           <p className="mt-3">
-            To request a higher quota, email{" "}
-            <a href="mailto:support@driftguard.io" className="text-[color:var(--dg-electric-bright)] hover:underline">support@driftguard.io</a> with
-            your org and expected request volume.
+            {t("docs.rateLimits.contactBodyIntro")}{" "}
+            <a href="mailto:support@driftguard.io" className="text-[color:var(--dg-electric-bright)] hover:underline">support@driftguard.io</a> {t("docs.rateLimits.contactBodyOutro")}
           </p>
         </section>
       </div>
