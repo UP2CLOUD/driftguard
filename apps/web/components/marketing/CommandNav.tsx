@@ -83,7 +83,7 @@ export function CommandNav() {
           aria-expanded={menuOpen}
           aria-controls="mobile-nav"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className="md:hidden flex flex-col items-center justify-center gap-[5px] w-9 h-9 rounded border border-[color:var(--dg-border-strong)] hover:border-[color:var(--dg-electric)]/40 transition"
+          className="md:hidden flex flex-col items-center justify-center gap-[5px] w-9 h-9 rounded border border-[color:var(--dg-border-strong)] hover:border-[color-mix(in_srgb,var(--dg-electric)_40%,transparent)] transition"
         >
           <span className={`block w-4 h-px bg-white transition-all origin-center ${menuOpen ? "rotate-45 translate-y-[6px]" : ""}`} />
           <span className={`block w-4 h-px bg-white transition-all ${menuOpen ? "opacity-0" : ""}`} />
@@ -95,7 +95,7 @@ export function CommandNav() {
       {menuOpen && (
         <div
           id="mobile-nav"
-          className="absolute top-full left-0 right-0 md:hidden border-t border-[color:var(--dg-border-strong)] bg-[color:var(--dg-canvas)]/95 backdrop-blur-md"
+          className="absolute top-full left-0 right-0 md:hidden border-t border-[color:var(--dg-border-strong)] bg-[color:var(--dg-canvas)]"
         >
           <div className="flex flex-col px-6 py-4 gap-1 font-mono text-[12px] uppercase tracking-[0.15em] text-[color:var(--dg-fg-muted)]">
             {NAV_LINKS.map((l) => (

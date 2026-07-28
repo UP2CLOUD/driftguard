@@ -1,28 +1,59 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { CheckCircle2, Minus, MinusCircle } from "lucide-react";
 
 // Illustrative mapping of the checks DriftGuard runs on a Terraform/OpenTofu PR
 // to the control families of the frameworks it supports. Deterministic — this
 // is an example of coverage, not live tenant data.
-const FRAMEWORKS = ["DORA", "NIS2", "ISO 27001", "SOC 2"];
-const CHECKS = ["Security", "Cost", "Drift", "IAM", "Encryption", "Network"];
+const FRAMEWORKS = ["DORA", "NIS2", "ISO 27001", "SOC 2"] as const;
+const CHECKS = ["Security", "Cost", "Drift", "IAM", "Encryption", "Network"] as const;
 
-// coverage: 2 = evidence emitted, 1 = partial / advisory, 0 = not applicable
-const COVERAGE: Record<string, number[]> = {
-  Security:   [2, 2, 2, 2],
-  Cost:       [1, 0, 1, 1],
-  Drift:      [2, 2, 2, 1],
-  IAM:        [2, 2, 2, 2],
-  Encryption: [1, 2, 2, 2],
-  Network:    [2, 2, 1, 1],
+type Status = "evidence" | "partial" | "na";
+
+// evidence = evidence emitted, partial = partial / advisory, na = not applicable
+const COVERAGE: Record<(typeof CHECKS)[number], Status[]> = {
+  Security:   ["evidence", "evidence", "evidence", "evidence"],
+  Cost:       ["partial",  "na",       "partial",  "partial"],
+  Drift:      ["evidence", "evidence", "evidence", "partial"],
+  IAM:        ["evidence", "evidence", "evidence", "evidence"],
+  Encryption: ["partial",  "evidence", "evidence", "evidence"],
+  Network:    ["evidence", "evidence", "partial",  "partial"],
 };
 
-const CELL = [
-  "bg-[color:var(--dg-surface-raised)] border border-[color:var(--dg-border)]",       // 0
-  "bg-[color:var(--dg-warned)]/15 border border-[color:var(--dg-warned)]/50",          // 1
-  "bg-[color:var(--dg-allowed)]/15 border border-[color:var(--dg-allowed)]/50",        // 2
-];
+const STATUS_META: Record<Status, { label: string; icon: typeof CheckCircle2; className: string }> = {
+  evidence: {
+    label: "Evidence emitted",
+    icon: CheckCircle2,
+    className:
+      "bg-[color-mix(in_srgb,var(--dg-allowed)_10%,transparent)] border-[color-mix(in_srgb,var(--dg-allowed)_40%,transparent)] text-[color:var(--dg-allowed)]",
+  },
+  partial: {
+    label: "Partial / advisory",
+    icon: MinusCircle,
+    className:
+      "bg-[color-mix(in_srgb,var(--dg-warned)_10%,transparent)] border-[color-mix(in_srgb,var(--dg-warned)_40%,transparent)] text-[color:var(--dg-warned)]",
+  },
+  na: {
+    label: "Not applicable",
+    icon: Minus,
+    className: "bg-transparent border-[color:var(--dg-border)] text-[color:var(--dg-fg-subtle)]",
+  },
+};
+
+function StatusBadge({ status }: { status: Status }) {
+  const meta = STATUS_META[status];
+  const Icon = meta.icon;
+  return (
+    <span
+      className={`inline-flex h-8 w-8 items-center justify-center rounded-md border ${meta.className}`}
+      title={meta.label}
+    >
+      <Icon className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
+      <span className="sr-only">{meta.label}</span>
+    </span>
+  );
+}
 
 export function ComplianceHeatmap() {
   const reduceMotion = useReducedMotion();
@@ -41,46 +72,84 @@ export function ComplianceHeatmap() {
         </p>
       </div>
 
-      <div className="overflow-x-auto">
-        <div className="min-w-[640px] border border-[color:var(--dg-border-strong)] rounded-lg bg-[color:var(--dg-surface)] p-6">
-          {/* Column headers */}
-          <div className="flex items-end gap-2 pl-28 mb-3">
-            {FRAMEWORKS.map((f) => (
-              <div key={f} className="flex-1 text-center font-mono text-[11px] uppercase tracking-wider text-[color:var(--dg-fg-subtle)]">
-                {f}
-              </div>
-            ))}
-          </div>
-
-          <div className="space-y-2">
-            {CHECKS.map((check, i) => (
-              <div key={check} className="flex items-center gap-2">
-                <div className="w-28 shrink-0 font-mono text-[11px] uppercase text-right text-[color:var(--dg-fg-muted)]">
-                  {check}
-                </div>
-                <div className="flex flex-1 gap-2">
-                  {COVERAGE[check].map((level, j) => (
-                    <motion.div
-                      key={j}
-                      initial={reduceMotion ? false : { opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.3, delay: (i * FRAMEWORKS.length + j) * 0.02 }}
-                      className={`h-8 flex-1 rounded ${CELL[level]}`}
-                      aria-label={`${check} × ${FRAMEWORKS[j]}: ${["not applicable", "partial", "evidence"][level]}`}
-                    />
+      <div className="relative rounded-lg border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)]">
+        {/* Horizontal scroll is intentional on narrow viewports — the first
+            column (check name) stays pinned via `sticky` so context never scrolls away.
+            The right-edge fade hints there's more to scroll. */}
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 z-20 w-10 rounded-r-lg bg-gradient-to-l from-[color:var(--dg-surface)] to-transparent sm:hidden"
+          aria-hidden="true"
+        />
+        <div className="overflow-x-auto rounded-lg [-webkit-overflow-scrolling:touch]">
+          <table className="w-full min-w-[560px] border-collapse">
+            <caption className="sr-only">
+              Evidence coverage of DriftGuard&rsquo;s pull-request checks against DORA, NIS2, ISO 27001 and SOC 2
+            </caption>
+            <thead>
+              <tr className="border-b border-[color:var(--dg-border)]">
+                <th
+                  scope="col"
+                  className="sticky left-0 z-10 bg-[color:var(--dg-surface)] px-5 py-4 text-left font-mono text-[11px] font-medium uppercase tracking-wider text-[color:var(--dg-fg-subtle)]"
+                >
+                  Check
+                </th>
+                {FRAMEWORKS.map((f) => (
+                  <th
+                    key={f}
+                    scope="col"
+                    className="px-3 py-4 text-center font-mono text-[11px] font-medium uppercase tracking-wider text-[color:var(--dg-fg-subtle)]"
+                  >
+                    {f}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {CHECKS.map((check, i) => (
+                <tr
+                  key={check}
+                  className={i > 0 ? "border-t border-[color:var(--dg-border)]" : undefined}
+                >
+                  <th
+                    scope="row"
+                    className="sticky left-0 z-10 bg-[color:var(--dg-surface)] px-5 py-3 text-left font-mono text-[12px] font-medium uppercase tracking-wide text-[color:var(--dg-fg)]"
+                  >
+                    {check}
+                  </th>
+                  {COVERAGE[check].map((status, j) => (
+                    <td key={j} className="px-3 py-2.5 text-center">
+                      <motion.span
+                        initial={reduceMotion ? false : { opacity: 0, scale: 0.85 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.25, delay: (i * FRAMEWORKS.length + j) * 0.02 }}
+                        className="inline-flex"
+                      >
+                        <StatusBadge status={status} />
+                      </motion.span>
+                    </td>
                   ))}
-                </div>
-              </div>
-            ))}
-          </div>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 font-mono text-[10px] text-[color:var(--dg-fg-subtle)] uppercase">
-            <div className="flex items-center gap-2"><span className={`w-3 h-3 rounded ${CELL[2]}`} /> Evidence emitted</div>
-            <div className="flex items-center gap-2"><span className={`w-3 h-3 rounded ${CELL[1]}`} /> Partial / advisory</div>
-            <div className="flex items-center gap-2"><span className={`w-3 h-3 rounded ${CELL[0]}`} /> Not applicable</div>
-            <span className="opacity-60">Illustrative coverage</span>
-          </div>
+        {/* Legend */}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-[color:var(--dg-border)] px-5 py-4 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+          {(Object.keys(STATUS_META) as Status[]).map((s) => {
+            const meta = STATUS_META[s];
+            const Icon = meta.icon;
+            return (
+              <div key={s} className="flex items-center gap-2">
+                <span className={`inline-flex h-5 w-5 items-center justify-center rounded border ${meta.className}`}>
+                  <Icon className="h-3 w-3" strokeWidth={2.25} aria-hidden="true" />
+                </span>
+                {meta.label}
+              </div>
+            );
+          })}
+          <span className="ml-auto opacity-60 normal-case tracking-normal">Illustrative coverage</span>
         </div>
       </div>
     </div>

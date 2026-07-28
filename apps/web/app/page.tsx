@@ -9,9 +9,11 @@ import { getGitHubAppInstallUrl } from "@/lib/github-app";
 
 import { CommandNav } from "@/components/marketing/CommandNav";
 import { HeroMissionControl } from "@/components/marketing/HeroMissionControl";
+import { TrustBar } from "@/components/marketing/TrustBar";
 import { PolicySimulatorDemo } from "@/components/marketing/PolicySimulatorDemo";
 import { RuntimeArchitectureMap } from "@/components/marketing/RuntimeArchitectureMap";
 import { ComplianceHeatmap } from "@/components/marketing/ComplianceHeatmap";
+import { PricingTeaser } from "@/components/marketing/PricingTeaser";
 
 export default async function Page() {
   const preferences = await getUserPreferences();
@@ -33,6 +35,8 @@ export default async function Page() {
             <HeroMissionControl />
           </section>
 
+          <TrustBar />
+
           <section id="demo" className="w-full border-t border-[color:var(--dg-border-strong)] bg-black/40 backdrop-blur-md">
             <PolicySimulatorDemo />
           </section>
@@ -43,6 +47,10 @@ export default async function Page() {
 
           <section id="compliance" className="w-full border-t border-[color:var(--dg-border-strong)] bg-black/40 backdrop-blur-md">
             <ComplianceHeatmap />
+          </section>
+
+          <section className="w-full border-t border-[color:var(--dg-border-strong)]">
+            <PricingTeaser />
           </section>
 
           {/* Closing CTA */}
