@@ -24,7 +24,7 @@ export default async function Page() {
       <>
         <JsonLd data={[jsonLdSoftware(), jsonLdOrg()]} />
         
-        <CommandNav />
+        <CommandNav initialPreferences={preferences} />
 
         {/* Global Particle/Network Background */}
         <div className="fixed inset-0 pointer-events-none z-[-1] dg-grid dg-grain opacity-50" />

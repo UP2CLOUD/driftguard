@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import type { UserPreferences } from "@/lib/preferences/config";
 
 // Single source of truth for the marketing nav links.
 const NAV_LINKS: { href: string; label: string }[] = [
@@ -14,7 +16,7 @@ const NAV_LINKS: { href: string; label: string }[] = [
   { href: "/docs", label: "Docs" },
 ];
 
-export function CommandNav() {
+export function CommandNav({ initialPreferences }: { initialPreferences?: UserPreferences }) {
   const { scrollY } = useScroll();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -66,6 +68,10 @@ export function CommandNav() {
       </div>
 
       <div className="flex items-center gap-3">
+        <div className="hidden sm:block">
+          <LocaleSwitcher initialPreferences={initialPreferences} compact label="Language" />
+        </div>
+
         <Link
           href="/login"
           className="group relative hidden sm:inline-flex items-center justify-center px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-white overflow-hidden rounded bg-[color:var(--dg-surface-raised)] border border-[color:var(--dg-border-strong)] hover:border-[color:var(--dg-electric)] transition-colors"
@@ -115,6 +121,13 @@ export function CommandNav() {
             >
               Sign in <span className="opacity-50">→</span>
             </Link>
+
+            <div className="mt-3 flex items-center justify-between border-t border-[color:var(--dg-border)] pt-3 normal-case tracking-normal">
+              <span className="font-sans text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+                Language
+              </span>
+              <LocaleSwitcher initialPreferences={initialPreferences} label="Language" />
+            </div>
           </div>
         </div>
       )}
