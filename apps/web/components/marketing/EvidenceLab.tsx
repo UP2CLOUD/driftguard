@@ -10,10 +10,12 @@ import {
   type EvidenceRecord,
   type VerifyResult,
 } from "@/lib/demo/evidence";
+import { useT } from "@/components/TranslationProvider";
 
 const TAMPER_INDEX = 2; // the "policy: no-public-buckets matched" check_result record
 
 function CopyableHash({ value }: { value: string }) {
+  const t = useT();
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const short = `${value.slice(0, 14)}…${value.slice(-6)}`;
@@ -41,38 +43,39 @@ function CopyableHash({ value }: { value: string }) {
       <button
         type="button"
         onClick={copy}
-        aria-label={copied ? "Copied to clipboard" : `Copy hash ${value}`}
+        aria-label={copied ? t("marketing.evidence.copyAriaCopied") : t("marketing.evidence.copyAriaCopy", { hash: value })}
         className="touch-manipulation min-h-[28px] rounded border border-[color:var(--dg-border-strong)] px-2 font-mono text-[9px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] hover:text-[color:var(--dg-fg)]"
       >
-        {copied ? "Copied" : "Copy"}
+        {copied ? t("marketing.evidence.copied") : t("marketing.evidence.copy")}
       </button>
     </span>
   );
 }
 
-function statusBadge(status: "unverified" | "ok" | "broken" | undefined) {
+function statusBadge(status: "unverified" | "ok" | "broken" | undefined, t: ReturnType<typeof useT>) {
   if (status === "ok") {
     return (
       <span className="rounded border border-[color:var(--dg-allowed)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-allowed)]">
-        ✓ intact
+        ✓ {t("marketing.evidence.statusIntact")}
       </span>
     );
   }
   if (status === "broken") {
     return (
       <span className="rounded border border-[color:var(--dg-blocked)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-blocked)]">
-        ✗ broken
+        ✗ {t("marketing.evidence.statusBroken")}
       </span>
     );
   }
   return (
     <span className="rounded border border-[color:var(--dg-border-strong)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-      not yet verified
+      {t("marketing.evidence.statusNotVerified")}
     </span>
   );
 }
 
 export function EvidenceLab() {
+  const t = useT();
   const [records, setRecords] = useState<EvidenceRecord[] | null>(null);
   const [tampered, setTampered] = useState(false);
   const [result, setResult] = useState<VerifyResult | null>(null);
@@ -126,17 +129,11 @@ export function EvidenceLab() {
     <div id="evidence" className="w-full max-w-6xl mx-auto px-6 py-24">
       <Reveal className="mb-10">
         <h2 className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] mb-4">
-          Evidence
+          {t("marketing.evidence.eyebrow")}
         </h2>
-        <h3 className="text-3xl font-medium text-white mb-4">Don&rsquo;t trust the dashboard. Verify the evidence.</h3>
+        <h3 className="text-3xl font-medium text-white mb-4">{t("marketing.evidence.title")}</h3>
         <p className="text-[color:var(--dg-fg-muted)] max-w-2xl">
-          Below is the synthetic audit trail for the blocked PR from the simulator above, in the record shape
-          documented at <code className="font-mono text-[color:var(--dg-fg)]">/docs/audit</code>: each record
-          commits to the hash of the one before it. This lab hashes every record with real SHA-256, via the{" "}
-          <span className="text-[color:var(--dg-fg)]">Web Crypto API in your browser</span> — it does not call
-          DriftGuard&rsquo;s servers and proves nothing about a live account&rsquo;s audit log. It verifies chain
-          integrity only; DriftGuard doesn&rsquo;t currently claim cryptographic signatures on these records, and
-          the export format is early access and may change.
+          {t("marketing.evidence.body")}
         </p>
       </Reveal>
 
@@ -144,7 +141,7 @@ export function EvidenceLab() {
         <div className="rounded-lg border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)]">
           <div className="flex items-center justify-between border-b border-[color:var(--dg-border)] px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
             <span>audit-record.json · acme/platform#482</span>
-            <span>{records ? `${records.length} records` : "loading…"}</span>
+            <span>{records ? t("marketing.evidence.recordsCount", { count: records.length }) : t("marketing.evidence.loadingLabel")}</span>
           </div>
           <ul>
             {(records ?? []).map((r, i) => {
@@ -165,7 +162,7 @@ export function EvidenceLab() {
                     <span className="font-mono text-[11px] font-medium uppercase tracking-wide text-white">
                       #{r.seq} · {r.event}
                     </span>
-                    {statusBadge(status)}
+                    {statusBadge(status, t)}
                   </div>
                   <dl className="grid grid-cols-1 gap-x-4 gap-y-1 font-mono text-[11px] text-[color:var(--dg-fg-muted)] sm:grid-cols-2">
                     <div>
@@ -212,20 +209,20 @@ export function EvidenceLab() {
         <div className="flex flex-col gap-4">
           <div className="rounded-lg border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-canvas)] p-5">
             <h4 className="mb-3 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-              Verification
+              {t("marketing.evidence.verificationHeader")}
             </h4>
             <ol className="mb-4 space-y-1.5 font-mono text-[11px] text-[color:var(--dg-fg-muted)]">
-              <li>1. Manifest loaded — {records ? records.length : 0} records</li>
-              <li>2. Each record re-hashed with SHA-256 in your browser</li>
-              <li>3. Hash compared against the record&rsquo;s stored value</li>
-              <li>4. prev_hash continuity checked against the prior record</li>
+              <li>1. {t("marketing.evidence.step1", { count: records ? records.length : 0 })}</li>
+              <li>2. {t("marketing.evidence.step2")}</li>
+              <li>3. {t("marketing.evidence.step3")}</li>
+              <li>4. {t("marketing.evidence.step4")}</li>
               <li>
-                5. Result:{" "}
+                5. {t("marketing.evidence.resultLabel")}{" "}
                 {!result
-                  ? "not yet run"
+                  ? t("marketing.evidence.resultNotRun")
                   : result.ok
-                    ? "chain intact"
-                    : `broken at #${result.firstFailureSeq}`}
+                    ? t("marketing.evidence.resultIntact")
+                    : t("marketing.evidence.resultBroken", { seq: result.firstFailureSeq ?? 0 })}
               </li>
             </ol>
 
@@ -236,7 +233,7 @@ export function EvidenceLab() {
                 disabled={!records || verifying}
                 className="touch-manipulation min-h-[44px] rounded bg-[color:var(--dg-electric)] px-4 font-mono text-[11px] uppercase tracking-widest text-white transition-colors hover:bg-[color:var(--dg-electric-bright)] active:scale-[0.97] disabled:opacity-50"
               >
-                {verifying ? "Verifying…" : "Verify evidence"}
+                {verifying ? t("marketing.evidence.btnVerifying") : t("marketing.evidence.btnVerify")}
               </button>
               <button
                 type="button"
@@ -244,7 +241,7 @@ export function EvidenceLab() {
                 disabled={!records || tampered}
                 className="touch-manipulation min-h-[44px] rounded border border-[color:var(--dg-border-strong)] px-4 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg)] transition-colors hover:bg-[color:var(--dg-surface-raised)] active:scale-[0.97] disabled:opacity-50"
               >
-                Modify one byte
+                {t("marketing.evidence.btnTamper")}
               </button>
               <button
                 type="button"
@@ -252,7 +249,7 @@ export function EvidenceLab() {
                 disabled={!tampered}
                 className="touch-manipulation min-h-[44px] rounded border border-[color:var(--dg-border-strong)] px-4 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg)] transition-colors hover:bg-[color:var(--dg-surface-raised)] active:scale-[0.97] disabled:opacity-50"
               >
-                Restore original
+                {t("marketing.evidence.btnRestore")}
               </button>
             </div>
           </div>
@@ -260,15 +257,15 @@ export function EvidenceLab() {
           <div aria-live="polite" className="sr-only">
             {result
               ? result.ok
-                ? "Verification result: hash chain intact, all records trusted."
-                : `Verification result: chain integrity broken starting at record ${result.firstFailureSeq}.`
+                ? t("marketing.evidence.srVerifyOk")
+                : t("marketing.evidence.srVerifyBroken", { seq: result.firstFailureSeq ?? 0 })
               : ""}
           </div>
 
           {result && !result.ok && (
             <div className="rounded-lg border border-[color:var(--dg-blocked)] bg-[color-mix(in_srgb,var(--dg-blocked)_8%,transparent)] p-5">
               <h4 className="mb-2 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-blocked)]">
-                First failing entry: #{result.firstFailureSeq}
+                {t("marketing.evidence.firstFailingEntry", { seq: result.firstFailureSeq ?? 0 })}
               </h4>
               {(() => {
                 const step = result.steps.find((s) => s.seq === result.firstFailureSeq);
@@ -276,20 +273,18 @@ export function EvidenceLab() {
                 return (
                   <dl className="space-y-2 font-mono text-[11px] text-[color:var(--dg-fg-muted)]">
                     <div>
-                      <dt className="text-[color:var(--dg-fg-subtle)]">expected hash (stored):</dt>
+                      <dt className="text-[color:var(--dg-fg-subtle)]">{t("marketing.evidence.expectedHash")}</dt>
                       <dd className="break-all">{step.expectedHash}</dd>
                     </div>
                     <div>
-                      <dt className="text-[color:var(--dg-fg-subtle)]">calculated hash (from current content):</dt>
+                      <dt className="text-[color:var(--dg-fg-subtle)]">{t("marketing.evidence.calculatedHash")}</dt>
                       <dd className="break-all text-[color:var(--dg-blocked)]">{step.calculatedHash}</dd>
                     </div>
                   </dl>
                 );
               })()}
               <p className="mt-3 text-[11px] text-[color:var(--dg-fg-muted)]">
-                Every record from #{result.firstFailureSeq} onward can no longer be trusted — even though their own
-                stored hashes are untouched, they&rsquo;re chained to a record whose content no longer matches what
-                was sealed.
+                {t("marketing.evidence.brokenExplain", { seq: result.firstFailureSeq ?? 0 })}
               </p>
             </div>
           )}
@@ -297,8 +292,7 @@ export function EvidenceLab() {
           {result?.ok && (
             <div className="rounded-lg border border-[color:var(--dg-allowed)] bg-[color-mix(in_srgb,var(--dg-allowed)_8%,transparent)] p-5">
               <p className="font-mono text-[11px] text-[color:var(--dg-allowed)]">
-                ✓ All {result.steps.length} records re-hashed and chained correctly. Nothing in this trail has been
-                altered since it was recorded.
+                {t("marketing.evidence.allOk", { count: result.steps.length })}
               </p>
             </div>
           )}

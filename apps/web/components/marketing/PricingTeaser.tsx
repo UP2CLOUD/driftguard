@@ -1,40 +1,45 @@
+"use client";
+
 import Link from "next/link";
 import { Reveal } from "./Reveal";
 import { STAGGER } from "@/lib/motion/tokens";
-
-// Kept in sync with components/landing/Pricing.tsx (the full pricing page).
-// This is a lightweight teaser, not a duplicate of the real plan logic.
-const PLANS = [
-  {
-    tier: "OSS",
-    price: "Free forever",
-    desc: "Self-host the analyzer. Community policies, 1 repo.",
-    highlighted: false,
-  },
-  {
-    tier: "Team",
-    price: "€29 /repo/mo",
-    desc: "Unlimited PR analyses, semantic memory, policy bundles.",
-    highlighted: true,
-  },
-  {
-    tier: "Enterprise",
-    price: "Custom",
-    desc: "Self-hosted, air-gapped, SSO/SCIM, dedicated SLA.",
-    highlighted: false,
-  },
-];
+import { useT } from "@/components/TranslationProvider";
 
 export function PricingTeaser() {
+  const t = useT();
+
+  // Kept in sync with components/landing/Pricing.tsx (the full pricing page).
+  // This is a lightweight teaser, not a duplicate of the real plan logic.
+  const PLANS = [
+    {
+      tier: t("landing.pricing.plans.oss.tier"),
+      price: t("landing.pricing.plans.oss.freeLabel"),
+      desc: t("marketing.pricingTeaser.ossDesc"),
+      highlighted: false,
+    },
+    {
+      tier: t("landing.pricing.plans.team.tier"),
+      price: `€29 ${t("landing.pricing.perRepoMo")}`,
+      desc: t("marketing.pricingTeaser.teamDesc"),
+      highlighted: true,
+    },
+    {
+      tier: t("landing.pricing.plans.enterprise.tier"),
+      price: t("landing.pricing.plans.enterprise.freeLabel"),
+      desc: t("marketing.pricingTeaser.enterpriseDesc"),
+      highlighted: false,
+    },
+  ];
+
   return (
     <div className="w-full max-w-6xl mx-auto px-6 py-24">
       <Reveal className="mb-12 text-center">
         <h2 className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] mb-4">
-          Pricing
+          {t("landing.pricing.eyebrow")}
         </h2>
-        <h3 className="text-3xl font-medium text-white mb-4">Start free, scale with your fleet</h3>
+        <h3 className="text-3xl font-medium text-white mb-4">{t("marketing.pricingTeaser.title")}</h3>
         <p className="text-[color:var(--dg-fg-muted)] max-w-2xl mx-auto">
-          Every plan includes cost, security, drift, and compliance checks on every pull request.
+          {t("marketing.pricingTeaser.subtitle")}
         </p>
       </Reveal>
 
@@ -63,7 +68,7 @@ export function PricingTeaser() {
           href="/pricing"
           className="inline-flex min-h-[44px] items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] transition-colors hover:text-white active:text-white"
         >
-          See full pricing &amp; feature comparison →
+          {t("marketing.pricingTeaser.ctaLink")}
         </Link>
       </div>
     </div>

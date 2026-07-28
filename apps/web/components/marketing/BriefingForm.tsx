@@ -3,21 +3,25 @@
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { Reveal } from "./Reveal";
+import { useT } from "@/components/TranslationProvider";
 
+// The submitted `value` stays a stable English string (sent to /api/briefing
+// and stored downstream) regardless of locale — only the displayed label
+// is translated.
 const ROLES = [
-  "CISO / Security leader",
-  "Platform / DevOps engineer",
-  "Compliance / Risk / Audit",
-  "Engineering leadership",
-  "Other",
+  { value: "CISO / Security leader", labelKey: "marketing.briefing.role1" },
+  { value: "Platform / DevOps engineer", labelKey: "marketing.briefing.role2" },
+  { value: "Compliance / Risk / Audit", labelKey: "marketing.briefing.role3" },
+  { value: "Engineering leadership", labelKey: "marketing.briefing.role4" },
+  { value: "Other", labelKey: "marketing.briefing.roleOther" },
 ] as const;
 
 const USE_CASES = [
-  "Terraform / OpenTofu PR review",
-  "Compliance evidence (DORA / NIS2 / ISO 27001)",
-  "Cost governance",
-  "Kubernetes / GitHub Actions review",
-  "Other",
+  { value: "Terraform / OpenTofu PR review", labelKey: "marketing.briefing.useCase1" },
+  { value: "Compliance evidence (DORA / NIS2 / ISO 27001)", labelKey: "marketing.briefing.useCase2" },
+  { value: "Cost governance", labelKey: "marketing.briefing.useCase3" },
+  { value: "Kubernetes / GitHub Actions review", labelKey: "marketing.briefing.useCase4" },
+  { value: "Other", labelKey: "marketing.briefing.useCaseOther" },
 ] as const;
 
 type Status = "idle" | "loading" | "success" | "error";
@@ -44,14 +48,14 @@ const INITIAL: FormState = {
   website: "",
 };
 
-function validate(form: FormState): Record<string, string> {
+function validate(form: FormState, t: ReturnType<typeof useT>): Record<string, string> {
   const errors: Record<string, string> = {};
-  if (!form.name.trim()) errors.name = "Enter your full name.";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = "Enter a valid work email.";
-  if (!form.company.trim()) errors.company = "Enter your company name.";
-  if (!form.role) errors.role = "Select a role.";
-  if (!form.useCase) errors.useCase = "Select a primary use case.";
-  if (!form.acknowledged) errors.acknowledged = "Acknowledge the privacy notice to continue.";
+  if (!form.name.trim()) errors.name = t("marketing.briefing.errorName");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = t("marketing.briefing.errorEmail");
+  if (!form.company.trim()) errors.company = t("marketing.briefing.errorCompany");
+  if (!form.role) errors.role = t("marketing.briefing.errorRole");
+  if (!form.useCase) errors.useCase = t("marketing.briefing.errorUseCase");
+  if (!form.acknowledged) errors.acknowledged = t("marketing.briefing.errorAck");
   return errors;
 }
 
@@ -61,6 +65,7 @@ const LABEL_CLASS = "mb-1.5 block font-mono text-[10px] uppercase tracking-wides
 const ERROR_CLASS = "mt-1 text-[11px] text-[color:var(--dg-blocked)]";
 
 export function BriefingForm() {
+  const t = useT();
   const [form, setForm] = useState<FormState>(INITIAL);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<Status>("idle");
@@ -75,7 +80,7 @@ export function BriefingForm() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const nextErrors = validate(form);
+    const nextErrors = validate(form, t);
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) {
@@ -110,12 +115,12 @@ export function BriefingForm() {
       setStatus("error");
       setServerError(
         r.status === 429
-          ? "Too many requests — please wait a minute and try again."
-          : "Something went wrong sending your request.",
+          ? t("marketing.briefing.errorTooMany")
+          : t("marketing.briefing.errorGeneric"),
       );
     } catch {
       setStatus("error");
-      setServerError("Network error — check your connection and try again.");
+      setServerError(t("marketing.briefing.errorNetwork"));
     }
   }
 
@@ -127,11 +132,12 @@ export function BriefingForm() {
         role="status"
         className="rounded-lg border border-[color:var(--dg-allowed)] bg-[color-mix(in_srgb,var(--dg-allowed)_8%,transparent)] p-6 text-center outline-none"
       >
-        <h4 className="mb-2 text-[16px] font-medium text-white">Request received</h4>
+        <h4 className="mb-2 text-[16px] font-medium text-white">{t("marketing.briefing.successTitle")}</h4>
         <p className="text-[13px] text-[color:var(--dg-fg-muted)]">
-          Thanks, {form.name.split(" ")[0] || "there"} — someone from the team will follow up at {form.email}{" "}
-          to schedule your technical briefing. No meeting is booked yet; this only confirms we received your
-          request.
+          {t("marketing.briefing.successBody", {
+            name: form.name.split(" ")[0] || "there",
+            email: form.email,
+          })}
         </p>
       </div>
     );
@@ -141,7 +147,7 @@ export function BriefingForm() {
     <form onSubmit={submit} noValidate className="rounded-lg border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-6">
       {/* Honeypot — hidden from sighted and keyboard users, visible to naive bots. */}
       <div aria-hidden="true" className="absolute -left-[9999px] top-auto h-0 w-0 overflow-hidden">
-        <label htmlFor="briefing-website">Leave this field empty</label>
+        <label htmlFor="briefing-website">{t("marketing.briefing.honeypotLabel")}</label>
         <input
           id="briefing-website"
           type="text"
@@ -155,7 +161,7 @@ export function BriefingForm() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="briefing-name" className={LABEL_CLASS}>
-            Full name <span aria-hidden="true">*</span>
+            {t("marketing.briefing.labelName")} <span aria-hidden="true">*</span>
           </label>
           <input
             id="briefing-name"
@@ -180,7 +186,7 @@ export function BriefingForm() {
 
         <div>
           <label htmlFor="briefing-email" className={LABEL_CLASS}>
-            Work email <span aria-hidden="true">*</span>
+            {t("marketing.briefing.labelEmail")} <span aria-hidden="true">*</span>
           </label>
           <input
             id="briefing-email"
@@ -205,7 +211,7 @@ export function BriefingForm() {
 
         <div>
           <label htmlFor="briefing-company" className={LABEL_CLASS}>
-            Company <span aria-hidden="true">*</span>
+            {t("marketing.briefing.labelCompany")} <span aria-hidden="true">*</span>
           </label>
           <input
             id="briefing-company"
@@ -230,7 +236,7 @@ export function BriefingForm() {
 
         <div>
           <label htmlFor="briefing-role" className={LABEL_CLASS}>
-            Role <span aria-hidden="true">*</span>
+            {t("marketing.briefing.labelRole")} <span aria-hidden="true">*</span>
           </label>
           <select
             id="briefing-role"
@@ -245,10 +251,10 @@ export function BriefingForm() {
             onChange={(e) => set("role", e.target.value)}
             className={FIELD_CLASS}
           >
-            <option value="">Select…</option>
+            <option value="">{t("marketing.briefing.selectPlaceholder")}</option>
             {ROLES.map((r) => (
-              <option key={r} value={r}>
-                {r}
+              <option key={r.value} value={r.value}>
+                {t(r.labelKey)}
               </option>
             ))}
           </select>
@@ -261,7 +267,7 @@ export function BriefingForm() {
 
         <div className="sm:col-span-2">
           <label htmlFor="briefing-use-case" className={LABEL_CLASS}>
-            Primary use case <span aria-hidden="true">*</span>
+            {t("marketing.briefing.labelUseCase")} <span aria-hidden="true">*</span>
           </label>
           <select
             id="briefing-use-case"
@@ -276,10 +282,10 @@ export function BriefingForm() {
             onChange={(e) => set("useCase", e.target.value)}
             className={FIELD_CLASS}
           >
-            <option value="">Select…</option>
+            <option value="">{t("marketing.briefing.selectPlaceholder")}</option>
             {USE_CASES.map((u) => (
-              <option key={u} value={u}>
-                {u}
+              <option key={u.value} value={u.value}>
+                {t(u.labelKey)}
               </option>
             ))}
           </select>
@@ -292,7 +298,7 @@ export function BriefingForm() {
 
         <div className="sm:col-span-2">
           <label htmlFor="briefing-context" className={LABEL_CLASS}>
-            Anything else? <span className="normal-case tracking-normal text-[color:var(--dg-fg-subtle)]">(optional)</span>
+            {t("marketing.briefing.labelContext")} <span className="normal-case tracking-normal text-[color:var(--dg-fg-subtle)]">{t("marketing.briefing.optionalTag")}</span>
           </label>
           <textarea
             id="briefing-context"
@@ -321,9 +327,9 @@ export function BriefingForm() {
             className="mt-0.5 h-[18px] w-[18px] shrink-0 accent-[color:var(--dg-electric)]"
           />
           <span>
-            I understand DriftGuard will use this information to respond to my request, per the{" "}
+            {t("marketing.briefing.ackBefore")}{" "}
             <Link href="/privacy" className="underline hover:text-white">
-              privacy policy
+              {t("marketing.briefing.ackLinkText")}
             </Link>
             . <span aria-hidden="true">*</span>
           </span>
@@ -336,13 +342,13 @@ export function BriefingForm() {
       </div>
 
       <div aria-live="polite" className="sr-only">
-        {status === "loading" ? "Submitting your request…" : ""}
+        {status === "loading" ? t("marketing.briefing.ariaSubmitting") : ""}
         {status === "error" ? serverError : ""}
       </div>
 
       {status === "error" && serverError && (
         <p role="alert" className="mt-3 text-[12px] text-[color:var(--dg-blocked)]">
-          {serverError} You can try again — nothing you entered was lost.
+          {serverError} {t("marketing.briefing.errorRetryHint")}
         </p>
       )}
 
@@ -352,23 +358,23 @@ export function BriefingForm() {
         aria-busy={status === "loading"}
         className="touch-manipulation mt-5 min-h-[44px] w-full rounded bg-[color:var(--dg-electric)] px-6 py-3 font-mono text-[12px] uppercase tracking-widest text-white transition-colors hover:bg-[color:var(--dg-electric-bright)] active:scale-[0.98] disabled:opacity-60 sm:w-auto"
       >
-        {status === "loading" ? "Sending…" : "Request a technical briefing"}
+        {status === "loading" ? t("marketing.briefing.submitting") : t("marketing.briefing.submitCta")}
       </button>
     </form>
   );
 }
 
 export function BriefingSection() {
+  const t = useT();
   return (
     <div id="briefing" className="w-full max-w-2xl mx-auto px-6 py-24">
       <Reveal className="mb-8 text-center">
         <h2 className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] mb-4">
-          Talk to the team
+          {t("marketing.briefing.eyebrow")}
         </h2>
-        <h3 className="text-3xl font-medium text-white mb-4">Schedule a technical briefing</h3>
+        <h3 className="text-3xl font-medium text-white mb-4">{t("marketing.briefing.title")}</h3>
         <p className="text-[color:var(--dg-fg-muted)]">
-          Tell us about your environment and someone from the team will follow up to walk through DriftGuard for
-          your Terraform, Kubernetes, or GitHub Actions workflows.
+          {t("marketing.briefing.subtitle")}
         </p>
       </Reveal>
       <Reveal delay={0.06}>

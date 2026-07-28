@@ -1,17 +1,22 @@
+"use client";
+
 import Link from "next/link";
 import { Lock, MapPin, KeyRound, BadgeCheck } from "lucide-react";
 import { Reveal } from "./Reveal";
-
-// Honest, sourced facts — kept in sync with app/security/page.tsx and
-// app/compliance/page.tsx. No adoption/uptime claims.
-const POINTS = [
-  { icon: Lock, label: "TLS 1.3 + AES-256 at rest" },
-  { icon: MapPin, label: "EU data residency (GDPR)" },
-  { icon: KeyRound, label: "Least-privilege cloud access — STS / Workload Identity" },
-  { icon: BadgeCheck, label: "SOC 2 Type II — in progress" },
-];
+import { useT } from "@/components/TranslationProvider";
 
 export function TrustBar() {
+  const t = useT();
+
+  // Honest, sourced facts — kept in sync with app/security/page.tsx and
+  // app/compliance/page.tsx. No adoption/uptime claims.
+  const POINTS = [
+    { icon: Lock, label: t("marketing.trustBar.tls") },
+    { icon: MapPin, label: t("marketing.trustBar.residency") },
+    { icon: KeyRound, label: t("marketing.trustBar.leastPriv") },
+    { icon: BadgeCheck, label: t("marketing.trustBar.soc2") },
+  ];
+
   return (
     <div className="w-full border-t border-[color:var(--dg-border-strong)] bg-[color:var(--dg-canvas)]">
       <Reveal
@@ -31,7 +36,7 @@ export function TrustBar() {
           href="/security"
           className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] transition-colors hover:text-white active:text-white"
         >
-          Security &amp; compliance →
+          {t("marketing.trustBar.link")}
         </Link>
       </Reveal>
     </div>

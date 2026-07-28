@@ -11,21 +11,23 @@ import { useFocusTrap } from "@/lib/motion/useFocusTrap";
 import { fadeUp, staggerContainer } from "@/lib/motion/variants";
 import { STAGGER, DURATION, EASE } from "@/lib/motion/tokens";
 import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
-
-// Single source of truth for the marketing nav links.
-const NAV_LINKS: { href: string; label: string }[] = [
-  { href: "/#demo", label: "How it works" },
-  { href: "/#architecture", label: "Architecture" },
-  { href: "/#compliance", label: "Compliance" },
-  { href: "/#evidence", label: "Evidence" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/docs", label: "Docs" },
-];
+import { useT } from "@/components/TranslationProvider";
 
 export function CommandNav({ initialPreferences }: { initialPreferences?: UserPreferences }) {
   const { scrollY } = useScroll();
   const pathname = usePathname();
   const reduceMotion = usePrefersReducedMotion();
+  const t = useT();
+
+  // Single source of truth for the marketing nav links.
+  const NAV_LINKS: { href: string; label: string }[] = [
+    { href: "/#demo", label: t("marketing.nav.linkHowItWorks") },
+    { href: "/#architecture", label: t("marketing.nav.linkArchitecture") },
+    { href: "/#compliance", label: t("marketing.nav.linkCompliance") },
+    { href: "/#evidence", label: t("marketing.nav.linkEvidence") },
+    { href: "/pricing", label: t("marketing.nav.linkPricing") },
+    { href: "/docs", label: t("marketing.nav.linkDocs") },
+  ];
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -108,7 +110,7 @@ export function CommandNav({ initialPreferences }: { initialPreferences?: UserPr
 
       <div className="flex shrink-0 items-center gap-3">
         <div className="hidden sm:block">
-          <LocaleSwitcher initialPreferences={initialPreferences} compact label="Language" />
+          <LocaleSwitcher initialPreferences={initialPreferences} compact label={t("marketing.nav.language")} />
         </div>
 
         <Link
@@ -117,7 +119,7 @@ export function CommandNav({ initialPreferences }: { initialPreferences?: UserPr
         >
           <div className="absolute inset-0 bg-[color:var(--dg-electric)] opacity-0 group-hover:opacity-10 transition-opacity" />
           <span className="relative flex items-center gap-2">
-            Sign in <span className="opacity-50">→</span>
+            {t("marketing.nav.signIn")} <span className="opacity-50">→</span>
           </span>
         </Link>
 
@@ -128,7 +130,7 @@ export function CommandNav({ initialPreferences }: { initialPreferences?: UserPr
           onClick={() => setMenuOpen((v) => !v)}
           aria-expanded={menuOpen}
           aria-controls="mobile-nav"
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-label={menuOpen ? t("marketing.nav.closeMenu") : t("marketing.nav.openMenu")}
           className="md:hidden flex flex-col items-center justify-center gap-[5px] w-11 h-11 rounded border border-[color:var(--dg-border-strong)] transition hover:border-[color-mix(in_srgb,var(--dg-electric)_40%,transparent)] active:scale-[0.95]"
         >
           <motion.span
@@ -157,7 +159,7 @@ export function CommandNav({ initialPreferences }: { initialPreferences?: UserPr
             id="mobile-nav"
             role="dialog"
             aria-modal="true"
-            aria-label="Site navigation"
+            aria-label={t("marketing.nav.siteNavigation")}
             tabIndex={-1}
             initial={reduceMotion ? false : { opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -189,7 +191,7 @@ export function CommandNav({ initialPreferences }: { initialPreferences?: UserPr
                   onClick={closeMenu}
                   className="mt-3 flex min-h-[44px] items-center gap-2 rounded bg-[color:var(--dg-surface-raised)] border border-[color:var(--dg-border-strong)] px-4 text-white transition active:scale-[0.98]"
                 >
-                  Sign in <span className="opacity-50">→</span>
+                  {t("marketing.nav.signIn")} <span className="opacity-50">→</span>
                 </Link>
               </motion.div>
 
@@ -198,9 +200,9 @@ export function CommandNav({ initialPreferences }: { initialPreferences?: UserPr
                 className="mt-3 flex min-h-[44px] items-center justify-between border-t border-[color:var(--dg-border)] pt-3 normal-case tracking-normal"
               >
                 <span className="font-sans text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                  Language
+                  {t("marketing.nav.language")}
                 </span>
-                <LocaleSwitcher initialPreferences={initialPreferences} label="Language" />
+                <LocaleSwitcher initialPreferences={initialPreferences} label={t("marketing.nav.language")} />
               </motion.div>
             </motion.div>
           </motion.div>

@@ -15,6 +15,7 @@ import { Reveal } from "./Reveal";
 import { fadeUp, staggerContainer, VIEWPORT_ONCE } from "@/lib/motion/variants";
 import { STAGGER } from "@/lib/motion/tokens";
 import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
+import { useT } from "@/components/TranslationProvider";
 
 interface Engine {
   key: string;
@@ -22,18 +23,6 @@ interface Engine {
   label: string;
   detail: string;
 }
-
-// The six analysis engines DriftGuard runs on every Terraform/OpenTofu pull
-// request, in execution order (plan parsing first, policy gate last — the
-// four in between run in parallel).
-const ENGINES: Engine[] = [
-  { key: "plan", icon: FileCode2, label: "Plan parsed", detail: "terraform plan → typed resource graph" },
-  { key: "cost", icon: DollarSign, label: "Cost delta", detail: "Infracost diff vs. current state" },
-  { key: "security", icon: ShieldAlert, label: "Security scan", detail: "Checkov policy checks" },
-  { key: "drift", icon: GitCompareArrows, label: "Drift check", detail: "plan vs. live cloud state" },
-  { key: "memory", icon: Brain, label: "Semantic recall", detail: "related past incidents" },
-  { key: "policy", icon: ShieldCheck, label: "Policy gate", detail: ".github/driftguard.yml verdict" },
-];
 
 function EngineNode({ engine }: { engine: Engine }) {
   const Icon = engine.icon;
@@ -59,33 +48,44 @@ function EngineNode({ engine }: { engine: Engine }) {
 
 export function RuntimeArchitectureMap() {
   const reduceMotion = usePrefersReducedMotion();
+  const t = useT();
+
+  // The six analysis engines DriftGuard runs on every Terraform/OpenTofu pull
+  // request, in execution order (plan parsing first, policy gate last — the
+  // four in between run in parallel).
+  const ENGINES: Engine[] = [
+    { key: "plan", icon: FileCode2, label: t("marketing.architecture.enginePlanLabel"), detail: t("marketing.architecture.enginePlanDetail") },
+    { key: "cost", icon: DollarSign, label: t("marketing.architecture.engineCostLabel"), detail: t("marketing.architecture.engineCostDetail") },
+    { key: "security", icon: ShieldAlert, label: t("marketing.architecture.engineSecurityLabel"), detail: t("marketing.architecture.engineSecurityDetail") },
+    { key: "drift", icon: GitCompareArrows, label: t("marketing.architecture.engineDriftLabel"), detail: t("marketing.architecture.engineDriftDetail") },
+    { key: "memory", icon: Brain, label: t("marketing.architecture.engineMemoryLabel"), detail: t("marketing.architecture.engineMemoryDetail") },
+    { key: "policy", icon: ShieldCheck, label: t("marketing.architecture.enginePolicyLabel"), detail: t("marketing.architecture.enginePolicyDetail") },
+  ];
 
   return (
     <div className="w-full max-w-7xl mx-auto px-6 py-24 flex flex-col lg:flex-row items-start gap-12">
       <Reveal className="flex-1 w-full lg:sticky lg:top-28">
         <h2 className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] mb-4">
-          Architecture
+          {t("marketing.architecture.eyebrow")}
         </h2>
         <h3 className="text-4xl font-medium text-white mb-6 leading-tight">
-          Six analyses, one merge verdict
+          {t("marketing.architecture.title")}
         </h3>
         <p className="text-[color:var(--dg-fg-muted)] mb-8">
-          When a pull request opens, DriftGuard parses the Terraform or OpenTofu plan and runs its
-          analyses in parallel — cost, security, drift, and semantic memory — then evaluates your
-          policy and posts a single allow / warn / block result as a GitHub Check.
+          {t("marketing.architecture.body")}
         </p>
         <ul className="space-y-4 font-mono text-[11px] text-[color:var(--dg-fg-subtle)] uppercase tracking-widest">
           <li className="flex items-center gap-3">
             <span className="w-1.5 h-1.5 bg-[color:var(--dg-electric)] rounded-full"></span>
-            Parallel analysis engines
+            {t("marketing.architecture.bullet1")}
           </li>
           <li className="flex items-center gap-3">
             <span className="w-1.5 h-1.5 bg-[color:var(--dg-electric)] rounded-full"></span>
-            Semantic incident recall
+            {t("marketing.architecture.bullet2")}
           </li>
           <li className="flex items-center gap-3">
             <span className="w-1.5 h-1.5 bg-[color:var(--dg-electric)] rounded-full"></span>
-            Deterministic policy gating
+            {t("marketing.architecture.bullet3")}
           </li>
         </ul>
       </Reveal>
@@ -109,7 +109,7 @@ export function RuntimeArchitectureMap() {
             <GitPullRequest className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
           </span>
           <div className="font-mono text-[11px] font-medium uppercase tracking-wide text-white">
-            Pull request opened
+            {t("marketing.architecture.prOpened")}
           </div>
         </motion.div>
 
@@ -136,11 +136,11 @@ export function RuntimeArchitectureMap() {
               <ShieldCheck className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
             </span>
             <div className="font-mono text-[11px] font-medium uppercase tracking-wide text-white">
-              GitHub Check posted
+              {t("marketing.architecture.checkPosted")}
             </div>
           </div>
           <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-            [ plan → analyses → policy → check ]
+            {t("marketing.architecture.verdictFlow")}
           </span>
         </motion.div>
       </motion.div>
