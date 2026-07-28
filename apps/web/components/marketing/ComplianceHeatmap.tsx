@@ -1,7 +1,11 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { CheckCircle2, Minus, MinusCircle } from "lucide-react";
+import { Reveal } from "./Reveal";
+import { staggerContainer, VIEWPORT_ONCE } from "@/lib/motion/variants";
+import { DURATION, EASE, STAGGER } from "@/lib/motion/tokens";
+import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 
 // Illustrative mapping of the checks DriftGuard runs on a Terraform/OpenTofu PR
 // to the control families of the frameworks it supports. Deterministic — this
@@ -41,6 +45,15 @@ const STATUS_META: Record<Status, { label: string; icon: typeof CheckCircle2; cl
   },
 };
 
+// Small, quick fade+scale for the compact status badges — shorter duration
+// and a subtler scale delta than the shared fadeUp/fadeScale (which are
+// tuned for larger headings/cards) so 24 cascading badges feel snappy
+// rather than sluggish.
+const badgeVariant: Variants = {
+  hidden: { opacity: 0, scale: 0.94 },
+  visible: { opacity: 1, scale: 1, transition: { duration: DURATION.medium, ease: EASE.out } },
+};
+
 function StatusBadge({ status }: { status: Status }) {
   const meta = STATUS_META[status];
   const Icon = meta.icon;
@@ -56,11 +69,11 @@ function StatusBadge({ status }: { status: Status }) {
 }
 
 export function ComplianceHeatmap() {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = usePrefersReducedMotion();
 
   return (
     <div className="w-full max-w-6xl mx-auto px-6 py-24">
-      <div className="mb-12 text-center">
+      <Reveal className="mb-12 text-center">
         <h2 className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] mb-4">
           Continuous compliance
         </h2>
@@ -70,7 +83,7 @@ export function ComplianceHeatmap() {
           so DORA, NIS2, ISO 27001 and SOC 2 audit trails are a by-product of normal review — not a
           separate spreadsheet exercise.
         </p>
-      </div>
+      </Reveal>
 
       <div className="relative rounded-lg border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)]">
         {/* Horizontal scroll is intentional on narrow viewports — the first
@@ -104,7 +117,15 @@ export function ComplianceHeatmap() {
                 ))}
               </tr>
             </thead>
-            <tbody>
+            {/* Single viewport observer for the whole table drives every
+                badge's stagger via inherited variants — replaces 24
+                independent whileInView triggers with one. */}
+            <motion.tbody
+              initial={reduceMotion ? undefined : "hidden"}
+              whileInView={reduceMotion ? undefined : "visible"}
+              viewport={VIEWPORT_ONCE}
+              variants={reduceMotion ? undefined : staggerContainer(STAGGER.tight)}
+            >
               {CHECKS.map((check, i) => (
                 <tr
                   key={check}
@@ -118,20 +139,14 @@ export function ComplianceHeatmap() {
                   </th>
                   {COVERAGE[check].map((status, j) => (
                     <td key={j} className="px-3 py-2.5 text-center">
-                      <motion.span
-                        initial={reduceMotion ? false : { opacity: 0, scale: 0.85 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.25, delay: (i * FRAMEWORKS.length + j) * 0.02 }}
-                        className="inline-flex"
-                      >
+                      <motion.span variants={badgeVariant} className="inline-flex">
                         <StatusBadge status={status} />
                       </motion.span>
                     </td>
                   ))}
                 </tr>
               ))}
-            </tbody>
+            </motion.tbody>
           </table>
         </div>
 

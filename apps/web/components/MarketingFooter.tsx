@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
+import { Reveal } from "@/components/marketing/Reveal";
 
 export async function MarketingFooter() {
   const preferences = await getUserPreferences();
@@ -10,30 +11,36 @@ export async function MarketingFooter() {
 
   return (
     <footer className="border-t border-border bg-canvas py-6">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 font-mono text-2xs text-fg-subtle">
+      {/* Clean, subtle reveal — small distance, no scale/rotation. Links
+          are real anchors from first paint, so they're clickable and
+          crawlable regardless of animation state. */}
+      <Reveal
+        distance={6}
+        className="mx-auto flex max-w-7xl items-center justify-between px-4 font-mono text-2xs text-fg-subtle"
+      >
         <div>
           © 2026 Driftguard ·{" "}
           <a
             href="https://up2cloud.tech/"
             target="_blank"
             rel="noreferrer"
-            className="transition hover:text-fg-muted"
+            className="transition hover:text-fg-muted active:text-fg-muted"
           >
             UP2CLOUD
           </a>
         </div>
         <div className="flex gap-4">
-          <a href="https://github.com/UP2CLOUD/driftguard" className="transition hover:text-fg-muted">
+          <a href="https://github.com/UP2CLOUD/driftguard" className="transition hover:text-fg-muted active:text-fg-muted">
             GitHub
           </a>
-          <Link href="/privacy" className="transition hover:text-fg-muted">
+          <Link href="/privacy" className="transition hover:text-fg-muted active:text-fg-muted">
             {t("common.privacy")}
           </Link>
-          <Link href="/terms" className="transition hover:text-fg-muted">
+          <Link href="/terms" className="transition hover:text-fg-muted active:text-fg-muted">
             {t("common.terms")}
           </Link>
         </div>
-      </div>
+      </Reveal>
     </footer>
   );
 }

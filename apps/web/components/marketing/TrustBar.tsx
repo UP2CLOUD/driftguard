@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Lock, MapPin, KeyRound, BadgeCheck } from "lucide-react";
+import { Reveal } from "./Reveal";
 
 // Honest, sourced facts — kept in sync with app/security/page.tsx and
 // app/compliance/page.tsx. No adoption/uptime claims.
@@ -13,7 +14,10 @@ const POINTS = [
 export function TrustBar() {
   return (
     <div className="w-full border-t border-[color:var(--dg-border-strong)] bg-[color:var(--dg-canvas)]">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 py-6 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-8 sm:gap-y-3">
+      <Reveal
+        distance={8}
+        className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 py-6 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-8 sm:gap-y-3"
+      >
         {POINTS.map(({ icon: Icon, label }) => (
           <div
             key={label}
@@ -25,11 +29,11 @@ export function TrustBar() {
         ))}
         <Link
           href="/security"
-          className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] hover:text-white transition-colors"
+          className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] transition-colors hover:text-white active:text-white"
         >
           Security &amp; compliance →
         </Link>
-      </div>
+      </Reveal>
     </div>
   );
 }

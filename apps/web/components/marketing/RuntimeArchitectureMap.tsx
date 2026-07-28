@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   FileCode2,
   DollarSign,
@@ -11,6 +11,10 @@ import {
   GitPullRequest,
   type LucideIcon,
 } from "lucide-react";
+import { Reveal } from "./Reveal";
+import { fadeUp, staggerContainer, VIEWPORT_ONCE } from "@/lib/motion/variants";
+import { STAGGER } from "@/lib/motion/tokens";
+import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 
 interface Engine {
   key: string;
@@ -31,15 +35,11 @@ const ENGINES: Engine[] = [
   { key: "policy", icon: ShieldCheck, label: "Policy gate", detail: ".github/driftguard.yml verdict" },
 ];
 
-function EngineNode({ engine, index }: { engine: Engine; index: number }) {
-  const reduceMotion = useReducedMotion();
+function EngineNode({ engine }: { engine: Engine }) {
   const Icon = engine.icon;
   return (
     <motion.div
-      initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.35, delay: index * 0.06 }}
+      variants={fadeUp({ distance: 10 })}
       className="flex items-center gap-3 rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface-raised)] px-4 py-3"
     >
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[color-mix(in_srgb,var(--dg-electric)_40%,transparent)] bg-[color-mix(in_srgb,var(--dg-electric)_10%,transparent)] text-[color:var(--dg-electric-bright)]">
@@ -58,11 +58,11 @@ function EngineNode({ engine, index }: { engine: Engine; index: number }) {
 }
 
 export function RuntimeArchitectureMap() {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = usePrefersReducedMotion();
 
   return (
     <div className="w-full max-w-7xl mx-auto px-6 py-24 flex flex-col lg:flex-row items-start gap-12">
-      <div className="flex-1 w-full lg:sticky lg:top-28">
+      <Reveal className="flex-1 w-full lg:sticky lg:top-28">
         <h2 className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] mb-4">
           Architecture
         </h2>
@@ -88,14 +88,21 @@ export function RuntimeArchitectureMap() {
             Deterministic policy gating
           </li>
         </ul>
-      </div>
+      </Reveal>
 
-      <div className="flex-1 w-full rounded-lg border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-5 sm:p-6">
+      {/* Single viewport observer drives the whole diagram's stagger —
+          replaces 8 independent whileInView triggers (source + 6 engines +
+          verdict) with one, propagated to children via variants. */}
+      <motion.div
+        initial={reduceMotion ? undefined : "hidden"}
+        whileInView={reduceMotion ? undefined : "visible"}
+        viewport={VIEWPORT_ONCE}
+        variants={reduceMotion ? undefined : staggerContainer(STAGGER.base)}
+        className="flex-1 w-full rounded-lg border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-5 sm:p-6"
+      >
         {/* Source */}
         <motion.div
-          initial={reduceMotion ? false : { opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          variants={fadeUp({ distance: 10 })}
           className="mb-4 flex items-center gap-3 rounded-md border border-[color-mix(in_srgb,var(--dg-warned)_40%,transparent)] bg-[color-mix(in_srgb,var(--dg-warned)_10%,transparent)] px-4 py-3"
         >
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[color-mix(in_srgb,var(--dg-warned)_40%,transparent)] text-[color:var(--dg-warned)]">
@@ -111,8 +118,8 @@ export function RuntimeArchitectureMap() {
 
         {/* Six engines */}
         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-          {ENGINES.map((engine, i) => (
-            <EngineNode key={engine.key} engine={engine} index={i} />
+          {ENGINES.map((engine) => (
+            <EngineNode key={engine.key} engine={engine} />
           ))}
         </div>
 
@@ -121,10 +128,7 @@ export function RuntimeArchitectureMap() {
 
         {/* Verdict */}
         <motion.div
-          initial={reduceMotion ? false : { opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
+          variants={fadeUp({ distance: 10 })}
           className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-[color-mix(in_srgb,var(--dg-electric)_40%,transparent)] bg-[color-mix(in_srgb,var(--dg-electric)_10%,transparent)] px-4 py-3"
         >
           <div className="flex items-center gap-3">
@@ -139,7 +143,7 @@ export function RuntimeArchitectureMap() {
             [ plan → analyses → policy → check ]
           </span>
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   );
 }

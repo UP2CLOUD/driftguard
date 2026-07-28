@@ -1,51 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Points, PointMaterial } from "@react-three/drei";
-import * as THREE from "three";
-import { motion, useReducedMotion } from "framer-motion";
+import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
 import { getGitHubAppInstallUrl } from "@/lib/github-app";
 import { PIPELINE_STEPS } from "@/lib/demo/pipeline";
+import { useIsMobileViewport } from "@/lib/motion/useIsMobileViewport";
+import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 
-// Helper to generate points on a sphere for the globe backdrop.
-function generateGlobePoints(count: number, radius: number) {
-  const positions = new Float32Array(count * 3);
-  for (let i = 0; i < count; i++) {
-    const phi = Math.acos(-1 + (2 * i) / count);
-    const theta = Math.sqrt(count * Math.PI) * phi;
-    positions[i * 3] = radius * Math.cos(theta) * Math.sin(phi);
-    positions[i * 3 + 1] = radius * Math.sin(theta) * Math.sin(phi);
-    positions[i * 3 + 2] = radius * Math.cos(phi);
-  }
-  return positions;
-}
-
-function GlobePoints() {
-  const ref = useRef<THREE.Points>(null);
-  const [positions] = useState(() => generateGlobePoints(3000, 2.5));
-
-  useFrame((state, delta) => {
-    if (ref.current) {
-      ref.current.rotation.y += delta * 0.1;
-      ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.2) * 0.1;
-    }
-  });
-
-  return (
-    <Points ref={ref} positions={positions} stride={3} frustumCulled={false}>
-      <PointMaterial
-        transparent
-        color="#3f8cff"
-        size={0.02}
-        sizeAttenuation={true}
-        depthWrite={false}
-        opacity={0.4}
-      />
-    </Points>
-  );
-}
+// Code-split: three.js + @react-three/fiber + drei only ship to devices
+// that actually render the globe (desktop/tablet, motion not reduced).
+const HeroGlobe = dynamic(() => import("./HeroGlobe"), { ssr: false });
 
 const VERDICT_COLOR: Record<string, string> = {
   ALLOW: "var(--dg-allowed, #22d38d)",
@@ -54,11 +20,17 @@ const VERDICT_COLOR: Record<string, string> = {
 };
 
 function ReviewFeed() {
-  const reduceMotion = useReducedMotion();
-  const [tick, setTick] = useState(reduceMotion ? PIPELINE_STEPS.length : 0);
+  // SSR-safe: false on the server and on the client's first render (so
+  // hydration never has to reconcile a mismatched initial state), then
+  // syncs to the real value via an effect.
+  const reduceMotion = usePrefersReducedMotion();
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    if (reduceMotion) return; // show the full, static feed — no timers
+    if (reduceMotion) {
+      setTick(PIPELINE_STEPS.length); // jump straight to the full, static feed
+      return;
+    }
     const interval = setInterval(() => {
       setTick((t) => (t + 1) % (PIPELINE_STEPS.length + 2));
     }, 1100);
@@ -97,71 +69,59 @@ function ReviewFeed() {
 }
 
 export function HeroMissionControl() {
-  const reduceMotion = useReducedMotion();
-  const fade = (delay: number) =>
-    reduceMotion
-      ? {}
-      : {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.8, delay, ease: "easeOut" as const },
-        };
+  const reduceMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobileViewport();
 
   return (
-    <div className="relative flex min-h-[90vh] w-full flex-col items-center justify-center overflow-hidden pt-20">
-      {/* 3D backdrop — decorative only */}
-      {!reduceMotion && (
-        <div className="pointer-events-none absolute inset-0 z-0 opacity-40 mix-blend-screen" aria-hidden="true">
-          <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
-            <GlobePoints />
-          </Canvas>
-        </div>
-      )}
+    <div className="relative flex min-h-hero w-full flex-col items-center justify-center overflow-hidden pt-20">
+      {/* 3D backdrop — decorative only. Skipped on mobile viewports in
+          favor of the page's existing static grid/vignette layers, and
+          skipped entirely under prefers-reduced-motion. */}
+      {!reduceMotion && !isMobile && <HeroGlobe />}
 
       <div className="relative z-10 mx-auto mt-[-10vh] flex w-full max-w-5xl flex-col items-center px-6 text-center">
-        <motion.div
-          {...fade(0)}
-          className="mb-8 inline-flex items-center gap-2 rounded-full border border-[color:var(--dg-border-bright)] bg-[color-mix(in_srgb,var(--dg-surface-overlay)_50%,transparent)] px-3 py-1 backdrop-blur-sm"
-        >
+        {/*
+          Entrance sequence is pure CSS (dg-page-enter + dg-stagger-N from
+          globals.css), not framer-motion: it's baked into the stylesheet,
+          so the headline and CTA are guaranteed to animate into place even
+          if JS hydration is slow — they're never stuck at opacity:0 waiting
+          on React. prefers-reduced-motion is handled globally (see the
+          @media block in globals.css), so no extra JS branch is needed here.
+        */}
+        <div className="dg-page-enter dg-stagger-1 mb-8 inline-flex items-center gap-2 rounded-full border border-[color:var(--dg-border-bright)] bg-[color-mix(in_srgb,var(--dg-surface-overlay)_50%,transparent)] px-3 py-1 backdrop-blur-sm">
           <span className="h-2 w-2 animate-pulse rounded-full bg-[color:var(--dg-electric)]" />
           <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-muted)]">
             GitHub-native · Terraform &amp; OpenTofu
           </span>
-        </motion.div>
+        </div>
 
-        <motion.h1
-          {...fade(0.1)}
-          className="mb-6 text-5xl font-medium leading-[1.1] tracking-tighter text-white md:text-7xl lg:text-8xl"
-        >
+        <h1 className="dg-page-enter dg-stagger-2 mb-6 text-5xl font-medium leading-[1.1] tracking-tighter text-white md:text-7xl lg:text-8xl">
           Runtime safety for <br className="hidden md:block" />
           the Terraform your agents write
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          {...fade(0.2)}
-          className="mb-12 max-w-2xl text-lg text-[color:var(--dg-fg-muted)] md:text-xl"
-        >
+        <p className="dg-page-enter dg-stagger-3 mb-12 max-w-2xl text-lg text-[color:var(--dg-fg-muted)] md:text-xl">
           DriftGuard reviews every Terraform and OpenTofu pull request — written by humans or
           AI agents — for <span className="text-white">cost, security, drift, and compliance</span>,
           recalls prior incidents, and gates the merge on your policy.
-        </motion.p>
+        </p>
 
-        <motion.div {...fade(0.3)} className="flex flex-col items-center gap-4 sm:flex-row">
+        <div className="dg-page-enter dg-stagger-4 flex flex-col items-center gap-4 sm:flex-row">
           <a
             href={getGitHubAppInstallUrl()}
             target="_blank"
             rel="noreferrer"
-            className="rounded bg-white px-8 py-3.5 text-[13px] font-medium text-black shadow-[0_0_24px_rgba(255,255,255,0.2)] transition-colors hover:bg-white/90"
+            className="touch-manipulation rounded bg-white px-8 py-3.5 text-[13px] font-medium text-black shadow-[0_0_24px_rgba(255,255,255,0.2)] transition-colors hover:bg-white/90 active:scale-[0.97]"
           >
             Install the GitHub App
           </a>
           <Link
             href="/docs"
-            className="rounded border border-[color:var(--dg-border-strong)] bg-transparent px-8 py-3.5 text-[13px] font-medium text-[color:var(--dg-fg)] transition-colors hover:bg-[color:var(--dg-surface-raised)]"
+            className="touch-manipulation rounded border border-[color:var(--dg-border-strong)] bg-transparent px-8 py-3.5 text-[13px] font-medium text-[color:var(--dg-fg)] transition-colors hover:bg-[color:var(--dg-surface-raised)] active:scale-[0.97]"
           >
             Read the docs
           </Link>
-        </motion.div>
+        </div>
       </div>
 
       <ReviewFeed />
