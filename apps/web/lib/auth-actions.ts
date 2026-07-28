@@ -7,10 +7,6 @@ export async function signInWithGitHub() {
   await signIn("github", { redirectTo: "/dashboard" });
 }
 
-export async function signInWithDevBypass() {
-  await signIn("developer-login", { redirectTo: "/dashboard" });
-}
-
 export async function signOutToHome() {
   await signOut({ redirectTo: "/", redirect: false });
   redirect("/");

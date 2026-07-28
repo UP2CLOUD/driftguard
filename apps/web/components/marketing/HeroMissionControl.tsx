@@ -7,6 +7,7 @@ import { Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
 import { motion, useReducedMotion } from "framer-motion";
 import { getGitHubAppInstallUrl } from "@/lib/github-app";
+import { PIPELINE_STEPS } from "@/lib/demo/pipeline";
 
 // Helper to generate points on a sphere for the globe backdrop.
 function generateGlobePoints(count: number, radius: number) {
@@ -45,17 +46,6 @@ function GlobePoints() {
     </Points>
   );
 }
-
-// Deterministic sample of the DriftGuard review pipeline for a real PR.
-// Order mirrors the actual sequence: plan parsed → analyses → policy → verdict.
-const PIPELINE_STEPS: { stage: string; detail: string; verdict: "ALLOW" | "WARN" | "BLOCK" }[] = [
-  { stage: "PLAN_PARSED", detail: "aws_db_instance.main", verdict: "ALLOW" },
-  { stage: "COST_DELTA", detail: "+€124/mo · rds t3.large", verdict: "WARN" },
-  { stage: "SECURITY_SCAN", detail: "s3 public-acl", verdict: "BLOCK" },
-  { stage: "DRIFT_CHECK", detail: "3 resources out of sync", verdict: "WARN" },
-  { stage: "MEMORY_RECALL", detail: "prior incident #248", verdict: "WARN" },
-  { stage: "POLICY_EVAL", detail: ".github/driftguard.yml", verdict: "BLOCK" },
-];
 
 const VERDICT_COLOR: Record<string, string> = {
   ALLOW: "var(--dg-allowed, #22d38d)",

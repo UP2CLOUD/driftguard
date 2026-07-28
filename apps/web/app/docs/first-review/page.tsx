@@ -47,7 +47,7 @@ export default async function FirstReview() {
           <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] overflow-hidden">
             {[
               { label: "Risk score", desc: "0–100 weighted by severity. ≥70 posts a failing check run that can block merge." },
-              { label: "Cost delta", desc: "+€124/mo — monthly delta from Infracost. Threshold configured in driftguard.yml." },
+              { label: "Cost delta", desc: "+€124/mo — monthly delta from Infracost. Threshold configured in .github/driftguard.yml." },
               { label: "Security findings", desc: "Checkov results mapped to DORA / NIS2 / ISO 27001 controls. Severity: critical → low." },
               { label: "Drift alert", desc: "Resources present in plan but missing from live state (or vice-versa) flagged as drift." },
               { label: "Memory recall", desc: "Top-3 similar past incidents with similarity score. Links to the original PR." },

@@ -39,4 +39,7 @@ jobs:
         run: pnpm validate-i18n
 
       - working-directory: apps/web
+        run: pnpm test
+
+      - working-directory: apps/web
         run: pnpm build

@@ -179,7 +179,7 @@ DATABASE_URL="postgresql+asyncpg://..." \
 
 ## Step 8 — GitHub App webhook URL
 
-1. Ir a https://github.com/settings/apps/driftguard-app
+1. Ir a https://github.com/settings/apps/driftguard-reviews
 2. Webhook URL: `$API_URL/api/v1/webhooks/github`
 3. Content type: `application/json`
 4. Verificar "Send me everything" ou pelo menos:
@@ -195,8 +195,8 @@ No dashboard Vercel do `driftguard-blue.vercel.app`:
 
 ```
 NEXT_PUBLIC_API_URL                = https://driftguard-api-xxxxx-ew.a.run.app
-NEXT_PUBLIC_GITHUB_APP_SLUG        = driftguard-app
-NEXT_PUBLIC_GITHUB_APP_INSTALL_URL = https://github.com/apps/driftguard-app/installations/new
+NEXT_PUBLIC_GITHUB_APP_SLUG        = driftguard-reviews
+NEXT_PUBLIC_GITHUB_APP_INSTALL_URL = https://github.com/apps/driftguard-reviews/installations/new
 SECRET_KEY                         = (mesmo valor de driftguard-secret-key do Secret Manager)
 ```
 

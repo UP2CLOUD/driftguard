@@ -30,7 +30,10 @@ export default async function DashboardRoot({
   const setupError = sp.setup_error ?? null;
 
   if (sp.installation_id) {
-    redirect(`/dashboard/${sp.installation_id}`);
+    // Preserve the GitHub setup_action (install | update | ...) so the overview
+    // can show a post-install success state on the first landing.
+    const action = sp.setup_action ?? "install";
+    redirect(`/dashboard/${sp.installation_id}?installed=${encodeURIComponent(action)}`);
   }
 
   const installations = await getInstallations(session);

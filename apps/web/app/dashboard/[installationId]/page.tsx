@@ -18,13 +18,16 @@ import { RiskTrendSection } from "./_sections/RiskTrend";
 
 export default async function DashboardPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ installationId: string }>;
+  searchParams: Promise<{ installed?: string }>;
 }) {
   const session = await auth();
   if (!session) redirect("/");
 
   const { installationId } = await params;
+  const { installed } = await searchParams;
   const preferences = await getUserPreferences();
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
@@ -36,6 +39,18 @@ export default async function DashboardPage({
   return (
     <div className="bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
       <div id="main-content" className="mx-auto max-w-[1400px] px-4 sm:px-6 py-10 sm:py-12">
+        {installed && (
+          <div className="mb-5 flex items-start gap-3 rounded-md border border-allowed/30 bg-allowed/5 px-4 py-3">
+            <span className="mt-0.5 shrink-0 text-allowed">✓</span>
+            <div className="font-mono text-[12px] leading-relaxed text-[color:var(--dg-fg)]">
+              <span className="font-bold text-allowed">
+                {installed === "update" ? "Repository selection updated." : "DriftGuard is installed."}
+              </span>{" "}
+              Open a Terraform or OpenTofu pull request in a connected repository to trigger your
+              first review — DriftGuard posts its verdict as a GitHub Check.
+            </div>
+          </div>
+        )}
         <DemoToggle active={demoMode} />
 
         <Suspense fallback={<StatsStripFallback />}>

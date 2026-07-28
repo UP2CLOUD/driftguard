@@ -196,7 +196,7 @@ SECRET_KEY          = <same value as driftguard-secret-key secret>
 ```
 
 **Update GitHub App webhook URL:**
-→ github.com/organizations/UP2CLOUD/settings/apps/driftguard-app
+→ github.com/organizations/UP2CLOUD/settings/apps/driftguard-reviews
 → Webhook URL: `https://driftguard-api-xxxx-ew.a.run.app/api/v1/webhooks/github`
 
 **Update Stripe webhook endpoint:**
