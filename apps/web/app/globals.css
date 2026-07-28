@@ -11,6 +11,15 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* 90% of the *dynamic* viewport height — falls back to 90vh on browsers
+     without dvh support. Fixes iOS Safari, where 100vh includes the area
+     the collapsing URL bar occupies, making `vh`-only hero sections taller
+     than what's actually visible. */
+  .min-h-hero {
+    min-height: 90vh;
+    min-height: 90dvh;
+  }
 }
 
 :root {

@@ -14,6 +14,8 @@ import {
 import "@xyflow/react/dist/style.css";
 import { motion } from "framer-motion";
 import { GitPullRequest, ShieldCheck, GitMerge } from "lucide-react";
+import { Reveal } from "./Reveal";
+import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 
 type Phase = "idle" | "evaluating" | "blocked";
 
@@ -72,6 +74,7 @@ const blockEdge = (id: string, source: string, target: string): Edge => ({
 const initialEdges: Edge[] = [okEdge("e-dg-merge", "driftguard", "merge")];
 
 export function PolicySimulatorDemo() {
+  const reduceMotion = usePrefersReducedMotion();
   const [nodes, , onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [phase, setPhase] = useState<Phase>("idle");
@@ -110,7 +113,7 @@ export function PolicySimulatorDemo() {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-6 py-24">
-      <div className="mb-12">
+      <Reveal className="mb-12">
         <h2 className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] mb-4">
           How it works
         </h2>
@@ -121,7 +124,7 @@ export function PolicySimulatorDemo() {
           <span className="font-mono text-[color:var(--dg-fg)]">.github/driftguard.yml</span>, and
           returns an allow / warn / block verdict on the GitHub Check.
         </p>
-      </div>
+      </Reveal>
 
       <div className="mb-4 flex items-center gap-3">
         <button
@@ -139,9 +142,13 @@ export function PolicySimulatorDemo() {
         </span>
       </div>
 
-      <div className="h-[460px] w-full border border-[color:var(--dg-border-strong)] rounded-lg bg-[color:var(--dg-canvas)] relative overflow-hidden shadow-[0_4px_40px_rgba(0,0,0,0.5)]">
-        {/* Verdict log */}
-        <div className="absolute top-4 left-4 z-10 bg-[color:var(--dg-surface-raised)] border border-[color:var(--dg-border)] rounded px-4 py-3 font-mono text-[11px] min-w-[280px]" aria-live="polite">
+      <div className="h-[400px] sm:h-[460px] w-full border border-[color:var(--dg-border-strong)] rounded-lg bg-[color:var(--dg-canvas)] relative overflow-hidden shadow-[0_4px_40px_rgba(0,0,0,0.5)]">
+        {/* Verdict log — width scales down on very narrow viewports instead
+            of forcing a fixed min-width that could overflow the card. */}
+        <div
+          className="absolute top-4 left-4 z-10 w-[calc(100%-2rem)] max-w-[280px] bg-[color:var(--dg-surface-raised)] border border-[color:var(--dg-border)] rounded px-4 py-3 font-mono text-[11px]"
+          aria-live="polite"
+        >
           <div className="text-[color:var(--dg-fg-subtle)] uppercase tracking-widest mb-3 border-b border-[color:var(--dg-border)] pb-2">
             GitHub Check · DriftGuard
           </div>
@@ -154,7 +161,11 @@ export function PolicySimulatorDemo() {
             </div>
           )}
           {phase === "blocked" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-1">
+            <motion.div
+              initial={reduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="space-y-1"
+            >
               <div className="text-[color:var(--dg-blocked)]">✗ BLOCK — 1 policy violation</div>
               <div className="text-[color:var(--dg-fg-subtle)] text-[10px]">security · aws_s3_bucket.assets = public-read</div>
               <div className="text-[color:var(--dg-fg-subtle)] text-[10px]">rule: block · no-public-buckets</div>
@@ -172,6 +183,15 @@ export function PolicySimulatorDemo() {
           fitView
           proOptions={{ hideAttribution: true }}
           className="bg-[color:var(--dg-canvas)]"
+          // The demo's real interactions are the Run review button and
+          // (optionally) dragging a connection between node handles — not
+          // panning/zooming the canvas. Disabling those prevents a touch
+          // swipe that starts over the canvas from hijacking page scroll.
+          panOnDrag={false}
+          zoomOnScroll={false}
+          zoomOnPinch={false}
+          zoomOnDoubleClick={false}
+          preventScrolling={false}
         >
           <Background color="var(--dg-border-strong)" gap={16} />
         </ReactFlow>

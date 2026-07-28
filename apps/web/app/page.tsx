@@ -14,6 +14,7 @@ import { PolicySimulatorDemo } from "@/components/marketing/PolicySimulatorDemo"
 import { RuntimeArchitectureMap } from "@/components/marketing/RuntimeArchitectureMap";
 import { ComplianceHeatmap } from "@/components/marketing/ComplianceHeatmap";
 import { PricingTeaser } from "@/components/marketing/PricingTeaser";
+import { Reveal } from "@/components/marketing/Reveal";
 
 export default async function Page() {
   const preferences = await getUserPreferences();
@@ -53,31 +54,33 @@ export default async function Page() {
             <PricingTeaser />
           </section>
 
-          {/* Closing CTA */}
+          {/* Closing CTA — focused reveal, minimal decorative movement */}
           <section className="w-full border-t border-[color:var(--dg-border-strong)] py-24 text-center">
-            <h2 className="mx-auto mb-4 max-w-2xl px-6 text-3xl font-medium text-white">
-              Ship Terraform your agents can&apos;t break.
-            </h2>
-            <p className="mx-auto mb-8 max-w-xl px-6 text-[15px] text-[color:var(--dg-fg-muted)]">
-              Install the GitHub App and DriftGuard reviews your next infrastructure pull request —
-              cost, security, drift, and compliance — before it merges.
-            </p>
-            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <a
-                href={getGitHubAppInstallUrl()}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-block rounded bg-[color:var(--dg-electric)] px-8 py-4 font-mono text-[11px] uppercase tracking-widest text-white transition-colors hover:bg-[color:var(--dg-electric-bright)]"
-              >
-                Install the GitHub App
-              </a>
-              <Link
-                href="/docs/install"
-                className="inline-block rounded border border-[color:var(--dg-border-strong)] px-8 py-4 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg)] transition-colors hover:bg-[color:var(--dg-surface-raised)]"
-              >
-                Installation guide
-              </Link>
-            </div>
+            <Reveal>
+              <h2 className="mx-auto mb-4 max-w-2xl px-6 text-3xl font-medium text-white">
+                Ship Terraform your agents can&apos;t break.
+              </h2>
+              <p className="mx-auto mb-8 max-w-xl px-6 text-[15px] text-[color:var(--dg-fg-muted)]">
+                Install the GitHub App and DriftGuard reviews your next infrastructure pull request —
+                cost, security, drift, and compliance — before it merges.
+              </p>
+              <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <a
+                  href={getGitHubAppInstallUrl()}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="touch-manipulation inline-block rounded bg-[color:var(--dg-electric)] px-8 py-4 font-mono text-[11px] uppercase tracking-widest text-white transition-colors hover:bg-[color:var(--dg-electric-bright)] active:scale-[0.97]"
+                >
+                  Install the GitHub App
+                </a>
+                <Link
+                  href="/docs/install"
+                  className="touch-manipulation inline-block rounded border border-[color:var(--dg-border-strong)] px-8 py-4 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg)] transition-colors hover:bg-[color:var(--dg-surface-raised)] active:scale-[0.97]"
+                >
+                  Installation guide
+                </Link>
+              </div>
+            </Reveal>
           </section>
         </main>
 
