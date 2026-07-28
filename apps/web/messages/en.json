@@ -1213,37 +1213,106 @@
     "aws": {
       "eyebrow": "Docs · Integrations",
       "title": "AWS integration",
-      "subtitle": "STS AssumeRole and S3 state backend — DriftGuard reads your live AWS state without storing credentials."
+      "subtitle": "STS AssumeRole and S3 state backend — DriftGuard reads your live AWS state without storing credentials.",
+      "howItWorksTitle": "How the connection works",
+      "howItWorksBody": "Drift detection needs read access to your live AWS state so it can diff the Terraform plan against what actually exists. DriftGuard never stores long-lived credentials — it assumes a role in your account via STS with an external ID. You create the role; DriftGuard assumes it read-only, on demand, per analysis.",
+      "step1Title": "1. Create the IAM role",
+      "trustPolicyTitle": "Trust policy",
+      "step1Intro": "Grant DriftGuard's AWS account permission to assume the role. Copy your account ID and external ID from the dashboard's AWS integration screen.",
+      "permsPolicyTitle": "Permissions policy",
+      "permsIntro": "Attach a read-only policy. Describe/Get/List actions are enough for drift detection:",
+      "step2Title": "2. Register the role",
+      "step2Body": "Save the role ARN and your Terraform state backend either in the dashboard (Settings → AWS) or in your repo config. The dashboard call is what actually stores the ARN; the config below documents intent and pins the region and state location:",
+      "step2Verify": "Verify the connection with GET /api/v1/aws/verify, which performs a test AssumeRole and returns success or the STS error.",
+      "withoutAwsTitle": "Without AWS access",
+      "withoutAwsBody": "AWS access is optional. Cost, security, policy, and semantic recall all run from the Terraform plan alone. Only live-state drift detection requires the role — skip this page if you don't need it yet."
     },
     "gcp": {
       "eyebrow": "Docs · Integrations",
       "title": "GCP integration",
-      "subtitle": "Workload Identity Federation — no long-lived credentials, no service account keys."
+      "subtitle": "Workload Identity Federation — no long-lived credentials, no service account keys.",
+      "keylessTitle": "Keyless by design",
+      "keylessBody": "DriftGuard connects to Google Cloud through Workload Identity Federation, so there are no service-account JSON keys to generate, rotate, or store. Drift detection needs only read access to compare your Terraform plan against live state — roles/viewer is sufficient.",
+      "step1Title": "1. Set up federation",
+      "step1Body": "Create a workload identity pool and bind DriftGuard's principal to a read-only role:",
+      "step2Title": "2. Register in DriftGuard",
+      "step2Body": "Enter the project ID, provider resource name, and GCS state backend in the dashboard (Settings → GCP). The dashboard stores the binding; the repo config documents which project and state DriftGuard reads:",
+      "step2Footer": "GCP access is optional — only live-state drift detection uses it. All other checks run from the plan alone. DriftGuard is in early access."
     },
     "azure": {
       "eyebrow": "Docs · Integrations",
       "title": "Azure integration",
-      "subtitle": "Federated workload identity for secure, keyless Azure resource access from DriftGuard."
+      "subtitle": "Federated workload identity for secure, keyless Azure resource access from DriftGuard.",
+      "federatedTitle": "Federated, keyless access",
+      "federatedBody": "DriftGuard authenticates to Azure using a federated workload identity credential on an app registration — no client secrets stored anywhere. Drift detection needs only the built-in Reader role to compare your plan against live resources.",
+      "step1Title": "1. Register the identity",
+      "step1Body": "Create the app registration, add the federated credential DriftGuard shows you, and assign Reader:",
+      "step2Title": "2. Register in DriftGuard",
+      "step2Body": "Save the subscription, tenant, and client IDs plus the Blob Storage state backend in the dashboard (Settings → Azure). The repo config records which subscription and state DriftGuard reads:",
+      "step2Footer": "Azure access is optional and read-only; it powers live-state drift detection only. DriftGuard is in early access."
     },
     "slack": {
       "eyebrow": "Docs · Integrations",
       "title": "Slack alerts",
-      "subtitle": "Channel routing per severity — critical blocks in #incidents, warnings in #infra-reviews."
+      "subtitle": "Channel routing per severity — critical blocks in #incidents, warnings in #infra-reviews.",
+      "connectTitle": "Connect a webhook",
+      "connectBody": "DriftGuard posts review results to Slack through an {webhookLink}. Create the webhook in your Slack workspace, then paste the URL into the dashboard (Settings → Slack). The URL is a secret and is stored server-side — never commit it to your repo.",
+      "webhookLinkText": "incoming webhook",
+      "routeTitle": "Route by severity",
+      "routeBody": "Once connected, choose which channel receives which severity. Critical blocks can go to your incident channel while warnings stay in a quieter review channel:",
+      "messageTitle": "Message shape",
+      "messageBody": "Each alert is a Block Kit message summarising the decision and the top findings:",
+      "messageFooter": "Slack notifications are optional and require dashboard setup for the webhook URL. DriftGuard is in early access."
     },
     "selfHost": {
       "eyebrow": "Docs · Deploy",
       "title": "Self-hosted deployment",
-      "subtitle": "Helm chart plus container images — run DriftGuard in your own Kubernetes cluster."
+      "subtitle": "Helm chart plus container images — run DriftGuard in your own Kubernetes cluster.",
+      "archTitle": "Architecture",
+      "archBody": "The API is a single container built from apps/api/Dockerfile. It needs three things at runtime: a Postgres database, a Redis instance for the job queue, and a GitHub App so it can receive webhooks and post checks. Anthropic powers the AI review. See {envLink} for the full list.",
+      "envLinkText": "environment variables",
+      "dockerTitle": "Docker",
+      "dockerBody": "The fastest way to run a single instance. Migrations run on startup:",
+      "helmTitle": "Helm (Kubernetes)",
+      "helmBody": "For production, deploy the container to your cluster and wire secrets from your secret store rather than passing them on the command line:",
+      "helmFooter": "DriftGuard is in early access — self-hosting is intended for teams comfortable operating a Python service with Postgres and Redis. Point the GitHub App's webhook URL at your instance's /api/v1/webhooks/github."
     },
     "cloudRun": {
       "eyebrow": "Docs · Deploy",
       "title": "Cloud Run deployment",
-      "subtitle": "Reference GCP deployment using Cloud Run — managed infrastructure, automatic scaling."
+      "subtitle": "Reference GCP deployment using Cloud Run — managed infrastructure, automatic scaling.",
+      "needTitle": "What you need",
+      "needBody": "Cloud Run runs the same container as any other deployment. For a managed GCP stack, pair it with Cloud SQL (Postgres) for DATABASE_URL and Memorystore (Redis) for REDIS_URL, and keep every secret in Secret Manager.",
+      "step1Title": "1. Build the image",
+      "step2Title": "2. Deploy",
+      "step2Body": "Mount secrets from Secret Manager rather than passing them inline:",
+      "step2Footer": "Point the service URL at your GitHub App webhook (/api/v1/webhooks/github). Because Cloud Run scales to zero, cold starts add latency to the first webhook after idle — keep a minimum instance warm for production. See the full {envLink} reference. DriftGuard is in early access; this is a reference deployment, not a managed offering.",
+      "envLinkText": "environment variable"
     },
     "env": {
       "eyebrow": "Docs · Deploy",
       "title": "Environment variables",
-      "subtitle": "Full reference — every configuration variable, default values, and examples."
+      "subtitle": "Full reference — every configuration variable, default values, and examples.",
+      "requiredLabel": "Required",
+      "optionalLabel": "Optional",
+      "introBody": "These variables configure the DriftGuard API. The seven required variables are enough to boot; the rest enable optional integrations. On managed hosts (Render, Cloud Run) set the required ones as secrets.",
+      "minimalTitle": "Minimal .env",
+      "minimalFooter": "Never commit real secrets. DriftGuard is in early access; variable names may change.",
+      "req_secretKey": "App signing key for JWTs and CSRF. Generate with openssl rand -hex 32.",
+      "req_databaseUrl": "Postgres connection string. Migrations run on startup.",
+      "req_redisUrl": "Redis instance backing the analysis job queue.",
+      "req_githubAppId": "Numeric ID of your DriftGuard GitHub App.",
+      "req_githubAppPrivateKey": "PEM private key for the GitHub App (multiline).",
+      "req_githubWebhookSecret": "Shared secret used to verify the X-Hub-Signature-256 webhook HMAC.",
+      "req_anthropicApiKey": "Powers the AI review summary of each diff.",
+      "opt_anthropicModel": "Override the model used for AI review.",
+      "opt_infracostApiKey": "Enables cost-delta analysis via Infracost.",
+      "opt_stripeApiKey": "Billing — checkout and customer portal.",
+      "opt_stripeWebhookSecret": "Verifies Stripe webhook signatures.",
+      "opt_resendApiKey": "Transactional email (alerts, invites).",
+      "opt_sentryDsn": "Error reporting to Sentry.",
+      "opt_environment": "Deployment environment name. Defaults to production.",
+      "opt_port": "Port the server binds to. Defaults to 8000."
     },
     "rateLimits": {
       "eyebrow": "Docs · API",

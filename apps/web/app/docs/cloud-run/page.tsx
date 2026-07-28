@@ -58,35 +58,34 @@ export default async function CloudRun() {
     >
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">What you need</h2>
-          <p>
-            Cloud Run runs the same container as any other deployment. For a managed GCP stack, pair it with Cloud SQL
-            (Postgres) for <code className="font-mono text-[color:var(--dg-electric-bright)]">DATABASE_URL</code> and
-            Memorystore (Redis) for <code className="font-mono text-[color:var(--dg-electric-bright)]">REDIS_URL</code>,
-            and keep every secret in Secret Manager.
-          </p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.cloudRun.needTitle")}</h2>
+          <p>{t("docs.cloudRun.needBody")}</p>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">1. Build the image</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.cloudRun.step1Title")}</h2>
           <div className="mt-3">
             <CodeBlock code={BUILD} filename="build.sh" />
           </div>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">2. Deploy</h2>
-          <p>Mount secrets from Secret Manager rather than passing them inline:</p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.cloudRun.step2Title")}</h2>
+          <p>{t("docs.cloudRun.step2Body")}</p>
           <div className="mt-3">
             <CodeBlock code={DEPLOY} filename="deploy.sh" />
           </div>
           <p className="mt-3">
-            Point the service URL at your GitHub App webhook (
-            <code className="font-mono text-[color:var(--dg-electric-bright)]">/api/v1/webhooks/github</code>). Because
-            Cloud Run scales to zero, cold starts add latency to the first webhook after idle — keep a minimum instance
-            warm for production. See the full{" "}
-            <a href="/docs/env" className="text-[color:var(--dg-electric-bright)] hover:underline">environment variable</a> reference.
-            DriftGuard is in early access; this is a reference deployment, not a managed offering.
+            {(() => {
+              const [pre, post] = t("docs.cloudRun.step2Footer").split("{envLink}");
+              return (
+                <>
+                  {pre}
+                  <a href="/docs/env" className="text-[color:var(--dg-electric-bright)] hover:underline">{t("docs.cloudRun.envLinkText")}</a>
+                  {post}
+                </>
+              );
+            })()}
           </p>
         </section>
       </div>

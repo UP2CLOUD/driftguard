@@ -60,38 +60,36 @@ export default async function SelfHost() {
     >
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Architecture</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.selfHost.archTitle")}</h2>
           <p>
-            The API is a single container built from <code className="font-mono text-[color:var(--dg-electric-bright)]">apps/api/Dockerfile</code>.
-            It needs three things at runtime: a Postgres database, a Redis instance for the job queue, and a GitHub
-            App so it can receive webhooks and post checks. Anthropic powers the AI review. See{" "}
-            <a href="/docs/env" className="text-[color:var(--dg-electric-bright)] hover:underline">environment variables</a> for
-            the full list.
+            {(() => {
+              const [pre, post] = t("docs.selfHost.archBody").split("{envLink}");
+              return (
+                <>
+                  {pre}
+                  <a href="/docs/env" className="text-[color:var(--dg-electric-bright)] hover:underline">{t("docs.selfHost.envLinkText")}</a>
+                  {post}
+                </>
+              );
+            })()}
           </p>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Docker</h2>
-          <p>The fastest way to run a single instance. Migrations run on startup:</p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.selfHost.dockerTitle")}</h2>
+          <p>{t("docs.selfHost.dockerBody")}</p>
           <div className="mt-3">
             <CodeBlock code={DOCKER} filename="run.sh" />
           </div>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Helm (Kubernetes)</h2>
-          <p>
-            For production, deploy the container to your cluster and wire secrets from your secret store rather than
-            passing them on the command line:
-          </p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.selfHost.helmTitle")}</h2>
+          <p>{t("docs.selfHost.helmBody")}</p>
           <div className="mt-3">
             <CodeBlock code={HELM} filename="install.sh" />
           </div>
-          <p className="mt-3">
-            DriftGuard is in early access — self-hosting is intended for teams comfortable operating a Python service
-            with Postgres and Redis. Point the GitHub App&rsquo;s webhook URL at your instance&rsquo;s{" "}
-            <code className="font-mono text-[color:var(--dg-electric-bright)]">/api/v1/webhooks/github</code>.
-          </p>
+          <p className="mt-3">{t("docs.selfHost.helmFooter")}</p>
         </section>
       </div>
     </MarketingPageShell>

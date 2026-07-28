@@ -1213,37 +1213,106 @@
     "aws": {
       "eyebrow": "Docs · Integrações",
       "title": "Integração com AWS",
-      "subtitle": "STS AssumeRole e backend de estado S3 — o DriftGuard lê seu estado AWS sem armazenar credenciais."
+      "subtitle": "STS AssumeRole e backend de estado S3 — o DriftGuard lê seu estado AWS sem armazenar credenciais.",
+      "howItWorksTitle": "Como funciona a conexão",
+      "howItWorksBody": "A detecção de drift precisa de acesso de leitura ao estado real da sua AWS para comparar o plano do Terraform com o que realmente existe. O DriftGuard nunca armazena credenciais de longa duração — ele assume uma role na sua conta via STS AssumeRole com um ID externo. Você cria a role; o DriftGuard a assume em modo somente leitura, sob demanda, a cada análise.",
+      "step1Title": "1. Crie a role do IAM",
+      "trustPolicyTitle": "Política de confiança",
+      "step1Intro": "Conceda à conta AWS do DriftGuard permissão para assumir a role. Copie seu ID de conta e o ID externo na tela de integração AWS do painel.",
+      "permsPolicyTitle": "Política de permissões",
+      "permsIntro": "Anexe uma política somente leitura. As ações Describe/Get/List são suficientes para a detecção de drift:",
+      "step2Title": "2. Registre a role",
+      "step2Body": "Salve o ARN da role e o backend de estado do Terraform no painel (Configurações → AWS) ou na configuração do repositório. É a chamada do painel que efetivamente armazena o ARN; a configuração abaixo documenta a intenção e fixa a região e o local do estado:",
+      "step2Verify": "Verifique a conexão com GET /api/v1/aws/verify, que executa um AssumeRole de teste e retorna sucesso ou o erro do STS.",
+      "withoutAwsTitle": "Sem acesso à AWS",
+      "withoutAwsBody": "O acesso à AWS é opcional. Custo, segurança, políticas e memória semântica funcionam apenas com o plano do Terraform. Só a detecção de drift sobre o estado real exige a role — pule esta página se ainda não precisar dela."
     },
     "gcp": {
       "eyebrow": "Docs · Integrações",
       "title": "Integração com GCP",
-      "subtitle": "Workload Identity Federation — sem credenciais de longa duração, sem chaves de conta de serviço."
+      "subtitle": "Workload Identity Federation — sem credenciais de longa duração, sem chaves de conta de serviço.",
+      "keylessTitle": "Sem chaves por design",
+      "keylessBody": "O DriftGuard se conecta ao Google Cloud por meio de Workload Identity Federation, então não há chaves JSON de conta de serviço para gerar, rotacionar ou armazenar. A detecção de drift precisa apenas de acesso de leitura para comparar seu plano do Terraform com o estado real — roles/viewer é suficiente.",
+      "step1Title": "1. Configure a federação",
+      "step1Body": "Crie um pool de identidade de carga de trabalho e vincule o principal do DriftGuard a uma role somente leitura:",
+      "step2Title": "2. Registre no DriftGuard",
+      "step2Body": "Informe o ID do projeto, o nome do recurso do provedor e o backend de estado no GCS no painel (Configurações → GCP). O painel armazena a vinculação; a configuração do repositório documenta qual projeto e estado o DriftGuard lê:",
+      "step2Footer": "O acesso ao GCP é opcional — apenas a detecção de drift sobre o estado real o utiliza. Todas as outras verificações rodam somente a partir do plano. O DriftGuard está em acesso antecipado."
     },
     "azure": {
       "eyebrow": "Docs · Integrações",
       "title": "Integração com Azure",
-      "subtitle": "Identidade de carga de trabalho federada para acesso seguro aos recursos Azure sem chaves."
+      "subtitle": "Identidade de carga de trabalho federada para acesso seguro aos recursos Azure sem chaves.",
+      "federatedTitle": "Acesso federado e sem chaves",
+      "federatedBody": "O DriftGuard se autentica no Azure usando uma credencial de identidade de carga de trabalho federada em um registro de aplicativo — sem client secrets armazenados em lugar nenhum. A detecção de drift precisa apenas da role interna Reader para comparar seu plano com os recursos reais.",
+      "step1Title": "1. Registre a identidade",
+      "step1Body": "Crie o registro de aplicativo, adicione a credencial federada exibida pelo DriftGuard e atribua a role Reader:",
+      "step2Title": "2. Registre no DriftGuard",
+      "step2Body": "Salve os IDs de assinatura, locatário (tenant) e cliente, além do backend de estado no Blob Storage, no painel (Configurações → Azure). A configuração do repositório registra qual assinatura e estado o DriftGuard lê:",
+      "step2Footer": "O acesso ao Azure é opcional e somente leitura; ele alimenta apenas a detecção de drift sobre o estado real. O DriftGuard está em acesso antecipado."
     },
     "slack": {
       "eyebrow": "Docs · Integrações",
       "title": "Alertas no Slack",
-      "subtitle": "Roteamento por canal e severidade — bloqueios críticos em #incidentes, avisos em #revisões-infra."
+      "subtitle": "Roteamento por canal e severidade — bloqueios críticos em #incidentes, avisos em #revisões-infra.",
+      "connectTitle": "Conecte um webhook",
+      "connectBody": "O DriftGuard publica os resultados das revisões no Slack por meio de um {webhookLink}. Crie o webhook no seu workspace do Slack e cole a URL no painel (Configurações → Slack). A URL é um secret e é armazenada no servidor — nunca faça commit dela no seu repositório.",
+      "webhookLinkText": "webhook de entrada",
+      "routeTitle": "Roteie por severidade",
+      "routeBody": "Depois de conectado, escolha qual canal recebe qual severidade. Bloqueios críticos podem ir para o seu canal de incidentes, enquanto avisos ficam em um canal de revisão mais tranquilo:",
+      "messageTitle": "Formato da mensagem",
+      "messageBody": "Cada alerta é uma mensagem em Block Kit que resume a decisão e os principais achados:",
+      "messageFooter": "As notificações do Slack são opcionais e exigem a configuração da URL do webhook no painel. O DriftGuard está em acesso antecipado."
     },
     "selfHost": {
       "eyebrow": "Docs · Implantação",
       "title": "Implantação auto-hospedada",
-      "subtitle": "Helm chart e imagens de container — execute o DriftGuard no seu próprio cluster Kubernetes."
+      "subtitle": "Helm chart e imagens de container — execute o DriftGuard no seu próprio cluster Kubernetes.",
+      "archTitle": "Arquitetura",
+      "archBody": "A API é um único container construído a partir de apps/api/Dockerfile. Ela precisa de três coisas em tempo de execução: um banco de dados Postgres, uma instância Redis para a fila de jobs e um GitHub App para poder receber webhooks e publicar checks. A Anthropic é quem alimenta a revisão por IA. Veja a lista completa em {envLink}.",
+      "envLinkText": "variáveis de ambiente",
+      "dockerTitle": "Docker",
+      "dockerBody": "A forma mais rápida de rodar uma única instância. As migrations rodam na inicialização:",
+      "helmTitle": "Helm (Kubernetes)",
+      "helmBody": "Para produção, implante o container no seu cluster e conecte os secrets a partir do seu secret store, em vez de passá-los na linha de comando:",
+      "helmFooter": "O DriftGuard está em acesso antecipado — o self-hosting é indicado para times confortáveis em operar um serviço Python com Postgres e Redis. Aponte a URL do webhook do seu GitHub App para /api/v1/webhooks/github da sua instância."
     },
     "cloudRun": {
       "eyebrow": "Docs · Implantação",
       "title": "Implantação no Cloud Run",
-      "subtitle": "Implantação de referência no GCP com Cloud Run — infraestrutura gerenciada, escalonamento automático."
+      "subtitle": "Implantação de referência no GCP com Cloud Run — infraestrutura gerenciada, escalonamento automático.",
+      "needTitle": "O que você precisa",
+      "needBody": "O Cloud Run executa o mesmo container de qualquer outra implantação. Para uma stack gerenciada na GCP, combine-o com o Cloud SQL (Postgres) para DATABASE_URL e o Memorystore (Redis) para REDIS_URL, e mantenha todos os secrets no Secret Manager.",
+      "step1Title": "1. Construa a imagem",
+      "step2Title": "2. Implante",
+      "step2Body": "Monte os secrets a partir do Secret Manager em vez de passá-los inline:",
+      "step2Footer": "Aponte a URL do serviço para o webhook do seu GitHub App (/api/v1/webhooks/github). Como o Cloud Run escala para zero, cold starts adicionam latência ao primeiro webhook após ficar ocioso — mantenha uma instância mínima ativa em produção. Veja a referência completa de {envLink}. O DriftGuard está em acesso antecipado; este é um deployment de referência, não uma oferta gerenciada.",
+      "envLinkText": "variáveis de ambiente"
     },
     "env": {
       "eyebrow": "Docs · Implantação",
       "title": "Variáveis de ambiente",
-      "subtitle": "Referência completa — todas as variáveis de configuração, valores padrão e exemplos."
+      "subtitle": "Referência completa — todas as variáveis de configuração, valores padrão e exemplos.",
+      "requiredLabel": "Obrigatórias",
+      "optionalLabel": "Opcionais",
+      "introBody": "Essas variáveis configuram a API do DriftGuard. As sete variáveis obrigatórias são suficientes para inicializar; as demais habilitam integrações opcionais. Em hosts gerenciados (Render, Cloud Run), configure as obrigatórias como secrets.",
+      "minimalTitle": ".env mínimo",
+      "minimalFooter": "Nunca faça commit de secrets reais. O DriftGuard está em acesso antecipado; os nomes das variáveis podem mudar.",
+      "req_secretKey": "Chave de assinatura do app para JWTs e CSRF. Gere com openssl rand -hex 32.",
+      "req_databaseUrl": "String de conexão do Postgres. As migrations rodam na inicialização.",
+      "req_redisUrl": "Instância Redis que sustenta a fila de jobs de análise.",
+      "req_githubAppId": "ID numérico do seu GitHub App do DriftGuard.",
+      "req_githubAppPrivateKey": "Chave privada PEM do GitHub App (multilinha).",
+      "req_githubWebhookSecret": "Secret compartilhado usado para verificar o HMAC do webhook X-Hub-Signature-256.",
+      "req_anthropicApiKey": "Alimenta o resumo de revisão por IA de cada diff.",
+      "opt_anthropicModel": "Sobrescreve o modelo usado para a revisão por IA.",
+      "opt_infracostApiKey": "Habilita a análise de variação de custo via Infracost.",
+      "opt_stripeApiKey": "Cobrança — checkout e portal do cliente.",
+      "opt_stripeWebhookSecret": "Verifica as assinaturas dos webhooks do Stripe.",
+      "opt_resendApiKey": "E-mail transacional (alertas, convites).",
+      "opt_sentryDsn": "Relatório de erros para o Sentry.",
+      "opt_environment": "Nome do ambiente de deployment. O padrão é production.",
+      "opt_port": "Porta em que o servidor escuta. O padrão é 8000."
     },
     "rateLimits": {
       "eyebrow": "Docs · API",

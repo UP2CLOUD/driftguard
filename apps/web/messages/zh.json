@@ -1183,37 +1183,106 @@
     "aws": {
       "eyebrow": "文档 · 集成",
       "title": "AWS 集成",
-      "subtitle": "STS AssumeRole 和 S3 状态后端 — DriftGuard 在不存储凭证的情况下读取您的 AWS 实时状态。"
+      "subtitle": "STS AssumeRole 和 S3 状态后端 — DriftGuard 在不存储凭证的情况下读取您的 AWS 实时状态。",
+      "howItWorksTitle": "连接原理",
+      "howItWorksBody": "漂移检测需要对你的实时 AWS 状态拥有读取权限，才能将 Terraform 计划与实际存在的资源进行比对。DriftGuard 从不存储长期有效的凭证——它通过带有外部 ID 的 STS AssumeRole 承担你账户中的角色。你创建该角色，DriftGuard 每次分析时按需以只读方式承担该角色。",
+      "step1Title": "1. 创建 IAM 角色",
+      "trustPolicyTitle": "信任策略",
+      "step1Intro": "授予 DriftGuard 的 AWS 账户承担该角色的权限。从控制台的 AWS 集成页面复制你的账户 ID 和外部 ID。",
+      "permsPolicyTitle": "权限策略",
+      "permsIntro": "附加一个只读策略。Describe/Get/List 类操作即可满足漂移检测的需要：",
+      "step2Title": "2. 注册角色",
+      "step2Body": "在控制台（设置 → AWS）或仓库配置中保存角色 ARN 和 Terraform 状态后端。真正存储 ARN 的是控制台的调用；下面的配置只是记录意图，并固定区域与状态位置：",
+      "step2Verify": "使用 GET /api/v1/aws/verify 验证连接，该接口会执行一次测试性的 AssumeRole，并返回成功结果或 STS 错误信息。",
+      "withoutAwsTitle": "不接入 AWS 的情况",
+      "withoutAwsBody": "AWS 访问权限是可选的。成本、安全、策略与语义记忆功能仅凭 Terraform 计划即可运行。只有针对实时状态的漂移检测才需要该角色——如果暂时不需要，可以跳过本页。"
     },
     "gcp": {
       "eyebrow": "文档 · 集成",
       "title": "GCP 集成",
-      "subtitle": "工作负载身份联合 — 无需长期凭证，无需服务账号密钥。"
+      "subtitle": "工作负载身份联合 — 无需长期凭证，无需服务账号密钥。",
+      "keylessTitle": "设计上即无密钥",
+      "keylessBody": "DriftGuard 通过 Workload Identity Federation 连接 Google Cloud，因此无需生成、轮换或存储服务账号 JSON 密钥。漂移检测只需要读取权限即可将 Terraform 计划与实时状态进行比对——roles/viewer 就已足够。",
+      "step1Title": "1. 设置联合身份",
+      "step1Body": "创建工作负载身份池，并将 DriftGuard 的主体绑定到一个只读角色：",
+      "step2Title": "2. 在 DriftGuard 中注册",
+      "step2Body": "在控制台（设置 → GCP）中输入项目 ID、提供方资源名称和 GCS 状态后端。控制台负责存储绑定关系；仓库配置只是记录 DriftGuard 读取的是哪个项目和状态：",
+      "step2Footer": "GCP 访问权限是可选的——只有针对实时状态的漂移检测会用到它，其余检查都只依赖计划本身运行。DriftGuard 目前处于早期访问阶段。"
     },
     "azure": {
       "eyebrow": "文档 · 集成",
       "title": "Azure 集成",
-      "subtitle": "联合工作负载身份，实现对 Azure 资源的安全无密钥访问。"
+      "subtitle": "联合工作负载身份，实现对 Azure 资源的安全无密钥访问。",
+      "federatedTitle": "联合身份、无密钥访问",
+      "federatedBody": "DriftGuard 通过应用注册上的联合工作负载身份凭据向 Azure 进行身份验证——不在任何地方存储客户端密钥。漂移检测只需要内置的 Reader 角色即可将你的计划与实际资源进行比对。",
+      "step1Title": "1. 注册身份",
+      "step1Body": "创建应用注册，添加 DriftGuard 展示给你的联合凭据，并分配 Reader 角色：",
+      "step2Title": "2. 在 DriftGuard 中注册",
+      "step2Body": "在控制台（设置 → Azure）中保存订阅 ID、租户 ID、客户端 ID 以及 Blob Storage 状态后端。仓库配置负责记录 DriftGuard 读取的是哪个订阅和状态：",
+      "step2Footer": "Azure 访问权限是可选且只读的；它仅用于驱动针对实时状态的漂移检测。DriftGuard 目前处于早期访问阶段。"
     },
     "slack": {
       "eyebrow": "文档 · 集成",
       "title": "Slack 告警",
-      "subtitle": "按严重程度路由到不同频道 — 严重阻断发送至 #incidents，警告发送至 #infra-reviews。"
+      "subtitle": "按严重程度路由到不同频道 — 严重阻断发送至 #incidents，警告发送至 #infra-reviews。",
+      "connectTitle": "连接 Webhook",
+      "connectBody": "DriftGuard 通过 {webhookLink} 将评审结果发布到 Slack。请在你的 Slack 工作区中创建该 webhook，然后将 URL 粘贴到控制台（设置 → Slack）中。该 URL 属于敏感信息，会保存在服务端——切勿将其提交到你的仓库中。",
+      "webhookLinkText": "传入 Webhook",
+      "routeTitle": "按严重级别路由",
+      "routeBody": "连接完成后，可以选择不同严重级别分别发送到哪个频道。严重阻断可以发送到你的事件频道，而警告则可以留在较为安静的评审频道中：",
+      "messageTitle": "消息结构",
+      "messageBody": "每条告警都是一条 Block Kit 消息，总结了判定结果和主要发现：",
+      "messageFooter": "Slack 通知是可选功能，需要在控制台配置 webhook URL。DriftGuard 目前处于早期访问阶段。"
     },
     "selfHost": {
       "eyebrow": "文档 · 部署",
       "title": "自托管部署",
-      "subtitle": "Helm chart 和容器镜像 — 在您自己的 Kubernetes 集群中运行 DriftGuard。"
+      "subtitle": "Helm chart 和容器镜像 — 在您自己的 Kubernetes 集群中运行 DriftGuard。",
+      "archTitle": "架构",
+      "archBody": "该 API 是由 apps/api/Dockerfile 构建出的单个容器。它在运行时需要三样东西：一个 Postgres 数据库、一个用于任务队列的 Redis 实例，以及一个用于接收 webhook 并发布检查结果的 GitHub App。AI 评审由 Anthropic 提供支持。完整列表见 {envLink}。",
+      "envLinkText": "环境变量",
+      "dockerTitle": "Docker",
+      "dockerBody": "运行单个实例最快的方式。数据库迁移会在启动时自动执行：",
+      "helmTitle": "Helm（Kubernetes）",
+      "helmBody": "在生产环境中，请将容器部署到你的集群，并从密钥存储中接入密钥，而不是通过命令行传递：",
+      "helmFooter": "DriftGuard 目前处于早期访问阶段——自托管适用于能够熟练运维基于 Postgres 和 Redis 的 Python 服务的团队。请将 GitHub App 的 webhook URL 指向你实例的 /api/v1/webhooks/github。"
     },
     "cloudRun": {
       "eyebrow": "文档 · 部署",
       "title": "Cloud Run 部署",
-      "subtitle": "使用 Cloud Run 的 GCP 参考部署 — 托管基础设施，自动扩缩容。"
+      "subtitle": "使用 Cloud Run 的 GCP 参考部署 — 托管基础设施，自动扩缩容。",
+      "needTitle": "所需条件",
+      "needBody": "Cloud Run 运行的容器与其他部署方式完全相同。若要使用托管的 GCP 技术栈，可将其与 Cloud SQL（Postgres）搭配用于 DATABASE_URL，与 Memorystore（Redis）搭配用于 REDIS_URL，并将所有密钥保存在 Secret Manager 中。",
+      "step1Title": "1. 构建镜像",
+      "step2Title": "2. 部署",
+      "step2Body": "从 Secret Manager 挂载密钥，而不是以内联方式传递：",
+      "step2Footer": "把服务 URL 指向你的 GitHub App webhook（/api/v1/webhooks/github）。由于 Cloud Run 会缩容至零，空闲后冷启动会给第一次 webhook 调用带来额外延迟——生产环境中请保留最小实例数以保持热启动。完整参考见 {envLink}。DriftGuard 目前处于早期访问阶段；这只是一个参考部署方式，并非托管服务。",
+      "envLinkText": "环境变量"
     },
     "env": {
       "eyebrow": "文档 · 部署",
       "title": "环境变量",
-      "subtitle": "完整参考 — 每个配置变量、默认值和示例。"
+      "subtitle": "完整参考 — 每个配置变量、默认值和示例。",
+      "requiredLabel": "必填",
+      "optionalLabel": "可选",
+      "introBody": "这些变量用于配置 DriftGuard API。七个必填变量足以启动服务；其余变量用于启用可选的集成功能。在托管主机（Render、Cloud Run）上，请将必填变量配置为密钥（secrets）。",
+      "minimalTitle": "最小 .env 配置",
+      "minimalFooter": "切勿提交真实密钥。DriftGuard 目前处于早期访问阶段；变量名称可能会发生变化。",
+      "req_secretKey": "用于 JWT 和 CSRF 的应用签名密钥。使用 openssl rand -hex 32 生成。",
+      "req_databaseUrl": "Postgres 连接字符串。数据库迁移会在启动时执行。",
+      "req_redisUrl": "支撑分析任务队列的 Redis 实例。",
+      "req_githubAppId": "你的 DriftGuard GitHub App 的数字 ID。",
+      "req_githubAppPrivateKey": "GitHub App 的 PEM 私钥（多行）。",
+      "req_githubWebhookSecret": "用于验证 X-Hub-Signature-256 webhook HMAC 的共享密钥。",
+      "req_anthropicApiKey": "为每次差异（diff）的 AI 评审摘要提供支持。",
+      "opt_anthropicModel": "覆盖用于 AI 评审的模型。",
+      "opt_infracostApiKey": "通过 Infracost 启用成本差异分析。",
+      "opt_stripeApiKey": "计费——结账与客户门户。",
+      "opt_stripeWebhookSecret": "用于验证 Stripe webhook 签名。",
+      "opt_resendApiKey": "事务性邮件（告警、邀请）。",
+      "opt_sentryDsn": "向 Sentry 上报错误。",
+      "opt_environment": "部署环境名称。默认值为 production。",
+      "opt_port": "服务器绑定的端口。默认值为 8000。"
     },
     "rateLimits": {
       "eyebrow": "文档 · API",

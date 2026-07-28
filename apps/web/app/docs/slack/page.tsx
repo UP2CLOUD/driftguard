@@ -59,36 +59,36 @@ export default async function Slack() {
     >
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Connect a webhook</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.slack.connectTitle")}</h2>
           <p>
-            DriftGuard posts review results to Slack through an{" "}
-            <a href="https://api.slack.com/messaging/webhooks" className="text-[color:var(--dg-electric-bright)] hover:underline">incoming webhook</a>.
-            Create the webhook in your Slack workspace, then paste the URL into the dashboard (Settings &rarr; Slack).
-            The URL is a secret and is stored server-side — never commit it to your repo.
+            {(() => {
+              const [pre, post] = t("docs.slack.connectBody").split("{webhookLink}");
+              return (
+                <>
+                  {pre}
+                  <a href="https://api.slack.com/messaging/webhooks" className="text-[color:var(--dg-electric-bright)] hover:underline">{t("docs.slack.webhookLinkText")}</a>
+                  {post}
+                </>
+              );
+            })()}
           </p>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Route by severity</h2>
-          <p>
-            Once connected, choose which channel receives which severity. Critical blocks can go to your incident
-            channel while warnings stay in a quieter review channel:
-          </p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.slack.routeTitle")}</h2>
+          <p>{t("docs.slack.routeBody")}</p>
           <div className="mt-3">
             <CodeBlock code={CONFIG} filename=".github/driftguard.yml" />
           </div>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Message shape</h2>
-          <p>Each alert is a Block Kit message summarising the decision and the top findings:</p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.slack.messageTitle")}</h2>
+          <p>{t("docs.slack.messageBody")}</p>
           <div className="mt-3">
             <CodeBlock code={PAYLOAD} filename="slack-message.json" />
           </div>
-          <p className="mt-3">
-            Slack notifications are optional and require dashboard setup for the webhook URL. DriftGuard is in early
-            access.
-          </p>
+          <p className="mt-3">{t("docs.slack.messageFooter")}</p>
         </section>
       </div>
     </MarketingPageShell>
