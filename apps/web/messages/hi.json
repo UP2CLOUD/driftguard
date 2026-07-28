@@ -1078,7 +1078,11 @@
       "eyebrow": "डॉक्स · API",
       "title": "दर सीमाएं",
       "subtitle": "प्रति-org और प्रति-API-key कोटा — सीमाएं समझें, 429 त्रुटियां संभालें, और वृद्धि का अनुरोध करें।"
-    }
+    },
+    "quickstartLabel": "▸ क्विकस्टार्ट",
+    "committedToRepo": ".github/driftguard.yml ▪ रिपॉज़िटरी में कमिट किया गया",
+    "installNow": "▸ अभी इंस्टॉल करें",
+    "githubIssues": "GitHub इश्यूज़ →"
   },
   "status": {
     "eyebrow": "सिस्टम स्थिति",

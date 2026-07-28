@@ -1078,7 +1078,11 @@
       "eyebrow": "文档 · API",
       "title": "速率限制",
       "subtitle": "按组织和 API 密钥的配额 — 了解限制、处理 429 错误并申请提高配额。"
-    }
+    },
+    "quickstartLabel": "▸ 快速开始",
+    "committedToRepo": ".github/driftguard.yml ▪ 已提交到仓库",
+    "installNow": "▸ 立即安装",
+    "githubIssues": "GitHub 问题反馈 →"
   },
   "status": {
     "eyebrow": "系统状态",

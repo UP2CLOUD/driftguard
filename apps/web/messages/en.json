@@ -1108,7 +1108,11 @@
       "eyebrow": "Docs · API",
       "title": "Rate limits",
       "subtitle": "Per-org and per-API-key quotas — understand limits, handle 429s, and request increases."
-    }
+    },
+    "quickstartLabel": "▸ quickstart",
+    "committedToRepo": ".github/driftguard.yml ▪ committed to repo",
+    "installNow": "▸ install now",
+    "githubIssues": "GitHub issues →"
   },
   "status": {
     "eyebrow": "System status",

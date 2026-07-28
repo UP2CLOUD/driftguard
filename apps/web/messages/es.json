@@ -1078,7 +1078,11 @@
       "eyebrow": "Docs · API",
       "title": "Límites de velocidad",
       "subtitle": "Cuotas por organización y por clave de API — entiende los límites, gestiona errores 429 y solicita aumentos."
-    }
+    },
+    "quickstartLabel": "▸ inicio rápido",
+    "committedToRepo": ".github/driftguard.yml ▪ confirmado en el repositorio",
+    "installNow": "▸ instalar ahora",
+    "githubIssues": "Incidencias de GitHub →"
   },
   "status": {
     "eyebrow": "Estado del sistema",

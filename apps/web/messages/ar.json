@@ -1078,7 +1078,11 @@
       "eyebrow": "المستندات · API",
       "title": "حدود المعدل",
       "subtitle": "حصص لكل مؤسسة ولكل مفتاح API — فهم الحدود والتعامل مع أخطاء 429 وطلب الزيادة."
-    }
+    },
+    "quickstartLabel": "▸ البدء السريع",
+    "committedToRepo": ".github/driftguard.yml ▪ تم إيداعه في المستودع",
+    "installNow": "▸ التثبيت الآن",
+    "githubIssues": "مشكلات GitHub ←"
   },
   "status": {
     "eyebrow": "حالة النظام",

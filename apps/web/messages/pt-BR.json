@@ -1108,7 +1108,11 @@
       "eyebrow": "Docs · API",
       "title": "Limites de taxa",
       "subtitle": "Cotas por organização e por chave de API — entenda os limites, trate erros 429 e solicite aumentos."
-    }
+    },
+    "quickstartLabel": "▸ início rápido",
+    "committedToRepo": ".github/driftguard.yml ▪ commitado no repositório",
+    "installNow": "▸ instalar agora",
+    "githubIssues": "Issues do GitHub →"
   },
   "status": {
     "eyebrow": "Estado do sistema",
