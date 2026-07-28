@@ -4,6 +4,18 @@
 
 export type Verdict = "ALLOW" | "WARN" | "BLOCK";
 
+export const VERDICT_COLOR: Record<Verdict, string> = {
+  ALLOW: "var(--dg-allowed, #22d38d)",
+  WARN: "var(--dg-warned, #f5a623)",
+  BLOCK: "var(--dg-blocked, #ef4444)",
+};
+
+export const VERDICT_LABEL: Record<Verdict, string> = {
+  ALLOW: "Allow",
+  WARN: "Warn — requires approval",
+  BLOCK: "Block",
+};
+
 export interface PipelineStep {
   stage: string;
   detail: string;

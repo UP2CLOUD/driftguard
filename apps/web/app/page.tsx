@@ -13,6 +13,8 @@ import { TrustBar } from "@/components/marketing/TrustBar";
 import { PolicySimulatorDemo } from "@/components/marketing/PolicySimulatorDemo";
 import { RuntimeArchitectureMap } from "@/components/marketing/RuntimeArchitectureMap";
 import { ComplianceHeatmap } from "@/components/marketing/ComplianceHeatmap";
+import { EvidenceLab } from "@/components/marketing/EvidenceLab";
+import { BriefingSection } from "@/components/marketing/BriefingForm";
 import { PricingTeaser } from "@/components/marketing/PricingTeaser";
 import { Reveal } from "@/components/marketing/Reveal";
 
@@ -51,7 +53,15 @@ export default async function Page() {
           </section>
 
           <section className="w-full border-t border-[color:var(--dg-border-strong)]">
+            <EvidenceLab />
+          </section>
+
+          <section className="w-full border-t border-[color:var(--dg-border-strong)] bg-black/40 backdrop-blur-md">
             <PricingTeaser />
+          </section>
+
+          <section className="w-full border-t border-[color:var(--dg-border-strong)]">
+            <BriefingSection />
           </section>
 
           {/* Closing CTA — focused reveal, minimal decorative movement */}

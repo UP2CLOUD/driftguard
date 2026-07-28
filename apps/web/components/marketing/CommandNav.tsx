@@ -17,6 +17,7 @@ const NAV_LINKS: { href: string; label: string }[] = [
   { href: "/#demo", label: "How it works" },
   { href: "/#architecture", label: "Architecture" },
   { href: "/#compliance", label: "Compliance" },
+  { href: "/#evidence", label: "Evidence" },
   { href: "/pricing", label: "Pricing" },
   { href: "/docs", label: "Docs" },
 ];
