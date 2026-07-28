@@ -19,7 +19,7 @@ export async function LegalPageShell({ children, active }: LegalPageShellProps) 
   return (
     <TranslationProvider messages={messages as Record<string, unknown>}>
       <main className="min-h-screen bg-[color:var(--dg-canvas)] text-[color:var(--dg-fg)]">
-        <CommandNav />
+        <CommandNav initialPreferences={preferences} />
 
         <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10 sm:py-14">
           <nav

@@ -42,7 +42,7 @@ export default async function PricingPage() {
     <TranslationProvider messages={messages as Record<string, unknown>}>
       <>
         <JsonLd data={faqData} />
-        <CommandNav />
+        <CommandNav initialPreferences={prefs} />
         <main className="bg-[color:var(--dg-canvas)]">
           <Pricing />
         </main>

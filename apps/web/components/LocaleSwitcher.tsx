@@ -135,7 +135,7 @@ export function LocaleSwitcher({
             absolute z-50 right-0 top-full mt-1.5
             min-w-[140px] rounded-lg
             border border-[color:var(--dg-border)]
-            bg-[color:var(--dg-canvas)]/95 backdrop-blur-md
+            bg-[color-mix(in_srgb,var(--dg-canvas)_95%,transparent)] backdrop-blur-md
             shadow-lg shadow-black/20
             overflow-hidden
             transition-all duration-150 origin-top-right
