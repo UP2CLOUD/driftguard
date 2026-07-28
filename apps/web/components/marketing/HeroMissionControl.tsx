@@ -5,19 +5,13 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { getGitHubAppInstallUrl } from "@/lib/github-app";
-import { PIPELINE_STEPS } from "@/lib/demo/pipeline";
+import { PIPELINE_STEPS, VERDICT_COLOR } from "@/lib/demo/pipeline";
 import { useIsMobileViewport } from "@/lib/motion/useIsMobileViewport";
 import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 
 // Code-split: three.js + @react-three/fiber + drei only ship to devices
 // that actually render the globe (desktop/tablet, motion not reduced).
 const HeroGlobe = dynamic(() => import("./HeroGlobe"), { ssr: false });
-
-const VERDICT_COLOR: Record<string, string> = {
-  ALLOW: "var(--dg-allowed, #22d38d)",
-  WARN: "var(--dg-warned, #f5a623)",
-  BLOCK: "var(--dg-blocked, #ef4444)",
-};
 
 function ReviewFeed() {
   // SSR-safe: false on the server and on the client's first render (so
@@ -116,10 +110,20 @@ export function HeroMissionControl() {
             Install the GitHub App
           </a>
           <Link
-            href="/docs"
+            href="#demo"
             className="touch-manipulation rounded border border-[color:var(--dg-border-strong)] bg-transparent px-8 py-3.5 text-[13px] font-medium text-[color:var(--dg-fg)] transition-colors hover:bg-[color:var(--dg-surface-raised)] active:scale-[0.97]"
           >
+            Run a governed PR review
+          </Link>
+        </div>
+
+        <div className="dg-page-enter dg-stagger-4 mt-5 flex items-center gap-4 font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
+          <Link href="/docs" className="touch-manipulation underline-offset-4 transition-colors hover:text-white hover:underline">
             Read the docs
+          </Link>
+          <span aria-hidden="true" className="opacity-40">·</span>
+          <Link href="#briefing" className="touch-manipulation underline-offset-4 transition-colors hover:text-white hover:underline">
+            Schedule a technical briefing
           </Link>
         </div>
       </div>
