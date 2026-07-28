@@ -9,6 +9,7 @@ import { SCENARIOS, scenarioVerdict, type Scenario } from "@/lib/demo/scenarios"
 import { VERDICT_COLOR, VERDICT_LABEL, type Verdict } from "@/lib/demo/pipeline";
 import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 import { DURATION, EASE } from "@/lib/motion/tokens";
+import { useT } from "@/components/TranslationProvider";
 
 type RunState = "idle" | "running" | "paused" | "done";
 
@@ -20,14 +21,14 @@ interface TimelineItem {
   verdict?: Verdict;
 }
 
-function buildTimeline(scenario: Scenario): TimelineItem[] {
+function buildTimeline(scenario: Scenario, t: ReturnType<typeof useT>): TimelineItem[] {
   const verdict = scenarioVerdict(scenario);
   return [
     {
       id: "pr_opened",
       kind: "meta",
-      label: "Pull request opened",
-      detail: `${scenario.repo}#${scenario.prNumber} · ${scenario.title} · opened by ${scenario.author}`,
+      label: t("marketing.simulator.timelinePrOpened"),
+      detail: `${scenario.repo}#${scenario.prNumber} · ${scenario.title} · ${t("marketing.simulator.openedBy", { author: scenario.author })}`,
     },
     ...scenario.engines.map((e) => ({
       id: e.key,
@@ -39,21 +40,21 @@ function buildTimeline(scenario: Scenario): TimelineItem[] {
     {
       id: "verdict",
       kind: "verdict",
-      label: "Verdict computed",
+      label: t("marketing.simulator.timelineVerdictComputed"),
       detail: `${scenario.rule} → ${verdict}`,
       verdict,
     },
     {
       id: "check",
       kind: "check",
-      label: "GitHub Check posted",
+      label: t("marketing.simulator.timelineCheckPosted"),
       detail: `driftguard/policy-gate → ${verdict}`,
       verdict,
     },
     {
       id: "audit",
       kind: "audit",
-      label: "Audit log entry appended",
+      label: t("marketing.simulator.timelineAuditAppended"),
       detail: `event: merge_decision · pr: ${scenario.repo}#${scenario.prNumber}`,
     },
   ];
@@ -96,6 +97,7 @@ function EngineRow({ item, revealed }: { item: TimelineItem; revealed: boolean }
 }
 
 function DecisionInspector({ scenario, verdict }: { scenario: Scenario; verdict: Verdict }) {
+  const t = useT();
   const flagged = scenario.engines.filter((e) => e.verdict !== "ALLOW");
   const clean = flagged.length === 0;
 
@@ -109,7 +111,7 @@ function DecisionInspector({ scenario, verdict }: { scenario: Scenario; verdict:
     >
       <div className="mb-4 flex items-center justify-between">
         <h4 className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-          Decision inspector
+          {t("marketing.simulator.decisionInspector")}
         </h4>
         <span
           className="rounded px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-widest"
@@ -122,47 +124,47 @@ function DecisionInspector({ scenario, verdict }: { scenario: Scenario; verdict:
       <dl className="grid grid-cols-1 gap-x-6 gap-y-3 text-[12px] sm:grid-cols-2">
         <div>
           <dt className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-            Pull request
+            {t("marketing.simulator.pullRequestLabel")}
           </dt>
           <dd className="text-[color:var(--dg-fg)]">{scenario.repo}#{scenario.prNumber} — {scenario.title}</dd>
         </div>
         <div>
           <dt className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-            Author
+            {t("marketing.simulator.authorLabel")}
           </dt>
           <dd className="text-[color:var(--dg-fg)]">{scenario.author}</dd>
         </div>
         <div className="sm:col-span-2">
           <dt className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-            {clean ? "Analysis result" : "Flagged by"}
+            {clean ? t("marketing.simulator.analysisResultLabel") : t("marketing.simulator.flaggedByLabel")}
           </dt>
           <dd className="text-[color:var(--dg-fg)]">
             {clean
-              ? "All six engines returned ALLOW — no policy rule matched."
+              ? t("marketing.simulator.allowAllText")
               : flagged.map((e) => `${e.stage} (${e.verdict})`).join(" · ")}
           </dd>
         </div>
         <div>
           <dt className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-            Policy rule
+            {t("marketing.simulator.policyRuleLabel")}
           </dt>
           <dd className="font-mono text-[color:var(--dg-fg)]">{scenario.rule}</dd>
         </div>
         <div>
           <dt className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-            Policy file
+            {t("marketing.simulator.policyFileLabel")}
           </dt>
           <dd className="font-mono text-[color:var(--dg-fg)]">.github/driftguard.yml</dd>
         </div>
         <div className="sm:col-span-2">
           <dt className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-            Explanation
+            {t("marketing.simulator.explanationLabel")}
           </dt>
           <dd className="text-[color:var(--dg-fg-muted)]">{scenario.explanation}</dd>
         </div>
         <div className="sm:col-span-2">
           <dt className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-            Audit entry
+            {t("marketing.simulator.auditEntryLabel")}
           </dt>
           <dd className="font-mono text-[color:var(--dg-fg-muted)]">
             event: merge_decision · decision: {verdict.toLowerCase()} · pr: {scenario.repo}#{scenario.prNumber}
@@ -175,7 +177,7 @@ function DecisionInspector({ scenario, verdict }: { scenario: Scenario; verdict:
           href="#evidence"
           className="mt-4 inline-flex min-h-[44px] items-center font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] underline-offset-4 hover:underline"
         >
-          Inspect the sealed evidence trail for this PR ↓
+          {t("marketing.simulator.inspectEvidenceLink")}
         </Link>
       )}
     </div>
@@ -187,9 +189,10 @@ const RUN_CONTROL_CLASS =
 
 export function PolicySimulatorDemo() {
   const reduceMotion = usePrefersReducedMotion();
+  const t = useT();
   const [scenarioId, setScenarioId] = useState(SCENARIOS[0].id);
   const scenario = useMemo(() => SCENARIOS.find((s) => s.id === scenarioId) ?? SCENARIOS[0], [scenarioId]);
-  const timeline = useMemo(() => buildTimeline(scenario), [scenario]);
+  const timeline = useMemo(() => buildTimeline(scenario, t), [scenario, t]);
   const verdict = useMemo(() => scenarioVerdict(scenario), [scenario]);
 
   const [stepIndex, setStepIndex] = useState(0);
@@ -278,20 +281,18 @@ export function PolicySimulatorDemo() {
     <div className="w-full max-w-6xl mx-auto px-6 py-24">
       <Reveal className="mb-12">
         <h2 className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-electric-bright)] mb-4">
-          How it works
+          {t("marketing.simulator.eyebrow")}
         </h2>
-        <h3 className="text-3xl font-medium text-white mb-4">Run a governed PR review</h3>
+        <h3 className="text-3xl font-medium text-white mb-4">{t("marketing.simulator.title")}</h3>
         <p className="text-[color:var(--dg-fg-muted)] max-w-xl">
-          Pick a scenario and step through what DriftGuard actually does when a Terraform pull request opens:
-          parse the plan, run six analyses, evaluate your policy, and post a verdict — before the change reaches
-          your cloud account.
+          {t("marketing.simulator.body")}
         </p>
       </Reveal>
 
       {/* Scenario tabs — accessible tablist with roving tabindex + arrow-key nav */}
       <div
         role="tablist"
-        aria-label="Simulator scenario"
+        aria-label={t("marketing.simulator.tablistAriaLabel")}
         className="mb-6 flex gap-2 overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch]"
       >
         {SCENARIOS.map((s, i) => {
@@ -335,20 +336,20 @@ export function PolicySimulatorDemo() {
         <div className="flex flex-col gap-4">
           <div className="rounded-lg border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-4">
             <div className="mb-1 font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-              {scenario.repo}#{scenario.prNumber} · demo PR, not a live tenant
+              {scenario.repo}#{scenario.prNumber} · {t("marketing.simulator.demoPrLabel")}
             </div>
             <div className="text-[14px] font-medium text-white">{scenario.title}</div>
             <div className="mt-1 font-mono text-[11px] text-[color:var(--dg-fg-subtle)]">
-              opened by {scenario.author}
+              {t("marketing.simulator.openedBy", { author: scenario.author })}
             </div>
           </div>
 
-          <CodeBlock code={scenario.diff} filename="main.tf" copyLabel="Copy Terraform diff" />
+          <CodeBlock code={scenario.diff} filename="main.tf" copyLabel={t("marketing.simulator.copyDiffLabel")} />
 
           <div className="flex flex-wrap gap-2">
             {runState === "running" ? (
               <button type="button" onClick={pause} className={RUN_CONTROL_CLASS}>
-                Pause
+                {t("marketing.simulator.btnPause")}
               </button>
             ) : (
               <button
@@ -357,7 +358,7 @@ export function PolicySimulatorDemo() {
                 disabled={runState === "done"}
                 className={RUN_CONTROL_CLASS}
               >
-                {runState === "paused" ? "Resume" : "Start"}
+                {runState === "paused" ? t("marketing.simulator.btnResume") : t("marketing.simulator.btnStart")}
               </button>
             )}
             <button
@@ -366,7 +367,7 @@ export function PolicySimulatorDemo() {
               disabled={runState === "running" || runState === "done"}
               className={RUN_CONTROL_CLASS}
             >
-              Step forward
+              {t("marketing.simulator.btnStepForward")}
             </button>
             <button
               type="button"
@@ -374,10 +375,10 @@ export function PolicySimulatorDemo() {
               disabled={runState === "done"}
               className={RUN_CONTROL_CLASS}
             >
-              Skip to verdict
+              {t("marketing.simulator.btnSkipToVerdict")}
             </button>
             <button type="button" onClick={restart} className={RUN_CONTROL_CLASS}>
-              Restart
+              {t("marketing.simulator.btnRestart")}
             </button>
           </div>
         </div>
@@ -387,7 +388,7 @@ export function PolicySimulatorDemo() {
           <div className="min-h-[280px] rounded-lg border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-canvas)] p-4">
             {revealedCount === 0 ? (
               <p className="py-8 text-center font-mono text-[11px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-                Press start to run the review
+                {t("marketing.simulator.pressStart")}
               </p>
             ) : (
               <ul>
