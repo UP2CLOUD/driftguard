@@ -15,8 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return localizedPageMeta({
     path:        "/docs/dora",
     locale,
-    title:       "DORA evidence — DriftGuard",
-    description: "Map DriftGuard's Terraform PR checks to DORA operational-resilience requirements and emit signed evidence per pull request.",
+    title:       t("docs.dora.metaTitle"),
+    description: t("docs.dora.metaDescription"),
   });
 }
 
@@ -64,40 +64,44 @@ export default async function Dora() {
     >
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Which checks map to DORA</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.dora.mappingTitle")}</h2>
           <p>
-            DORA asks financial entities to manage ICT risk across change management, resilience testing, and
-            incident handling. DriftGuard contributes evidence for the change-management and ICT-risk articles by
-            gating every infrastructure PR through the same review pipeline:
+            {t("docs.dora.mappingBody")}
           </p>
           <ul className="mt-3 list-disc space-y-1 pl-5">
-            <li><span className="font-mono text-[color:var(--dg-electric-bright)]">ICT risk (Art. 6–8)</span> — Checkov security misconfig scan + policy gate on each change.</li>
-            <li><span className="font-mono text-[color:var(--dg-electric-bright)]">Change management (Art. 9)</span> — live-state drift detection proves the plan matches reality before merge.</li>
-            <li><span className="font-mono text-[color:var(--dg-electric-bright)]">Learning &amp; evolving (Art. 13)</span> — semantic recall surfaces prior incidents linked to the same resources.</li>
+            <li><span className="font-mono text-[color:var(--dg-electric-bright)]">ICT risk (Art. 6–8)</span> — {t("docs.dora.item1_desc")}</li>
+            <li><span className="font-mono text-[color:var(--dg-electric-bright)]">Change management (Art. 9)</span> — {t("docs.dora.item2_desc")}</li>
+            <li><span className="font-mono text-[color:var(--dg-electric-bright)]">Learning &amp; evolving (Art. 13)</span> — {t("docs.dora.item3_desc")}</li>
           </ul>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Enable the compliance block</h2>
-          <p>Turn on DORA evidence collection in your canonical config file:</p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.dora.enableTitle")}</h2>
+          <p>{t("docs.dora.enableBody")}</p>
           <div className="mt-3">
             <CodeBlock code={CONFIG} filename=".github/driftguard.yml" />
           </div>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Evidence emitted per PR</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.dora.evidenceTitle")}</h2>
           <p>
-            When <code className="font-mono text-[color:var(--dg-electric-bright)]">evidence.emit</code> is on, DriftGuard
-            writes a signed record for each pull request — the checks that ran, the merge decision, and the reviewer.
-            Records are exported to the tamper-evident audit log so auditors can reconstruct any change.
+            {(() => {
+              const [before, after] = t("docs.dora.evidenceBody").split("{code}");
+              return (
+                <>
+                  {before}
+                  <code className="font-mono text-[color:var(--dg-electric-bright)]">evidence.emit</code>
+                  {after}
+                </>
+              );
+            })()}
           </p>
           <div className="mt-3">
             <CodeBlock code={EVIDENCE} filename="dora-evidence.json" />
           </div>
           <p className="mt-3">
-            DriftGuard is in early access — control identifiers are advisory and should be reviewed with your own
-            compliance team. It is a source of evidence, not a certification.
+            {t("docs.dora.evidenceFooter")}
           </p>
         </section>
       </div>

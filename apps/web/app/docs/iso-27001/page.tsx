@@ -15,8 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return localizedPageMeta({
     path:        "/docs/iso-27001",
     locale,
-    title:       "ISO 27001 mapping — DriftGuard",
-    description: "How DriftGuard's Terraform PR checks map to ISO/IEC 27001:2022 Annex A controls, with per-PR evidence for your ISMS.",
+    title:       t("docs.iso.metaTitle"),
+    description: t("docs.iso.metaDescription"),
   });
 }
 
@@ -28,11 +28,11 @@ compliance:
     emit: true
     export: audit-log`;
 
-const CONTROLS: { id: string; name: string; check: string }[] = [
-  { id: "A.8.9",  name: "Configuration management", check: "Checkov scans every Terraform plan for misconfiguration." },
-  { id: "A.8.32", name: "Change management",        check: "Required GitHub Check gates merges; drift detection blocks stale plans." },
-  { id: "A.8.15", name: "Logging",                  check: "Append-only audit log captures every review and override." },
-  { id: "A.5.7",  name: "Threat intelligence",      check: "Semantic recall links changes to prior incidents." },
+const CONTROLS: { id: string; nameKey: string; checkKey: string }[] = [
+  { id: "A.8.9",  nameKey: "docs.iso.control1_name", checkKey: "docs.iso.control1_check" },
+  { id: "A.8.32", nameKey: "docs.iso.control2_name", checkKey: "docs.iso.control2_check" },
+  { id: "A.8.15", nameKey: "docs.iso.control3_name", checkKey: "docs.iso.control3_check" },
+  { id: "A.5.7",  nameKey: "docs.iso.control4_name", checkKey: "docs.iso.control4_check" },
 ];
 
 export default async function Iso27001() {
@@ -54,10 +54,9 @@ export default async function Iso27001() {
     >
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <section>
-          <h2 className="mb-3 text-[15px] font-semibold text-[color:var(--dg-fg)]">Annex A control mapping</h2>
+          <h2 className="mb-3 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.iso.mappingTitle")}</h2>
           <p>
-            DriftGuard automates operating evidence for the Annex A controls most relevant to
-            infrastructure-as-code. It does not certify your ISMS — it produces the artefacts an auditor asks for.
+            {t("docs.iso.mappingBody")}
           </p>
           <div className="mt-4 overflow-hidden rounded-md border border-[color:var(--dg-border)]">
             {CONTROLS.map((c) => (
@@ -67,7 +66,7 @@ export default async function Iso27001() {
               >
                 <span className="font-mono text-[12px] text-[color:var(--dg-electric-bright)]">{c.id}</span>
                 <span className="text-[12px] text-[color:var(--dg-fg)]">
-                  <span className="font-semibold">{c.name}</span> — {c.check}
+                  <span className="font-semibold">{t(c.nameKey)}</span> — {t(c.checkKey)}
                 </span>
               </div>
             ))}
@@ -75,18 +74,16 @@ export default async function Iso27001() {
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Enable ISO 27001 evidence</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.iso.enableTitle")}</h2>
           <div className="mt-3">
             <CodeBlock code={CONFIG} filename=".github/driftguard.yml" />
           </div>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Evidence per PR</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.iso.evidenceTitle")}</h2>
           <p>
-            Every pull request emits a signed evidence record listing the Annex A controls exercised and the merge
-            decision, then streams it to the append-only audit log. Export the log to attach change-management
-            evidence to your Statement of Applicability. DriftGuard is in early access.
+            {t("docs.iso.evidenceBody")}
           </p>
         </section>
       </div>

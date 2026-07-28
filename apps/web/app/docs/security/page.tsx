@@ -15,8 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return localizedPageMeta({
     path:        "/docs/security",
     locale,
-    title:       "Security & data handling — DriftGuard",
-    description: "How DriftGuard handles your data: least-privilege cloud access, HMAC-verified webhooks, encryption, and no long-lived cloud keys.",
+    title:       t("docs.security.metaTitle"),
+    description: t("docs.security.metaDescription"),
   });
 }
 
@@ -51,32 +51,27 @@ export default async function Security() {
     >
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Data handling</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.security.dataHandlingTitle")}</h2>
           <p>
-            DriftGuard analyses your Terraform plan and diff, not your application data. Data is encrypted at rest
-            (AES-256) and in transit (TLS 1.3 minimum). Secrets live in a managed secret store — never in source or
-            plain environment files. See the full{" "}
-            <a href="/security" className="text-[color:var(--dg-electric-bright)] hover:underline">security posture page</a> for
-            the current control list.
+            {t("docs.security.dataHandlingBodyPre")}{" "}
+            <a href="/security" className="text-[color:var(--dg-electric-bright)] hover:underline">{t("docs.security.dataHandlingLinkText")}</a>{" "}
+            {t("docs.security.dataHandlingBodyPost")}
           </p>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Least-privilege cloud access</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.security.leastPrivilegeTitle")}</h2>
           <p>
-            Drift detection reads live state through short-lived, read-only credentials only — AWS via STS AssumeRole,
-            GCP via Workload Identity Federation, Azure via federated workload identity. DriftGuard stores no
-            long-lived cloud keys. If you never enable a cloud integration, DriftGuard only ever sees the Terraform
-            plan attached to the PR.
+            {t("docs.security.leastPrivilegeBody")}
           </p>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Webhook verification (HMAC)</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.security.webhookVerificationTitle")}</h2>
           <p>
-            Every GitHub webhook is signed with your{" "}
-            <code className="font-mono text-[color:var(--dg-electric-bright)]">GITHUB_WEBHOOK_SECRET</code> and verified
-            with an HMAC-SHA256 constant-time comparison before any work is queued:
+            {t("docs.security.webhookVerificationBodyPre")}{" "}
+            <code className="font-mono text-[color:var(--dg-electric-bright)]">GITHUB_WEBHOOK_SECRET</code>{" "}
+            {t("docs.security.webhookVerificationBodyPost")}
           </p>
           <div className="mt-3">
             <CodeBlock code={HMAC} filename="verify.py" />
@@ -84,15 +79,15 @@ export default async function Security() {
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Tuning the security scan</h2>
-          <p>Checkov runs on every plan. Suppress specific rules or make it non-blocking per repo:</p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.security.tuningTitle")}</h2>
+          <p>{t("docs.security.tuningBodyPre")}</p>
           <div className="mt-3">
             <CodeBlock code={CONFIG} filename=".github/driftguard.yml" />
           </div>
           <p className="mt-3">
-            Report a vulnerability to{" "}
-            <a href="mailto:security@driftguard.io" className="text-[color:var(--dg-electric-bright)] hover:underline">security@driftguard.io</a>.
-            DriftGuard is in early access; SOC 2 is in progress.
+            {t("docs.security.tuningBodyPost1")}{" "}
+            <a href="mailto:security@driftguard.io" className="text-[color:var(--dg-electric-bright)] hover:underline">security@driftguard.io</a>.{" "}
+            {t("docs.security.tuningBodyPost2")}
           </p>
         </section>
       </div>

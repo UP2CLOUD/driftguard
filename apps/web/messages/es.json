@@ -907,25 +907,49 @@
       "label": "Memoria semántica",
       "eyebrow": "Docs · Conceptos",
       "title": "Memoria semántica",
-      "subtitle": "Cómo DriftGuard recuerda fallos y los recupera en la revisión de PRs."
+      "subtitle": "Cómo DriftGuard recuerda fallos y los recupera en la revisión de PRs.",
+      "embeddingBody": "Cada hallazgo de cada análisis de PR se convierte en un embedding de 384 dimensiones usando el modelo Voyage-3-lite. El embedding captura: el tipo de recurso, la intención del cambio, el radio de impacto y la severidad. Se almacena en un índice pgvector junto con el texto original del hallazgo, el repositorio, el número de PR y el resultado (bloqueado / permitido).",
+      "howItWorksBody": "Cuando llega un nuevo PR, su diff de plan se convierte en embedding con el mismo modelo. Una búsqueda por similitud de coseno devuelve los k incidentes pasados más similares con similitud ≥ 0.5. Los resultados se adjuntan al comentario del PR como citas.",
+      "isolationBody": "La memoria está aislada por organización. No hay recuperación entre inquilinos (cross-tenant). En el plan Team, la retención es de 365 días. En Enterprise, ilimitada. La memoria está cifrada en reposo (AES-256).",
+      "apiRefBodyPre": "Puedes consultar el índice de memoria directamente mediante",
+      "apiRefBodyMid": ". Consulta la",
+      "apiRefBodyPost": "para ver el esquema completo."
     },
     "cost": {
       "label": "Análisis de coste",
       "eyebrow": "Docs · Conceptos",
       "title": "Análisis de coste",
-      "subtitle": "Delta de coste mensual en cada PR de Terraform — antes del merge."
+      "subtitle": "Delta de coste mensual en cada PR de Terraform — antes del merge.",
+      "metaTitle": "Análisis de costos — DriftGuard",
+      "metaDescription": "Delta de costo mensual en cada PR de Terraform antes de fusionarse, impulsado por Infracost, con umbrales de advertencia/bloqueo configurables.",
+      "poweredByInfracostBody": "DriftGuard ejecuta Infracost en cada JSON de plan de Terraform y reporta el delta de costo mensual por recurso. Si un PR agregaría 500 €/mes de instancias EC2, eso aparece en el comentario del PR antes de que alguien lo fusione.",
+      "currencyBody": "El costo se reporta en la moneda configurada en los ajustes de tu espacio de trabajo. Los tipos de cambio se obtienen diariamente. Compatibles: USD, EUR, GBP, BRL."
     },
     "drift": {
       "label": "Detección de drift",
       "eyebrow": "Docs · Conceptos",
       "title": "Detección de drift",
-      "subtitle": "Estado real de la cloud vs. lo que espera tu plan de Terraform."
+      "subtitle": "Estado real de la cloud vs. lo que espera tu plan de Terraform.",
+      "metaTitle": "Verificación de drift — DriftGuard",
+      "metaDescription": "Estado real de la nube frente a lo que espera tu plan de Terraform — integración de solo lectura con AWS STS, o alternativa basada solo en el plan.",
+      "howItWorksBodyPre": "DriftGuard compara los recursos de tu salida de",
+      "howItWorksBodyPost": "contra el estado real de tu cuenta de nube. Cualquier recurso que exista en el plan pero no en el estado real (o viceversa) se marca como drift.",
+      "awsIntegrationBody": "Concede a DriftGuard acceso de solo lectura a tu cuenta de AWS mediante STS AssumeRole. DriftGuard obtiene el backend de estado en S3 y lo compara con el plan del PR. No se almacenan credenciales — solo tokens de sesión de corta duración de STS.",
+      "withoutAwsBodyPre": "Sin integración con AWS, DriftGuard recurre a comparar el plan con cualquier archivo",
+      "withoutAwsBodyPost": "confirmado en el repositorio. Esto es menos preciso pero no requiere configuración de IAM."
     },
     "policies": {
       "label": "Motor de políticas",
       "eyebrow": "Docs · Conceptos",
       "title": "Motor de políticas",
-      "subtitle": "Declara qué pueden cambiar tus agentes e ingenieros."
+      "subtitle": "Declara qué pueden cambiar tus agentes e ingenieros.",
+      "configLabel": "Configuración de .github/driftguard.yml",
+      "metaTitle": "Motor de políticas — DriftGuard",
+      "metaDescription": "Declara qué pueden cambiar tus agentes e ingenieros en Terraform — patrones de bloqueo y advertencia, OPA/Rego para Enterprise.",
+      "patternSyntaxBodyPre": "Los patrones siguen el formato",
+      "patternSyntaxBodyMid": "Los comodines (",
+      "patternSyntaxBodyPost": ") coinciden con cualquier valor. Los patrones se evalúan contra cada cambio de recurso en el plan de Terraform.",
+      "opaRegoBody": "Los planes Enterprise admiten paquetes completos de políticas OPA Rego para lógica compleja — reglas multi-entorno, acceso basado en equipos, restricciones basadas en tiempo. Contáctanos para obtener la guía de integración de Rego."
     },
     "webhooks": {
       "label": "Webhooks salientes",
@@ -1017,22 +1041,75 @@
     "security": {
       "eyebrow": "Docs · Conceptos clave",
       "title": "Análisis de seguridad",
-      "subtitle": "Análisis estático con Checkov más triaje con IA en cada PR de Terraform."
+      "subtitle": "Análisis estático con Checkov más triaje con IA en cada PR de Terraform.",
+      "metaTitle": "Seguridad y manejo de datos — DriftGuard",
+      "metaDescription": "Cómo DriftGuard maneja tus datos: acceso a la nube de mínimo privilegio, webhooks verificados por HMAC, cifrado y sin claves de nube de larga duración.",
+      "dataHandlingTitle": "Manejo de datos",
+      "dataHandlingBodyPre": "DriftGuard analiza tu plan y diff de Terraform, no los datos de tu aplicación. Los datos se cifran en reposo (AES-256) y en tránsito (TLS 1.3 mínimo). Los secretos residen en un almacén de secretos gestionado — nunca en el código fuente ni en archivos de entorno planos. Consulta la",
+      "dataHandlingLinkText": "página de postura de seguridad",
+      "dataHandlingBodyPost": "para ver la lista de controles actual.",
+      "leastPrivilegeTitle": "Acceso a la nube de mínimo privilegio",
+      "leastPrivilegeBody": "La verificación de drift lee el estado en vivo únicamente mediante credenciales de solo lectura y de corta duración — AWS vía STS AssumeRole, GCP vía Workload Identity Federation, Azure vía identidad de carga de trabajo federada. DriftGuard no almacena claves de nube de larga duración. Si nunca activas una integración con la nube, DriftGuard solo ve el plan de Terraform adjunto al PR.",
+      "webhookVerificationTitle": "Verificación de webhooks (HMAC)",
+      "webhookVerificationBodyPre": "Cada webhook de GitHub se firma con tu",
+      "webhookVerificationBodyPost": "y se verifica con una comparación de tiempo constante HMAC-SHA256 antes de encolar cualquier trabajo:",
+      "tuningTitle": "Ajustar el escaneo de seguridad",
+      "tuningBodyPre": "Checkov se ejecuta en cada plan. Suprime reglas específicas o hazlo no bloqueante por repositorio:",
+      "tuningBodyPost1": "Informa una vulnerabilidad a",
+      "tuningBodyPost2": "DriftGuard está en acceso anticipado; SOC 2 está en curso."
     },
     "dora": {
       "eyebrow": "Docs · Cumplimiento",
       "title": "Evidencia DORA",
-      "subtitle": "Recopilación automática de evidencias para el Reglamento de Resiliencia Operativa Digital de la UE."
+      "subtitle": "Recopilación automática de evidencias para el Reglamento de Resiliencia Operativa Digital de la UE.",
+      "metaTitle": "Evidencia de DORA — DriftGuard",
+      "metaDescription": "Vincula las verificaciones de DriftGuard en los PR de Terraform con los requisitos de resiliencia operativa de DORA y emite evidencia firmada en cada pull request.",
+      "mappingTitle": "Qué verificaciones se corresponden con DORA",
+      "mappingBody": "DORA exige que las entidades financieras gestionen el riesgo de TIC en la gestión de cambios, las pruebas de resiliencia y la gestión de incidentes. DriftGuard aporta evidencia para los artículos de gestión de cambios y riesgo de TIC al someter cada PR de infraestructura al mismo flujo de revisión:",
+      "item1_desc": "Análisis de configuraciones erróneas de seguridad con Checkov + puerta de política en cada cambio.",
+      "item2_desc": "la detección de drift en el estado real demuestra que el plan coincide con la realidad antes de la fusión.",
+      "item3_desc": "la recuperación semántica muestra incidentes anteriores vinculados a los mismos recursos.",
+      "enableTitle": "Activa el bloque de cumplimiento",
+      "enableBody": "Activa la recopilación de evidencia de DORA en tu archivo de configuración canónico:",
+      "evidenceTitle": "Evidencia emitida por cada PR",
+      "evidenceBody": "Cuando {code} está activado, DriftGuard escribe un registro firmado para cada pull request: las verificaciones ejecutadas, la decisión de fusión y el revisor. Los registros se exportan al registro de auditoría a prueba de manipulaciones para que los auditores puedan reconstruir cualquier cambio.",
+      "evidenceFooter": "DriftGuard está en acceso anticipado: los identificadores de control son orientativos y deben revisarse con tu propio equipo de cumplimiento. Es una fuente de evidencia, no una certificación."
     },
     "nis2": {
       "eyebrow": "Docs · Cumplimiento",
       "title": "Cumplimiento NIS2",
-      "subtitle": "Directiva de Redes y Sistemas de Información — DriftGuard mapea tus cambios Terraform a controles NIS2."
+      "subtitle": "Directiva de Redes y Sistemas de Información — DriftGuard mapea tus cambios Terraform a controles NIS2.",
+      "metaTitle": "Cumplimiento de NIS2 — DriftGuard",
+      "metaDescription": "Vincula las verificaciones de DriftGuard en los PR de Terraform con las medidas de gestión de riesgos y control de cambios de NIS2, con evidencia emitida en cada pull request.",
+      "mappingTitle": "Qué verificaciones se corresponden con NIS2",
+      "mappingBody": "El artículo 21 de NIS2 exige «medidas técnicas adecuadas y proporcionadas» para gestionar el riesgo. DriftGuard aplica un subconjunto de esas medidas directamente en el pull request que modifica tu infraestructura:",
+      "item1_desc": "Checkov y el motor de políticas señalan configuraciones erróneas antes de la fusión.",
+      "item2_desc": "una comprobación obligatoria de GitHub controla las fusiones; la detección de drift bloquea los planes obsoletos.",
+      "item3_desc": "el registro de auditoría deja constancia de cada decisión para su evaluación posterior.",
+      "configTitle": "Configuración",
+      "configBody": "Activa la evidencia de NIS2 y fija las reglas de exposición de red que la mayoría de las evaluaciones de NIS2 buscan:",
+      "evidenceTitle": "Evidencia por PR",
+      "evidenceBody": "Cada pull request genera un registro de evidencia que referencia las medidas de NIS2 aplicadas, los resultados de las verificaciones y la decisión de fusión. Los registros se incorporan al registro de auditoría de solo anexado. DriftGuard está en acceso anticipado y proporciona evidencia para respaldar un programa de NIS2; no sustituye una auditoría formal."
     },
     "iso": {
       "eyebrow": "Docs · Cumplimiento",
       "title": "Controles ISO 27001",
-      "subtitle": "Mapeo de controles del Anexo A para cada cambio de infraestructura revisado en pull request."
+      "subtitle": "Mapeo de controles del Anexo A para cada cambio de infraestructura revisado en pull request.",
+      "metaTitle": "Mapeo de ISO 27001 — DriftGuard",
+      "metaDescription": "Cómo se corresponden las verificaciones de DriftGuard en los PR de Terraform con los controles del Anexo A de ISO/IEC 27001:2022, con evidencia por PR para tu SGSI.",
+      "mappingTitle": "Mapeo de controles del Anexo A",
+      "mappingBody": "DriftGuard automatiza la evidencia operativa de los controles del Anexo A más relevantes para la infraestructura como código. No certifica tu SGSI: genera los artefactos que un auditor solicita.",
+      "control1_name": "Gestión de configuración",
+      "control1_check": "Checkov analiza cada plan de Terraform en busca de configuraciones erróneas.",
+      "control2_name": "Gestión de cambios",
+      "control2_check": "Una comprobación obligatoria de GitHub controla las fusiones; la detección de drift bloquea los planes obsoletos.",
+      "control3_name": "Registro",
+      "control3_check": "El registro de auditoría de solo anexado captura cada revisión y anulación.",
+      "control4_name": "Inteligencia de amenazas",
+      "control4_check": "La recuperación semántica vincula los cambios con incidentes anteriores.",
+      "enableTitle": "Activa la evidencia de ISO 27001",
+      "evidenceTitle": "Evidencia por PR",
+      "evidenceBody": "Cada pull request emite un registro de evidencia firmado que enumera los controles del Anexo A aplicados y la decisión de fusión, y lo transmite al registro de auditoría de solo anexado. Exporta el registro para adjuntar evidencia de gestión de cambios a tu Declaración de Aplicabilidad. DriftGuard está en acceso anticipado."
     },
     "audit": {
       "eyebrow": "Docs · Cumplimiento",

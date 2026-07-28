@@ -907,25 +907,49 @@
       "label": "语义记忆",
       "eyebrow": "文档 · 核心概念",
       "title": "语义记忆",
-      "subtitle": "DriftGuard 如何记住故障并在 PR 审查时回忆它们。"
+      "subtitle": "DriftGuard 如何记住故障并在 PR 审查时回忆它们。",
+      "embeddingBody": "每次 PR 分析中的每项发现都会通过 Voyage-3-lite 模型转换为 384 维嵌入。该嵌入捕获资源类型、变更意图、影响范围和严重性,并与原始发现文本、仓库、PR 编号和结果(已拦截/已允许)一起存储在 pgvector 索引中。",
+      "howItWorksBody": "当新的 PR 到达时,其计划差异会使用同一模型进行嵌入。余弦相似度搜索会返回相似度 ≥ 0.5 的前 k 个最相似历史事件,结果会作为引用附加到 PR 评论中。",
+      "isolationBody": "记忆按组织隔离,不存在跨租户回溯。Team 方案的保留期为 365 天,Enterprise 方案不限期。记忆数据静态加密(AES-256)。",
+      "apiRefBodyPre": "您可以直接通过",
+      "apiRefBodyMid": "查询记忆索引。完整架构请参见",
+      "apiRefBodyPost": "查看。"
     },
     "cost": {
       "label": "成本分析",
       "eyebrow": "文档 · 核心概念",
       "title": "成本分析",
-      "subtitle": "每个 Terraform PR 合并前的月度成本变化。"
+      "subtitle": "每个 Terraform PR 合并前的月度成本变化。",
+      "metaTitle": "成本分析 — DriftGuard",
+      "metaDescription": "在每个 Terraform PR 合并之前显示月度成本差异,由 Infracost 驱动,并支持可配置的警告/阻断阈值。",
+      "poweredByInfracostBody": "DriftGuard 会在每个 Terraform 计划 JSON 上运行 Infracost,并按资源报告月度成本差异。如果某个 PR 会增加每月 500 欧元的 EC2 实例费用,该信息会在任何人合并之前出现在 PR 评论中。",
+      "currencyBody": "成本按工作区设置中配置的货币报告。汇率每日更新。支持:USD、EUR、GBP、BRL。"
     },
     "drift": {
       "label": "漂移检测",
       "eyebrow": "文档 · 核心概念",
       "title": "漂移检测",
-      "subtitle": "真实云状态与 Terraform 计划预期之间的对比。"
+      "subtitle": "真实云状态与 Terraform 计划预期之间的对比。",
+      "metaTitle": "漂移检查 — DriftGuard",
+      "metaDescription": "真实云状态与您的 Terraform 计划预期的对比 — 支持只读 AWS STS 集成,或仅基于计划的回退方案。",
+      "howItWorksBodyPre": "DriftGuard 会将您的",
+      "howItWorksBodyPost": "输出与您云账户中的真实状态进行比较。任何存在于计划中但不存在于实时状态中的资源(反之亦然)都会被标记为漂移。",
+      "awsIntegrationBody": "通过 STS AssumeRole 授予 DriftGuard 对您 AWS 账户的只读访问权限。DriftGuard 会获取 S3 状态后端并与 PR 计划进行比较。不存储任何凭证 — 仅使用 STS 提供的短期会话令牌。",
+      "withoutAwsBodyPre": "如果没有 AWS 集成,DriftGuard 会退回为将计划与仓库中提交的任何",
+      "withoutAwsBodyPost": "文件进行比较。这种方式精度较低,但无需 IAM 配置。"
     },
     "policies": {
       "label": "策略引擎",
       "eyebrow": "文档 · 核心概念",
       "title": "策略引擎",
-      "subtitle": "声明您的代理和工程师被允许更改的内容。"
+      "subtitle": "声明您的代理和工程师被允许更改的内容。",
+      "configLabel": ".github/driftguard.yml 配置",
+      "metaTitle": "策略引擎 — DriftGuard",
+      "metaDescription": "声明您的智能体和工程师在 Terraform 中被允许更改的内容 — 阻断和警告模式,Enterprise 支持 OPA/Rego。",
+      "patternSyntaxBodyPre": "模式遵循",
+      "patternSyntaxBodyMid": "格式。通配符(",
+      "patternSyntaxBodyPost": ")匹配任意值。模式会针对 Terraform 计划中的每个资源变更进行评估。",
+      "opaRegoBody": "Enterprise 方案支持完整的 OPA Rego 策略包,用于处理复杂逻辑 — 多环境规则、基于团队的访问、基于时间的限制。请联系我们获取 Rego 集成指南。"
     },
     "webhooks": {
       "label": "出站 Webhooks",
@@ -1017,22 +1041,75 @@
     "security": {
       "eyebrow": "文档 · 核心概念",
       "title": "安全扫描",
-      "subtitle": "每次 Terraform PR 都会进行 Checkov 静态分析和 AI 驱动的问题分类。"
+      "subtitle": "每次 Terraform PR 都会进行 Checkov 静态分析和 AI 驱动的问题分类。",
+      "metaTitle": "安全与数据处理 — DriftGuard",
+      "metaDescription": "DriftGuard 如何处理您的数据:最小权限云访问、HMAC 验证的 webhook、加密,且不保留长期云密钥。",
+      "dataHandlingTitle": "数据处理",
+      "dataHandlingBodyPre": "DriftGuard 分析的是您的 Terraform 计划和差异,而非应用数据。数据在静态(AES-256)和传输(至少 TLS 1.3)时均加密。密钥存放在受管密钥库中 — 绝不存放在源码或明文环境文件中。完整控制列表请参见完整的",
+      "dataHandlingLinkText": "安全态势页面",
+      "dataHandlingBodyPost": "查看。",
+      "leastPrivilegeTitle": "最小权限云访问",
+      "leastPrivilegeBody": "漂移检查仅通过短期只读凭证读取实时状态 — AWS 通过 STS AssumeRole、GCP 通过 Workload Identity Federation、Azure 通过联合工作负载身份。DriftGuard 不存储长期云密钥。如果您从未启用云集成,DriftGuard 只会看到 PR 中附带的 Terraform 计划。",
+      "webhookVerificationTitle": "Webhook 验证(HMAC)",
+      "webhookVerificationBodyPre": "每个 GitHub webhook 都会使用您的",
+      "webhookVerificationBodyPost": "签名,并在任何工作入队之前使用 HMAC-SHA256 恒定时间比较进行验证:",
+      "tuningTitle": "调整安全扫描",
+      "tuningBodyPre": "Checkov 会在每次计划中运行。您可以按仓库抑制特定规则或使其不再阻断合并:",
+      "tuningBodyPost1": "如需报告漏洞,请发送邮件至",
+      "tuningBodyPost2": "DriftGuard 目前处于早期访问阶段;SOC 2 认证正在进行中。"
     },
     "dora": {
       "eyebrow": "文档 · 合规",
       "title": "DORA 证据",
-      "subtitle": "自动收集欧盟数字运营韧性法规所需的合规证据。"
+      "subtitle": "自动收集欧盟数字运营韧性法规所需的合规证据。",
+      "metaTitle": "DORA 证据 — DriftGuard",
+      "metaDescription": "将 DriftGuard 在 Terraform PR 中的检查项映射到 DORA 运营弹性要求，并为每个拉取请求生成签名证据。",
+      "mappingTitle": "哪些检查项映射到 DORA",
+      "mappingBody": "DORA 要求金融机构在变更管理、韧性测试和事件处理方面管理 ICT 风险。DriftGuard 通过让每个基础设施 PR 都经过同一审查流水线，为变更管理和 ICT 风险相关条款提供证据：",
+      "item1_desc": "Checkov 安全错误配置扫描 + 每次变更的策略关卡。",
+      "item2_desc": "实时状态漂移检测可在合并前证明计划与实际情况一致。",
+      "item3_desc": "语义检索可呈现与相同资源相关的既往事件。",
+      "enableTitle": "启用合规区块",
+      "enableBody": "在你的规范配置文件中启用 DORA 证据收集：",
+      "evidenceTitle": "每个 PR 生成的证据",
+      "evidenceBody": "启用 {code} 后，DriftGuard 会为每个拉取请求写入一条签名记录——包括已运行的检查项、合并决定和审核人。记录会导出到防篡改审计日志，以便审计员可以重建任何变更。",
+      "evidenceFooter": "DriftGuard 目前处于抢先体验阶段——控制项标识仅供参考，应与您自己的合规团队一起审核。它是证据来源，而非认证。"
     },
     "nis2": {
       "eyebrow": "文档 · 合规",
       "title": "NIS2 合规",
-      "subtitle": "网络和信息系统指令 — DriftGuard 将您的 Terraform 变更映射到 NIS2 控制措施。"
+      "subtitle": "网络和信息系统指令 — DriftGuard 将您的 Terraform 变更映射到 NIS2 控制措施。",
+      "metaTitle": "NIS2 合规 — DriftGuard",
+      "metaDescription": "将 DriftGuard 在 Terraform PR 中的检查项映射到 NIS2 的风险管理与变更控制措施，并为每个拉取请求生成证据。",
+      "mappingTitle": "哪些检查项映射到 NIS2",
+      "mappingBody": "NIS2 第 21 条要求采取“适当且相称的技术措施”来管理风险。DriftGuard 直接在修改您基础设施的拉取请求上执行其中一部分措施：",
+      "item1_desc": "Checkov 与策略引擎在合并前标记错误配置。",
+      "item2_desc": "必需的 GitHub Check 把关合并；漂移检测会阻止过时的计划。",
+      "item3_desc": "审计日志会记录每一次决策，供后续评估。",
+      "configTitle": "配置",
+      "configBody": "启用 NIS2 证据，并固定大多数 NIS2 评估都会检查的网络暴露规则：",
+      "evidenceTitle": "每个 PR 的证据",
+      "evidenceBody": "每个拉取请求都会生成一条证据记录，引用所执行的 NIS2 措施、检查结果和合并决定。记录会汇入只追加的审计日志。DriftGuard 目前处于抢先体验阶段，用于为 NIS2 项目提供支持性证据——它不能替代正式审计。"
     },
     "iso": {
       "eyebrow": "文档 · 合规",
       "title": "ISO 27001 控制",
-      "subtitle": "针对每次基础设施变更在拉取请求中进行附录 A 控制映射。"
+      "subtitle": "针对每次基础设施变更在拉取请求中进行附录 A 控制映射。",
+      "metaTitle": "ISO 27001 映射 — DriftGuard",
+      "metaDescription": "DriftGuard 的 Terraform PR 检查项如何映射到 ISO/IEC 27001:2022 附录 A 控制项，并为您的信息安全管理体系（ISMS）提供逐 PR 证据。",
+      "mappingTitle": "附录 A 控制项映射",
+      "mappingBody": "DriftGuard 为与基础设施即代码最相关的附录 A 控制项自动生成运行证据。它不会为您的 ISMS 提供认证——它生成审计员所需要的工件。",
+      "control1_name": "配置管理",
+      "control1_check": "Checkov 会扫描每个 Terraform 计划以查找错误配置。",
+      "control2_name": "变更管理",
+      "control2_check": "必需的 GitHub Check 把关合并；漂移检测会阻止过时的计划。",
+      "control3_name": "日志记录",
+      "control3_check": "只追加的审计日志会记录每一次审核和覆盖操作。",
+      "control4_name": "威胁情报",
+      "control4_check": "语义检索会将变更与既往事件关联起来。",
+      "enableTitle": "启用 ISO 27001 证据",
+      "evidenceTitle": "每个 PR 的证据",
+      "evidenceBody": "每个拉取请求都会生成一条签名证据记录，列出所执行的附录 A 控制项和合并决定，并将其推送到只追加的审计日志。导出日志即可将变更管理证据附加到您的适用性声明中。DriftGuard 目前处于抢先体验阶段。"
     },
     "audit": {
       "eyebrow": "文档 · 合规",

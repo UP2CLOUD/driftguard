@@ -15,8 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return localizedPageMeta({
     path:        "/docs/policies",
     locale,
-    title:       t("docs.meta.title"),
-    description: t("docs.meta.description"),
+    title:       t("docs.policies.metaTitle"),
+    description: t("docs.policies.metaDescription"),
   });
 }
 
@@ -28,10 +28,10 @@ export default async function Policies() {
 
   return (
     <MarketingPageShell
-      jsonLd={jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Docs", path: "/docs" }, { name: "Policy engine", path: "/docs/policies" }])}
+      jsonLd={jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Docs", path: "/docs" }, { name: t("docs.policies.title"), path: "/docs/policies" }])}
       eyebrow={t("docs.policies.eyebrow")} title={t("docs.policies.title")} subtitle={t("docs.policies.subtitle")} narrow>
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
-        <div><h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-2">.github/driftguard.yml config</h2>
+        <div><h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-2">{t("docs.policies.configLabel")}</h2>
         <pre className="overflow-x-auto rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-4 font-mono text-[12px] text-[color:var(--dg-fg)]">{`# .github/driftguard.yml
 policy:
   # These patterns will BLOCK the PR (exit 1 in CI)
@@ -44,9 +44,9 @@ policy:
     - aws_security_group.ingress.0.0.0.0/0
     - aws_s3_bucket.*.acl=public-read`}</pre></div>
         <div><h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-2">{t("docs.patternSyntax")}</h2>
-        <p>Patterns follow <code className="font-mono text-[color:var(--dg-electric-bright)]">resource_type.name.attribute=value</code>. Wildcards (<code className="font-mono text-[color:var(--dg-electric-bright)]">*</code>) match any value. Patterns are evaluated against every resource change in the Terraform plan.</p></div>
+        <p>{t("docs.policies.patternSyntaxBodyPre")} <code className="font-mono text-[color:var(--dg-electric-bright)]">resource_type.name.attribute=value</code>. {t("docs.policies.patternSyntaxBodyMid")}<code className="font-mono text-[color:var(--dg-electric-bright)]">*</code>{t("docs.policies.patternSyntaxBodyPost")}</p></div>
         <div><h2 className="text-[15px] font-semibold text-[color:var(--dg-fg)] mb-2">{t("docs.opaRego")}</h2>
-        <p>Enterprise plans support full OPA Rego policy bundles for complex logic — multi-environment rules, team-based access, time-based restrictions. Contact us for the Rego integration guide.</p></div>
+        <p>{t("docs.policies.opaRegoBody")}</p></div>
       </div>
     </MarketingPageShell>
   );
