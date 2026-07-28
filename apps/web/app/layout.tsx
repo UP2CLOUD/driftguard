@@ -35,6 +35,11 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: "#09090b",
+  // Lets the page draw under the notch/home-indicator safe areas so
+  // `env(safe-area-inset-*)` resolves to real values instead of 0 —
+  // required for the fixed header/footer safe-area padding to do anything.
+  // Does not restrict pinch-zoom (no maximumScale/userScalable here).
+  viewportFit: "cover",
 };
 
 export async function generateMetadata(): Promise<Metadata> {

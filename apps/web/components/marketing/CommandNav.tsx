@@ -73,21 +73,26 @@ export function CommandNav({ initialPreferences }: { initialPreferences?: UserPr
   return (
     <motion.nav
       style={{ background }}
-      className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex items-center justify-between backdrop-blur-md transition-all duration-300"
+      // Mobile gets tighter vertical padding (~72px total header height);
+      // sm: values restore the original desktop padding exactly. padding-top
+      // uses max() against env(safe-area-inset-top) so notched devices get
+      // pushed below the notch instead of changing the base height on
+      // ordinary screens (where the inset resolves to 0).
+      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between gap-2 px-4 pb-3.5 pt-[max(0.875rem,env(safe-area-inset-top))] backdrop-blur-md transition-all duration-300 sm:px-6 sm:pb-4 sm:pt-[max(1rem,env(safe-area-inset-top))]"
     >
       <motion.div
         style={{ opacity: borderOpacity }}
         className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[color:var(--dg-border-strong)] to-transparent"
       />
 
-      <div className="flex items-center gap-4">
-        <div className="relative flex items-center justify-center w-6 h-6" aria-hidden="true">
+      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+        <div className="relative flex w-5 h-5 shrink-0 items-center justify-center sm:w-6 sm:h-6" aria-hidden="true">
           <div className="absolute inset-0 border border-[color:var(--dg-electric-bright)] rounded-sm animate-pulse opacity-50" />
-          <div className="w-2 h-2 bg-[color:var(--dg-electric)] rounded-sm shadow-[0_0_8px_var(--dg-electric-bright)]" />
+          <div className="w-1.5 h-1.5 bg-[color:var(--dg-electric)] rounded-sm shadow-[0_0_8px_var(--dg-electric-bright)] sm:w-2 sm:h-2" />
         </div>
-        <Link href="/" className="font-mono text-[13px] font-medium tracking-[0.2em] text-white flex flex-col">
-          <span>DRIFTGUARD</span>
-          <span className="text-[8px] text-[color:var(--dg-fg-subtle)] tracking-widest mt-0.5">RUNTIME SAFETY</span>
+        <Link href="/" className="flex min-w-0 flex-col font-mono text-[12px] font-medium tracking-[0.15em] text-white sm:text-[13px] sm:tracking-[0.2em]">
+          <span className="truncate">DRIFTGUARD</span>
+          <span className="truncate text-[8px] text-[color:var(--dg-fg-subtle)] tracking-widest mt-0.5">RUNTIME SAFETY</span>
         </Link>
       </div>
 
@@ -101,7 +106,7 @@ export function CommandNav({ initialPreferences }: { initialPreferences?: UserPr
         ))}
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex shrink-0 items-center gap-3">
         <div className="hidden sm:block">
           <LocaleSwitcher initialPreferences={initialPreferences} compact label="Language" />
         </div>
