@@ -55,36 +55,25 @@ export default async function Gcp() {
     >
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Keyless by design</h2>
-          <p>
-            DriftGuard connects to Google Cloud through Workload Identity Federation, so there are no service-account
-            JSON keys to generate, rotate, or store. Drift detection needs only read access to compare your Terraform
-            plan against live state — <code className="font-mono text-[color:var(--dg-electric-bright)]">roles/viewer</code> is sufficient.
-          </p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.gcp.keylessTitle")}</h2>
+          <p>{t("docs.gcp.keylessBody")}</p>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">1. Set up federation</h2>
-          <p>Create a workload identity pool and bind DriftGuard&rsquo;s principal to a read-only role:</p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.gcp.step1Title")}</h2>
+          <p>{t("docs.gcp.step1Body")}</p>
           <div className="mt-3">
             <CodeBlock code={WIF} filename="setup.sh" />
           </div>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">2. Register in DriftGuard</h2>
-          <p>
-            Enter the project ID, provider resource name, and GCS state backend in the dashboard (Settings &rarr;
-            GCP). The dashboard stores the binding; the repo config documents which project and state DriftGuard
-            reads:
-          </p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.gcp.step2Title")}</h2>
+          <p>{t("docs.gcp.step2Body")}</p>
           <div className="mt-3">
             <CodeBlock code={CONFIG} filename=".github/driftguard.yml" />
           </div>
-          <p className="mt-3">
-            GCP access is optional — only live-state drift detection uses it. All other checks run from the plan alone.
-            DriftGuard is in early access.
-          </p>
+          <p className="mt-3">{t("docs.gcp.step2Footer")}</p>
         </section>
       </div>
     </MarketingPageShell>

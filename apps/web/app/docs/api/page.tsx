@@ -9,21 +9,21 @@ import { pageMeta, jsonLdBreadcrumb, jsonLdArticle, localizedPageMeta } from "@/
 
 
 const ENDPOINTS = [
-  { method: "GET",    path: "/api/v1/health",                      desc: "Liveness probe. Returns status + uptime + version." },
-  { method: "GET",    path: "/api/v1/ready",                       desc: "Readiness probe. Checks DB + Redis. Returns 503 if degraded." },
-  { method: "GET",    path: "/api/v1/metrics",                     desc: "Lightweight metrics: uptime, gc counts, pid." },
-  { method: "POST",   path: "/api/v1/webhooks/github",             desc: "GitHub App webhook receiver. HMAC-SHA256 verified." },
-  { method: "GET",    path: "/api/v1/orgs/by-installation/{id}",   desc: "Get org by GitHub installation ID." },
-  { method: "GET",    path: "/api/v1/orgs/{org_id}/repos",         desc: "List repos for an org." },
-  { method: "GET",    path: "/api/v1/orgs/{org_id}/analyses",      desc: "List analyses for an org. Query: limit (default 20)." },
-  { method: "PATCH",  path: "/api/v1/orgs/{org_id}/aws",           desc: "Save AWS IAM role ARN + state bucket for drift detection." },
-  { method: "GET",    path: "/api/v1/analyses",                    desc: "List analyses. Query: repo_id, limit." },
-  { method: "GET",    path: "/api/v1/analyses/{id}",               desc: "Get single analysis with findings + AI summary." },
-  { method: "POST",   path: "/api/v1/memory/recall",               desc: "Semantic recall: top-k similar past incidents by cosine sim." },
-  { method: "GET",    path: "/api/v1/repos",                       desc: "List all repositories across the installation." },
-  { method: "POST",   path: "/api/v1/billing/checkout",            desc: "Create Stripe checkout session. Returns {url}." },
-  { method: "POST",   path: "/api/v1/billing/portal",              desc: "Create Stripe customer portal session. Returns {url}." },
-  { method: "GET",    path: "/api/v1/aws/verify",                  desc: "Test STS AssumeRole with configured credentials." },
+  { method: "GET",    path: "/api/v1/health",                      desc: "docs.api.endpoint_health" },
+  { method: "GET",    path: "/api/v1/ready",                       desc: "docs.api.endpoint_ready" },
+  { method: "GET",    path: "/api/v1/metrics",                     desc: "docs.api.endpoint_metrics" },
+  { method: "POST",   path: "/api/v1/webhooks/github",             desc: "docs.api.endpoint_webhooksGithub" },
+  { method: "GET",    path: "/api/v1/orgs/by-installation/{id}",   desc: "docs.api.endpoint_orgsByInstallation" },
+  { method: "GET",    path: "/api/v1/orgs/{org_id}/repos",         desc: "docs.api.endpoint_orgsRepos" },
+  { method: "GET",    path: "/api/v1/orgs/{org_id}/analyses",      desc: "docs.api.endpoint_orgsAnalyses" },
+  { method: "PATCH",  path: "/api/v1/orgs/{org_id}/aws",           desc: "docs.api.endpoint_orgsAws" },
+  { method: "GET",    path: "/api/v1/analyses",                    desc: "docs.api.endpoint_analyses" },
+  { method: "GET",    path: "/api/v1/analyses/{id}",               desc: "docs.api.endpoint_analysisById" },
+  { method: "POST",   path: "/api/v1/memory/recall",               desc: "docs.api.endpoint_memoryRecall" },
+  { method: "GET",    path: "/api/v1/repos",                       desc: "docs.api.endpoint_repos" },
+  { method: "POST",   path: "/api/v1/billing/checkout",            desc: "docs.api.endpoint_billingCheckout" },
+  { method: "POST",   path: "/api/v1/billing/portal",              desc: "docs.api.endpoint_billingPortal" },
+  { method: "GET",    path: "/api/v1/aws/verify",                  desc: "docs.api.endpoint_awsVerify" },
 ];
 
 const METHOD_STYLE: Record<string, string> = {
@@ -54,7 +54,7 @@ export default async function ApiReference() {
 
   return (
     <MarketingPageShell
-      jsonLd={jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Docs", path: "/docs" }, { name: "API reference", path: "/docs/api" }])}
+      jsonLd={jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Docs", path: "/docs" }, { name: t("docs.api.title"), path: "/docs/api" }])}
             eyebrow={t("docs.api.eyebrow")} title={t("docs.api.title")} subtitle={t("docs.api.subtitle")}
     >
       {/* Auth */}
@@ -62,13 +62,13 @@ export default async function ApiReference() {
         <div className="dg-label mb-4">{t("docs.auth")}</div>
         <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] overflow-hidden">
           <div className="border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)]">
-            Example request
+            {t("docs.api.exampleRequest")}
           </div>
           <pre className="overflow-x-auto p-5 font-mono text-[12.5px] leading-relaxed text-[color:var(--dg-fg)]">{`curl https://api.driftguard.io/api/v1/health \
   -H "Authorization: Bearer $DG_API_KEY"`}</pre>
         </div>
         <p className="mt-3 text-[13px] text-[color:var(--dg-fg-muted)]">
-          All responses are JSON. Errors follow <code className="font-mono text-[color:var(--dg-electric-bright)]">{"{ detail: string, status: number }"}</code>.
+          {t("docs.api.errorsFollow")} <code className="font-mono text-[color:var(--dg-electric-bright)]">{"{ detail: string, status: number }"}</code>.
         </p>
       </section>
 
@@ -77,13 +77,13 @@ export default async function ApiReference() {
         <div className="dg-label mb-4">{t("docs.endpoints")}</div>
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden">
           <div className="grid border-b border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-2.5 font-sans font-medium text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-subtle)] grid-cols-[80px_1fr_1fr]">
-            <span>{t("docs.method")}</span><span>Path</span><span className="hidden md:inline">{t("docs.description")}</span>
+            <span>{t("docs.method")}</span><span>{t("docs.api.pathColumn")}</span><span className="hidden md:inline">{t("docs.description")}</span>
           </div>
           {ENDPOINTS.map((e) => (
             <div key={e.path} className="grid grid-cols-[80px_1fr] md:grid-cols-[80px_1fr_1fr] gap-2 items-start border-b border-[color:var(--dg-border)] last:border-b-0 bg-[color:var(--dg-surface)] hover:bg-[color:var(--dg-surface-raised)] px-4 py-3 transition">
               <span className={`inline-flex items-center justify-center rounded border px-1.5 py-0.5 font-sans font-medium text-[9px] font-bold tracking-widest w-fit ${METHOD_STYLE[e.method] || ""}`}>{e.method}</span>
               <code className="font-mono text-[12px] text-[color:var(--dg-fg)]">{e.path}</code>
-              <span className="col-span-2 md:col-span-1 font-mono text-[11px] text-[color:var(--dg-fg-muted)] md:pt-0 pt-0">{e.desc}</span>
+              <span className="col-span-2 md:col-span-1 font-mono text-[11px] text-[color:var(--dg-fg-muted)] md:pt-0 pt-0">{t(e.desc)}</span>
             </div>
           ))}
         </div>
@@ -119,7 +119,7 @@ export default async function ApiReference() {
       <div className="rounded-md border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-6 flex flex-col sm:flex-row items-start gap-4 justify-between">
         <div>
           <div className="dg-label mb-2">{t("docs.openApiSpec")}</div>
-          <p className="text-[13px] text-[color:var(--dg-fg-muted)]">Full spec available at <code className="font-mono text-[color:var(--dg-electric-bright)]">/api/v1/openapi.json</code> on self-hosted deployments.</p>
+          <p className="text-[13px] text-[color:var(--dg-fg-muted)]">{t("docs.api.openApiBody")} <code className="font-mono text-[color:var(--dg-electric-bright)]">/api/v1/openapi.json</code>.</p>
         </div>
         <a href="mailto:support@driftguard.io" className="dg-button dg-button-ghost text-[12px] shrink-0">{t("docs.requestAccess")}</a>
       </div>

@@ -57,36 +57,25 @@ export default async function Azure() {
     >
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Federated, keyless access</h2>
-          <p>
-            DriftGuard authenticates to Azure using a federated workload identity credential on an app registration —
-            no client secrets stored anywhere. Drift detection needs only the built-in
-            <code className="font-mono text-[color:var(--dg-electric-bright)]"> Reader</code> role to compare your plan
-            against live resources.
-          </p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.azure.federatedTitle")}</h2>
+          <p>{t("docs.azure.federatedBody")}</p>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">1. Register the identity</h2>
-          <p>Create the app registration, add the federated credential DriftGuard shows you, and assign Reader:</p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.azure.step1Title")}</h2>
+          <p>{t("docs.azure.step1Body")}</p>
           <div className="mt-3">
             <CodeBlock code={FED} filename="setup.sh" />
           </div>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">2. Register in DriftGuard</h2>
-          <p>
-            Save the subscription, tenant, and client IDs plus the Blob Storage state backend in the dashboard
-            (Settings &rarr; Azure). The repo config records which subscription and state DriftGuard reads:
-          </p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.azure.step2Title")}</h2>
+          <p>{t("docs.azure.step2Body")}</p>
           <div className="mt-3">
             <CodeBlock code={CONFIG} filename=".github/driftguard.yml" />
           </div>
-          <p className="mt-3">
-            Azure access is optional and read-only; it powers live-state drift detection only. DriftGuard is in early
-            access.
-          </p>
+          <p className="mt-3">{t("docs.azure.step2Footer")}</p>
         </section>
       </div>
     </MarketingPageShell>

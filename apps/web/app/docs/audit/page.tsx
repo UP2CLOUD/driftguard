@@ -15,8 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return localizedPageMeta({
     path:        "/docs/audit",
     locale,
-    title:       "Audit log — DriftGuard",
-    description: "DriftGuard's append-only, tamper-evident audit log records every review, approval, and override across your infrastructure pull requests.",
+    title:       t("docs.audit.metaTitle"),
+    description: t("docs.audit.metaDescription"),
   });
 }
 
@@ -58,37 +58,34 @@ export default async function Audit() {
     >
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">What gets recorded</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.audit.whatRecordedTitle")}</h2>
           <p>
-            The audit log is an append-only event stream. Every review, check result, approval, override, and merge
-            decision produces a record. Records are chained by hash — each one references the hash of the previous
-            record — so any deletion or edit breaks the chain and is detectable.
+            {t("docs.audit.whatRecordedBody")}
           </p>
           <ul className="mt-3 list-disc space-y-1 pl-5">
-            <li>Analysis started / completed for a PR</li>
-            <li>Check result posted (security, drift, cost, policy)</li>
-            <li>Merge decision — allow, warn, or block, with the triggering rule</li>
-            <li>Manual override, with the actor who performed it</li>
+            <li>{t("docs.audit.item1")}</li>
+            <li>{t("docs.audit.item2")}</li>
+            <li>{t("docs.audit.item3")}</li>
+            <li>{t("docs.audit.item4")}</li>
           </ul>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Enable the log</h2>
-          <p>The audit log is populated whenever evidence export is turned on:</p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.audit.enableTitle")}</h2>
+          <p>{t("docs.audit.enableBody")}</p>
           <div className="mt-3">
             <CodeBlock code={CONFIG} filename=".github/driftguard.yml" />
           </div>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Record shape</h2>
-          <p>Each record is JSON with a hash chain field. Export the full stream from the dashboard for auditors:</p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.audit.recordShapeTitle")}</h2>
+          <p>{t("docs.audit.recordShapeBody")}</p>
           <div className="mt-3">
             <CodeBlock code={RECORD} filename="audit-record.json" />
           </div>
           <p className="mt-3">
-            DriftGuard is early access; the export format may change. Treat the log as supporting evidence for your
-            change-management process.
+            {t("docs.audit.recordShapeFooter")}
           </p>
         </section>
       </div>

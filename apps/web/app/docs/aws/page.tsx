@@ -74,53 +74,36 @@ export default async function Aws() {
     >
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">How the connection works</h2>
-          <p>
-            Drift detection needs read access to your live AWS state so it can diff the Terraform plan against what
-            actually exists. DriftGuard never stores long-lived credentials — it assumes a role in your account via
-            STS with an external ID. You create the role; DriftGuard assumes it read-only, on demand, per analysis.
-          </p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.aws.howItWorksTitle")}</h2>
+          <p>{t("docs.aws.howItWorksBody")}</p>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">1. Create the IAM role</h2>
-          <h3 className="mb-1 mt-3 text-[13px] font-semibold text-[color:var(--dg-fg)]">Trust policy</h3>
-          <p>
-            Grant DriftGuard&rsquo;s AWS account permission to assume the role. Copy your account ID and external ID
-            from the dashboard&rsquo;s AWS integration screen.
-          </p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.aws.step1Title")}</h2>
+          <h3 className="mb-1 mt-3 text-[13px] font-semibold text-[color:var(--dg-fg)]">{t("docs.aws.trustPolicyTitle")}</h3>
+          <p>{t("docs.aws.step1Intro")}</p>
           <div className="mt-3">
             <CodeBlock code={TRUST} filename="trust-policy.json" />
           </div>
-          <h3 className="mb-1 mt-5 text-[13px] font-semibold text-[color:var(--dg-fg)]">Permissions policy</h3>
-          <p>Attach a read-only policy. Describe/Get/List actions are enough for drift detection:</p>
+          <h3 className="mb-1 mt-5 text-[13px] font-semibold text-[color:var(--dg-fg)]">{t("docs.aws.permsPolicyTitle")}</h3>
+          <p>{t("docs.aws.permsIntro")}</p>
           <div className="mt-3">
             <CodeBlock code={PERMS} filename="permissions-policy.json" />
           </div>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">2. Register the role</h2>
-          <p>
-            Save the role ARN and your Terraform state backend either in the dashboard (Settings &rarr; AWS) or in
-            your repo config. The dashboard call is what actually stores the ARN; the config below documents intent
-            and pins the region and state location:
-          </p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.aws.step2Title")}</h2>
+          <p>{t("docs.aws.step2Body")}</p>
           <div className="mt-3">
             <CodeBlock code={CONFIG} filename=".github/driftguard.yml" />
           </div>
-          <p className="mt-3">
-            Verify the connection with <code className="font-mono text-[color:var(--dg-electric-bright)]">GET /api/v1/aws/verify</code>,
-            which performs a test AssumeRole and returns success or the STS error.
-          </p>
+          <p className="mt-3">{t("docs.aws.step2Verify")}</p>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Without AWS access</h2>
-          <p>
-            AWS access is optional. Cost, security, policy, and semantic recall all run from the Terraform plan alone.
-            Only live-state drift detection requires the role — skip this page if you don&rsquo;t need it yet.
-          </p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.aws.withoutAwsTitle")}</h2>
+          <p>{t("docs.aws.withoutAwsBody")}</p>
         </section>
       </div>
     </MarketingPageShell>

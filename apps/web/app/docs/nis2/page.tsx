@@ -15,8 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return localizedPageMeta({
     path:        "/docs/nis2",
     locale,
-    title:       "NIS2 compliance — DriftGuard",
-    description: "Map DriftGuard's Terraform PR checks to NIS2 risk-management and change-control measures, with evidence emitted per pull request.",
+    title:       t("docs.nis2.metaTitle"),
+    description: t("docs.nis2.metaDescription"),
   });
 }
 
@@ -51,33 +51,29 @@ export default async function Nis2() {
     >
       <div className="space-y-8 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Which checks map to NIS2</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.nis2.mappingTitle")}</h2>
           <p>
-            NIS2 Article 21 requires &ldquo;appropriate and proportionate technical measures&rdquo; to manage risk.
-            DriftGuard enforces a subset of those measures directly on the pull request that changes your
-            infrastructure:
+            {t("docs.nis2.mappingBody")}
           </p>
           <ul className="mt-3 list-disc space-y-1 pl-5">
-            <li><span className="font-mono text-[color:var(--dg-electric-bright)]">21(2)(a) risk analysis</span> — Checkov + policy engine flag misconfigurations before merge.</li>
-            <li><span className="font-mono text-[color:var(--dg-electric-bright)]">21(2)(e) secure change control</span> — a required GitHub Check gates merges; drift detection blocks stale plans.</li>
-            <li><span className="font-mono text-[color:var(--dg-electric-bright)]">21(2)(f) effectiveness review</span> — the audit log records every decision for later assessment.</li>
+            <li><span className="font-mono text-[color:var(--dg-electric-bright)]">21(2)(a) risk analysis</span> — {t("docs.nis2.item1_desc")}</li>
+            <li><span className="font-mono text-[color:var(--dg-electric-bright)]">21(2)(e) secure change control</span> — {t("docs.nis2.item2_desc")}</li>
+            <li><span className="font-mono text-[color:var(--dg-electric-bright)]">21(2)(f) effectiveness review</span> — {t("docs.nis2.item3_desc")}</li>
           </ul>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Configuration</h2>
-          <p>Enable NIS2 evidence and pin the network-exposure rules that most NIS2 assessments look for:</p>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.nis2.configTitle")}</h2>
+          <p>{t("docs.nis2.configBody")}</p>
           <div className="mt-3">
             <CodeBlock code={CONFIG} filename=".github/driftguard.yml" />
           </div>
         </section>
 
         <section>
-          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">Evidence per PR</h2>
+          <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.nis2.evidenceTitle")}</h2>
           <p>
-            Each pull request produces an evidence record referencing the NIS2 measures exercised, the check results,
-            and the merge decision. Records flow into the append-only audit log. DriftGuard is early access and
-            provides evidence to support a NIS2 program — it is not a substitute for a formal audit.
+            {t("docs.nis2.evidenceBody")}
           </p>
         </section>
       </div>
