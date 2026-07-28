@@ -1,8 +1,8 @@
 {
   "login": {
     "eyebrow": "Access console",
-    "title": "Initialize DriftGuard",
-    "subtitle": "Authenticate with GitHub to govern your autonomous infrastructure fleet.",
+    "title": "Sign in to DriftGuard",
+    "subtitle": "Authenticate with GitHub to start reviewing Terraform and OpenTofu pull requests.",
     "githubCta": "Sign in with GitHub",
     "terms": "By continuing you agree to our",
     "backHome": "Back to home"

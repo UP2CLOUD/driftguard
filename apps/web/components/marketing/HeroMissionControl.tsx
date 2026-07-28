@@ -68,7 +68,7 @@ function ReviewFeed() {
   const shown = PIPELINE_STEPS.slice(0, Math.min(tick, PIPELINE_STEPS.length));
 
   return (
-    <div className="absolute right-6 bottom-6 hidden w-80 rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)]/80 p-4 font-mono text-[10px] text-[color:var(--dg-fg-subtle)] backdrop-blur md:block">
+    <div className="absolute right-6 bottom-6 hidden w-80 rounded border border-[color:var(--dg-border-strong)] bg-[color-mix(in_srgb,var(--dg-surface)_80%,transparent)] p-4 font-mono text-[10px] text-[color:var(--dg-fg-subtle)] backdrop-blur md:block">
       <div className="mb-2 flex items-center justify-between border-b border-[color:var(--dg-border)] pb-2 uppercase tracking-widest text-[color:var(--dg-electric-bright)]">
         <span>PR #482 · review feed</span>
         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[color:var(--dg-electric)]" />
@@ -121,7 +121,7 @@ export function HeroMissionControl() {
       <div className="relative z-10 mx-auto mt-[-10vh] flex w-full max-w-5xl flex-col items-center px-6 text-center">
         <motion.div
           {...fade(0)}
-          className="mb-8 inline-flex items-center gap-2 rounded-full border border-[color:var(--dg-border-bright)] bg-[color:var(--dg-surface-overlay)]/50 px-3 py-1 backdrop-blur-sm"
+          className="mb-8 inline-flex items-center gap-2 rounded-full border border-[color:var(--dg-border-bright)] bg-[color-mix(in_srgb,var(--dg-surface-overlay)_50%,transparent)] px-3 py-1 backdrop-blur-sm"
         >
           <span className="h-2 w-2 animate-pulse rounded-full bg-[color:var(--dg-electric)]" />
           <span className="font-mono text-[10px] uppercase tracking-widest text-[color:var(--dg-fg-muted)]">

@@ -43,17 +43,17 @@ export default async function LoginPage() {
         </Link>
 
         {/* Auth panel */}
-        <div className="rounded-lg border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)]/60 backdrop-blur-md p-8">
+        <div className="rounded-lg border border-[color:var(--dg-border-strong)] bg-[color-mix(in_srgb,var(--dg-surface)_60%,transparent)] backdrop-blur-md p-8">
           <div className="dg-label flex items-center gap-3 mb-3">
             <span className="h-px w-6 bg-[color:var(--dg-electric)]" />
             {t("login.eyebrow") ?? "Access console"}
           </div>
           <h1 className="font-sans text-2xl font-semibold tracking-tight text-white">
-            {t("login.title") ?? "Initialize DriftGuard"}
+            {t("login.title") ?? "Sign in to DriftGuard"}
           </h1>
           <p className="mt-2 text-[13px] leading-relaxed text-[color:var(--dg-fg-muted)]">
             {t("login.subtitle") ??
-              "Authenticate with GitHub to govern your autonomous infrastructure fleet."}
+              "Authenticate with GitHub to start reviewing Terraform and OpenTofu pull requests."}
           </p>
 
           <div className="mt-7">
