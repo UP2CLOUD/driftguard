@@ -170,14 +170,14 @@ async def run_ai_review(
 
             genai.configure(api_key=gemini_key)
             model = genai.GenerativeModel(
-                model_name="gemini-1.5-flash",
+                model_name="gemini-2.5-flash",
                 system_instruction=_SYSTEM,
             )
             response = await model.generate_content_async(prompt)
             narrative = response.text or ""
             return AIReview(
                 narrative=narrative,
-                model="gemini-1.5-flash",
+                model="gemini-2.5-flash",
                 input_tokens=0,
                 output_tokens=0,
             )
