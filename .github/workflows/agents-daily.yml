@@ -42,6 +42,7 @@ jobs:
         working-directory: apps/api
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: uv run python -m driftguard.autonomy.cli "${{ github.run_id }}"
 
       # Findings are uploaded as a build artifact, not committed to the repo —
