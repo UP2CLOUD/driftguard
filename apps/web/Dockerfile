@@ -10,8 +10,13 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-# Build with a placeholder API URL — overridden at runtime via env
-ENV NEXT_PUBLIC_API_URL=http://api:8000
+# NEXT_PUBLIC_* vars are inlined into the compiled output at build time —
+# Next.js applies the same static replacement to server AND client bundles,
+# so this cannot be corrected later via a runtime container env var. Must be
+# passed as a build arg (see docker-compose.yml's web.build.args) set to the
+# API's real, publicly-reachable URL for any non-local deployment.
+ARG NEXT_PUBLIC_API_URL=http://api:8000
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 RUN pnpm build
 
 # ── Runtime ──────────────────────────────────────────────────────────────────
