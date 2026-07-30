@@ -1,12 +1,12 @@
 name: deploy-fly
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "apps/api/**"
-      - ".github/workflows/deploy-fly.yml"
   workflow_dispatch:
+
+# Manual-dispatch only: no Fly.io app is provisioned for this project (GCP Cloud
+# Run via deploy-api.yml is the deploy target — see DEPLOY.md). This workflow is
+# kept as an opt-in alternative but must not auto-run on every apps/api push,
+# since flyctl has no app/token to deploy to.
 
 permissions:
   contents: read
