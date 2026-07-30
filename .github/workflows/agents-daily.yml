@@ -1,0 +1,67 @@
+name: agents-daily
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  autonomy:
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'UP2CLOUD'
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@8d55fbecc275b1c35dbe060458839f8d30439ccf # v3
+        with:
+          version: latest
+
+      - name: Sync deps
+        working-directory: apps/api
+        run: uv sync --all-extras
+
+      - name: Check API key is configured
+        id: key_check
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "has_key=false" >> $GITHUB_OUTPUT
+            echo "⚠ ANTHROPIC_API_KEY secret not set — skipping autonomy run (no cost, no failure)"
+          else
+            echo "has_key=true" >> $GITHUB_OUTPUT
+            echo "✓ ANTHROPIC_API_KEY present — running autonomy fleet"
+          fi
+
+      - name: Run autonomy fleet (costs $)
+        if: steps.key_check.outputs.has_key == 'true'
+        working-directory: apps/api
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: uv run python -m driftguard.autonomy.cli "${{ github.run_id }}"
+
+      # Findings are uploaded as a build artifact, not committed to the repo —
+      # this is a read-only reporting phase (see .driftguard/autonomy/README.md).
+      # Review the artifact and decide what, if anything, to act on manually.
+      - name: Upload findings artifact
+        if: steps.key_check.outputs.has_key == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: autonomy-findings-${{ github.run_id }}
+          path: |
+            .driftguard/autonomy/findings/
+            .driftguard/autonomy/runs/
+          retention-days: 90
+
+      - name: Report results
+        if: always()
+        run: |
+          if [ "${{ steps.key_check.outputs.has_key }}" == "false" ]; then
+            echo "ℹ Autonomy run skipped — add ANTHROPIC_API_KEY to repository secrets to enable"
+          else
+            echo "✓ Autonomy run completed — findings uploaded as a workflow artifact"
+          fi
