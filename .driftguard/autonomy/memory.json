@@ -1,4 +1,14 @@
 {
   "history": {},
-  "rejected": []
+  "rejected": [
+    "analytics:apps/api, apps/web:core application is missing explicit analytics and error tracking setup",
+    "performance:apps/api/driftguard/db/:risk of n+1 query patterns when fetching related findings data",
+    "performance:apps/api/driftguard/services/scanner/, apps/api/driftguard/services/analysis/:cpu-bound operations in services might block fastapi event loop",
+    "product:product.md, readme.md, apps/api/driftguard/middleware/:absence of documented billing/quota tiers and enforcement details",
+    "qa:apps/api (github app integration), apps/api/driftguard/worker/:lack of explicit coverage for concurrent pr processing and comment deduplication",
+    "qa:apps/api, readme.md:`tests/eval` directory skipped without tracked reason",
+    "qa:apps/api:missing explicit coverage for github webhook signature verification",
+    "security:apps/api/v1/, github app integration:github webhook signature verification not explicitly mentioned",
+    "security:claude.md, apps/api/driftguard/services/analysis/:potential command injection and ssrf through `rtk` agent commands"
+  ]
 }
