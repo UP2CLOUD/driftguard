@@ -4,11 +4,13 @@ import { useState } from "react";
 
 export function RepoToggle({
   repoId,
+  installationId,
   initialEnabled,
   atFreeLimit,
   labels,
 }: {
   repoId: string;
+  installationId: string;
   initialEnabled: boolean;
   atFreeLimit: boolean;
   labels?: {
@@ -36,7 +38,11 @@ export function RepoToggle({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/repos/${repoId}/${action}`, { method: "POST" });
+      const res = await fetch(`/api/repos/${repoId}/${action}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ installationId }),
+      });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         if (res.status === 402) {

@@ -358,3 +358,161 @@ class TestDisableRepo:
     def test_requires_auth(self):
         r = TestClient(app).post("/api/v1/repos/repo-1/disable")
         assert r.status_code == 401
+
+
+# ── Ownership authorization (installation_id) ────────────────────────────────
+#
+# require_internal_auth only proves "this is our own web app calling" — a
+# single shared secret with no per-end-user identity. Without an explicit
+# installation_id check, any authenticated web-app user could enable/disable
+# a repo belonging to a *different* org just by guessing/enumerating repo
+# IDs, since repo_id alone carries no ownership proof. These tests cover the
+# 403 this now returns on a mismatch, and that a matching installation_id
+# still succeeds.
+
+
+class TestEnableRepoOwnership:
+    def test_mismatched_installation_id_returns_403(self):
+        repo = _repo(enabled=False)
+        org = _free_org()  # github_installation_id=123
+        mock = AsyncMock()
+        mock.get = AsyncMock(side_effect=[repo, org])
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).post(
+                "/api/v1/repos/repo-1/enable?installation_id=999",
+                headers=AUTH,
+            )
+            assert r.status_code == 403
+        finally:
+            _cleanup()
+
+    def test_matching_installation_id_succeeds(self):
+        repo = _repo(enabled=False)
+        org = _free_org()  # github_installation_id=123
+        mock = AsyncMock()
+        mock.get = AsyncMock(side_effect=[repo, org])
+        mock.execute = AsyncMock(return_value=MagicMock(scalar_one=MagicMock(return_value=0)))
+        mock.commit = AsyncMock()
+        mock.add = MagicMock()
+        _override(mock)
+        try:
+            r = TestClient(app).post(
+                "/api/v1/repos/repo-1/enable?installation_id=123",
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            assert r.json()["enabled"] is True
+        finally:
+            _cleanup()
+
+    def test_mismatch_checked_even_when_already_enabled(self):
+        """Ownership must gate the idempotent no-op path too, not just the mutating one."""
+        repo = _repo(enabled=True)
+        org = _free_org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(side_effect=[repo, org])
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).post(
+                "/api/v1/repos/repo-1/enable?installation_id=999",
+                headers=AUTH,
+            )
+            assert r.status_code == 403
+        finally:
+            _cleanup()
+
+
+class TestDisableRepoOwnership:
+    def test_mismatched_installation_id_returns_403(self):
+        repo = _repo(enabled=True)
+        org = _free_org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(side_effect=[repo, org])
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).post(
+                "/api/v1/repos/repo-1/disable?installation_id=999",
+                headers=AUTH,
+            )
+            assert r.status_code == 403
+        finally:
+            _cleanup()
+
+    def test_matching_installation_id_succeeds(self):
+        repo = _repo(enabled=True)
+        org = _free_org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(side_effect=[repo, org])
+        mock.commit = AsyncMock()
+        mock.add = MagicMock()
+        _override(mock)
+        try:
+            r = TestClient(app).post(
+                "/api/v1/repos/repo-1/disable?installation_id=123",
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            assert r.json()["enabled"] is False
+        finally:
+            _cleanup()
+
+
+class TestPatchRepoOwnership:
+    def test_mismatched_installation_id_returns_403(self):
+        repo = _repo(enabled=True)
+        org = _free_org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(side_effect=[repo, org])
+        mock.commit = AsyncMock()
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/repos/repo-1?installation_id=999",
+                json={"enabled": False},
+                headers=AUTH,
+            )
+            assert r.status_code == 403
+        finally:
+            _cleanup()
+
+    def test_matching_installation_id_succeeds(self):
+        repo = _repo(enabled=True)
+        org = _free_org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(side_effect=[repo, org])
+        mock.commit = AsyncMock()
+        mock.add = MagicMock()
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/repos/repo-1?installation_id=123",
+                json={"enabled": False},
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+            assert r.json()["enabled"] is False
+        finally:
+            _cleanup()
+
+    def test_omitted_installation_id_stays_backward_compatible(self):
+        """No installation_id supplied — fails open, matching pre-existing callers."""
+        repo = _repo(enabled=True)
+        org = _free_org()
+        mock = AsyncMock()
+        mock.get = AsyncMock(side_effect=[repo, org])
+        mock.commit = AsyncMock()
+        mock.add = MagicMock()
+        _override(mock)
+        try:
+            r = TestClient(app).patch(
+                "/api/v1/repos/repo-1",
+                json={"enabled": False},
+                headers=AUTH,
+            )
+            assert r.status_code == 200
+        finally:
+            _cleanup()

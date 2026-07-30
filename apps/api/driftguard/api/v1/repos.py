@@ -16,6 +16,31 @@ class RepoPatch(BaseModel):
     enabled: bool | None = None
 
 
+async def _assert_repo_belongs_to_installation(
+    db: AsyncSession, org: Organization, installation_id: int | None
+) -> None:
+    """When the caller supplies installation_id, verify it matches the repo's org.
+
+    require_internal_auth only proves "this is our own web app calling" — a
+    single shared secret with no per-end-user identity, since the FastAPI
+    backend never sees who's logged in. The Next.js layer is what actually
+    knows the calling user (via their NextAuth session) and is responsible
+    for verifying that user is authorized for `installation_id` before it
+    ever proxies here (see apps/web/lib/auth-utils.ts checkInstallationAccess).
+    This check closes the other half of the gap: even a caller legitimately
+    authorized for *some* installation could otherwise pass any repo_id
+    belonging to a *different* org and this endpoint would happily act on
+    it, since repo_id alone carries no ownership proof. Skipped (fail open)
+    only when the caller omits installation_id, to stay compatible with any
+    other internal caller that doesn't have it — new web-layer call sites
+    should always send it.
+    """
+    if installation_id is None:
+        return
+    if org.github_installation_id != installation_id:
+        raise HTTPException(403, "Repository does not belong to this installation")
+
+
 @router.get("")
 async def list_repos(
     installation_id: int | None = Query(None),
@@ -56,6 +81,7 @@ async def list_repos(
 async def patch_repo(
     repo_id: str,
     body: RepoPatch,
+    installation_id: int | None = Query(None),
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> dict:
@@ -63,11 +89,13 @@ async def patch_repo(
     if repo is None:
         raise HTTPException(404, "Repository not found")
 
+    org = await db.get(Organization, repo.org_id)
+    if org is None:
+        raise HTTPException(404, "Organization not found")
+    await _assert_repo_belongs_to_installation(db, org, installation_id)
+
     if body.enabled is not None:
         if body.enabled and not repo.enabled:
-            org = await db.get(Organization, repo.org_id)
-            if org is None:
-                raise HTTPException(404, "Organization not found")
             try:
                 await assert_can_enable_repo(db, org)
             except ValueError as exc:
@@ -97,18 +125,21 @@ async def patch_repo(
 @router.post("/{repo_id}/enable")
 async def enable_repo(
     repo_id: str,
+    installation_id: int | None = Query(None),
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> dict:
     repo = await db.get(Repository, repo_id)
     if repo is None:
         raise HTTPException(404, "Repository not found")
-    if repo.enabled:
-        return {"id": repo.id, "enabled": True}
 
     org = await db.get(Organization, repo.org_id)
     if org is None:
         raise HTTPException(404, "Organization not found")
+    await _assert_repo_belongs_to_installation(db, org, installation_id)
+
+    if repo.enabled:
+        return {"id": repo.id, "enabled": True}
 
     try:
         await assert_can_enable_repo(db, org)
@@ -133,12 +164,18 @@ async def enable_repo(
 @router.post("/{repo_id}/disable")
 async def disable_repo(
     repo_id: str,
+    installation_id: int | None = Query(None),
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> dict:
     repo = await db.get(Repository, repo_id)
     if repo is None:
         raise HTTPException(404, "Repository not found")
+
+    org = await db.get(Organization, repo.org_id)
+    if org is None:
+        raise HTTPException(404, "Organization not found")
+    await _assert_repo_belongs_to_installation(db, org, installation_id)
 
     repo.enabled = False
     db.add(
