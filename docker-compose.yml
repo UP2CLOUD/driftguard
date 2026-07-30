@@ -115,12 +115,18 @@ services:
     build:
       context: apps/web
       dockerfile: Dockerfile
+      # NEXT_PUBLIC_* vars are inlined at build time — see the Dockerfile's
+      # own comment on this. Setting NEXT_PUBLIC_API_URL under `environment:`
+      # below would have no effect on the already-built output, so it must
+      # be threaded through here instead. Default matches what a browser on
+      # the host machine needs to reach the api container's published port.
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
     restart: unless-stopped
     depends_on:
       api: { condition: service_healthy }
     ports: ["3000:3000"]
     environment:
-      NEXT_PUBLIC_API_URL:              http://localhost:8000
       NEXTAUTH_URL:                     ${NEXTAUTH_URL:-http://localhost:3000}
       NEXTAUTH_SECRET:                  ${AUTH_SECRET:-dev-nextauth-secret-change-in-production}
       AUTH_SECRET:                      ${AUTH_SECRET:-dev-nextauth-secret-change-in-production}
