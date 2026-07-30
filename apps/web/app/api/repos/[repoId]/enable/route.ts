@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { beProxy } from "@/lib/backend";
+import { checkInstallationAccess } from "@/lib/auth-utils";
 
 export async function POST(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ repoId: string }> },
 ) {
   const session = await auth();
@@ -12,7 +13,31 @@ export async function POST(
   }
 
   const { repoId } = await params;
-  const { body, status } = await beProxy(`/api/v1/repos/${repoId}/enable`, { method: "POST", timeout: 8000 });
-  if (body === null) return new NextResponse(null, { status });
-  return NextResponse.json(body, { status });
+
+  let installationId: string | undefined;
+  try {
+    const body = await req.json();
+    if (body && typeof body.installationId === "string") installationId = body.installationId;
+  } catch {
+    // No/invalid JSON body — installationId stays undefined, request is rejected below.
+  }
+  if (!installationId) {
+    return NextResponse.json({ error: "installationId required" }, { status: 400 });
+  }
+
+  // The session proves *who* is calling; this proves they're actually
+  // authorized for the installation that owns the target repo. Without it,
+  // any authenticated user could enable/disable a repo belonging to a
+  // different org just by guessing/enumerating repo IDs.
+  const { authorized } = await checkInstallationAccess(installationId);
+  if (!authorized) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const { body: data, status } = await beProxy(
+    `/api/v1/repos/${repoId}/enable?installation_id=${encodeURIComponent(installationId)}`,
+    { method: "POST", timeout: 8000 },
+  );
+  if (data === null) return new NextResponse(null, { status });
+  return NextResponse.json(data, { status });
 }

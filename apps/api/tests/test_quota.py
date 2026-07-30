@@ -317,6 +317,60 @@ async def test_scan_run_different_sha_not_duplicate(db):
 
 
 @pytest.mark.asyncio
+async def test_scan_run_concurrent_delivery_no_exception_exactly_one_wins():
+    """Two webhook deliveries racing on the identical (org, repo, pr, sha) key.
+
+    Regression test for the pre-fix behavior: a plain SELECT-then-INSERT let
+    both concurrent callers pass the SELECT before either committed, so the
+    losing INSERT raised IntegrityError. That propagated out of the caller's
+    quota-gate try/except in enqueue_pr_analysis, which fails open — so the
+    "duplicate" got analyzed anyway (duplicate LLM calls, duplicate PR
+    comments, undercounted quota). The fix (INSERT ... ON CONFLICT DO
+    NOTHING) must let exactly one caller win, with neither raising.
+
+    Uses a shared in-memory SQLite engine (StaticPool, single connection) so
+    two independent sessions really do race on the same underlying database —
+    the default per-connection :memory: engine would give each session its
+    own isolated database and never exercise the conflict at all.
+    """
+    import asyncio
+
+    from sqlalchemy.pool import StaticPool
+
+    engine = create_async_engine(
+        "sqlite+aiosqlite:///:memory:",
+        poolclass=StaticPool,
+        connect_args={"check_same_thread": False},
+    )
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        maker = async_sessionmaker(engine, expire_on_commit=False)
+
+        async with maker() as setup_session:
+            org = make_org()
+            setup_session.add(org)
+            await setup_session.commit()
+            org_id = org.id
+
+        sha = "c" * 40
+
+        async def attempt():
+            async with maker() as session:
+                result = await try_record_scan_run(session, org_id, "repo-race", 7, sha)
+                await session.commit()
+                return result
+
+        results = await asyncio.gather(attempt(), attempt(), return_exceptions=True)
+
+        exceptions = [r for r in results if isinstance(r, Exception)]
+        assert exceptions == [], f"try_record_scan_run raised under concurrency: {exceptions}"
+        assert sorted(results) == [False, True], f"expected exactly one winner, got {results}"
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.asyncio
 async def test_scan_run_new_month_resets(db, monkeypatch):
     """New month = new usage row, quota resets."""
     monkeypatch.setattr(settings, "premium_monthly_pr_limit", 2)

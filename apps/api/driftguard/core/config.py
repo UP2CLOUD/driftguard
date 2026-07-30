@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    environment: str = "prod"
+    environment: str = "dev"
     database_url: str = "postgresql+asyncpg://driftguard:driftguard@localhost:5432/driftguard"
     secret_key: str = "dev-only-change-me"
     debug_endpoint_token: str = ""  # prod-only: unlocks /debug/* with matching X-Debug-Token

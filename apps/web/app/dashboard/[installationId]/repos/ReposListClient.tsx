@@ -225,6 +225,7 @@ export function ReposListClient({
                 {r.id ? (
                   <RepoToggle
                     repoId={r.id}
+                    installationId={installationId}
                     initialEnabled={r.enabled}
                     atFreeLimit={r.atFreeLimit}
                     labels={{

@@ -5,12 +5,12 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from driftguard.core.config import settings
 from driftguard.core.logging import log
-from driftguard.db.models import MonthlyUsage, Organization, Repository, ScanRun
+from driftguard.db.models import MonthlyUsage, Organization, Repository
 
 
 def _uuid() -> str:
@@ -105,28 +105,38 @@ async def try_consume_manual_scan_quota(db: AsyncSession, org: Organization) -> 
 
 
 async def try_record_scan_run(db: AsyncSession, org_id: str, repo_id: str, pr_number: int, head_sha: str) -> bool:
-    """Insert a ScanRun row. Returns True if new, False if already seen (duplicate)."""
-    existing = await db.execute(
-        select(ScanRun).where(
-            ScanRun.org_id == org_id,
-            ScanRun.repo_id == repo_id,
-            ScanRun.pr_number == pr_number,
-            ScanRun.head_sha == head_sha,
-        )
-    )
-    if existing.scalar_one_or_none() is not None:
-        return False
+    """Insert a ScanRun row. Returns True if new, False if already seen (duplicate).
 
-    run = ScanRun(
-        id=_uuid(),
-        org_id=org_id,
-        repo_id=repo_id,
-        pr_number=pr_number,
-        head_sha=head_sha,
+    Uses INSERT ... ON CONFLICT DO NOTHING (matching the pattern in
+    webhooks._claim_delivery) rather than a plain SELECT-then-INSERT: two
+    concurrent webhook deliveries for the same (org, repo, pr, sha) can both
+    pass a SELECT before either commits, so the losing INSERT raises
+    IntegrityError. That used to propagate out of the caller's quota-gate
+    try/except, which fails open and dispatches analysis anyway — the
+    duplicate delivery got analyzed *and* skipped quota consumption, doubling
+    LLM cost and PR comments while undercounting usage. A single atomic
+    statement makes the DB resolve the conflict — the losing writer just
+    returns no row, no exception.
+    """
+    claimed = await db.execute(
+        text(
+            "INSERT INTO scan_runs (id, org_id, repo_id, pr_number, head_sha) "
+            "VALUES (:id, :org_id, :repo_id, :pr_number, :head_sha) "
+            "ON CONFLICT (org_id, repo_id, pr_number, head_sha) DO NOTHING "
+            "RETURNING id"
+        ),
+        {
+            "id": _uuid(),
+            "org_id": org_id,
+            "repo_id": repo_id,
+            "pr_number": pr_number,
+            "head_sha": head_sha,
+        },
     )
-    db.add(run)
-    await db.flush()
-    return True
+    is_new = claimed.scalar_one_or_none() is not None
+    if is_new:
+        await db.flush()
+    return is_new
 
 
 async def assert_can_enable_repo(db: AsyncSession, org: Organization) -> None:
