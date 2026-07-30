@@ -64,6 +64,7 @@ ignore = ["S101", "S104", "B008"]
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S"]
 "driftguard/integrations/*" = ["S603", "S607"]
+"driftguard/autonomy/context.py" = ["S603", "S607"]
 "driftguard/core/config.py" = ["S105"]
 "driftguard/services/email.py" = ["E501"]   # HTML strings in f-strings can't wrap
 

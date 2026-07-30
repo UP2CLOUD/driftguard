@@ -1,0 +1,22 @@
+{
+  "enabled_roles": [
+    "product",
+    "uiux",
+    "qa",
+    "performance",
+    "reliability",
+    "security",
+    "codehealth",
+    "seo",
+    "analytics"
+  ],
+  "protected_paths": [
+    "apps/api/driftguard/db/migrations",
+    "apps/api/driftguard/core/config.py",
+    ".github/workflows",
+    "infra"
+  ],
+  "max_findings_per_role": 5,
+  "max_findings_per_run": 20,
+  "oscillation_window_runs": 3
+}
