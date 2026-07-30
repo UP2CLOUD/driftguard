@@ -318,3 +318,140 @@ class TestPostCheckRun:
         ):
             await post_check_run("tok", "acme/infra", "sha", conclusion="failure", title="t", summary="s")
         mock_warn.assert_called_once()
+
+
+# ── post_pr_comment (dedup / edit-in-place) ───────────────────────────────────
+#
+# Every push to a PR (the `synchronize` webhook event) re-runs analysis, and
+# without dedup each run would post a brand-new GitHub comment — stacking
+# duplicates rather than updating one summary in place, unlike a "production
+# grade" review bot. post_pr_comment(marker=...) embeds an invisible
+# <!-- driftguard:<marker> --> tag and, when a prior comment carrying it is
+# found, PATCHes that comment instead of POSTing a new one.
+
+
+def _client_with_get_then_write(get_response, write_response):
+    """Mock client where .get is used for the comment scan and .post/.patch for the write."""
+    mock_client = AsyncMock()
+    mock_client.get = AsyncMock(return_value=get_response)
+    mock_client.post = AsyncMock(return_value=write_response)
+    mock_client.patch = AsyncMock(return_value=write_response)
+    cm = AsyncMock()
+    cm.__aenter__ = AsyncMock(return_value=mock_client)
+    cm.__aexit__ = AsyncMock(return_value=False)
+    return cm, mock_client
+
+
+class TestPostPrComment:
+    @pytest.mark.asyncio
+    async def test_no_marker_always_posts_new_comment(self):
+        """Pre-existing behavior: without a marker, never scans, always POSTs."""
+        from driftguard.integrations.github import post_pr_comment
+
+        cm, client = _async_client_ctx(_mock_response(201))
+        with patch("driftguard.integrations.github.httpx.AsyncClient", return_value=cm):
+            await post_pr_comment("tok", "acme/infra", 7, "hello")
+        client.get.assert_not_awaited()
+        client.post.assert_awaited_once()
+        assert client.post.call_args[1]["json"]["body"] == "hello"
+
+    @pytest.mark.asyncio
+    async def test_marker_no_existing_comment_posts_new_with_tag(self):
+        from driftguard.integrations.github import post_pr_comment
+
+        empty_page = _mock_response(200)
+        empty_page.json = MagicMock(return_value=[])
+        write_resp = _mock_response(201)
+
+        cm, client = _client_with_get_then_write(empty_page, write_resp)
+        with patch("driftguard.integrations.github.httpx.AsyncClient", return_value=cm):
+            await post_pr_comment("tok", "acme/infra", 7, "hello", marker="summary")
+
+        client.post.assert_awaited_once()
+        client.patch.assert_not_awaited()
+        posted_body = client.post.call_args[1]["json"]["body"]
+        assert posted_body.startswith("<!-- driftguard:summary -->")
+        assert "hello" in posted_body
+
+    @pytest.mark.asyncio
+    async def test_marker_existing_comment_patches_in_place(self):
+        from driftguard.integrations.github import post_pr_comment
+
+        found_page = _mock_response(200)
+        found_page.json = MagicMock(
+            return_value=[
+                {"id": 111, "body": "some unrelated comment"},
+                {"id": 222, "body": "<!-- driftguard:summary -->\nold content"},
+            ]
+        )
+        write_resp = _mock_response(200)
+
+        cm, client = _client_with_get_then_write(found_page, write_resp)
+        with patch("driftguard.integrations.github.httpx.AsyncClient", return_value=cm):
+            await post_pr_comment("tok", "acme/infra", 7, "new content", marker="summary")
+
+        client.post.assert_not_awaited()
+        client.patch.assert_awaited_once()
+        patch_url = client.patch.call_args[0][0]
+        assert patch_url.endswith("/repos/acme/infra/issues/comments/222")
+        patched_body = client.patch.call_args[1]["json"]["body"]
+        assert "new content" in patched_body
+
+    @pytest.mark.asyncio
+    async def test_different_markers_do_not_collide(self):
+        """A comment tagged quota-blocked must not be matched (and clobbered) by marker='summary'."""
+        from driftguard.integrations.github import post_pr_comment
+
+        found_page = _mock_response(200)
+        found_page.json = MagicMock(
+            return_value=[{"id": 222, "body": "<!-- driftguard:quota-blocked -->\nquota message"}]
+        )
+        write_resp = _mock_response(201)
+
+        cm, client = _client_with_get_then_write(found_page, write_resp)
+        with patch("driftguard.integrations.github.httpx.AsyncClient", return_value=cm):
+            await post_pr_comment("tok", "acme/infra", 7, "the real summary", marker="summary")
+
+        # No match for "summary" marker among quota-blocked comments -> new comment posted, not patched.
+        client.post.assert_awaited_once()
+        client.patch.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_scan_failure_falls_back_to_posting_new_comment(self):
+        """If listing comments errors, don't fail the whole call — post a new one."""
+        from driftguard.integrations.github import post_pr_comment
+
+        error_page = _mock_response(500)
+        write_resp = _mock_response(201)
+
+        cm, client = _client_with_get_then_write(error_page, write_resp)
+        with patch("driftguard.integrations.github.httpx.AsyncClient", return_value=cm):
+            await post_pr_comment("tok", "acme/infra", 7, "hello", marker="summary")
+
+        client.post.assert_awaited_once()
+        client.patch.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_scan_paginates_to_find_older_comment(self):
+        from driftguard.integrations.github import post_pr_comment
+
+        page1 = _mock_response(200)
+        page1.json = MagicMock(return_value=[{"id": i, "body": f"comment {i}"} for i in range(100)])
+        page2 = _mock_response(200)
+        page2.json = MagicMock(return_value=[{"id": 999, "body": "<!-- driftguard:summary -->\nold"}])
+        write_resp = _mock_response(200)
+
+        mock_client = AsyncMock()
+        mock_client.get = AsyncMock(side_effect=[page1, page2])
+        mock_client.post = AsyncMock(return_value=write_resp)
+        mock_client.patch = AsyncMock(return_value=write_resp)
+        cm = AsyncMock()
+        cm.__aenter__ = AsyncMock(return_value=mock_client)
+        cm.__aexit__ = AsyncMock(return_value=False)
+
+        with patch("driftguard.integrations.github.httpx.AsyncClient", return_value=cm):
+            await post_pr_comment("tok", "acme/infra", 7, "new", marker="summary")
+
+        assert mock_client.get.await_count == 2
+        mock_client.patch.assert_awaited_once()
+        assert mock_client.patch.call_args[0][0].endswith("/comments/999")
