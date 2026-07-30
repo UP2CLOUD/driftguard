@@ -1,4 +1,4 @@
-"""LLM Router — Claude primary, OpenAI fallback.
+"""LLM Router — Claude primary, OpenAI then Gemini fallback.
 
 Usage:
     from driftguard.ai.llm_router import llm_complete
@@ -46,7 +46,12 @@ async def llm_complete(
     temperature: float = 0.2,
     tag: str = "default",
 ) -> str:
-    """Call Claude; fall back to OpenAI on 529 / timeout if enabled."""
+    """Call Claude; on failure, try OpenAI then Gemini (each only if configured).
+
+    If fallback is disabled, or no further provider is configured/succeeds,
+    re-raises the *original* Claude exception — callers should treat that as
+    the canonical failure reason regardless of which fallback also failed.
+    """
     try:
         client = _get_anthropic()
         response = await client.messages.create(
@@ -59,11 +64,24 @@ async def llm_complete(
         log.info("llm.claude.ok", tag=tag, tokens=response.usage.output_tokens)
         _track_usage("claude", response.usage.input_tokens, response.usage.output_tokens)
         return text
-    except (APIStatusError, APITimeoutError) as exc:
-        log.warning("llm.claude.failed", tag=tag, error=str(exc))
-        if not settings.llm_fallback_enabled or not settings.openai_api_key:
+    except (APIStatusError, APITimeoutError) as claude_exc:
+        log.warning("llm.claude.failed", tag=tag, error=str(claude_exc))
+        if not settings.llm_fallback_enabled:
             raise
-        return await _openai_fallback(system=system, user=user, max_tokens=max_tokens, tag=tag)
+
+        if settings.openai_api_key:
+            try:
+                return await _openai_fallback(system=system, user=user, max_tokens=max_tokens, tag=tag)
+            except Exception as openai_exc:  # noqa: BLE001 — try the next provider, not abort
+                log.warning("llm.openai.failed", tag=tag, error=str(openai_exc))
+
+        if settings.gemini_api_key:
+            try:
+                return await _gemini_fallback(system=system, user=user, tag=tag)
+            except Exception as gemini_exc:  # noqa: BLE001 — no providers left after this
+                log.warning("llm.gemini.failed", tag=tag, error=str(gemini_exc))
+
+        raise claude_exc from None
 
 
 async def _openai_fallback(*, system: str, user: str, max_tokens: int, tag: str) -> str:
@@ -81,6 +99,21 @@ async def _openai_fallback(*, system: str, user: str, max_tokens: int, tag: str)
     in_tok = response.usage.prompt_tokens if response.usage else 0
     out_tok = response.usage.completion_tokens if response.usage else 0
     _track_usage("openai", in_tok, out_tok)
+    return text
+
+
+async def _gemini_fallback(*, system: str, user: str, tag: str) -> str:
+    import google.generativeai as genai  # lazy: avoid import cost when unused
+
+    genai.configure(api_key=settings.gemini_api_key)
+    model = genai.GenerativeModel(model_name=settings.gemini_model, system_instruction=system)
+    response = await model.generate_content_async(user)
+    text = response.text or ""
+    log.info("llm.gemini.ok", tag=tag, model=settings.gemini_model)
+    usage = getattr(response, "usage_metadata", None)
+    in_tok = getattr(usage, "prompt_token_count", 0) if usage else 0
+    out_tok = getattr(usage, "candidates_token_count", 0) if usage else 0
+    _track_usage("gemini", in_tok, out_tok)
     return text
 
 
