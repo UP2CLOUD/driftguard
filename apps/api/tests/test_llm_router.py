@@ -1,4 +1,4 @@
-"""Unit tests for driftguard.ai.llm_router — Claude primary, OpenAI fallback."""
+"""Unit tests for driftguard.ai.llm_router — Claude primary, OpenAI then Gemini fallback."""
 
 from __future__ import annotations
 
@@ -22,6 +22,18 @@ def _openai_response(text: str = "OpenAI fallback response."):
     resp.choices = [choice]
     resp.usage = MagicMock(prompt_tokens=80, completion_tokens=40)
     return resp
+
+
+def _gemini_response(text: str = "Gemini fallback response.", prompt_tokens: int = 60, candidate_tokens: int = 30):
+    resp = MagicMock()
+    resp.text = text
+    resp.usage_metadata = MagicMock(prompt_token_count=prompt_tokens, candidates_token_count=candidate_tokens)
+    return resp
+
+
+def _patch_gemini_model(monkeypatch, fake_model):
+    monkeypatch.setattr("google.generativeai.configure", MagicMock())
+    monkeypatch.setattr("google.generativeai.GenerativeModel", MagicMock(return_value=fake_model))
 
 
 # ── llm_complete ───────────────────────────────────────────────────────────────
@@ -111,6 +123,75 @@ class TestLlmComplete:
         with pytest.raises(APITimeoutError):
             await llm_complete(system="sys", user="usr")
 
+    @pytest.mark.asyncio
+    async def test_claude_and_openai_fail_falls_back_to_gemini(self, monkeypatch):
+        """When Claude and OpenAI both fail, Gemini is tried next."""
+        from driftguard.core.config import settings
+
+        fake_claude = AsyncMock()
+        fake_claude.messages.create = AsyncMock(side_effect=APITimeoutError(request=MagicMock()))
+        fake_openai = AsyncMock()
+        fake_openai.chat.completions.create = AsyncMock(side_effect=RuntimeError("openai down"))
+        monkeypatch.setattr("driftguard.ai.llm_router._anthropic", fake_claude)
+        monkeypatch.setattr("driftguard.ai.llm_router._openai", fake_openai)
+        monkeypatch.setattr(settings, "llm_fallback_enabled", True)
+        monkeypatch.setattr(settings, "openai_api_key", "sk-test")
+        monkeypatch.setattr(settings, "gemini_api_key", "gm-test")
+
+        fake_model = MagicMock()
+        fake_model.generate_content_async = AsyncMock(return_value=_gemini_response("Gemini answer."))
+        _patch_gemini_model(monkeypatch, fake_model)
+
+        from driftguard.ai.llm_router import llm_complete
+
+        result = await llm_complete(system="sys", user="usr", tag="gemini-test")
+        assert result == "Gemini answer."
+
+    @pytest.mark.asyncio
+    async def test_claude_fails_openai_unconfigured_skips_to_gemini(self, monkeypatch):
+        """No OpenAI key configured: Gemini is tried directly, not skipped entirely."""
+        from driftguard.core.config import settings
+
+        fake_claude = AsyncMock()
+        fake_claude.messages.create = AsyncMock(side_effect=APITimeoutError(request=MagicMock()))
+        monkeypatch.setattr("driftguard.ai.llm_router._anthropic", fake_claude)
+        monkeypatch.setattr(settings, "llm_fallback_enabled", True)
+        monkeypatch.setattr(settings, "openai_api_key", "")
+        monkeypatch.setattr(settings, "gemini_api_key", "gm-test")
+
+        fake_model = MagicMock()
+        fake_model.generate_content_async = AsyncMock(return_value=_gemini_response("Gemini direct answer."))
+        _patch_gemini_model(monkeypatch, fake_model)
+
+        from driftguard.ai.llm_router import llm_complete
+
+        result = await llm_complete(system="sys", user="usr")
+        assert result == "Gemini direct answer."
+
+    @pytest.mark.asyncio
+    async def test_all_providers_fail_reraises_original_claude_exception(self, monkeypatch):
+        """If OpenAI and Gemini also fail, the ORIGINAL Claude exception propagates."""
+        from driftguard.core.config import settings
+
+        fake_claude = AsyncMock()
+        fake_claude.messages.create = AsyncMock(side_effect=APITimeoutError(request=MagicMock()))
+        fake_openai = AsyncMock()
+        fake_openai.chat.completions.create = AsyncMock(side_effect=RuntimeError("openai down"))
+        monkeypatch.setattr("driftguard.ai.llm_router._anthropic", fake_claude)
+        monkeypatch.setattr("driftguard.ai.llm_router._openai", fake_openai)
+        monkeypatch.setattr(settings, "llm_fallback_enabled", True)
+        monkeypatch.setattr(settings, "openai_api_key", "sk-test")
+        monkeypatch.setattr(settings, "gemini_api_key", "gm-test")
+
+        fake_model = MagicMock()
+        fake_model.generate_content_async = AsyncMock(side_effect=RuntimeError("gemini down"))
+        _patch_gemini_model(monkeypatch, fake_model)
+
+        from driftguard.ai.llm_router import llm_complete
+
+        with pytest.raises(APITimeoutError):
+            await llm_complete(system="sys", user="usr")
+
 
 # ── _openai_fallback ──────────────────────────────────────────────────────────
 
@@ -156,6 +237,52 @@ class TestOpenAiFallback:
         from driftguard.ai.llm_router import _openai_fallback
 
         result = await _openai_fallback(system="s", user="u", max_tokens=512, tag="t")
+        assert result == "text"
+
+
+# ── _gemini_fallback ──────────────────────────────────────────────────────────
+
+
+class TestGeminiFallback:
+    @pytest.mark.asyncio
+    async def test_gemini_fallback_returns_response_text(self, monkeypatch):
+        """_gemini_fallback returns the response's text."""
+        fake_model = MagicMock()
+        fake_model.generate_content_async = AsyncMock(return_value=_gemini_response("Gemini result."))
+        _patch_gemini_model(monkeypatch, fake_model)
+
+        from driftguard.ai.llm_router import _gemini_fallback
+
+        result = await _gemini_fallback(system="s", user="u", tag="t")
+        assert result == "Gemini result."
+
+    @pytest.mark.asyncio
+    async def test_gemini_fallback_null_text_returns_empty_string(self, monkeypatch):
+        """When Gemini returns None text, result should be empty string."""
+        resp = _gemini_response()
+        resp.text = None
+        fake_model = MagicMock()
+        fake_model.generate_content_async = AsyncMock(return_value=resp)
+        _patch_gemini_model(monkeypatch, fake_model)
+
+        from driftguard.ai.llm_router import _gemini_fallback
+
+        result = await _gemini_fallback(system="s", user="u", tag="t")
+        assert result == ""
+
+    @pytest.mark.asyncio
+    async def test_gemini_fallback_no_usage_metadata_defaults_to_zero(self, monkeypatch):
+        """When response.usage_metadata is None, token counts default to 0 without error."""
+        resp = MagicMock()
+        resp.text = "text"
+        resp.usage_metadata = None
+        fake_model = MagicMock()
+        fake_model.generate_content_async = AsyncMock(return_value=resp)
+        _patch_gemini_model(monkeypatch, fake_model)
+
+        from driftguard.ai.llm_router import _gemini_fallback
+
+        result = await _gemini_fallback(system="s", user="u", tag="t")
         assert result == "text"
 
 
