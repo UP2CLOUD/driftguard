@@ -31,17 +31,81 @@ async def installation_token(installation_id: int) -> str:
         return r.json()["token"]
 
 
-async def post_pr_comment(token: str, repo_full_name: str, pr_number: int, body: str) -> None:
+def _marker_tag(marker: str) -> str:
+    return f"<!-- driftguard:{marker} -->"
+
+
+async def _find_marked_comment(token: str, repo_full_name: str, pr_number: int, marker: str) -> int | None:
+    """Find DriftGuard's own prior comment on this PR carrying `marker`.
+
+    Returns the comment id, or None if not found — including on any fetch
+    error, so callers fall back to posting a new comment rather than failing
+    the whole review. Capped at 3 pages (300 comments): DriftGuard's own
+    comment is always recent relative to when it last ran, so an unbounded
+    scan isn't worth the extra requests on a long-lived, heavily-discussed PR.
+    """
+    headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
+    needle = _marker_tag(marker)
+    try:
+        async with httpx.AsyncClient(timeout=15) as client:
+            for page in range(1, 4):
+                r = await client.get(
+                    f"{GITHUB_API}/repos/{repo_full_name}/issues/{pr_number}/comments",
+                    headers=headers,
+                    params={"per_page": 100, "page": page},
+                )
+                if r.status_code != 200:
+                    return None
+                batch = r.json()
+                if not batch:
+                    return None
+                for c in batch:
+                    if needle in (c.get("body") or ""):
+                        return c["id"]
+                if len(batch) < 100:
+                    return None
+    except Exception as exc:  # noqa: BLE001
+        log.warning("find_marked_comment_failed", repo=repo_full_name, pr=pr_number, error=str(exc))
+    return None
+
+
+async def post_pr_comment(
+    token: str, repo_full_name: str, pr_number: int, body: str, *, marker: str | None = None
+) -> None:
+    """Post a PR comment, or update DriftGuard's own prior comment in place.
+
+    Without `marker`, always posts a new comment (pre-existing behavior).
+    With `marker`, embeds an invisible HTML-comment tag and looks for a
+    prior DriftGuard comment carrying the same tag — if found, PATCHes it
+    instead of posting a new one, so repeated pushes to the same PR update
+    a single comment rather than stacking duplicates. Different call sites
+    use different markers ("summary", "quota-blocked", "error", "finops")
+    so they never clobber each other — a PR's state across runs can
+    legitimately switch between these (e.g. quota-blocked on one push, a
+    real summary on the next once quota resets).
+    """
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github+json",
     }
+    if marker:
+        body = f"{_marker_tag(marker)}\n{body}"
+
+    existing_id = await _find_marked_comment(token, repo_full_name, pr_number, marker) if marker else None
+
     async with httpx.AsyncClient(timeout=10) as client:
-        r = await client.post(
-            f"{GITHUB_API}/repos/{repo_full_name}/issues/{pr_number}/comments",
-            headers=headers,
-            json={"body": body},
-        )
+        if existing_id is not None:
+            r = await client.patch(
+                f"{GITHUB_API}/repos/{repo_full_name}/issues/comments/{existing_id}",
+                headers=headers,
+                json={"body": body},
+            )
+        else:
+            r = await client.post(
+                f"{GITHUB_API}/repos/{repo_full_name}/issues/{pr_number}/comments",
+                headers=headers,
+                json={"body": body},
+            )
         r.raise_for_status()
 
 

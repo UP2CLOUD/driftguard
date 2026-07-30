@@ -145,6 +145,7 @@ async def enqueue_pr_analysis(payload: dict) -> None:
                         pr_number,
                         "**DriftGuard:** Monthly PR review limit reached. "
                         f"Visit {settings.public_base_url}/dashboard to manage your plan.",
+                        marker="quota-blocked",
                     )
                 except Exception as _quota_comment_exc:  # noqa: BLE001
                     log.warning("quota_comment_failed", repo=repo, error=str(_quota_comment_exc))
@@ -189,7 +190,11 @@ async def enqueue_pr_analysis(payload: dict) -> None:
         try:
             token = await installation_token(installation_id)
             await post_pr_comment(
-                token, repo, pr_number, f"⚠️ **DriftGuard analysis failed**\n```\n{traceback.format_exc()[-1500:]}\n```"
+                token,
+                repo,
+                pr_number,
+                f"⚠️ **DriftGuard analysis failed**\n```\n{traceback.format_exc()[-1500:]}\n```",
+                marker="error",
             )
         except Exception:  # noqa: S110
             pass
@@ -546,7 +551,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
                 await _fo_db.commit()
             _finops_comment = render_finops_comment(_finops_result)
             try:
-                await post_pr_comment(token, repo_full_name, pr_number, _finops_comment)
+                await post_pr_comment(token, repo_full_name, pr_number, _finops_comment, marker="finops")
             except Exception as _foc_err:
                 log.warning("finops_comment_post_failed", error=str(_foc_err))
     except ImportError:
@@ -581,7 +586,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
     if recall_section:
         body = body.replace("\n\n---\n", recall_section + "\n\n---\n", 1)
 
-    await post_pr_comment(token, repo_full_name, pr_number, body)
+    await post_pr_comment(token, repo_full_name, pr_number, body, marker="summary")
 
     # GitHub Check Run — gates merge button when branch protection requires it
     crit_high_count = sum(1 for f in findings if f.severity in ("critical", "high"))
