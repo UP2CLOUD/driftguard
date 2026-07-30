@@ -1,0 +1,88 @@
+name: deploy-hostman
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: "Hostman app name, as shown in the dashboard"
+        required: true
+        default: "Drifguard"
+
+# Manual-dispatch only, same as deploy-api.yml/deploy-k8s.yml. Hostman's own
+# dashboard already auto-redeploys this app on every push to main ("Implantação
+# automática" toggle) — this workflow is for on-demand redeploys (a specific
+# commit, or a re-trigger without a new push), not a replacement for that.
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'UP2CLOUD'
+    steps:
+      - name: Check API token is configured
+        id: key_check
+        env:
+          HOSTMAN_API_TOKEN: ${{ secrets.HOSTMAN_API_TOKEN }}
+        run: |
+          if [ -z "$HOSTMAN_API_TOKEN" ]; then
+            echo "has_key=false" >> "$GITHUB_OUTPUT"
+            echo "⚠ HOSTMAN_API_TOKEN secret not set — skipping deploy"
+          else
+            echo "has_key=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Look up app ID by name
+        if: steps.key_check.outputs.has_key == 'true'
+        id: lookup
+        env:
+          HOSTMAN_API_TOKEN: ${{ secrets.HOSTMAN_API_TOKEN }}
+          APP_NAME: ${{ inputs.app_name }}
+        run: |
+          set -euo pipefail
+          response=$(curl -sS -w '\n%{http_code}' \
+            -H "Authorization: Bearer $HOSTMAN_API_TOKEN" \
+            "https://hostman.com/api/v1/apps")
+          body=$(echo "$response" | head -n -1)
+          status=$(echo "$response" | tail -n 1)
+          if [ "$status" != "200" ]; then
+            echo "::error::Failed to list Hostman apps (HTTP $status): $body"
+            exit 1
+          fi
+
+          app_id=$(echo "$body" | jq -r --arg name "$APP_NAME" '[.apps[] | select(.name == $name)] | .[0].id // empty')
+          if [ -z "$app_id" ]; then
+            echo "::error::No Hostman app named '$APP_NAME' found. Apps visible to this token: $(echo "$body" | jq -c '[.apps[].name]')"
+            exit 1
+          fi
+          echo "app_id=$app_id" >> "$GITHUB_OUTPUT"
+          echo "Found app '$APP_NAME' → id=$app_id"
+
+      - name: Trigger deploy
+        if: steps.key_check.outputs.has_key == 'true'
+        env:
+          HOSTMAN_API_TOKEN: ${{ secrets.HOSTMAN_API_TOKEN }}
+          APP_ID: ${{ steps.lookup.outputs.app_id }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          response=$(curl -sS -w '\n%{http_code}' -X POST \
+            -H "Authorization: Bearer $HOSTMAN_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"commit_sha\": \"$COMMIT_SHA\"}" \
+            "https://hostman.com/api/v1/apps/$APP_ID/deploy")
+          body=$(echo "$response" | head -n -1)
+          status=$(echo "$response" | tail -n 1)
+          if [ "$status" != "201" ]; then
+            echo "::error::Deploy trigger failed (HTTP $status): $body"
+            exit 1
+          fi
+          echo "✓ Deploy triggered for app_id=$APP_ID at commit $COMMIT_SHA"
+          echo "$body" | jq .
+
+      - name: Report results
+        if: always()
+        run: |
+          if [ "${{ steps.key_check.outputs.has_key }}" == "false" ]; then
+            echo "ℹ Skipped — add HOSTMAN_API_TOKEN to repository secrets to enable"
+          fi
