@@ -1,8 +1,13 @@
 name: agents-daily
 
 on:
+  # Every 6 hours (4x/day) rather than a literal 24/7 poll -- the codebase
+  # doesn't change fast enough to justify continuous LLM spend, and this
+  # keeps findings current within a few hours of any merge without needing
+  # a push-triggered run on every single commit. Tune if that tradeoff
+  # doesn't fit; each run costs real tokens across 9 role agents.
   schedule:
-    - cron: "0 3 * * *"
+    - cron: "0 */6 * * *"
   workflow_dispatch:
 
 permissions:
