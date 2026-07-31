@@ -9,6 +9,12 @@ const __impeccableLiveDev =
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Required for apps/web/Dockerfile's runtime stage, which COPYs
+  // .next/standalone — without this, `next build` never produces that
+  // directory and the Docker image build fails. Unnecessary but harmless
+  // for the Vercel deploy (Vercel handles output optimization separately
+  // and doesn't read this directory).
+  output: "standalone",
 
   images: {
     remotePatterns: [
