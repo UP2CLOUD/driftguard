@@ -65,17 +65,15 @@ services:
       DEMO_MODE:              ${DEMO_MODE:-false}
       # CORS — allow web container + local dev
       CORS_ORIGINS:           "http://localhost:3000,http://web:3000"
-    volumes:
-      # Hot reload for development
-      - ./apps/api/driftguard:/app/driftguard:ro
+    # Hot-reload bind mount + --reload flag live in docker-compose.override.yml
+    # (auto-merged locally, absent on any cloud Docker Compose target — see
+    # that file for why).
     command: >
       sh -c "
         uv run alembic upgrade head &&
         uvicorn driftguard.main:app
           --host 0.0.0.0
           --port 8000
-          --reload
-          --reload-dir /app/driftguard
       "
     healthcheck:
       test: ["CMD", "curl", "-fs", "http://localhost:8000/api/v1/health"]
@@ -100,8 +98,7 @@ services:
       GITHUB_APP_ID:          ${GITHUB_APP_ID:-}
       GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY:-}
       ENVIRONMENT:            ${ENVIRONMENT:-dev}
-    volumes:
-      - ./apps/api/driftguard:/app/driftguard:ro
+    # Hot-reload bind mount lives in docker-compose.override.yml.
     command: >
       sh -c "
         uv run celery -A driftguard.worker.app worker
