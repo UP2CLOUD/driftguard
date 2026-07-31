@@ -43,6 +43,8 @@ class PolicyPatch(BaseModel):
 async def list_policies(
     installation_id: int = Query(...),
     enabled_only: bool = Query(False),
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
     _auth: str = Depends(require_internal_auth),
 ) -> list[dict]:
@@ -60,7 +62,13 @@ async def list_policies(
     if not org:
         return []
 
-    stmt = select(PolicyRule).where(PolicyRule.org_id == org.id).order_by(PolicyRule.created_at.desc())
+    stmt = (
+        select(PolicyRule)
+        .where(PolicyRule.org_id == org.id)
+        .order_by(PolicyRule.created_at.desc())
+        .limit(limit)
+        .offset(offset)
+    )
     if enabled_only:
         stmt = stmt.where(PolicyRule.enabled.is_(True))
 

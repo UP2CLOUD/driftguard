@@ -98,6 +98,30 @@ class TestListPolicies:
         finally:
             _cleanup()
 
+    def test_limit_above_max_returns_422(self):
+        r = TestClient(app).get("/api/v1/policies?installation_id=999&limit=101", headers=AUTH)
+        assert r.status_code == 422
+
+    def test_limit_at_max_accepted(self):
+        _override(_mock_session(org=_org(), rules=[_rule()]))
+        try:
+            r = TestClient(app).get("/api/v1/policies?installation_id=999&limit=100", headers=AUTH)
+            assert r.status_code == 200
+        finally:
+            _cleanup()
+
+    def test_offset_accepted(self):
+        _override(_mock_session(org=_org(), rules=[_rule()]))
+        try:
+            r = TestClient(app).get("/api/v1/policies?installation_id=999&offset=50", headers=AUTH)
+            assert r.status_code == 200
+        finally:
+            _cleanup()
+
+    def test_negative_offset_returns_422(self):
+        r = TestClient(app).get("/api/v1/policies?installation_id=999&offset=-1", headers=AUTH)
+        assert r.status_code == 422
+
 
 class TestCreatePolicy:
     def test_valid_rule_creates_and_returns_201(self):
