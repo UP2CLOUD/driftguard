@@ -8,8 +8,6 @@
 #   Use DEMO_MODE=true in .env to bypass GitHub OAuth
 #   Run: docker compose exec api uv run python -m driftguard.db.seed
 
-version: "3.9"
-
 services:
 
   # ── Infrastructure ──────────────────────────────────────────────────────────
