@@ -1,4 +1,7 @@
-"""LLM Router — Claude primary, OpenAI then Gemini fallback.
+"""LLM Router — Gemini primary, Claude then OpenAI fallback.
+
+Gemini is primary to conserve Anthropic API spend; Claude and OpenAI are
+tried in turn if Gemini fails.
 
 Usage:
     from driftguard.ai.llm_router import llm_complete
@@ -13,7 +16,7 @@ Usage:
 from __future__ import annotations
 
 import structlog
-from anthropic import APIStatusError, APITimeoutError, AsyncAnthropic
+from anthropic import AsyncAnthropic
 from openai import AsyncOpenAI
 
 from driftguard.core.config import settings
@@ -46,42 +49,46 @@ async def llm_complete(
     temperature: float = 0.2,
     tag: str = "default",
 ) -> str:
-    """Call Claude; on failure, try OpenAI then Gemini (each only if configured).
+    """Call Gemini; on failure, try Claude then OpenAI (each only if configured).
 
     If fallback is disabled, or no further provider is configured/succeeds,
-    re-raises the *original* Claude exception — callers should treat that as
+    re-raises the *original* Gemini exception — callers should treat that as
     the canonical failure reason regardless of which fallback also failed.
     """
     try:
-        client = _get_anthropic()
-        response = await client.messages.create(
-            model=settings.anthropic_model,
-            max_tokens=max_tokens,
-            system=system,
-            messages=[{"role": "user", "content": user}],
-        )
-        text = response.content[0].text
-        log.info("llm.claude.ok", tag=tag, tokens=response.usage.output_tokens)
-        _track_usage("claude", response.usage.input_tokens, response.usage.output_tokens)
-        return text
-    except (APIStatusError, APITimeoutError) as claude_exc:
-        log.warning("llm.claude.failed", tag=tag, error=str(claude_exc))
+        return await _gemini_fallback(system=system, user=user, tag=tag)
+    except Exception as gemini_exc:  # noqa: BLE001 — genai raises its own exception types
+        log.warning("llm.gemini.failed", tag=tag, error=str(gemini_exc))
         if not settings.llm_fallback_enabled:
             raise
+
+        if settings.anthropic_api_key:
+            try:
+                return await _claude_fallback(system=system, user=user, max_tokens=max_tokens, tag=tag)
+            except Exception as claude_exc:  # noqa: BLE001 — try the next provider, not abort
+                log.warning("llm.claude.failed", tag=tag, error=str(claude_exc))
 
         if settings.openai_api_key:
             try:
                 return await _openai_fallback(system=system, user=user, max_tokens=max_tokens, tag=tag)
-            except Exception as openai_exc:  # noqa: BLE001 — try the next provider, not abort
+            except Exception as openai_exc:  # noqa: BLE001 — no providers left after this
                 log.warning("llm.openai.failed", tag=tag, error=str(openai_exc))
 
-        if settings.gemini_api_key:
-            try:
-                return await _gemini_fallback(system=system, user=user, tag=tag)
-            except Exception as gemini_exc:  # noqa: BLE001 — no providers left after this
-                log.warning("llm.gemini.failed", tag=tag, error=str(gemini_exc))
+        raise gemini_exc from None
 
-        raise claude_exc from None
+
+async def _claude_fallback(*, system: str, user: str, max_tokens: int, tag: str) -> str:
+    client = _get_anthropic()
+    response = await client.messages.create(
+        model=settings.anthropic_model,
+        max_tokens=max_tokens,
+        system=system,
+        messages=[{"role": "user", "content": user}],
+    )
+    text = response.content[0].text
+    log.info("llm.claude.ok", tag=tag, tokens=response.usage.output_tokens)
+    _track_usage("claude", response.usage.input_tokens, response.usage.output_tokens)
+    return text
 
 
 async def _openai_fallback(*, system: str, user: str, max_tokens: int, tag: str) -> str:

@@ -48,12 +48,12 @@ class Settings(BaseSettings):
         return missing
 
     # ── LLM router ─────────────────────────────────────────────
-    anthropic_api_key: str = ""
+    gemini_api_key: str = ""  # primary
+    gemini_model: str = "gemini-2.5-flash"
+    anthropic_api_key: str = ""  # fallback
     anthropic_model: str = "claude-sonnet-4-6"
     openai_api_key: str = ""  # fallback
     openai_model: str = "gpt-4o-mini"
-    gemini_api_key: str = ""  # fallback when Anthropic unavailable
-    gemini_model: str = "gemini-2.5-flash"
     llm_fallback_enabled: bool = True
 
     # ── Infracost ──────────────────────────────────────────────

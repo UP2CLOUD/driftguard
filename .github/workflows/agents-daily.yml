@@ -33,13 +33,14 @@ jobs:
         id: key_check
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          if [ -z "$ANTHROPIC_API_KEY" ]; then
+          if [ -z "$GEMINI_API_KEY" ] && [ -z "$ANTHROPIC_API_KEY" ]; then
             echo "has_key=false" >> $GITHUB_OUTPUT
-            echo "⚠ ANTHROPIC_API_KEY secret not set — skipping autonomy run (no cost, no failure)"
+            echo "⚠ Neither GEMINI_API_KEY nor ANTHROPIC_API_KEY secret set — skipping autonomy run (no cost, no failure)"
           else
             echo "has_key=true" >> $GITHUB_OUTPUT
-            echo "✓ ANTHROPIC_API_KEY present — running autonomy fleet"
+            echo "✓ API key present — running autonomy fleet (Gemini primary, Claude/OpenAI fallback)"
           fi
 
       - name: Run autonomy fleet (costs $)
