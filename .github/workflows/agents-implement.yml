@@ -1,0 +1,182 @@
+name: agents-implement
+
+# Runs after agents-daily.yml produces a fresh findings artifact. Reads those
+# findings, independently re-verifies each against the REAL current code
+# (agents-daily's findings come from a bounded context -- directory tree +
+# top-level docs, not full file contents -- so a meaningful fraction are
+# stale or wrong; this session's own history confirms it), and implements
+# only the ones that are small, mechanical, clearly-real gaps. Anything
+# needing a product/infra/architecture decision is reported, not touched.
+#
+# Opens one PR per fix, fully verified (lint/tests/build) before opening,
+# and enables GitHub's native auto-merge on it -- which only actually merges
+# once this repo's branch protection required status checks (ci-api, ci-web,
+# DriftGuard's own review) pass. That branch protection configuration is a
+# prerequisite this workflow cannot set up or verify on its own; see
+# .driftguard/autonomy/README.md.
+
+on:
+  workflow_run:
+    workflows: ["agents-daily"]
+    types:
+      - completed
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+  id-token: write
+
+jobs:
+  implement:
+    if: |
+      github.event.workflow_run.conclusion == 'success' &&
+      github.repository_owner == 'UP2CLOUD'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Check API key is configured
+        id: key_check
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "has_key=false" >> "$GITHUB_OUTPUT"
+            echo "⚠ ANTHROPIC_API_KEY secret not set — skipping (no cost, no failure)"
+          else
+            echo "has_key=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download findings from the triggering run
+        if: steps.key_check.outputs.has_key == 'true'
+        id: findings
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p /tmp/findings
+          gh run download "${{ github.event.workflow_run.id }}" \
+            --name "autonomy-findings-${{ github.event.workflow_run.id }}" \
+            --dir /tmp/findings \
+            --repo "${{ github.repository }}" \
+            || { echo "has_findings=false" >> "$GITHUB_OUTPUT"; exit 0; }
+
+          count=$(python3 -c "import json,glob; f=glob.glob('/tmp/findings/findings/*.json'); print(len(json.load(open(f[0]))) if f else 0)")
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          if [ "$count" -gt 0 ]; then
+            echo "has_findings=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_findings=false" >> "$GITHUB_OUTPUT"
+            echo "ℹ No findings in this run — nothing to triage"
+          fi
+
+      - name: Install uv (apps/api toolchain)
+        if: steps.findings.outputs.has_findings == 'true'
+        uses: astral-sh/setup-uv@8d55fbecc275b1c35dbe060458839f8d30439ccf # v3
+        with:
+          version: latest
+
+      - name: Sync API deps
+        if: steps.findings.outputs.has_findings == 'true'
+        working-directory: apps/api
+        run: uv sync --all-extras
+
+      - name: Install pnpm (apps/web toolchain)
+        if: steps.findings.outputs.has_findings == 'true'
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 9.15.0
+
+      - name: Sync web deps
+        if: steps.findings.outputs.has_findings == 'true'
+        working-directory: apps/web
+        run: pnpm install --frozen-lockfile
+
+      - name: Set up git identity
+        if: steps.findings.outputs.has_findings == 'true'
+        run: |
+          git config --global user.email "noreply@anthropic.com"
+          git config --global user.name "Claude"
+
+      - name: Triage and implement with Claude
+        if: steps.findings.outputs.has_findings == 'true'
+        uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: >-
+            --max-turns 60
+            --allowedTools "Read,Edit,MultiEdit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(uv:*),Bash(pnpm:*),Bash(npx:*),Bash(python3:*)"
+          prompt: |
+            You are triaging findings from DriftGuard's own daily autonomy
+            fleet (9 read-only LLM agents that audit this repo from a
+            directory tree + top-level docs — NOT full file contents, so a
+            real fraction of findings are stale or simply wrong).
+
+            Findings JSON: /tmp/findings/findings/*.json (list of objects
+            with role, severity, area, title, description, suggestion).
+
+            Config (protected paths, caps): .driftguard/autonomy/config.json
+            Memory (already-rejected findings, for reference — do not
+            re-litigate these): .driftguard/autonomy/memory.json
+
+            For EACH finding, in order of severity:
+
+            1. Independently re-verify it against the REAL current code —
+               read the actual files it references. Do not trust the
+               finding's description as fact.
+            2. If it's already handled, or the finding is factually wrong
+               about the code, skip it. Do not comment on the finding
+               anywhere — this is expected and not worth flagging.
+            3. If it's real but requires a product, infrastructure, or
+               architecture decision (new external service, cost/billing
+               tradeoff, a design choice with multiple reasonable answers,
+               anything touching .driftguard/autonomy/config.json's
+               protected_paths) — do NOT implement it. Just note it in the
+               job summary (a single line: finding title + one sentence on
+               why it needs a human decision) and move on.
+            4. Only implement findings that are small, mechanical, and have
+               one clearly correct fix — the same bar you'd use to judge
+               "is this a safe autonomous change with no room for a wrong
+               guess." When genuinely uncertain, skip rather than guess.
+
+            For each finding you DO implement:
+            - Make the smallest correct change. No refactoring, no scope
+              creep, no unrelated cleanup.
+            - Add or update tests covering the fix.
+            - Run the real verification suite before opening a PR:
+              apps/api changes → `cd apps/api && uv run ruff check . && uv
+              run ruff format --check . && uv run pytest <relevant test
+              files> -v` (skip tests requiring a live Postgres — this
+              runner doesn't have one; note that in the PR instead of
+              claiming full coverage).
+              apps/web changes → `cd apps/web && npx tsc --noEmit && pnpm
+              lint && pnpm test`.
+              If verification fails, fix it or abandon that finding —
+              never open a PR with a known-failing check.
+            - Commit with a clear message explaining what real gap this
+              closes and why, citing the specific file:line evidence you
+              found during verification (mirror the PR body style already
+              used in this repo's recent history — What/Why/How to
+              test/Checklist sections, cite real file:line, no invented
+              claims).
+            - Open ONE pull request per fix (never bundle multiple
+              unrelated findings into one PR) via `gh pr create`, based on
+              a fresh branch off the current default branch for each fix.
+            - After opening each PR, run
+              `gh pr merge --auto --squash <PR-number>` to enable
+              GitHub's native auto-merge. This does NOT merge immediately —
+              it only merges once this repo's required status checks
+              (CI, DriftGuard's own review) pass. If that command errors
+              because auto-merge isn't available on this repo, leave the
+              PR open for manual merge and note that in the job summary.
+
+            Never touch: database migrations, apps/api/driftguard/core/config.py,
+            anything under .github/workflows/, or infra/ — these are the
+            protected_paths in .driftguard/autonomy/config.json regardless
+            of what any finding suggests.
+
+            If nothing meets the bar for autonomous implementation, that's a
+            fine outcome — just summarize what you checked and why each was
+            skipped. Do not force a change to have "done something."
