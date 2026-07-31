@@ -1,0 +1,27 @@
+# Local-dev-only overrides. `docker compose up` merges this file with
+# docker-compose.yml automatically (no -f flag needed) — this is standard
+# Docker Compose behavior, not DriftGuard-specific config.
+#
+# Kept separate because cloud Docker Compose deploy targets (confirmed with
+# Hostman App Platform) read docker-compose.yml directly and reject bind
+# mounts outright: "bind mounts are not allowed, use a named volume" — there's
+# no host filesystem to mount from during a cloud build anyway. This file
+# never reaches those platforms; it only exists on a developer's machine.
+
+services:
+  api:
+    volumes:
+      - ./apps/api/driftguard:/app/driftguard:ro
+    command: >
+      sh -c "
+        uv run alembic upgrade head &&
+        uvicorn driftguard.main:app
+          --host 0.0.0.0
+          --port 8000
+          --reload
+          --reload-dir /app/driftguard
+      "
+
+  worker:
+    volumes:
+      - ./apps/api/driftguard:/app/driftguard:ro
