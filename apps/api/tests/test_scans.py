@@ -106,6 +106,67 @@ class TestScanUpload:
         finally:
             _cleanup()
 
+    def test_oversized_archive_returns_413(self):
+        from driftguard.core.rate_limit import _buckets
+
+        _override(_mock_org_session(org=_org()))
+        try:
+            oversized = b"x" * (50 * 1024 * 1024 + 1)
+            r = TestClient(app).post(
+                "/api/v1/scans/upload",
+                data={"installation_id": "42"},
+                files={"file": ("infra.tar.gz", oversized, "application/gzip")},
+                headers=AUTH,
+            )
+            assert r.status_code == 413
+            assert "50MB" in r.json()["detail"]
+        finally:
+            _cleanup()
+            _buckets.pop("testclient", None)
+
+    def test_empty_archive_returns_empty_result(self):
+        """An archive with no matching IaC files scans successfully with
+        zero files/findings — the real scanner runs here (not mocked), only
+        the AI review and policy layers are stubbed."""
+        from driftguard.core.rate_limit import _buckets
+
+        org = _org()
+        org_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
+        no_row_result = MagicMock(scalar_one_or_none=MagicMock(return_value=None))
+        mock_session = AsyncMock()
+        mock_session.execute = AsyncMock(side_effect=[org_result, no_row_result, no_row_result])
+        mock_session.flush = AsyncMock()
+        mock_session.commit = AsyncMock()
+        mock_session.add = MagicMock()
+        _override(mock_session)
+        try:
+            with (
+                patch(
+                    "driftguard.api.v1.scans.run_ai_review",
+                    new_callable=AsyncMock,
+                    return_value=MagicMock(narrative="AI review unavailable."),
+                ),
+                patch(
+                    "driftguard.services.policy_engine.apply_policies",
+                    new_callable=AsyncMock,
+                    return_value=([], "pass"),
+                ),
+            ):
+                r = TestClient(app).post(
+                    "/api/v1/scans/upload",
+                    data={"installation_id": "42"},
+                    files={"file": ("infra.tar.gz", _make_tgz({"README.md": "no iac here"}), "application/gzip")},
+                    headers=AUTH,
+                )
+            assert r.status_code == 200
+            data = r.json()
+            assert data["status"] == "completed"
+            assert data["files_scanned"] == 0
+            assert data["findings"] == []
+        finally:
+            _cleanup()
+            _buckets.pop("testclient", None)
+
     def test_upload_success_returns_scan_result(self):
         from driftguard.services.scanner.engine import ScanResult
 

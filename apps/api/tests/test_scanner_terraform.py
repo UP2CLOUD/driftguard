@@ -313,6 +313,17 @@ output "name" {
     assert _scan_single(content, "vars.tf") == []
 
 
+def test_malformed_hcl_does_not_crash():
+    """Genuinely unparseable content (no valid HCL structure at all) must not
+    raise — the per-file parse failure is swallowed and the file contributes
+    no findings, unlike the empty-string/unrelated-HCL cases above which are
+    both valid HCL. (A merely-untidy resource block with trailing garbage
+    isn't a good test here: python-hcl2 is lenient enough to still parse the
+    well-formed part and correctly find real findings in it.)"""
+    content = "{{{ not valid hcl at all [[[ ??? }}} ==="
+    assert _scan_single(content, "broken.tf") == []
+
+
 # ── TF002: S3 missing public access block ────────────────────────────────────
 
 

@@ -2,12 +2,21 @@
   "history": {},
   "rejected": [
     "analytics:apps/api, apps/web:core application is missing explicit analytics and error tracking setup",
+    "analytics:apps/web, apps/api, apps/api/driftguard/services/scanner:no explicit sentry/error tracking for frontend or critical backend processes.",
     "performance:apps/api/driftguard/db/:risk of n+1 query patterns when fetching related findings data",
     "performance:apps/api/driftguard/services/scanner/, apps/api/driftguard/services/analysis/:cpu-bound operations in services might block fastapi event loop",
+    "product:compliance:broad compliance claims lack detailed implementation evidence for general iac",
+    "product:onboarding:missing end-user onboarding documentation for github app installation",
+    "product:product strategy:no billing or quota tiers defined or enforced",
     "product:product.md, readme.md, apps/api/driftguard/middleware/:absence of documented billing/quota tiers and enforcement details",
     "qa:apps/api (github app integration), apps/api/driftguard/worker/:lack of explicit coverage for concurrent pr processing and comment deduplication",
     "qa:apps/api, readme.md:`tests/eval` directory skipped without tracked reason",
+    "qa:apps/api/driftguard/api/v1/:lack of explicit webhook signature verification test coverage.",
+    "qa:apps/api:`tests/eval` directory is ignored in api test runs.",
     "qa:apps/api:missing explicit coverage for github webhook signature verification",
+    "reliability:apps/api/driftguard/services/analysis/:lack of llm fallback strategy for claude api failures",
+    "reliability:apps/api/driftguard/worker/ and github integration:undocumented timeouts and retries for external api dependencies",
+    "security:apps/api/driftguard/api/v1/:github webhook signature verification not explicitly shown",
     "security:apps/api/v1/, github app integration:github webhook signature verification not explicitly mentioned",
     "security:claude.md, apps/api/driftguard/services/analysis/:potential command injection and ssrf through `rtk` agent commands"
   ]
