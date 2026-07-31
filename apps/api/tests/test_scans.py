@@ -107,6 +107,8 @@ class TestScanUpload:
             _cleanup()
 
     def test_oversized_archive_returns_413(self):
+        from driftguard.core.rate_limit import _buckets
+
         _override(_mock_org_session(org=_org()))
         try:
             oversized = b"x" * (50 * 1024 * 1024 + 1)
@@ -120,11 +122,14 @@ class TestScanUpload:
             assert "50MB" in r.json()["detail"]
         finally:
             _cleanup()
+            _buckets.pop("testclient", None)
 
     def test_empty_archive_returns_empty_result(self):
         """An archive with no matching IaC files scans successfully with
         zero files/findings — the real scanner runs here (not mocked), only
         the AI review and policy layers are stubbed."""
+        from driftguard.core.rate_limit import _buckets
+
         org = _org()
         org_result = MagicMock(scalars=MagicMock(return_value=MagicMock(first=MagicMock(return_value=org))))
         no_row_result = MagicMock(scalar_one_or_none=MagicMock(return_value=None))
@@ -160,6 +165,7 @@ class TestScanUpload:
             assert data["findings"] == []
         finally:
             _cleanup()
+            _buckets.pop("testclient", None)
 
     def test_upload_success_returns_scan_result(self):
         from driftguard.services.scanner.engine import ScanResult
