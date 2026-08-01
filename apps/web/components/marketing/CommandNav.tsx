@@ -27,6 +27,7 @@ export function CommandNav({ initialPreferences }: { initialPreferences?: UserPr
     { href: "/#evidence", label: t("marketing.nav.linkEvidence") },
     { href: "/pricing", label: t("marketing.nav.linkPricing") },
     { href: "/docs", label: t("marketing.nav.linkDocs") },
+    { href: "/blog", label: t("marketing.nav.linkBlog") },
   ];
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);

@@ -1808,6 +1808,7 @@
       "linkEvidence": "الأدلة",
       "linkPricing": "التسعير",
       "linkDocs": "الوثائق",
+      "linkBlog": "المدونة",
       "signIn": "تسجيل الدخول",
       "openMenu": "فتح القائمة",
       "closeMenu": "إغلاق القائمة",
@@ -1986,6 +1987,18 @@
       "timelineVerdictComputed": "تم احتساب القرار",
       "timelineCheckPosted": "تم نشر فحص GitHub",
       "timelineAuditAppended": "تمت إضافة إدخال سجل التدقيق"
+    },
+    "faq": {
+      "eyebrow": "الأسئلة الشائعة",
+      "title": "أسئلة متكررة",
+      "q1_question": "ما هو DriftGuard؟",
+      "q1_answer": "DriftGuard هو تطبيق GitHub يراجع تلقائيًا طلبات السحب (pull requests) الخاصة بـ Terraform و OpenTofu — للتحقق من انحراف البنية التحتية (drift) وأخطاء إعدادات الأمان وتأثير التكلفة قبل الدمج.",
+      "q2_question": "كيف يكتشف DriftGuard انحراف Terraform؟",
+      "q2_answer": "يقارن DriftGuard حالة Terraform لديك بالحالة الفعلية لموارد السحابة في كل طلب سحب، ويحدد التغييرات التي تمت خارج مسار IaC — مثل تعديل يدوي في وحدة التحكم — قبل أن تظهر كفرق غير متوقع في terraform plan.",
+      "q3_question": "هل يدعم DriftGuard OpenTofu بالإضافة إلى Terraform؟",
+      "q3_answer": "نعم. يراجع DriftGuard طلبات السحب الخاصة بـ Terraform و OpenTofu باستخدام نفس فحوصات الانحراف والتكلفة والأمان والسياسات.",
+      "q4_question": "هل يمكن تجربة DriftGuard مجانًا؟",
+      "q4_answer": "نعم — يوفر DriftGuard خطة مجانية للمستودعات الفردية. تضيف خطتا Team و Enterprise سياسات متعددة المستودعات وتسجيل دخول موحد (SSO) والاحتفاظ بسجلات التدقيق."
     }
   }
 }

@@ -10,6 +10,7 @@
  */
 import type { MetadataRoute } from "next";
 import { locales, LOCALE_BCP47_MAP } from "@/i18n/sitemap-helpers";
+import { BLOG_POSTS } from "@/lib/blog";
 
 const BASE = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://driftguard-blue.vercel.app"
@@ -59,12 +60,13 @@ const ROUTES: Route[] = [
   { path: "/terms",             freq: "yearly",  priority: 0.3 },
   { path: "/dpa",               freq: "yearly",  priority: 0.3 },
   { path: "/subprocessors",     freq: "monthly", priority: 0.3 },
+  { path: "/blog",              freq: "weekly",  priority: 0.7 },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
-  return ROUTES.map(({ path, freq, priority }) => {
+  const localizedEntries = ROUTES.map(({ path, freq, priority }) => {
     const url = `${BASE}${path}`;
 
     // hreflang alternates — same URL for all locales (cookie-based i18n)
@@ -81,4 +83,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       alternates:      { languages },
     };
   });
+
+  // Blog is English-only content — no hreflang languages map, since
+  // claiming translated alternates that don't exist would be misleading.
+  const blogEntries = BLOG_POSTS.map((post) => ({
+    url:             `${BASE}/blog/${post.slug}`,
+    lastModified:    new Date(post.publishedAt),
+    changeFrequency: "monthly" as Freq,
+    priority:        0.6,
+  }));
+
+  return [...localizedEntries, ...blogEntries];
 }

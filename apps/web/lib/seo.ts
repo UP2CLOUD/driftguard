@@ -163,6 +163,55 @@ export function pageMeta(opts: {
   });
 }
 
+// ── Blog metadata (English-only content, no hreflang matrix) ─────────────────
+
+export interface BlogPostMetaOpts {
+  path:         string;
+  title:        string;
+  description:  string;
+  keywords?:    string[];
+  publishedAt?: string;
+  modifiedAt?:  string;
+}
+
+/**
+ * Metadata for blog content, which — unlike the rest of the (fully
+ * multilingual) site — ships English-only. Sets canonical without an
+ * hreflang `languages` map, since claiming translated alternates that
+ * don't exist would be misleading to search engines.
+ */
+export function blogPostMeta(opts: BlogPostMetaOpts): Metadata {
+  const { path, title, description, keywords, publishedAt, modifiedAt } = opts;
+  const url    = canonical(path);
+  const imgUrl = ogImageUrl({ title, locale: "en" });
+
+  return {
+    title,
+    description,
+    ...(keywords?.length ? { keywords } : {}),
+    alternates: { canonical: path },
+    openGraph: {
+      type:        publishedAt ? "article" : "website",
+      url,
+      siteName:    "DriftGuard",
+      locale:      "en_US",
+      title,
+      description,
+      images: [{ url: imgUrl, width: 1200, height: 630, alt: title }],
+      ...(publishedAt ? { publishedTime: publishedAt } : {}),
+      ...(modifiedAt  ? { modifiedTime:  modifiedAt }  : {}),
+    },
+    twitter: {
+      card:        "summary_large_image",
+      site:        "@driftguard",
+      creator:     "@driftguard",
+      title,
+      description,
+      images:      [imgUrl],
+    },
+  };
+}
+
 // ── JSON-LD structured data builders ─────────────────────────────────────────
 
 export interface JsonLdOrg {
