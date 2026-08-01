@@ -3,8 +3,9 @@ import type { Metadata } from "next";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
 import { JsonLd } from "@/components/JsonLd";
 import { blogPostMeta, jsonLdBreadcrumb, jsonLdArticle, jsonLdFaq } from "@/lib/seo";
-import { getBlogPost } from "@/lib/blog";
+import { getBlogPost, getRelatedPosts } from "@/lib/blog";
 import { ArticleSection, ArticleCode, ArticleList } from "@/components/blog/ArticleSection";
+import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { getGitHubAppInstallUrl } from "@/lib/github-app";
 
 const POST = getBlogPost("terraform-drift-detection-guide")!;
@@ -12,7 +13,7 @@ const POST = getBlogPost("terraform-drift-detection-guide")!;
 export async function generateMetadata(): Promise<Metadata> {
   return blogPostMeta({
     path:        `/blog/${POST.slug}`,
-    title:       `${POST.title} | DriftGuard`,
+    title:       `${POST.seoTitle} | DriftGuard`,
     description: POST.description,
     keywords:    ["terraform drift detection", "terraform state drift", "infrastructure drift", "terraform plan drift", "driftctl alternative"],
     publishedAt: POST.publishedAt,
@@ -182,6 +183,8 @@ aws_region: eu-west-1`}</ArticleCode>
           </div>
         </ArticleSection>
       </div>
+
+      <RelatedArticles posts={getRelatedPosts(POST)} />
 
       <div className="mt-14 rounded border border-[color:var(--dg-border-strong)] bg-[color:var(--dg-surface)] p-6 text-center sm:p-8">
         <p className="mb-4 text-[15px] font-medium text-[color:var(--dg-fg)]">
