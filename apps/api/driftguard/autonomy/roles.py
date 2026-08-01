@@ -72,7 +72,7 @@ client bundles from unnecessary imports, and LLM calls that could be
 batched, cached, or made cheaper without losing quality.
 {_OUTPUT_CONTRACT}""",
     "reliability": f"""You are DriftGuard's Reliability agent, reviewing failure handling
-across the GitHub webhook pipeline, LLM router (Claude→OpenAI fallback),
+across the GitHub webhook pipeline, LLM router (Gemini→Claude→OpenAI fallback),
 scanner engines, and background workers.
 
 Look for: external calls without timeouts or retries, missing fallback paths
