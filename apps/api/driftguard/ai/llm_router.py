@@ -25,6 +25,7 @@ log = structlog.get_logger(__name__)
 
 _anthropic: AsyncAnthropic | None = None
 _openai: AsyncOpenAI | None = None
+_gemini = None  # google.genai.Client — typed loosely to keep the import lazy
 
 
 def _get_anthropic() -> AsyncAnthropic:
@@ -39,6 +40,15 @@ def _get_openai() -> AsyncOpenAI:
     if _openai is None:
         _openai = AsyncOpenAI(api_key=settings.openai_api_key)
     return _openai
+
+
+def _get_gemini():
+    global _gemini
+    if _gemini is None:
+        from google import genai  # lazy: avoid import cost when unused
+
+        _gemini = genai.Client(api_key=settings.gemini_api_key)
+    return _gemini
 
 
 async def llm_complete(
@@ -110,11 +120,14 @@ async def _openai_fallback(*, system: str, user: str, max_tokens: int, tag: str)
 
 
 async def _gemini_fallback(*, system: str, user: str, tag: str) -> str:
-    import google.generativeai as genai  # lazy: avoid import cost when unused
+    from google.genai import types  # lazy: avoid import cost when unused
 
-    genai.configure(api_key=settings.gemini_api_key)
-    model = genai.GenerativeModel(model_name=settings.gemini_model, system_instruction=system)
-    response = await model.generate_content_async(user)
+    client = _get_gemini()
+    response = await client.aio.models.generate_content(
+        model=settings.gemini_model,
+        contents=user,
+        config=types.GenerateContentConfig(system_instruction=system),
+    )
     text = response.text or ""
     log.info("llm.gemini.ok", tag=tag, model=settings.gemini_model)
     usage = getattr(response, "usage_metadata", None)

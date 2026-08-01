@@ -119,14 +119,15 @@ async def review(findings: list[Finding], pr_context: dict) -> str:
     # 2. Gemini fallback
     if settings.gemini_api_key:
         try:
-            import google.generativeai as genai  # type: ignore
+            from google import genai  # type: ignore
+            from google.genai import types  # type: ignore
 
-            genai.configure(api_key=settings.gemini_api_key)
-            model = genai.GenerativeModel(
-                model_name="gemini-2.5-flash",
-                system_instruction=SYSTEM_PROMPT,
+            gemini_client = genai.Client(api_key=settings.gemini_api_key)
+            resp = await gemini_client.aio.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt,
+                config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT),
             )
-            resp = await model.generate_content_async(prompt)
             return resp.text or _static_fallback(findings)
         except Exception as exc:
             import logging
