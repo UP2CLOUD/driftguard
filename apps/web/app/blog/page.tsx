@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { MarketingPageShell } from "@/components/MarketingPageShell";
-import { blogPostMeta, jsonLdBreadcrumb } from "@/lib/seo";
+import { blogPostMeta, jsonLdBreadcrumb, jsonLdBlogItemList } from "@/lib/seo";
 import { BLOG_POSTS } from "@/lib/blog";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -16,7 +16,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function BlogIndex() {
   return (
     <MarketingPageShell
-      jsonLd={jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }])}
+      jsonLd={[
+        jsonLdBreadcrumb([{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }]),
+        jsonLdBlogItemList(BLOG_POSTS),
+      ]}
       eyebrow="Blog"
       title="Terraform drift, cost, and security — in practice"
       subtitle="Guides written from what actually breaks Terraform pipelines in production: drift, surprise cloud bills, and misconfigurations that slip past a quick glance."
