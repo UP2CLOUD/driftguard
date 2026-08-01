@@ -36,6 +36,22 @@ export const BLOG_POSTS: BlogPost[] = [
     publishedAt: "2026-08-01",
     readTime:    "10 min read",
   },
+  {
+    slug:        "dora-nis2-compliance-infrastructure-as-code",
+    title:       "DORA and NIS2 Compliance for Infrastructure as Code: A Practical Guide",
+    description:
+      "How to map Terraform pull request checks to DORA and NIS2 change-management and ICT-risk requirements, and generate the evidence an auditor actually wants to see.",
+    publishedAt: "2026-08-01",
+    readTime:    "8 min read",
+  },
+  {
+    slug:        "opentofu-vs-terraform-drift-security",
+    title:       "OpenTofu vs Terraform: What Changes for Drift Detection and Security Scanning",
+    description:
+      "OpenTofu and Terraform share a plan/state model, so most drift, cost, and security tooling carries over — here's exactly where they diverge and what to check before you migrate.",
+    publishedAt: "2026-08-01",
+    readTime:    "7 min read",
+  },
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {

@@ -279,6 +279,24 @@ export function jsonLdWebSite(locale: Locale) {
   };
 }
 
+export function jsonLdBlogItemList(
+  posts: { title: string; description: string; slug: string; publishedAt: string }[]
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type":    "Blog",
+    name:       "The DriftGuard Blog",
+    url:        canonical("/blog"),
+    blogPost: posts.map((post) => ({
+      "@type":       "TechArticle",
+      headline:      post.title,
+      description:   post.description,
+      url:           canonical(`/blog/${post.slug}`),
+      datePublished: post.publishedAt,
+    })),
+  };
+}
+
 export function jsonLdBreadcrumb(
   items: { name: string; path: string }[]
 ) {
