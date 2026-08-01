@@ -1808,6 +1808,7 @@
       "linkEvidence": "Evidence",
       "linkPricing": "Pricing",
       "linkDocs": "Docs",
+      "linkBlog": "Blog",
       "signIn": "Sign in",
       "openMenu": "Open menu",
       "closeMenu": "Close menu",
@@ -1986,6 +1987,18 @@
       "timelineVerdictComputed": "Verdict computed",
       "timelineCheckPosted": "GitHub Check posted",
       "timelineAuditAppended": "Audit log entry appended"
+    },
+    "faq": {
+      "eyebrow": "FAQ",
+      "title": "Common questions",
+      "q1_question": "What is DriftGuard?",
+      "q1_answer": "DriftGuard is a GitHub App that automatically reviews your Terraform and OpenTofu pull requests — checking for infrastructure drift, security misconfigurations, and cost impact before you merge.",
+      "q2_question": "How does DriftGuard detect Terraform drift?",
+      "q2_answer": "DriftGuard compares your Terraform state against the real state of your cloud resources on every pull request, flagging changes made outside your IaC pipeline — like a manual console edit — before they surface as a surprise terraform plan diff.",
+      "q3_question": "Does DriftGuard support OpenTofu as well as Terraform?",
+      "q3_answer": "Yes. DriftGuard reviews both Terraform and OpenTofu pull requests using the same drift, cost, security, and policy checks.",
+      "q4_question": "Is DriftGuard free to try?",
+      "q4_answer": "Yes — DriftGuard has a free plan for individual repositories. Team and Enterprise plans add multi-repo policies, SSO, and audit retention."
     }
   }
 }

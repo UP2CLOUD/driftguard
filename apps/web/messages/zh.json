@@ -1808,6 +1808,7 @@
       "linkEvidence": "证据",
       "linkPricing": "定价",
       "linkDocs": "文档",
+      "linkBlog": "博客",
       "signIn": "登录",
       "openMenu": "打开菜单",
       "closeMenu": "关闭菜单",
@@ -1986,6 +1987,18 @@
       "timelineVerdictComputed": "裁决已计算",
       "timelineCheckPosted": "GitHub Check 已发布",
       "timelineAuditAppended": "已追加审计日志条目"
+    },
+    "faq": {
+      "eyebrow": "常见问题",
+      "title": "常见疑问",
+      "q1_question": "DriftGuard 是什么？",
+      "q1_answer": "DriftGuard 是一款 GitHub App，会自动审查你的 Terraform 和 OpenTofu 拉取请求——在合并之前检查基础设施漂移、安全配置错误以及成本影响。",
+      "q2_question": "DriftGuard 如何检测 Terraform 漂移？",
+      "q2_answer": "DriftGuard 会在每个拉取请求中将你的 Terraform 状态与云资源的真实状态进行比对，标记出在 IaC 流水线之外（例如控制台手动修改）产生的变更，避免它们在 terraform plan 中变成意外的差异。",
+      "q3_question": "DriftGuard 除了 Terraform 之外是否支持 OpenTofu？",
+      "q3_answer": "是的。DriftGuard 使用相同的漂移、成本、安全和策略检查来审查 Terraform 和 OpenTofu 的拉取请求。",
+      "q4_question": "DriftGuard 可以免费试用吗？",
+      "q4_answer": "可以——DriftGuard 为单个仓库提供免费方案。Team 和 Enterprise 方案还包含多仓库策略、SSO 和审计留存。"
     }
   }
 }

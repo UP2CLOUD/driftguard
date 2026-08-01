@@ -1808,6 +1808,7 @@
       "linkEvidence": "साक्ष्य",
       "linkPricing": "मूल्य निर्धारण",
       "linkDocs": "दस्तावेज़",
+      "linkBlog": "ब्लॉग",
       "signIn": "साइन इन करें",
       "openMenu": "मेनू खोलें",
       "closeMenu": "मेनू बंद करें",
@@ -1986,6 +1987,18 @@
       "timelineVerdictComputed": "निर्णय की गणना हुई",
       "timelineCheckPosted": "GitHub Check पोस्ट किया गया",
       "timelineAuditAppended": "ऑडिट लॉग प्रविष्टि जोड़ी गई"
+    },
+    "faq": {
+      "eyebrow": "सामान्य प्रश्न",
+      "title": "सामान्य सवाल",
+      "q1_question": "DriftGuard क्या है?",
+      "q1_answer": "DriftGuard एक GitHub App है जो आपके Terraform और OpenTofu पुल रिक्वेस्ट की स्वतः समीक्षा करता है — मर्ज होने से पहले इन्फ्रास्ट्रक्चर ड्रिफ्ट, सुरक्षा गलत-कॉन्फ़िगरेशन और लागत प्रभाव की जांच करते हुए।",
+      "q2_question": "DriftGuard Terraform ड्रिफ्ट का पता कैसे लगाता है?",
+      "q2_answer": "DriftGuard हर पुल रिक्वेस्ट पर आपके Terraform स्टेट की तुलना आपके क्लाउड संसाधनों की वास्तविक स्थिति से करता है, और आपके IaC पाइपलाइन से बाहर किए गए बदलावों — जैसे कंसोल में मैन्युअल बदलाव — को terraform plan में अप्रत्याशित डिफ बनने से पहले ही चिह्नित कर देता है।",
+      "q3_question": "क्या DriftGuard, Terraform के साथ-साथ OpenTofu को भी सपोर्ट करता है?",
+      "q3_answer": "हां। DriftGuard समान ड्रिफ्ट, लागत, सुरक्षा और पॉलिसी जांच का उपयोग करके Terraform और OpenTofu दोनों के पुल रिक्वेस्ट की समीक्षा करता है।",
+      "q4_question": "क्या DriftGuard को मुफ्त में आज़माया जा सकता है?",
+      "q4_answer": "हां — DriftGuard में व्यक्तिगत रिपॉज़िटरी के लिए एक मुफ्त प्लान है। Team और Enterprise प्लान मल्टी-रिपॉज़िटरी पॉलिसी, SSO और ऑडिट रिटेंशन जोड़ते हैं।"
     }
   }
 }
