@@ -201,7 +201,7 @@ export function PolicyCard({ policy, installationId }: { policy: Policy; install
               if {Object.entries(policy.conditions as Record<string, string>).map(([k, v]) => `${k}=${v}`).join(" · ")}
             </span>
           )}
-          {policy.match_count > 0 && (
+          {(policy.match_count ?? 0) > 0 && (
             <span className="text-warned shrink-0">↺ {t("policies.matches", { n: policy.match_count })}</span>
           )}
         </div>
