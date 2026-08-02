@@ -74,6 +74,7 @@ export type Analysis = {
   high?: number;
   duration_ms?: number | null;
   errors?: string[];
+  policy_verdict?: string | null;
 };
 
 export type FinOpsResourceCostDetail = {
