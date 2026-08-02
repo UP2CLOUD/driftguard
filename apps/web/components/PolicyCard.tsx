@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useT } from "@/components/I18nProvider";
+import type { Policy, PolicyRuleType, PolicySeverity } from "@/lib/policies";
 
 const TYPE_STYLE: Record<string, string> = {
   block: "text-blocked border-blocked/30 bg-blocked/5",
@@ -13,7 +14,7 @@ const TYPE_STYLE: Record<string, string> = {
 const RULE_TYPES = ["block", "warn", "alert"];
 const SEVERITIES = ["critical", "high", "medium", "low"];
 
-export function PolicyCard({ policy, installationId }: { policy: any; installationId: string }) {
+export function PolicyCard({ policy, installationId }: { policy: Policy; installationId: string }) {
   const t = useT();
   const router = useRouter();
   const [editing, setEditing] = useState(false);
@@ -118,14 +119,14 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
           <div className="grid grid-cols-2 gap-3">
             <select
               value={form.rule_type}
-              onChange={(e) => setForm((f) => ({ ...f, rule_type: e.target.value }))}
+              onChange={(e) => setForm((f) => ({ ...f, rule_type: e.target.value as PolicyRuleType }))}
               className="w-full rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] focus:border-[color:var(--dg-electric)] focus:outline-none"
             >
               {RULE_TYPES.map((r) => <option key={r} value={r}>{r}</option>)}
             </select>
             <select
               value={form.severity}
-              onChange={(e) => setForm((f) => ({ ...f, severity: e.target.value }))}
+              onChange={(e) => setForm((f) => ({ ...f, severity: e.target.value as PolicySeverity }))}
               className="w-full rounded border border-[color:var(--dg-border)] bg-[color:var(--dg-canvas)] px-3 py-2 font-mono text-[12px] text-[color:var(--dg-fg)] focus:border-[color:var(--dg-electric)] focus:outline-none"
             >
               {SEVERITIES.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -200,8 +201,8 @@ export function PolicyCard({ policy, installationId }: { policy: any; installati
               if {Object.entries(policy.conditions as Record<string, string>).map(([k, v]) => `${k}=${v}`).join(" · ")}
             </span>
           )}
-          {policy.match_count > 0 && (
-            <span className="text-warned shrink-0">↺ {t("policies.matches", { n: policy.match_count })}</span>
+          {(policy.match_count ?? 0) > 0 && (
+            <span className="text-warned shrink-0">↺ {t("policies.matches", { n: policy.match_count ?? 0 })}</span>
           )}
         </div>
         {error && <p role="alert" className="font-mono text-[11px] text-blocked mt-1">✗ {error}</p>}

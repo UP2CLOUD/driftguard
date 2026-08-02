@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getIncidents, getOverview } from "./api";
 import { formatDateTime } from "@/lib/format-date";
+import type { DashboardIncident } from "@/lib/dashboard-types";
 
 type T = (key: string) => string | null | undefined;
 
@@ -56,7 +57,7 @@ export async function IncidentsSection({
         </div>
       </div>
       <div className="divide-y divide-[color:var(--dg-border)]">
-        {incidents.map((inc: any) => (
+        {incidents.map((inc: DashboardIncident) => (
           <Link
             key={inc.id}
             href={`/dashboard/${installationId}/incidents/${inc.id}`}

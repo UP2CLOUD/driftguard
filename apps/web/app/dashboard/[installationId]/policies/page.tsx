@@ -4,12 +4,13 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { beGet } from "@/lib/backend";
+import type { Policy } from "@/lib/policies";
 import { PolicyCreateForm } from "@/components/PolicyCreateForm";
 import { PoliciesListClient } from "./PoliciesListClient";
 
-async function fetchPolicies(id: string) {
+async function fetchPolicies(id: string): Promise<Policy[]> {
   return (
-    (await beGet<unknown[]>(`/api/v1/policies?installation_id=${id}`, {
+    (await beGet<Policy[]>(`/api/v1/policies?installation_id=${id}`, {
       revalidate: 30,
       timeout: 3000,
     })) ?? []
@@ -36,7 +37,7 @@ export default async function PoliciesPage({
   const t = createTranslator(messages);
 
   const policies = await fetchPolicies(installationId);
-  const active = policies.filter((p: any) => p.enabled).length;
+  const active = policies.filter((p) => p.enabled).length;
 
   const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
 
@@ -135,7 +136,7 @@ export default async function PoliciesPage({
             </div>
           ) : (
             <PoliciesListClient
-              policies={policies as any[]}
+              policies={policies}
               installationId={installationId}
               labels={{
                 filterPlaceholder: t("policies.filterPlaceholder"),

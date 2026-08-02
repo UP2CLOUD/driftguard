@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getOverview } from "./api";
+import type { DashboardOverview } from "@/lib/dashboard-types";
 
 type T = (key: string, vars?: Record<string, string | number>) => string | null | undefined;
 
@@ -20,7 +21,7 @@ export async function SeverityBreakdownSection({
 }: {
   installationId: string;
   t: T;
-  demoOverview?: any;
+  demoOverview?: DashboardOverview;
   analysesHref?: string;
 }) {
   const overview = demoOverview ?? await getOverview(installationId);
