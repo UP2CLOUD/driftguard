@@ -25,6 +25,7 @@ export interface DashboardOverview {
   open_incidents: number;
   critical_incidents: number;
   memory_entries: number;
+  severity_breakdown?: Record<string, number>;
   recent_events?: DashboardEvent[];
   recent_analyses?: RecentAnalysis[];
 }

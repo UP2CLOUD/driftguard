@@ -3,6 +3,7 @@ import { getOverview } from "./api";
 import { fetchInstallationRepos } from "@/lib/github-installation";
 import { formatDateTime } from "@/lib/format-date";
 import { getGitHubAppInstallUrl } from "@/lib/github-app";
+import type { DashboardOverview, RecentAnalysis } from "@/lib/dashboard-types";
 
 type T = (key: string) => string | null | undefined;
 
@@ -15,7 +16,7 @@ export async function RecentAnalysesSection({
   installationId: string;
   t: T;
   locale: string;
-  demoOverview?: any;
+  demoOverview?: DashboardOverview;
 }) {
   const overview = demoOverview ?? await getOverview(installationId);
   const apiAvailable = !!overview;
@@ -112,7 +113,7 @@ export async function RecentAnalysesSection({
           </div>
         ) : (
           <div className="divide-y divide-[color:var(--dg-border)]">
-            {recentAnalyses.map((a: any) => (
+            {recentAnalyses.map((a: RecentAnalysis) => (
               <Link
                 key={a.id}
                 href={`/dashboard/${installationId}/analyses/${a.id}`}
