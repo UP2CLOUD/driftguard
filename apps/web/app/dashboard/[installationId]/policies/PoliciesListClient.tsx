@@ -2,8 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { PolicyCard } from "@/components/PolicyCard";
-
-type RuleType = "block" | "warn" | "alert";
+import type { Policy, PolicyRuleType } from "@/lib/policies";
 
 const TYPE_CHIP: Record<string, string> = {
   block: "text-blocked border-blocked/30 bg-blocked/10",
@@ -25,12 +24,12 @@ export function PoliciesListClient({
   installationId,
   labels: L,
 }: {
-  policies: any[];
+  policies: Policy[];
   installationId: string;
   labels: Labels;
 }) {
   const [nameFilter, setNameFilter] = useState("");
-  const [typeFilter, setTypeFilter] = useState<RuleType | null>(null);
+  const [typeFilter, setTypeFilter] = useState<PolicyRuleType | null>(null);
 
   const safePolicies = useMemo(() => {
     if (!Array.isArray(policies)) return [];
@@ -54,7 +53,7 @@ export function PoliciesListClient({
     return out;
   }, [safePolicies, typeFilter, nameFilter]);
 
-  const TYPE_ORDER: RuleType[] = ["block", "warn", "alert"];
+  const TYPE_ORDER: PolicyRuleType[] = ["block", "warn", "alert"];
   const TYPE_LABEL: Record<string, string> = {
     block: L.typeBlock,
     warn:  L.typeWarn,
@@ -106,7 +105,7 @@ export function PoliciesListClient({
         </div>
       ) : (
         <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden divide-y divide-[color:var(--dg-border)]">
-          {filtered.map((p: any) => (
+          {filtered.map((p) => (
             <PolicyCard key={p.id} policy={p} installationId={installationId} />
           ))}
         </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useT } from "@/components/I18nProvider";
+import type { Policy } from "@/lib/policies";
 
 const TYPE_STYLE: Record<string, string> = {
   block: "text-blocked border-blocked/30 bg-blocked/5",
@@ -13,7 +14,7 @@ const TYPE_STYLE: Record<string, string> = {
 const RULE_TYPES = ["block", "warn", "alert"];
 const SEVERITIES = ["critical", "high", "medium", "low"];
 
-export function PolicyCard({ policy, installationId }: { policy: any; installationId: string }) {
+export function PolicyCard({ policy, installationId }: { policy: Policy; installationId: string }) {
   const t = useT();
   const router = useRouter();
   const [editing, setEditing] = useState(false);
