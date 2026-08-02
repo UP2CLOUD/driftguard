@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getEvents, getOverview } from "./api";
 import { formatTime } from "@/lib/format-date";
+import type { DashboardOverview, DashboardEvent } from "@/lib/dashboard-types";
 
 type T = (key: string) => string | null | undefined;
 
@@ -13,7 +14,7 @@ export async function EventsSection({
   installationId: string;
   t: T;
   locale: string;
-  demoOverview?: any;
+  demoOverview?: DashboardOverview;
 }) {
   const [events, overview] = demoOverview
     ? [demoOverview.recent_events, demoOverview]
@@ -35,7 +36,7 @@ export async function EventsSection({
       </div>
       {events && events.length > 0 ? (
         <div className="divide-y divide-[color:var(--dg-border)]">
-          {events.map((e: any) => {
+          {events.map((e: DashboardEvent) => {
             const sev = e.severity ?? "info";
             const dotCls =
               sev === "critical" ? "bg-blocked shadow-[0_0_4px_rgba(255,71,87,0.5)]" :

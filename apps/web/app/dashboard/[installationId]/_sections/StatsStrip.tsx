@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getOverview, getPlan } from "./api";
+import type { DashboardOverview, DashboardPlan } from "@/lib/dashboard-types";
 
 type T = (key: string) => string | null | undefined;
 
@@ -19,7 +20,7 @@ export async function StatsStripSection({
 }: {
   installationId: string;
   t: T;
-  demoOverview?: any;
+  demoOverview?: DashboardOverview;
 }) {
   const [overview, plan] = await Promise.all([
     demoOverview ?? getOverview(installationId),

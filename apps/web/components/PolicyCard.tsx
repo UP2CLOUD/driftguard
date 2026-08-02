@@ -202,7 +202,7 @@ export function PolicyCard({ policy, installationId }: { policy: Policy; install
             </span>
           )}
           {(policy.match_count ?? 0) > 0 && (
-            <span className="text-warned shrink-0">↺ {t("policies.matches", { n: policy.match_count })}</span>
+            <span className="text-warned shrink-0">↺ {t("policies.matches", { n: policy.match_count ?? 0 })}</span>
           )}
         </div>
         {error && <p role="alert" className="font-mono text-[11px] text-blocked mt-1">✗ {error}</p>}
