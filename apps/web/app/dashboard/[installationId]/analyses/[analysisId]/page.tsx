@@ -330,7 +330,7 @@ export default async function AnalysisPage({
       )}
 
       {/* Errors */}
-      {data.errors?.length > 0 && (
+      {(data.errors?.length ?? 0) > 0 && (
         <div className="mt-6 rounded-md border border-warned/30 bg-warned/5 p-4">
           <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-warned mb-2">
             {t("dashboard.scannerWarnings")}
