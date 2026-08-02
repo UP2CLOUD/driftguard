@@ -5,13 +5,14 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
+import type { Analysis, Finding } from "@/lib/api";
 import { formatCostDeltaCentsForUser } from "@/lib/currency/format";
 import { RescanButton } from "./RescanButton";
 import { ShareButton } from "./ShareButton";
 import { FindingsListClient, type FindingRow } from "./FindingsListClient";
 
 async function fetchAnalysis(id: string) {
-  return beGet<any>(`/api/v1/analyses/${id}`, { revalidate: 0, timeout: 15000 });
+  return beGet<Analysis>(`/api/v1/analyses/${id}`, { revalidate: 0, timeout: 15000 });
 }
 
 const SEV_STYLE: Record<string, string> = {
@@ -111,12 +112,12 @@ export default async function AnalysisPage({
     );
   }
 
-  const rawFindings: any[] = Array.isArray(data.findings) ? data.findings : [];
+  const rawFindings: Finding[] = Array.isArray(data.findings) ? data.findings : [];
   const bySeverity = ["critical","high","medium","low","info"].map(s => ({
-    s, count: rawFindings.filter((f: any) => (f.severity ?? "").toLowerCase() === s).length,
+    s, count: rawFindings.filter((f) => (f.severity ?? "").toLowerCase() === s).length,
   })).filter(x => x.count > 0);
 
-  const findingRows: FindingRow[] = rawFindings.map((f: any) => ({
+  const findingRows: FindingRow[] = rawFindings.map((f) => ({
     severity: f.severity ?? null,
     rule_id: f.rule_id ?? null,
     category: f.category ?? null,
@@ -329,7 +330,7 @@ export default async function AnalysisPage({
       )}
 
       {/* Errors */}
-      {data.errors?.length > 0 && (
+      {data.errors && data.errors.length > 0 && (
         <div className="mt-6 rounded-md border border-warned/30 bg-warned/5 p-4">
           <div className="font-sans font-medium text-[10px] uppercase tracking-widest text-warned mb-2">
             {t("dashboard.scannerWarnings")}
