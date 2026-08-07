@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
+from rich import box
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
-from rich import box
 
-from driftguard_cli.scanner.engine import ScanResult, Severity
-from driftguard_cli.plan import PlanSummary, ChangeAction
+from driftguard_cli.plan import ChangeAction, PlanSummary
+from driftguard_cli.scanner.engine import ScanResult
 
 console = Console()
 
@@ -150,7 +150,8 @@ def print_plan_summary(summary: PlanSummary, verbose: bool = False) -> None:
         f"[bold red]↺{summary.replaces}[/bold red] replace"
     )
     console.print(
-        f"[bold]Risk score:[/bold] [{risk_colour}]{summary.risk_score}/100 ({summary.risk_level.upper()})[/{risk_colour}]"
+        f"[bold]Risk score:[/bold] [{risk_colour}]{summary.risk_score}/100 "
+        f"({summary.risk_level.upper()})[/{risk_colour}]"
     )
 
     if verbose and summary.risk_factors:

@@ -5,8 +5,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from driftguard_cli.scanner.engine import ScanResult, Severity
 from driftguard_cli import __version__
+from driftguard_cli.scanner.engine import ScanResult, Severity
 
 _SARIF_URI = "https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-schema-2.1.0.json"
 

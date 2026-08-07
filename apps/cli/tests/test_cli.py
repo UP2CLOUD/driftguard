@@ -3,15 +3,28 @@
 from __future__ import annotations
 
 import json
+import re
 import textwrap
 from pathlib import Path
 
-import pytest
 from typer.testing import CliRunner
 
 from driftguard_cli.main import app
 
 runner = CliRunner()
+
+_ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def strip_ansi(text: str) -> str:
+    """Strip SGR escape codes so plain-text assertions don't depend on the
+    runner's terminal/colour detection. NO_COLOR (set in conftest.py) isn't
+    enough on its own: it suppresses colour but Rich still emits bold/dim
+    style codes, which split option names like "--fail-on" into separate
+    spans (e.g. "-", "-fail", "-on") and break a naive substring check on
+    whichever CI runner happens to make Typer/Rich think it's a terminal.
+    """
+    return _ANSI_RE.sub("", text)
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -44,33 +57,33 @@ class TestMetaCommands:
     def test_version(self):
         result = runner.invoke(app, ["--version"])
         assert result.exit_code == 0
-        assert "0.1.0" in result.output
+        assert "0.1.0" in strip_ansi(result.output)
 
     def test_help(self):
         result = runner.invoke(app, ["--help"])
         assert result.exit_code == 0
-        assert "scan" in result.output
-        assert "analyze" in result.output
-        assert "check" in result.output
-        assert "rules" in result.output
+        assert "scan" in strip_ansi(result.output)
+        assert "analyze" in strip_ansi(result.output)
+        assert "check" in strip_ansi(result.output)
+        assert "rules" in strip_ansi(result.output)
 
     def test_scan_help(self):
         result = runner.invoke(app, ["scan", "--help"])
         assert result.exit_code == 0
-        assert "--fail-on" in result.output
+        assert "--fail-on" in strip_ansi(result.output)
 
     def test_rules_all(self):
         result = runner.invoke(app, ["rules"])
         assert result.exit_code == 0
-        assert "TF001" in result.output
-        assert "K8S001" in result.output
-        assert "GHA001" in result.output
+        assert "TF001" in strip_ansi(result.output)
+        assert "K8S001" in strip_ansi(result.output)
+        assert "GHA001" in strip_ansi(result.output)
 
     def test_rules_category_filter(self):
         result = runner.invoke(app, ["rules", "--category", "terraform"])
         assert result.exit_code == 0
-        assert "TF001" in result.output
-        assert "K8S001" not in result.output
+        assert "TF001" in strip_ansi(result.output)
+        assert "K8S001" not in strip_ansi(result.output)
 
     def test_rules_json_output(self):
         result = runner.invoke(app, ["rules", "-o", "json"])
@@ -90,7 +103,7 @@ class TestScanCommand:
     def test_empty_dir_exit_0(self, tmp_path):
         result = runner.invoke(app, ["scan", str(tmp_path)])
         assert result.exit_code == 0
-        assert "No findings" in result.output
+        assert "No findings" in strip_ansi(result.output)
 
     def test_invalid_path_exit_2(self, tmp_path):
         result = runner.invoke(app, ["scan", str(tmp_path / "does_not_exist")])
@@ -110,7 +123,7 @@ class TestScanCommand:
         """)
         result = runner.invoke(app, ["scan", str(tmp_path)])
         assert result.exit_code == 0
-        assert "TF003" in result.output
+        assert "TF003" in strip_ansi(result.output)
 
     def test_json_output(self, tmp_path):
         write_tf(tmp_path, """
@@ -168,7 +181,7 @@ class TestScanCommand:
         # TF011 is LOW — filtered out when min-severity is high
         result = runner.invoke(app, ["scan", str(tmp_path), "--min-severity", "high"])
         assert result.exit_code == 0
-        assert "TF011" not in result.output
+        assert "TF011" not in strip_ansi(result.output)
 
     def test_k8s_finding_detected(self, tmp_path):
         write_k8s(tmp_path, """
@@ -185,7 +198,7 @@ class TestScanCommand:
         """)
         result = runner.invoke(app, ["scan", str(tmp_path)])
         assert result.exit_code == 0
-        assert "K8S006" in result.output
+        assert "K8S006" in strip_ansi(result.output)
 
     def test_gha_finding_detected(self, tmp_path):
         write_gha(tmp_path, """
@@ -198,7 +211,7 @@ class TestScanCommand:
         """)
         result = runner.invoke(app, ["scan", str(tmp_path)])
         assert result.exit_code == 0
-        assert "GHA001" in result.output
+        assert "GHA001" in strip_ansi(result.output)
 
     def test_verbose_shows_suggestion(self, tmp_path):
         write_tf(tmp_path, """
@@ -208,7 +221,7 @@ class TestScanCommand:
         """)
         result = runner.invoke(app, ["scan", str(tmp_path), "-v"])
         assert result.exit_code == 0
-        assert "Fix:" in result.output
+        assert "Fix:" in strip_ansi(result.output)
 
     def test_json_output_includes_metadata(self, tmp_path):
         result = runner.invoke(app, ["scan", str(tmp_path), "-o", "json"])
@@ -228,7 +241,7 @@ class TestCheckCommand:
     def test_clean_dir_exits_0(self, tmp_path):
         result = runner.invoke(app, ["check", str(tmp_path)])
         assert result.exit_code == 0
-        assert "Safe to merge" in result.output
+        assert "Safe to merge" in strip_ansi(result.output)
 
     def test_high_finding_exits_1(self, tmp_path):
         write_tf(tmp_path, """
@@ -308,8 +321,8 @@ class TestAnalyzeCommand:
         plan_file.write_text(json.dumps(_PLAN_CREATE))
         result = runner.invoke(app, ["analyze", str(plan_file)])
         assert result.exit_code == 0
-        assert "aws_s3_bucket" in result.output
-        assert "CREATE" in result.output
+        assert "aws_s3_bucket" in strip_ansi(result.output)
+        assert "CREATE" in strip_ansi(result.output)
 
     def test_analyze_json_output(self, tmp_path):
         plan_file = tmp_path / "plan.json"
@@ -335,7 +348,7 @@ class TestAnalyzeCommand:
         plan_file.write_text(json.dumps(_PLAN_DELETE_RDS))
         result = runner.invoke(app, ["analyze", str(plan_file), "-v"])
         assert result.exit_code == 0
-        assert "Risk factors" in result.output
+        assert "Risk factors" in strip_ansi(result.output)
 
     def test_analyze_fail_on_exits_1(self, tmp_path):
         plan_file = tmp_path / "plan.json"
