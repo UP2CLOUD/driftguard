@@ -63,9 +63,9 @@ jobs:
         id: key_check
         if: steps.guard.outputs.already_attempted == 'false'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          if [ -z "$ANTHROPIC_API_KEY" ]; then
+          if [ -z "$GEMINI_API_KEY" ]; then
             echo "has_key=false" >> "$GITHUB_OUTPUT"
           else
             echo "has_key=true" >> "$GITHUB_OUTPUT"
@@ -74,8 +74,8 @@ jobs:
       - name: Setup git identity
         if: steps.guard.outputs.already_attempted == 'false' && steps.key_check.outputs.has_key == 'true'
         run: |
-          git config --global user.email "noreply@anthropic.com"
-          git config --global user.name "Claude"
+          git config --global user.email "noreply@google.com"
+          git config --global user.name "Gemini CLI"
 
       - name: Install uv (apps/api toolchain)
         if: steps.guard.outputs.already_attempted == 'false' && steps.key_check.outputs.has_key == 'true'
@@ -119,15 +119,16 @@ jobs:
             echo "FAILEDJOBS_EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Fix CI failures with Claude
+      - name: Install Gemini CLI
         if: steps.guard.outputs.already_attempted == 'false' && steps.key_check.outputs.has_key == 'true'
-        uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1
-        with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: >-
-            --max-turns 30
-            --allowedTools "Read,Edit,MultiEdit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(uv:*),Bash(pnpm:*),Bash(npx:*)"
-          prompt: |
+        run: npm install -g @google/gemini-cli@latest
+
+      - name: Fix CI failures with Gemini
+        if: steps.guard.outputs.already_attempted == 'false' && steps.key_check.outputs.has_key == 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          cat > /tmp/gemini-prompt.txt <<'PROMPT_EOF'
             CI just failed on this PR's branch (${{ github.event.workflow_run.head_branch }}).
 
             Failed workflow: ${{ steps.failure_details.outputs.workflow_name }}
@@ -161,3 +162,13 @@ jobs:
               this same workflow checks for it to avoid retrying forever on
               a branch that already had an auto-fix attempt).
             - Push with `git push`.
+          PROMPT_EOF
+
+          # --approval-mode yolo: auto-approves every tool call, including
+          # shell commands — coarser-grained than the Bash(git:*)/Bash(gh:*)
+          # allowlist the previous claude-code-action step used, since Gemini
+          # CLI has no per-command-prefix allowlist equivalent. Acceptable
+          # per this file's header note: every collaborator with write access
+          # is fully trusted, and this workflow never runs against untrusted
+          # input.
+          gemini --model gemini-2.5-pro --approval-mode yolo --prompt "$(cat /tmp/gemini-prompt.txt)"
