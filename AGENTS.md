@@ -90,19 +90,20 @@ Validated from repeated real usage across multiple PRs, not aspirational:
 **Required checks on the default branch:** `ci-api` (`test`), `ci-web`
 (`build`), CodeQL (`Analyze (python)` + `Analyze (javascript-typescript)`),
 and an approving human review. A bot-only approval (DriftGuard's own
-self-review, or `claude-code-action` acting on an `@claude` mention) does
-**not** satisfy the required-review check by itself — `mergeable_state`
-stays `"blocked"` until a human collaborator approves, even with every
-status check green.
+self-review, or Gemini CLI acting on an `@gemini` mention via
+`gemini.yml`) does **not** satisfy the required-review check by itself —
+`mergeable_state` stays `"blocked"` until a human collaborator approves,
+even with every status check green.
 
 **DriftGuard's own self-review bot** (`driftguard-reviews[bot]`) posts a
 summary comment with a risk score and, separately, a review
 (approve/request-changes). One known false positive worth recognizing
 rather than re-investigating each time: rule `GHA004` ("No permissions:
-block defined") fires on `.github/workflows/claude.yml` even though that
-workflow defines an explicit job-level `permissions:` block — verified
-directly against the file, not assumed. Confirm against the actual
-workflow before treating a `GHA004` finding as real.
+block defined") has fired on workflow files that *do* define an explicit
+job-level `permissions:` block (seen on `claude.yml`, before it was renamed
+`gemini.yml` — same structure, so the same false positive likely recurs) —
+verified directly against the file, not assumed. Confirm against the
+actual workflow before treating a `GHA004` finding as real.
 
 **Non-actionable bot comments to recognize and skip, not investigate:**
 - `vercel[bot]` — automated build/deploy status, updates in place per push.
@@ -127,8 +128,13 @@ on the now-merged history.
 `agents-autofix-ci.yml`, see `.driftguard/autonomy/README.md`) has two
 independently moving pieces worth checking separately when asked "is it
 working": finding generation (`agents-daily.yml`, Python SDK via
-`llm_router.py`) and implementation (`agents-implement.yml`,
-`claude-code-action`) use different auth paths to the same
-`ANTHROPIC_API_KEY` secret — one working is not evidence the other does.
-Check each workflow's own run history (`list_workflow_runs`), not just
-whether the fleet "runs on schedule."
+`llm_router.py`, Gemini-primary with Claude/OpenAI fallback) and
+implementation (`agents-implement.yml`, `agents-autofix-ci.yml`,
+`gemini.yml` — all three now run on the Gemini CLI headless, not
+`claude-code-action`) use different code paths and, historically, different
+provider auth entirely — one working was never evidence the other did (this
+is exactly how `agents-implement.yml`'s 100% failure rate went unnoticed:
+`agents-daily.yml` kept succeeding via its Gemini-primary fallback while the
+Anthropic-backed implementation step failed silently every run). Check each
+workflow's own run history (`list_workflow_runs`), not just whether the
+fleet "runs on schedule."

@@ -62,10 +62,10 @@ actually run, not just "tests pass."
 
 The default branch requires: CI (`ci-api`, `ci-web`), CodeQL, and an
 approving review before merge. A bot approval (DriftGuard's own self-review,
-or `claude-code-action` on an `@claude`-triggered PR) does **not** by itself
-satisfy the required-review check — a human collaborator still has to
-approve. Keep this in mind if you're relying on automation to get a PR to
-a mergeable state end-to-end.
+or Gemini CLI on an `@gemini`-triggered PR via `gemini.yml`) does **not**
+by itself satisfy the required-review check — a human collaborator still
+has to approve. Keep this in mind if you're relying on automation to get a
+PR to a mergeable state end-to-end.
 
 ## Reporting issues
 

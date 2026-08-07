@@ -29,8 +29,8 @@ change.
    this keeps that convention rather than introducing a bot-commit
    pattern.
 4. `.github/workflows/agents-daily.yml` runs this every 6 hours, gated on
-   `ANTHROPIC_API_KEY` being present (skips cleanly, no failure, no cost,
-   if it's not set — same pattern as `eval-suite.yml`).
+   `GEMINI_API_KEY` or `ANTHROPIC_API_KEY` being present (skips cleanly, no
+   failure, no cost, if neither is set — same pattern as `eval-suite.yml`).
 
 **A meaningful fraction of raw findings are stale or simply wrong** —
 these agents see a bounded context (directory tree + top-level docs, not
@@ -68,10 +68,14 @@ source). Includes a runaway-loop guard: if a branch already has a prior
 `driftguard-autofix:`-tagged commit and CI is still red, it stops and
 leaves it for a human rather than retrying forever.
 
-`.github/workflows/claude.yml` responds to `@claude` mentions in issue
+`.github/workflows/gemini.yml` responds to `@gemini` mentions in issue
 comments, PR review comments, and PR reviews — the same interactive
 capability used manually throughout this project, made available without
 needing a live session.
+
+All three of the above run on Gemini CLI (`GEMINI_API_KEY`), not
+`claude-code-action`/`ANTHROPIC_API_KEY` — see the billing-error prerequisite
+note below for why.
 
 ### Auto-merge — the one hard rule
 
@@ -94,22 +98,29 @@ settings or billing:
    build job, and the DriftGuard check. Without this, `gh pr merge --auto`
    could merge on the first check to go green without waiting for the
    others — verify this is configured correctly before trusting the gate.
-3. The `ANTHROPIC_API_KEY` secret's account needs an available credit
-   balance. Confirmed the hard way: `agents-implement.yml` failed on
-   **every single run** from creation through 2026-08-07 with a $0-cost,
-   single-turn `is_error:true` immediately after SDK init — with the
-   underlying error text hidden by default, this looked identical to an
-   auth or model-access problem for days. Turning on `claude-code-action`'s
-   `show_full_output: true` for one run revealed the real error:
-   `"error": "billing_error"`, `"result": "Credit balance is too low"`,
-   `"api_error_status": 400`. Check
-   https://console.anthropic.com/settings/billing for the account behind
-   this key before assuming a code-level cause. Critically,
-   `agents-daily.yml` succeeding is **not** evidence this key has credit —
-   Phase 1 routes through `llm_router.py`'s Gemini-primary chain (see
-   `apps/api/driftguard/ai/llm_router.py`), so it only ever touches
-   Anthropic on a Gemini failure. The two workflows share a secret name
-   but exercise completely different code paths to it.
+3. The `GEMINI_API_KEY` secret's account needs an available credit
+   balance — same class of prerequisite, different secret. This one is
+   here because of history worth keeping: these three workflows originally
+   ran on `claude-code-action`/`ANTHROPIC_API_KEY`, and `agents-implement.yml`
+   failed on **every single run** from creation through 2026-08-07 with a
+   $0-cost, single-turn `is_error:true` immediately after SDK init — with
+   the underlying error text hidden by default, this looked identical to
+   an auth or model-access problem for days. Turning on
+   `claude-code-action`'s `show_full_output: true` for one run revealed the
+   real error: `"error": "billing_error"`, `"result": "Credit balance is
+   too low"`, `"api_error_status": 400`. That's what prompted migrating
+   `agents-implement.yml`, `agents-autofix-ci.yml`, and `claude.yml`
+   (renamed `gemini.yml`) off Anthropic entirely, onto the Gemini CLI
+   (`@google/gemini-cli`, installed via npm, invoked headless with
+   `--approval-mode yolo`) — `GEMINI_API_KEY` had credit at the time.
+   Check whichever provider's console is relevant before assuming a
+   code-level cause the next time one of these goes quiet with a
+   suspiciously cheap, suspiciously fast failure. Critically,
+   `agents-daily.yml` succeeding is still **not** by itself evidence any
+   given key has credit — Phase 1 routes through `llm_router.py`'s
+   Gemini-primary chain (see `apps/api/driftguard/ai/llm_router.py`), so it
+   only ever touches Claude or OpenAI on a Gemini failure; a workflow
+   succeeding is only evidence for whichever provider it actually exercised.
 
 ### What's still deliberately not built
 
@@ -123,7 +134,7 @@ settings or billing:
 
 ```bash
 cd apps/api
-ANTHROPIC_API_KEY=... uv run python -m driftguard.autonomy.cli
+GEMINI_API_KEY=... uv run python -m driftguard.autonomy.cli
 ```
 
 Writes `.driftguard/autonomy/findings/<date>.json` and

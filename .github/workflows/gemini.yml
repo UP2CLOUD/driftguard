@@ -1,0 +1,152 @@
+name: Gemini CLI
+
+# Responds to @gemini mentions on issues, PR review comments, and PR reviews.
+# Migrated from claude.yml (anthropics/claude-code-action) after the
+# ANTHROPIC_API_KEY account hit a billing_error ("Credit balance is too
+# low") — GEMINI_API_KEY has credit, so this runs the same trigger surface
+# through the Gemini CLI instead.
+#
+# Unlike claude-code-action, Gemini CLI has no built-in "read this GitHub
+# event and figure out what to do" behavior — that context has to be
+# assembled explicitly and handed to it as a prompt, which the "Run Gemini
+# CLI" step below does.
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+permissions: {}  # deny all by default; job-level block grants only required access
+
+jobs:
+  gemini:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@gemini')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@gemini')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@gemini')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@gemini') || contains(github.event.issue.title, '@gemini')))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read # Required for Gemini to read CI results on PRs
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 1
+
+      - name: Check API key is configured
+        id: key_check
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ -z "$GEMINI_API_KEY" ]; then
+            echo "has_key=false" >> "$GITHUB_OUTPUT"
+            echo "⚠ GEMINI_API_KEY secret not set — skipping (no cost, no failure)"
+          else
+            echo "has_key=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up git identity
+        if: steps.key_check.outputs.has_key == 'true'
+        run: |
+          git config --global user.email "noreply@google.com"
+          git config --global user.name "Gemini CLI"
+
+      - name: Install Gemini CLI
+        if: steps.key_check.outputs.has_key == 'true'
+        run: npm install -g @google/gemini-cli@latest
+
+      - name: Run Gemini CLI
+        id: gemini
+        if: steps.key_check.outputs.has_key == 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          REQUEST_BODY: ${{ github.event.comment.body || github.event.review.body || github.event.issue.body }}
+          EVENT_NAME: ${{ github.event_name }}
+          ISSUE_OR_PR_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+          IS_PULL_REQUEST: ${{ github.event.issue.pull_request != null || github.event_name == 'pull_request_review_comment' || github.event_name == 'pull_request_review' }}
+          REPOSITORY: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          # Quoted heredoc delimiter ('PROMPT_TEMPLATE_EOF'): the entire
+          # template below is captured as 100% literal text — no shell
+          # parameter/command/backtick expansion at all. This matters two
+          # ways: it keeps the markdown `code spans` in this template literal
+          # instead of being run as commands, and it means the __TOKEN__
+          # placeholders are inert until the Python substitution step below
+          # replaces them with the real (env-provided) values, so untrusted
+          # REQUEST_BODY content is never concatenated into something the
+          # shell parses — only ever a literal Python string replacement.
+          cat > /tmp/gemini-prompt.template <<'PROMPT_TEMPLATE_EOF'
+          You were mentioned with "@gemini" on a GitHub issue or pull request in this
+          repository. Read the request below and do what it asks — this can mean
+          answering a question, reviewing code, reading CI results, or making and
+          pushing a code change, depending on what's actually being asked.
+
+          Repository: __REPOSITORY__
+          Event: __EVENT_NAME__
+          Issue/PR number: __ISSUE_OR_PR_NUMBER__
+          Is this a pull request: __IS_PULL_REQUEST__
+          Requested by: @__ACTOR__
+
+          The full comment/issue/review text that mentioned you:
+          ---
+          __REQUEST_BODY__
+          ---
+
+          Ground yourself in the real repository state before acting — read the actual
+          files involved, and if this is a PR, check `gh pr diff __ISSUE_OR_PR_NUMBER__`
+          and `gh pr checks __ISSUE_OR_PR_NUMBER__` for the real current state rather
+          than assuming.
+
+          If you make a code change:
+          - Verify locally before pushing: apps/api changes → `cd apps/api && uv run
+            ruff check . && uv run pytest <relevant files> -v` (skip tests needing a
+            live Postgres this runner doesn't have). apps/web changes → `cd apps/web
+            && npx tsc --noEmit && pnpm lint && pnpm test`.
+          - If this is already a PR branch, commit and `git push` directly onto it.
+            If this is an issue with no associated PR, open a new branch and PR via
+            `gh pr create`.
+
+          Always leave a reply so the requester sees a response — either `gh issue
+          comment __ISSUE_OR_PR_NUMBER__ --body "..."` or `gh pr comment
+          __ISSUE_OR_PR_NUMBER__ --body "..."` depending on Is-this-a-pull-request
+          above — summarizing what you did, or explaining why you didn't act if the
+          request was unclear or needs a human decision.
+          PROMPT_TEMPLATE_EOF
+
+          # Single-quoted bash string (not a heredoc): every statement below
+          # is a flat top-level statement with no indented block, so it's
+          # immune to whatever uniform indentation this YAML block scalar
+          # imposes on the surrounding shell script — no heredoc-terminator
+          # column-zero requirement to satisfy, and no Python indentation
+          # rules to keep consistent across a nested block.
+          python3 -c '
+          import os
+          text = open("/tmp/gemini-prompt.template").read()
+          text = text.replace("__REPOSITORY__", os.environ.get("REPOSITORY", ""))
+          text = text.replace("__EVENT_NAME__", os.environ.get("EVENT_NAME", ""))
+          text = text.replace("__ISSUE_OR_PR_NUMBER__", os.environ.get("ISSUE_OR_PR_NUMBER", ""))
+          text = text.replace("__IS_PULL_REQUEST__", os.environ.get("IS_PULL_REQUEST", ""))
+          text = text.replace("__ACTOR__", os.environ.get("ACTOR", ""))
+          text = text.replace("__REQUEST_BODY__", os.environ.get("REQUEST_BODY", ""))
+          open("/tmp/gemini-prompt.txt", "w").write(text)
+          '
+
+          # --approval-mode yolo: auto-approves every tool call, including
+          # shell commands — coarser-grained than the Bash(git:*)/Bash(gh:*)
+          # allowlist the previous claude-code-action step used, since Gemini
+          # CLI has no per-command-prefix allowlist equivalent. Same trust
+          # posture this trigger already had under claude.yml — this repo's
+          # only collaborator is the trusted owner (see the same argument
+          # documented in agents-autofix-ci.yml's header comment).
+          gemini --model gemini-2.5-pro --approval-mode yolo --prompt "$(cat /tmp/gemini-prompt.txt)"

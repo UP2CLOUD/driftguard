@@ -41,11 +41,11 @@ jobs:
       - name: Check API key is configured
         id: key_check
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          if [ -z "$ANTHROPIC_API_KEY" ]; then
+          if [ -z "$GEMINI_API_KEY" ]; then
             echo "has_key=false" >> "$GITHUB_OUTPUT"
-            echo "⚠ ANTHROPIC_API_KEY secret not set — skipping (no cost, no failure)"
+            echo "⚠ GEMINI_API_KEY secret not set — skipping (no cost, no failure)"
           else
             echo "has_key=true" >> "$GITHUB_OUTPUT"
           fi
@@ -97,18 +97,19 @@ jobs:
       - name: Set up git identity
         if: steps.findings.outputs.has_findings == 'true'
         run: |
-          git config --global user.email "noreply@anthropic.com"
-          git config --global user.name "Claude"
+          git config --global user.email "noreply@google.com"
+          git config --global user.name "Gemini CLI"
 
-      - name: Triage and implement with Claude
+      - name: Install Gemini CLI
         if: steps.findings.outputs.has_findings == 'true'
-        uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1
-        with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: >-
-            --max-turns 60
-            --allowedTools "Read,Edit,MultiEdit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(uv:*),Bash(pnpm:*),Bash(npx:*),Bash(python3:*)"
-          prompt: |
+        run: npm install -g @google/gemini-cli@latest
+
+      - name: Triage and implement with Gemini
+        if: steps.findings.outputs.has_findings == 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          cat > /tmp/gemini-prompt.txt <<'PROMPT_EOF'
             You are triaging findings from DriftGuard's own daily autonomy
             fleet (9 read-only LLM agents that audit this repo from a
             directory tree + top-level docs — NOT full file contents, so a
@@ -180,3 +181,14 @@ jobs:
             If nothing meets the bar for autonomous implementation, that's a
             fine outcome — just summarize what you checked and why each was
             skipped. Do not force a change to have "done something."
+          PROMPT_EOF
+
+          # --approval-mode yolo: auto-approves every tool call, including
+          # shell commands — coarser-grained than the Bash(git:*)/Bash(gh:*)
+          # allowlist the previous claude-code-action step used, since Gemini
+          # CLI has no per-command-prefix allowlist equivalent. Acceptable
+          # here only because this repo's sole collaborator is the trusted
+          # owner and this workflow never runs against untrusted input (see
+          # the same trust argument already documented in
+          # agents-autofix-ci.yml's header comment).
+          gemini --model gemini-2.5-pro --approval-mode yolo --prompt "$(cat /tmp/gemini-prompt.txt)"
