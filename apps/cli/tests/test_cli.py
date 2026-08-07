@@ -10,6 +10,9 @@ from typer.testing import CliRunner
 
 from driftguard_cli.main import app
 
+# ANSI colour is disabled process-wide in conftest.py (must happen before
+# driftguard_cli.main's module-level Console() singletons are constructed —
+# see conftest.py for why a per-invoke env override here isn't enough).
 runner = CliRunner()
 
 
