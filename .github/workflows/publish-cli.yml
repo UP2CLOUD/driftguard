@@ -14,8 +14,16 @@ name: publish-cli
 
 on:
   push:
+    branches: [main]
     tags:
       - "cli-v*.*.*"
+    paths:
+      - "apps/cli/**"
+      - ".github/workflows/publish-cli.yml"
+  pull_request:
+    paths:
+      - "apps/cli/**"
+      - ".github/workflows/publish-cli.yml"
   workflow_dispatch:
     inputs:
       dry_run:
