@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import asyncio
-import sys
 from enum import StrEnum
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -42,7 +41,7 @@ def _version_callback(value: bool) -> None:
 @app.callback()
 def main(
     version: Annotated[
-        Optional[bool],
+        bool | None,
         typer.Option("--version", "-V", callback=_version_callback, is_eager=True, help="Show version and exit."),
     ] = None,
 ) -> None:
@@ -65,7 +64,7 @@ def scan(
         typer.Option("--min-severity", "-s", help="Minimum severity to report (info/low/medium/high/critical)."),
     ] = "info",
     fail_on: Annotated[
-        Optional[str],
+        str | None,
         typer.Option("--fail-on", help="Exit code 1 if findings at or above this severity exist. E.g. --fail-on high"),
     ] = None,
 ) -> None:
@@ -83,8 +82,9 @@ def scan(
       [cyan]dg scan ./infra --fail-on high[/cyan]     CI gate: exit 1 on high+ findings
       [cyan]dg scan ./infra -v[/cyan]                 Show fix suggestions
     """
-    from driftguard_cli.scanner.engine import scan_directory, Severity
-    from driftguard_cli.output import console as out_console, json_fmt, sarif
+    from driftguard_cli.output import console as out_console
+    from driftguard_cli.output import json_fmt, sarif
+    from driftguard_cli.scanner.engine import scan_directory
 
     if not path.exists():
         err_console.print(f"[red]Error:[/red] path does not exist: {path}")
@@ -147,8 +147,9 @@ def check(
       [cyan]dg check . --severity critical[/cyan]  Only fail on critical
       [cyan]dg check . -o json[/cyan]             JSON output (parseable in CI)
     """
+    from driftguard_cli.output import console as out_console
+    from driftguard_cli.output import json_fmt
     from driftguard_cli.scanner.engine import scan_directory
-    from driftguard_cli.output import console as out_console, json_fmt
 
     if not path.exists() or not path.is_dir():
         err_console.print(f"[red]Error:[/red] {path} is not a valid directory")
@@ -162,7 +163,6 @@ def check(
     blocking = [f for f in result.findings if sev_order.get(str(f.severity).lower(), 0) >= threshold]
 
     if output == OutputFormat.JSON:
-        import json
         data = json_fmt.scan_to_dict(result)
         data["check"] = {"severity_threshold": severity, "blocking_count": len(blocking), "passed": len(blocking) == 0}
         print(json_fmt.dump(data))
@@ -189,7 +189,7 @@ def analyze(
     output: Annotated[OutputFormat, typer.Option("-o", "--output")] = OutputFormat.TABLE,
     verbose: Annotated[bool, typer.Option("-v", "--verbose", help="Show risk factors.")] = False,
     fail_on: Annotated[
-        Optional[str],
+        str | None,
         typer.Option("--fail-on", help="Exit 1 if risk level meets threshold (low/medium/high/critical)."),
     ] = None,
 ) -> None:
@@ -212,8 +212,9 @@ def analyze(
       [cyan]dg analyze plan.json -o json[/cyan]         JSON output
       [cyan]dg analyze plan.json --fail-on high[/cyan]  CI gate
     """
+    from driftguard_cli.output import console as out_console
+    from driftguard_cli.output import json_fmt
     from driftguard_cli.plan import parse_plan
-    from driftguard_cli.output import console as out_console, json_fmt
 
     if not plan_file.exists():
         err_console.print(f"[red]Error:[/red] file not found: {plan_file}")
@@ -241,7 +242,8 @@ def analyze(
         if actual >= threshold:
             if output == OutputFormat.TABLE:
                 err_console.print(
-                    f"\n[bold red]✗ Risk level '{summary.risk_level}' meets or exceeds threshold '{fail_on}'.[/bold red]"
+                    f"\n[bold red]✗ Risk level '{summary.risk_level}' meets or exceeds "
+                    f"threshold '{fail_on}'.[/bold red]"
                 )
             raise typer.Exit(code=1)
 
@@ -252,7 +254,7 @@ def analyze(
 @app.command()
 def rules(
     category: Annotated[
-        Optional[str],
+        str | None,
         typer.Option("--category", "-c", help="Filter by category (terraform/kubernetes/github_actions)."),
     ] = None,
     output: Annotated[OutputFormat, typer.Option("-o", "--output")] = OutputFormat.TABLE,
@@ -267,8 +269,9 @@ def rules(
       [cyan]dg rules -o json[/cyan]                  JSON output
     """
     import json as _json
-    from rich.table import Table
+
     from rich import box
+    from rich.table import Table
 
     _rules = _get_all_rules()
 
@@ -284,8 +287,6 @@ def rules(
     table.add_column("Category", width=15)
     table.add_column("Severity", width=10)
     table.add_column("Title")
-
-    sev_colours = {"critical": "bold red", "high": "red", "medium": "yellow", "low": "cyan", "info": "dim"}
 
     for r in _rules:
         sev = r["severity"].lower()
@@ -305,44 +306,46 @@ def _sev_to_typer_colour(sev: str) -> str:
 
 
 def _get_all_rules() -> list[dict]:
-    return [
+    # (id, category, severity, title) — kept as tuples so each row fits on one line.
+    rows = [
         # Terraform
-        {"id": "TF001", "category": "terraform", "severity": "critical", "title": "IAM policy allows all resources (*)"},
-        {"id": "TF002", "category": "terraform", "severity": "high", "title": "S3 bucket missing public access block"},
-        {"id": "TF003", "category": "terraform", "severity": "high", "title": "force_destroy enabled on storage resource"},
-        {"id": "TF004", "category": "terraform", "severity": "high", "title": "RDS skip_final_snapshot enabled"},
-        {"id": "TF005", "category": "terraform", "severity": "medium", "title": "RDS missing deletion protection"},
-        {"id": "TF006", "category": "terraform", "severity": "high", "title": "Potential hardcoded secret"},
-        {"id": "TF007", "category": "terraform", "severity": "high", "title": "Security group open to all IPv4 (0.0.0.0/0)"},
-        {"id": "TF008", "category": "terraform", "severity": "medium", "title": "KMS key deletion window too short"},
-        {"id": "TF009", "category": "terraform", "severity": "low", "title": "Missing provider version constraints"},
-        {"id": "TF010", "category": "terraform", "severity": "medium", "title": "EBS volume not encrypted at rest"},
-        {"id": "TF011", "category": "terraform", "severity": "low", "title": "Lambda missing reserved_concurrent_executions"},
-        {"id": "TF012", "category": "terraform", "severity": "high", "title": "IAM policy allows all actions (*)"},
-        {"id": "TF013", "category": "terraform", "severity": "critical", "title": "S3 bucket has public ACL"},
-        {"id": "TF014", "category": "terraform", "severity": "critical", "title": "RDS instance publicly accessible"},
-        {"id": "TF015", "category": "terraform", "severity": "medium", "title": "Secrets Manager secret missing rotation"},
+        ("TF001", "terraform", "critical", "IAM policy allows all resources (*)"),
+        ("TF002", "terraform", "high", "S3 bucket missing public access block"),
+        ("TF003", "terraform", "high", "force_destroy enabled on storage resource"),
+        ("TF004", "terraform", "high", "RDS skip_final_snapshot enabled"),
+        ("TF005", "terraform", "medium", "RDS missing deletion protection"),
+        ("TF006", "terraform", "high", "Potential hardcoded secret"),
+        ("TF007", "terraform", "high", "Security group open to all IPv4 (0.0.0.0/0)"),
+        ("TF008", "terraform", "medium", "KMS key deletion window too short"),
+        ("TF009", "terraform", "low", "Missing provider version constraints"),
+        ("TF010", "terraform", "medium", "EBS volume not encrypted at rest"),
+        ("TF011", "terraform", "low", "Lambda missing reserved_concurrent_executions"),
+        ("TF012", "terraform", "high", "IAM policy allows all actions (*)"),
+        ("TF013", "terraform", "critical", "S3 bucket has public ACL"),
+        ("TF014", "terraform", "critical", "RDS instance publicly accessible"),
+        ("TF015", "terraform", "medium", "Secrets Manager secret missing rotation"),
         # Kubernetes
-        {"id": "K8S001", "category": "kubernetes", "severity": "critical", "title": "Privileged container"},
-        {"id": "K8S002", "category": "kubernetes", "severity": "medium", "title": "Missing resource limits"},
-        {"id": "K8S003", "category": "kubernetes", "severity": "critical", "title": "hostPID / hostNetwork enabled"},
-        {"id": "K8S004", "category": "kubernetes", "severity": "medium", "title": "Container may run as root"},
-        {"id": "K8S005", "category": "kubernetes", "severity": "high", "title": "allowPrivilegeEscalation not disabled"},
-        {"id": "K8S006", "category": "kubernetes", "severity": "medium", "title": "Image using :latest or untagged"},
-        {"id": "K8S007", "category": "kubernetes", "severity": "low", "title": "Missing readinessProbe"},
-        {"id": "K8S008", "category": "kubernetes", "severity": "medium", "title": "Container missing securityContext"},
-        {"id": "K8S009", "category": "kubernetes", "severity": "low", "title": "Root filesystem is writable"},
-        {"id": "K8S010", "category": "kubernetes", "severity": "critical", "title": "Container granted ALL capabilities"},
+        ("K8S001", "kubernetes", "critical", "Privileged container"),
+        ("K8S002", "kubernetes", "medium", "Missing resource limits"),
+        ("K8S003", "kubernetes", "critical", "hostPID / hostNetwork enabled"),
+        ("K8S004", "kubernetes", "medium", "Container may run as root"),
+        ("K8S005", "kubernetes", "high", "allowPrivilegeEscalation not disabled"),
+        ("K8S006", "kubernetes", "medium", "Image using :latest or untagged"),
+        ("K8S007", "kubernetes", "low", "Missing readinessProbe"),
+        ("K8S008", "kubernetes", "medium", "Container missing securityContext"),
+        ("K8S009", "kubernetes", "low", "Root filesystem is writable"),
+        ("K8S010", "kubernetes", "critical", "Container granted ALL capabilities"),
         # GitHub Actions
-        {"id": "GHA001", "category": "github_actions", "severity": "high", "title": "Unpinned action (uses @branch)"},
-        {"id": "GHA002", "category": "github_actions", "severity": "critical", "title": "ACTIONS_ALLOW_UNSECURE_COMMANDS enabled"},
-        {"id": "GHA003", "category": "github_actions", "severity": "critical", "title": "Script injection via github.event interpolation"},
-        {"id": "GHA004", "category": "github_actions", "severity": "medium", "title": "Workflow missing explicit permissions"},
-        {"id": "GHA005", "category": "github_actions", "severity": "critical", "title": "pull_request_target with unsafe checkout"},
-        {"id": "GHA006", "category": "github_actions", "severity": "high", "title": "Secret directly interpolated in run step"},
-        {"id": "GHA007", "category": "github_actions", "severity": "high", "title": "Remote script execution via curl | bash"},
-        {"id": "GHA008", "category": "github_actions", "severity": "medium", "title": "Untrusted event data in if: condition"},
+        ("GHA001", "github_actions", "high", "Unpinned action (uses @branch)"),
+        ("GHA002", "github_actions", "critical", "ACTIONS_ALLOW_UNSECURE_COMMANDS enabled"),
+        ("GHA003", "github_actions", "critical", "Script injection via github.event interpolation"),
+        ("GHA004", "github_actions", "medium", "Workflow missing explicit permissions"),
+        ("GHA005", "github_actions", "critical", "pull_request_target with unsafe checkout"),
+        ("GHA006", "github_actions", "high", "Secret directly interpolated in run step"),
+        ("GHA007", "github_actions", "high", "Remote script execution via curl | bash"),
+        ("GHA008", "github_actions", "medium", "Untrusted event data in if: condition"),
     ]
+    return [{"id": rid, "category": cat, "severity": sev, "title": title} for rid, cat, sev, title in rows]
 
 
 if __name__ == "__main__":

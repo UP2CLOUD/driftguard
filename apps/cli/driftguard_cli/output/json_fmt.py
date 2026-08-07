@@ -5,8 +5,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from driftguard_cli.scanner.engine import ScanResult
 from driftguard_cli.plan import PlanSummary
+from driftguard_cli.scanner.engine import ScanResult
 
 
 def scan_to_dict(result: ScanResult) -> dict[str, Any]:
