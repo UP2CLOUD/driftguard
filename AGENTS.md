@@ -83,6 +83,52 @@ cd infra/terraform/bootstrap && terraform init && terraform apply
 
 Production deployment details are documented in `DEPLOY.md`.
 
-## TODO
+## PR review and CI triage
 
-- Agent-specific review, release, and CI triage workflow is not yet documented here because it was not validated from repo usage in this run.
+Validated from repeated real usage across multiple PRs, not aspirational:
+
+**Required checks on the default branch:** `ci-api` (`test`), `ci-web`
+(`build`), CodeQL (`Analyze (python)` + `Analyze (javascript-typescript)`),
+and an approving human review. A bot-only approval (DriftGuard's own
+self-review, or `claude-code-action` acting on an `@claude` mention) does
+**not** satisfy the required-review check by itself — `mergeable_state`
+stays `"blocked"` until a human collaborator approves, even with every
+status check green.
+
+**DriftGuard's own self-review bot** (`driftguard-reviews[bot]`) posts a
+summary comment with a risk score and, separately, a review
+(approve/request-changes). One known false positive worth recognizing
+rather than re-investigating each time: rule `GHA004` ("No permissions:
+block defined") fires on `.github/workflows/claude.yml` even though that
+workflow defines an explicit job-level `permissions:` block — verified
+directly against the file, not assumed. Confirm against the actual
+workflow before treating a `GHA004` finding as real.
+
+**Non-actionable bot comments to recognize and skip, not investigate:**
+- `vercel[bot]` — automated build/deploy status, updates in place per push.
+- `gemini-code-assist[bot]` — a fixed sunset notice ("consumer version...
+  has been sunset"), not a real review, appears once per PR.
+
+**Transient CI infrastructure failures:** CodeQL (and other GitHub-hosted
+Actions) can fail with `Service Unavailable` / `Internal Server Error`
+while resolving action download info — a GitHub-side hiccup, not a real
+finding against the diff. `rerun_failed_jobs` / `rerun_workflow_run` can
+return `403 This workflow run cannot be retried` for some run types
+(observed on a CodeQL default-setup run); an empty `git commit --allow-empty`
+push is the reliable fallback to retrigger CI in that case.
+
+**Resuming work after a PR merges:** the working branch for ongoing
+sessions is reused across PRs. Once a PR on it merges, reset it from the
+new default branch tip before starting the next change —
+`git checkout -B <branch> origin/main` — rather than stacking new commits
+on the now-merged history.
+
+**The 24/7 autonomy fleet** (`agents-daily.yml` → `agents-implement.yml` →
+`agents-autofix-ci.yml`, see `.driftguard/autonomy/README.md`) has two
+independently moving pieces worth checking separately when asked "is it
+working": finding generation (`agents-daily.yml`, Python SDK via
+`llm_router.py`) and implementation (`agents-implement.yml`,
+`claude-code-action`) use different auth paths to the same
+`ANTHROPIC_API_KEY` secret — one working is not evidence the other does.
+Check each workflow's own run history (`list_workflow_runs`), not just
+whether the fleet "runs on schedule."
