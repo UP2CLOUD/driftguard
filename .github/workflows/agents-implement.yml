@@ -105,12 +105,6 @@ jobs:
         uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # TEMPORARY: every run of this workflow has failed with a $0-cost,
-          # single-turn is_error:true immediately after SDK init — consistent
-          # with an auth/model-access error, not a real triage failure. The
-          # action hides the actual error text unless this is set. Revert
-          # once the real error is captured and the root cause is fixed.
-          show_full_output: true
           claude_args: >-
             --max-turns 60
             --allowedTools "Read,Edit,MultiEdit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(uv:*),Bash(pnpm:*),Bash(npx:*),Bash(python3:*)"

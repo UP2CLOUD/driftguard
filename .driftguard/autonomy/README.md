@@ -81,9 +81,9 @@ merge immediately. It only merges once this repo's branch protection
 required status checks pass: `ci-api`, `ci-web`, and DriftGuard's own
 review bot approval.
 
-**Two prerequisites these workflows cannot set up or verify themselves**
+**Three prerequisites these workflows cannot set up or verify themselves**
 — no tool used to build this had access to read or modify repo/branch
-settings:
+settings or billing:
 
 1. Repo settings → General → Pull Requests → **"Allow auto-merge"** must
    be enabled, or `gh pr merge --auto` fails outright (`gh` reports it
@@ -94,6 +94,22 @@ settings:
    build job, and the DriftGuard check. Without this, `gh pr merge --auto`
    could merge on the first check to go green without waiting for the
    others — verify this is configured correctly before trusting the gate.
+3. The `ANTHROPIC_API_KEY` secret's account needs an available credit
+   balance. Confirmed the hard way: `agents-implement.yml` failed on
+   **every single run** from creation through 2026-08-07 with a $0-cost,
+   single-turn `is_error:true` immediately after SDK init — with the
+   underlying error text hidden by default, this looked identical to an
+   auth or model-access problem for days. Turning on `claude-code-action`'s
+   `show_full_output: true` for one run revealed the real error:
+   `"error": "billing_error"`, `"result": "Credit balance is too low"`,
+   `"api_error_status": 400`. Check
+   https://console.anthropic.com/settings/billing for the account behind
+   this key before assuming a code-level cause. Critically,
+   `agents-daily.yml` succeeding is **not** evidence this key has credit —
+   Phase 1 routes through `llm_router.py`'s Gemini-primary chain (see
+   `apps/api/driftguard/ai/llm_router.py`), so it only ever touches
+   Anthropic on a Gemini failure. The two workflows share a secret name
+   but exercise completely different code paths to it.
 
 ### What's still deliberately not built
 
