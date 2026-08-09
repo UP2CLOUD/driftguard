@@ -108,6 +108,12 @@ jobs:
         if: steps.findings.outputs.has_findings == 'true'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # Required in headless CI: without it, Gemini CLI refuses every
+          # tool call ("Approval mode overridden to 'default' because the
+          # current folder is not trusted", exit code 55) even with
+          # --approval-mode yolo — yolo only pre-approves calls, it doesn't
+          # imply the workspace itself is trusted.
+          GEMINI_CLI_TRUST_WORKSPACE: "true"
         run: |
           cat > /tmp/gemini-prompt.txt <<'PROMPT_EOF'
             You are triaging findings from DriftGuard's own daily autonomy

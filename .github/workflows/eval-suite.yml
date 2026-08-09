@@ -28,13 +28,14 @@ jobs:
         id: key_check
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          if [ -z "$ANTHROPIC_API_KEY" ]; then
+          if [ -z "$ANTHROPIC_API_KEY" ] && [ -z "$GEMINI_API_KEY" ]; then
             echo "has_key=false" >> $GITHUB_OUTPUT
-            echo "⚠ ANTHROPIC_API_KEY secret not set — skipping evals (no cost, no failure)"
+            echo "⚠ Neither ANTHROPIC_API_KEY nor GEMINI_API_KEY secret set — skipping evals (no cost, no failure)"
           else
             echo "has_key=true" >> $GITHUB_OUTPUT
-            echo "✓ ANTHROPIC_API_KEY present — running evals"
+            echo "✓ API key present — running evals"
           fi
 
       - name: Run eval suite (costs $)
@@ -43,13 +44,18 @@ jobs:
         env:
           DRIFTGUARD_RUN_EVAL: "1"
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # ai/reviewer.py falls back to Gemini when the Anthropic call
+          # fails (e.g. billing_error) — without this, that fallback is
+          # unreachable and every eval silently degrades to the static,
+          # no-compliance-framework-names response instead.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: uv run pytest tests/eval -v --tb=short
 
       - name: Report results
         if: always()
         run: |
           if [ "${{ steps.key_check.outputs.has_key }}" == "false" ]; then
-            echo "ℹ Eval suite skipped — add ANTHROPIC_API_KEY to repository secrets to enable"
+            echo "ℹ Eval suite skipped — add ANTHROPIC_API_KEY or GEMINI_API_KEY to repository secrets to enable"
           else
             echo "✓ Eval suite completed — check logs for any quality regressions"
           fi
