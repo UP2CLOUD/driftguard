@@ -70,6 +70,12 @@ jobs:
         if: steps.key_check.outputs.has_key == 'true'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # Required in headless CI: without it, Gemini CLI refuses every
+          # tool call ("Approval mode overridden to 'default' because the
+          # current folder is not trusted", exit code 55) even with
+          # --approval-mode yolo — yolo only pre-approves calls, it doesn't
+          # imply the workspace itself is trusted.
+          GEMINI_CLI_TRUST_WORKSPACE: "true"
           REQUEST_BODY: ${{ github.event.comment.body || github.event.review.body || github.event.issue.body }}
           EVENT_NAME: ${{ github.event_name }}
           ISSUE_OR_PR_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
