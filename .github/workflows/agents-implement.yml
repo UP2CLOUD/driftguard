@@ -114,6 +114,13 @@ jobs:
           # --approval-mode yolo — yolo only pre-approves calls, it doesn't
           # imply the workspace itself is trusted.
           GEMINI_CLI_TRUST_WORKSPACE: "true"
+          # Required for the `gh pr create` / `gh pr merge --auto` calls the
+          # prompt below instructs Gemini to make — without it, `gh` has no
+          # auth and those calls fail even though the step itself reports
+          # success (confirmed live: run 31301227911 correctly triaged
+          # findings and drafted fixes, then had to revert everything
+          # because `gh pr create` had no credential).
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cat > /tmp/gemini-prompt.txt <<'PROMPT_EOF'
             You are triaging findings from DriftGuard's own daily autonomy
