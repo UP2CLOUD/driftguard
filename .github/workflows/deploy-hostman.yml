@@ -6,7 +6,7 @@ on:
       app_name:
         description: "Hostman app name, as shown in the dashboard"
         required: true
-        default: "Drifguard"
+        default: "Drifguard App"
 
 # Manual-dispatch only, same as deploy-api.yml/deploy-k8s.yml. Hostman's own
 # dashboard already auto-redeploys this app on every push to main ("Implantação
