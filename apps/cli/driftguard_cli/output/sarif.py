@@ -59,12 +59,14 @@ def to_sarif(result: ScanResult) -> dict[str, Any]:
         if f.resource:
             location["logicalLocations"] = [{"name": f.resource, "kind": "resource"}]
 
-        results.append({
-            "ruleId": rule_id,
-            "level": sarif_level,
-            "message": {"text": f.message},
-            "locations": [location],
-        })
+        results.append(
+            {
+                "ruleId": rule_id,
+                "level": sarif_level,
+                "message": {"text": f.message},
+                "locations": [location],
+            }
+        )
 
     return {
         "$schema": _SARIF_URI,
@@ -80,9 +82,7 @@ def to_sarif(result: ScanResult) -> dict[str, Any]:
                     }
                 },
                 "results": results,
-                "artifacts": [
-                    {"location": {"uri": result.directory, "uriBaseId": "%SRCROOT%"}}
-                ],
+                "artifacts": [{"location": {"uri": result.directory, "uriBaseId": "%SRCROOT%"}}],
             }
         ],
     }

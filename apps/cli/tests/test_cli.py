@@ -116,21 +116,27 @@ class TestScanCommand:
         assert result.exit_code == 2
 
     def test_tf_finding_detected(self, tmp_path):
-        write_tf(tmp_path, """
+        write_tf(
+            tmp_path,
+            """
             resource "aws_s3_bucket" "logs" {
               force_destroy = true
             }
-        """)
+        """,
+        )
         result = runner.invoke(app, ["scan", str(tmp_path)])
         assert result.exit_code == 0
         assert "TF003" in strip_ansi(result.output)
 
     def test_json_output(self, tmp_path):
-        write_tf(tmp_path, """
+        write_tf(
+            tmp_path,
+            """
             resource "aws_s3_bucket" "logs" {
               force_destroy = true
             }
-        """)
+        """,
+        )
         result = runner.invoke(app, ["scan", str(tmp_path), "-o", "json"])
         assert result.exit_code == 0
         data = json.loads(result.output)
@@ -139,11 +145,14 @@ class TestScanCommand:
         assert "TF003" in rule_ids
 
     def test_sarif_output_structure(self, tmp_path):
-        write_tf(tmp_path, """
+        write_tf(
+            tmp_path,
+            """
             resource "aws_s3_bucket" "logs" {
               force_destroy = true
             }
-        """)
+        """,
+        )
         result = runner.invoke(app, ["scan", str(tmp_path), "-o", "sarif"])
         assert result.exit_code == 0
         sarif = json.loads(result.output)
@@ -152,39 +161,50 @@ class TestScanCommand:
         assert sarif["runs"][0]["tool"]["driver"]["name"] == "DriftGuard"
 
     def test_fail_on_exits_1_when_finding(self, tmp_path):
-        write_tf(tmp_path, """
+        write_tf(
+            tmp_path,
+            """
             resource "aws_s3_bucket" "logs" {
               force_destroy = true
             }
-        """)
+        """,
+        )
         result = runner.invoke(app, ["scan", str(tmp_path), "--fail-on", "high"])
         assert result.exit_code == 1
 
     def test_fail_on_exits_0_when_below_threshold(self, tmp_path):
-        write_tf(tmp_path, """
+        write_tf(
+            tmp_path,
+            """
             resource "aws_lambda_function" "worker" {
               function_name = "worker"
               runtime       = "python3.12"
             }
-        """)
+        """,
+        )
         # TF011 is LOW — should not trigger --fail-on high
         result = runner.invoke(app, ["scan", str(tmp_path), "--fail-on", "high"])
         assert result.exit_code == 0
 
     def test_min_severity_filters_low(self, tmp_path):
-        write_tf(tmp_path, """
+        write_tf(
+            tmp_path,
+            """
             resource "aws_lambda_function" "worker" {
               function_name = "worker"
               runtime       = "python3.12"
             }
-        """)
+        """,
+        )
         # TF011 is LOW — filtered out when min-severity is high
         result = runner.invoke(app, ["scan", str(tmp_path), "--min-severity", "high"])
         assert result.exit_code == 0
         assert "TF011" not in strip_ansi(result.output)
 
     def test_k8s_finding_detected(self, tmp_path):
-        write_k8s(tmp_path, """
+        write_k8s(
+            tmp_path,
+            """
             apiVersion: apps/v1
             kind: Deployment
             metadata:
@@ -195,30 +215,37 @@ class TestScanCommand:
                   containers:
                     - name: app
                       image: app:latest
-        """)
+        """,
+        )
         result = runner.invoke(app, ["scan", str(tmp_path)])
         assert result.exit_code == 0
         assert "K8S006" in strip_ansi(result.output)
 
     def test_gha_finding_detected(self, tmp_path):
-        write_gha(tmp_path, """
+        write_gha(
+            tmp_path,
+            """
             on: push
             jobs:
               build:
                 runs-on: ubuntu-latest
                 steps:
                   - uses: actions/checkout@main
-        """)
+        """,
+        )
         result = runner.invoke(app, ["scan", str(tmp_path)])
         assert result.exit_code == 0
         assert "GHA001" in strip_ansi(result.output)
 
     def test_verbose_shows_suggestion(self, tmp_path):
-        write_tf(tmp_path, """
+        write_tf(
+            tmp_path,
+            """
             resource "aws_db_instance" "prod" {
               engine = "postgres"
             }
-        """)
+        """,
+        )
         result = runner.invoke(app, ["scan", str(tmp_path), "-v"])
         assert result.exit_code == 0
         assert "Fix:" in strip_ansi(result.output)
@@ -244,20 +271,26 @@ class TestCheckCommand:
         assert "Safe to merge" in strip_ansi(result.output)
 
     def test_high_finding_exits_1(self, tmp_path):
-        write_tf(tmp_path, """
+        write_tf(
+            tmp_path,
+            """
             resource "aws_s3_bucket" "logs" {
               force_destroy = true
             }
-        """)
+        """,
+        )
         result = runner.invoke(app, ["check", str(tmp_path)])
         assert result.exit_code == 1
 
     def test_severity_critical_only_passes_high(self, tmp_path):
-        write_tf(tmp_path, """
+        write_tf(
+            tmp_path,
+            """
             resource "aws_s3_bucket" "logs" {
               force_destroy = true
             }
-        """)
+        """,
+        )
         # TF003 is HIGH, threshold is critical — should pass
         result = runner.invoke(app, ["check", str(tmp_path), "--severity", "critical"])
         assert result.exit_code == 0

@@ -130,11 +130,7 @@ async def scan_directory(root: Path) -> ScanResult:
                 k8s_files.append(full)
 
     gha_dir = root / ".github" / "workflows"
-    gha_files = (
-        list(gha_dir.glob("*.yml")) + list(gha_dir.glob("*.yaml"))
-        if gha_dir.exists()
-        else []
-    )
+    gha_files = list(gha_dir.glob("*.yml")) + list(gha_dir.glob("*.yaml")) if gha_dir.exists() else []
 
     result.tf_files = len(tf_files)
     result.k8s_files = len(k8s_files)
