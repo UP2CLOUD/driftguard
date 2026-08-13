@@ -19,6 +19,7 @@ import { EvidenceLab } from "@/components/marketing/EvidenceLab";
 import { BriefingSection } from "@/components/marketing/BriefingForm";
 import { PricingTeaser } from "@/components/marketing/PricingTeaser";
 import { Reveal } from "@/components/marketing/Reveal";
+import { StickyMobileCTA } from "@/components/marketing/StickyMobileCTA";
 
 const FAQ_KEYS = ["q1", "q2", "q3", "q4"] as const;
 
@@ -139,6 +140,7 @@ export default async function Page() {
         </main>
 
         <MarketingFooter />
+        <StickyMobileCTA />
       </>
     </TranslationProvider>
   );
