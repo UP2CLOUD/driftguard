@@ -195,7 +195,10 @@
     "title": "加入等候名单",
     "subtitle": "抢先体验 DriftGuard — 面向 Terraform 代理的 AI 运行时安全。",
     "note": "不发垃圾邮件，随时可取消订阅。",
-    "eyebrow": "抢先体验"
+    "eyebrow": "抢先体验",
+    "errorTooMany": "尝试次数过多，请一分钟后再试。",
+    "errorGeneric": "出了点问题，请重试。",
+    "errorNetwork": "网络错误，请检查连接后重试。"
   },
   "footer": {
     "privacy": "隐私",

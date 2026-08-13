@@ -225,7 +225,10 @@
     "title": "Entre na lista de espera",
     "subtitle": "Acesso antecipado ao DriftGuard — segurança em tempo de execução com IA para agentes Terraform.",
     "note": "Sem spam. Cancele quando quiser.",
-    "eyebrow": "Acesso antecipado"
+    "eyebrow": "Acesso antecipado",
+    "errorTooMany": "Muitas tentativas. Tente novamente em um minuto.",
+    "errorGeneric": "Algo deu errado. Tente novamente.",
+    "errorNetwork": "Erro de rede. Verifique sua conexão e tente novamente."
   },
   "footer": {
     "privacy": "Privacidade",

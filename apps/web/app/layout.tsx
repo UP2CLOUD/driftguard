@@ -96,10 +96,14 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     },
     icons: {
-      icon:     [{ url: "/icon.svg", type: "image/svg+xml" }],
-      shortcut: "/icon.svg",
-      apple:    "/icon.svg",
+      icon: [
+        { url: "/icon.svg", type: "image/svg+xml" },
+        { url: "/favicon.ico", sizes: "16x16 32x32 48x48", type: "image/x-icon" },
+      ],
+      shortcut: "/favicon.ico",
+      apple:    "/apple-touch-icon.png",
     },
+    manifest: "/manifest.json",
     alternates: hreflangAlternates("/"),
     verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
       ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }

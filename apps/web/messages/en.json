@@ -195,7 +195,10 @@
     "title": "Join the waitlist",
     "subtitle": "Get early access to DriftGuard — AI runtime safety for Terraform agents.",
     "note": "No spam. Unsubscribe at any time.",
-    "eyebrow": "Early access"
+    "eyebrow": "Early access",
+    "errorTooMany": "Too many attempts. Try again in a minute.",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "errorNetwork": "Network error. Check your connection and try again."
   },
   "common": {
     "privacy": "Privacy",
