@@ -266,6 +266,70 @@ def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
                     )
                 )
 
+        # TF017: public access block present but disabled
+        # TF002 only fires when the block resource is absent entirely, so a
+        # bucket that HAS an aws_s3_bucket_public_access_block with the
+        # guards flipped to false silently passed -- the exact configuration
+        # behind most real S3 exposure incidents.
+        if res_type == "aws_s3_bucket_public_access_block":
+            disabled = [
+                attr
+                for attr in (
+                    "block_public_acls",
+                    "block_public_policy",
+                    "ignore_public_acls",
+                    "restrict_public_buckets",
+                )
+                if (_attr_value(body, attr) or "").lower() == "false"
+            ]
+            if disabled:
+                findings.append(
+                    ScanFinding(
+                        rule_id="TF017",
+                        severity=Severity.HIGH,
+                        category=Category.STORAGE,
+                        title="S3 public access block has guards disabled",
+                        message=(
+                            f"{res_type}.{res_name} sets {', '.join(disabled)} = false, "
+                            "which re-opens public access the block is meant to prevent."
+                        ),
+                        file=rel_path,
+                        line=start_line,
+                        resource=f"{res_type}.{res_name}",
+                        suggestion=(
+                            "Set block_public_acls, block_public_policy, ignore_public_acls "
+                            "and restrict_public_buckets all to true"
+                        ),
+                        controls=["public_exposure", "data_protection"],
+                    )
+                )
+
+        # TF016: RDS storage not encrypted at rest
+        # storage_encrypted defaults to false on aws_db_instance, so an
+        # unset attribute is a real finding, not just a style nit --
+        # encryption at rest is an explicit control in SOC 2, PCI-DSS,
+        # HIPAA and DORA.
+        if res_type in ("aws_db_instance", "aws_rds_cluster", "aws_rds_cluster_instance"):
+            val = _attr_value(body, "storage_encrypted")
+            if val not in ("true", "True"):
+                findings.append(
+                    ScanFinding(
+                        rule_id="TF016",
+                        severity=Severity.HIGH,
+                        category=Category.ENCRYPTION,
+                        title="RDS storage not encrypted at rest",
+                        message=(
+                            f"{res_type}.{res_name} does not set storage_encrypted = true; "
+                            "database storage is unencrypted at rest."
+                        ),
+                        file=rel_path,
+                        line=start_line,
+                        resource=f"{res_type}.{res_name}",
+                        suggestion="Add storage_encrypted = true (and kms_key_id for a customer-managed key)",
+                        controls=["encryption_at_rest", "data_protection"],
+                    )
+                )
+
         # TF014: RDS publicly accessible
         if res_type in ("aws_db_instance", "aws_rds_instance"):
             val = _attr_value(body, "publicly_accessible")

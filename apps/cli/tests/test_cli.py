@@ -420,3 +420,82 @@ class TestAnalyzeCommand:
         plan_file.write_text(json.dumps(_PLAN_CREATE))
         result = runner.invoke(app, ["analyze", str(plan_file), "-o", "sarif"])
         assert result.exit_code == 2
+
+
+class TestEncryptionAndPublicAccessRules:
+    """TF016 / TF017 — gaps found by scanning a deliberately insecure fixture.
+
+    TF016: RDS storage_encrypted defaults to false, so an unset attribute is a
+    real unencrypted-at-rest finding (SOC 2 / PCI-DSS / HIPAA / DORA control),
+    but only EBS encryption was covered before.
+
+    TF017: TF002 fires only when aws_s3_bucket_public_access_block is absent
+    entirely, so a block that exists with its guards flipped to false passed
+    silently -- the configuration behind most real S3 exposure incidents.
+    """
+
+    def test_tf016_flags_unencrypted_rds(self, tmp_path):
+        write_tf(
+            tmp_path,
+            """
+            resource "aws_db_instance" "postgres" {
+              engine            = "postgres"
+              storage_encrypted = false
+            }
+        """,
+        )
+        result = runner.invoke(app, ["scan", str(tmp_path)])
+        assert "TF016" in strip_ansi(result.output)
+
+    def test_tf016_flags_rds_with_attribute_absent(self, tmp_path):
+        # storage_encrypted defaults to false in AWS, so omitting it is a finding
+        write_tf(
+            tmp_path,
+            """
+            resource "aws_db_instance" "postgres" {
+              engine = "postgres"
+            }
+        """,
+        )
+        assert "TF016" in strip_ansi(runner.invoke(app, ["scan", str(tmp_path)]).output)
+
+    def test_tf016_silent_when_encrypted(self, tmp_path):
+        write_tf(
+            tmp_path,
+            """
+            resource "aws_db_instance" "postgres" {
+              engine            = "postgres"
+              storage_encrypted = true
+            }
+        """,
+        )
+        assert "TF016" not in strip_ansi(runner.invoke(app, ["scan", str(tmp_path)]).output)
+
+    def test_tf017_flags_disabled_public_access_guard(self, tmp_path):
+        write_tf(
+            tmp_path,
+            """
+            resource "aws_s3_bucket_public_access_block" "pab" {
+              bucket              = "b"
+              block_public_acls   = false
+              block_public_policy = true
+            }
+        """,
+        )
+        out = strip_ansi(runner.invoke(app, ["scan", str(tmp_path)]).output)
+        assert "TF017" in out
+
+    def test_tf017_silent_when_all_guards_enabled(self, tmp_path):
+        write_tf(
+            tmp_path,
+            """
+            resource "aws_s3_bucket_public_access_block" "pab" {
+              bucket                  = "b"
+              block_public_acls       = true
+              block_public_policy     = true
+              ignore_public_acls      = true
+              restrict_public_buckets = true
+            }
+        """,
+        )
+        assert "TF017" not in strip_ansi(runner.invoke(app, ["scan", str(tmp_path)]).output)

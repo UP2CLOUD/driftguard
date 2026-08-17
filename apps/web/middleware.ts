@@ -53,7 +53,12 @@ function hreflangLinkHeader(url: string): string {
 
 export default auth((req: NextRequest & { auth: unknown }) => {
   const { pathname } = req.nextUrl;
-  const isLoggedIn   = !!(req as any).auth;
+  // Must be `auth?.user`, not `auth`: NextAuth populates req.auth with a
+  // session-shaped object even when nobody is signed in, so `!!req.auth` is
+  // true for anonymous requests and the /dashboard guard below never fires.
+  // auth.config.ts's own `authorized` callback already gets this right
+  // (`!!auth?.user`) -- this line had drifted from it.
+  const isLoggedIn   = !!(req as any).auth?.user;
   const isDashboard  = pathname.startsWith("/dashboard");
   const isApiRoute   = pathname.startsWith("/api/");
 
