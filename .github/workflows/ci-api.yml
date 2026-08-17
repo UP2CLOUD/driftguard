@@ -20,7 +20,13 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16-alpine
+        # Must match docker-compose.yml: migration 002 runs
+        # `CREATE EXTENSION IF NOT EXISTS vector`, which plain
+        # postgres:16-alpine cannot satisfy ("extension \"vector\" is not
+        # available"). The unit tests mock the database and never run
+        # migrations, so this mismatch stayed invisible until the boot
+        # smoke test below started applying them for real.
+        image: pgvector/pgvector:pg16
         env:
           POSTGRES_USER: driftguard
           POSTGRES_PASSWORD: driftguard
