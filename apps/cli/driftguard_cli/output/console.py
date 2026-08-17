@@ -36,10 +36,12 @@ def _sev_badge(sev: str) -> Text:
 
 def print_scan_result(result: ScanResult, path: str, verbose: bool = False) -> None:
     if not result.findings:
-        console.print(Panel(
-            f"[bold green]✓ No findings in {path}[/bold green]",
-            border_style="green",
-        ))
+        console.print(
+            Panel(
+                f"[bold green]✓ No findings in {path}[/bold green]",
+                border_style="green",
+            )
+        )
         return
 
     table = Table(
@@ -91,9 +93,12 @@ def print_scan_result(result: ScanResult, path: str, verbose: bool = False) -> N
 
 def _print_scan_summary(result: ScanResult) -> None:
     score_colour = (
-        "bold red" if result.risk_score >= 80
-        else "red" if result.risk_score >= 60
-        else "yellow" if result.risk_score >= 30
+        "bold red"
+        if result.risk_score >= 80
+        else "red"
+        if result.risk_score >= 60
+        else "yellow"
+        if result.risk_score >= 30
         else "green"
     )
     parts = []

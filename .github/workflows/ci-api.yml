@@ -20,7 +20,13 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16-alpine
+        # Must match docker-compose.yml: migration 002 runs
+        # `CREATE EXTENSION IF NOT EXISTS vector`, which plain
+        # postgres:16-alpine cannot satisfy ("extension \"vector\" is not
+        # available"). The unit tests mock the database and never run
+        # migrations, so this mismatch stayed invisible until the boot
+        # smoke test below started applying them for real.
+        image: pgvector/pgvector:pg16
         env:
           POSTGRES_USER: driftguard
           POSTGRES_PASSWORD: driftguard
@@ -62,6 +68,19 @@ jobs:
           SECRET_KEY: ci
           ENVIRONMENT: ci
         run: uv run pytest -v --ignore=tests/eval
+
+      # The suite above overrides get_db and never binds a socket, so it
+      # cannot catch a crash that happens at import time or during startup.
+      # A CORS_ORIGINS value that was valid in docker-compose.yml but invalid
+      # to pydantic-settings took production down exactly that way: every
+      # test passed and the container still died ~1s after start. This step
+      # boots the app with the real compose environment and curls the same
+      # endpoint the Dockerfile HEALTHCHECK uses.
+      - name: Smoke — boot API with real docker-compose env
+        run: ./scripts/smoke-boot-api.sh
+        env:
+          SMOKE_DATABASE_URL: postgresql+asyncpg://driftguard:driftguard@localhost:5432/driftguard
+          SMOKE_REDIS_URL: redis://localhost:6379/0
 
   checkov-api:
     runs-on: ubuntu-latest

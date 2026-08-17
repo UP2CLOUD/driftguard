@@ -1,5 +1,8 @@
-from pydantic import model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+import json
+from typing import Annotated
+
+from pydantic import field_validator, model_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -101,12 +104,35 @@ class Settings(BaseSettings):
     public_base_url: str = "http://localhost:3000"
     slack_webhook_url: str = ""
 
-    cors_origins: list[str] = [
+    cors_origins: Annotated[list[str], NoDecode] = [
         "http://localhost:3000",
         "http://localhost:3002",
         "https://driftguard-blue.vercel.app",
         "https://driftguard.io",
     ]
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def _split_comma_separated(cls, v: object) -> object:
+        # pydantic-settings JSON-decodes list-typed env vars by default, but
+        # docker-compose.yml's CORS_ORIGINS (and any dashboard-style "comma
+        # separated list" input, e.g. Hostman/Render/Railway env var UIs) is
+        # a plain comma-separated string, not a JSON array -- that mismatch
+        # crashes Settings() at import time before the app ever starts (see
+        # the incident this fixes: every service imports this module, so a
+        # non-JSON CORS_ORIGINS took down the whole container instantly).
+        # NoDecode above is required for this validator to even see the raw
+        # string -- without it, pydantic-settings JSON-decodes list-typed
+        # env vars BEFORE any field_validator runs, so the crash happens one
+        # layer beneath where a plain "mode=before" validator could catch it.
+        # That also means WE now own JSON decoding for the array-string case,
+        # since NoDecode opts out of pydantic-settings doing it for us.
+        if isinstance(v, str):
+            stripped = v.strip()
+            if stripped.startswith("["):
+                return json.loads(stripped)
+            return [origin.strip() for origin in stripped.split(",") if origin.strip()]
+        return v
 
     @property
     def celery_broker_url(self) -> str:

@@ -168,9 +168,7 @@ def _score(summary: PlanSummary) -> None:
         # Blast-radius multiplier: sensitive attribute changes
         if ch.action == ChangeAction.UPDATE and ch.before and ch.after:
             changed = {
-                k
-                for k in ch.before
-                if k in ch.after and ch.before.get(k) != ch.after.get(k) and k in _HIGH_BLAST_ATTRS
+                k for k in ch.before if k in ch.after and ch.before.get(k) != ch.after.get(k) and k in _HIGH_BLAST_ATTRS
             }
             if changed:
                 w = min(100, int(w * 1.5))
