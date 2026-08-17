@@ -221,7 +221,10 @@ async def get_task_status(
         return {"state": "unknown", "error": str(exc)[:120]}
 
     if state == "SUCCESS":
-        task_result = result.result or {}
+        # Celery's .result is typed loosely enough to include BaseException;
+        # only treat it as a payload when it really is a mapping.
+        raw = result.result
+        task_result: dict = raw if isinstance(raw, dict) else {}
         return {
             "state": "completed",
             "analysis_id": task_result.get("analysis_id"),

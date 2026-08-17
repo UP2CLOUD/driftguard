@@ -7,12 +7,20 @@ Flow:
   → upload plan to R2 → return {analysis_id, status, findings, ...}
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import time
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
+
+    from driftguard.services.finops.engine import FinOpsResult
 
 from driftguard.ai.findings import (
     Finding,
@@ -223,12 +231,19 @@ async def _get_aws_env(settings: dict) -> dict[str, str] | None:
     try:
         from driftguard.integrations.aws import assume_role
 
-        creds = await asyncio.to_thread(assume_role, role_arn, settings.get("aws_external_id"))
-        return {
-            "AWS_ACCESS_KEY_ID": creds["AccessKeyId"],
-            "AWS_SECRET_ACCESS_KEY": creds["SecretAccessKey"],
-            "AWS_SESSION_TOKEN": creds["SessionToken"],
-        }
+        # Two bugs lived on these lines, both hidden by the bare `except`
+        # below, which logged "sts_assume_role_failed" and returned None --
+        # so cross-account AWS scanning silently never worked and the log
+        # blamed STS:
+        #   1. the external ID was passed positionally into `region`;
+        #   2. AWSCredentials is an object, not a dict, so subscripting it
+        #      raised TypeError before any credential was ever read.
+        creds = await asyncio.to_thread(
+            assume_role,
+            role_arn,
+            external_id=settings.get("aws_external_id"),
+        )
+        return creds.as_env()
     except Exception as exc:
         log.warning("sts_assume_role_failed", role_arn=role_arn, error=str(exc))
         return None
@@ -366,7 +381,7 @@ async def _persist_analysis(
         return str(uuid.uuid4())
 
 
-def _compute_risk(findings: list[Finding], plan: "TerraformPlan | None" = None) -> int:
+def _compute_risk(findings: list[Finding], plan: TerraformPlan | None = None) -> int:
     """
     Compute risk score.
     When a parsed TerraformPlan is available, uses the deterministic plan-level scorer.
@@ -534,7 +549,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
 
     # FinOps cost analysis — non-blocking, best-effort
     try:
-        from driftguard.services.finops.engine import FinOpsResult, run_finops_analysis
+        from driftguard.services.finops.engine import run_finops_analysis
         from driftguard.services.finops.github.comment import render_comment as render_finops_comment
 
         _finops_result: FinOpsResult = run_finops_analysis(_tf_file_contents)
@@ -938,7 +953,11 @@ async def _analyze_all_dirs(
     findings: list[Finding] = []
     plan_bytes: bytes | None = None
     for r in results:
-        if isinstance(r, Exception):
+        # BaseException, not Exception: gather(return_exceptions=True) can
+        # hand back asyncio.CancelledError, which is a BaseException. Under
+        # the narrower check a cancelled directory analysis fell through to
+        # the success branch and blew up unpacking a non-tuple.
+        if isinstance(r, BaseException):
             log.warning("dir_analysis_error", error=str(r))
         else:
             f, pb = r
@@ -1034,12 +1053,15 @@ def _safe_checkov(path: Path) -> list[dict] | None:
 
 
 async def _persist_finops_review(
-    db: "SessionLocal",  # type: ignore[type-arg]
+    # `SessionLocal` is a sessionmaker instance, not a type -- annotating
+    # with it silently degraded every `db.` call to an untyped attribute.
+    # `result: object` did the same to every field read below.
+    db: AsyncSession,
     analysis_id: str,
     installation_id: int,
     repo_full_name: str,
     pr_number: int,
-    result: object,
+    result: FinOpsResult,
 ) -> str | None:
     """Persist a FinOpsReview and its per-resource rows. Returns the review id."""
     from driftguard.db.models import FinOpsResourceCost, FinOpsReview

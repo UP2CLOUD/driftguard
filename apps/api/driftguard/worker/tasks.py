@@ -185,11 +185,12 @@ async def _send_policy_violation_async(
         if not repo:
             return
         org = await session.get(Organization, repo.org_id)
-        if not org or not getattr(org, "contact_email", None):
+        contact_email = org.contact_email if org else None
+        if not contact_email:
             return
 
         await send_policy_violation(
-            to=org.contact_email,
+            to=contact_email,
             repo=repo_full_name,
             pr_number=pr_number,
             resource=resource,
@@ -219,7 +220,8 @@ async def _send_notification_async(analysis_id: str, repo_full_name: str, pr_num
 
         # Get org owner email
         org = await session.get(Organization, repo.org_id)
-        if not org or not getattr(org, "contact_email", None):
+        contact_email = org.contact_email if org else None
+        if not contact_email:
             return
 
         findings_count = (
@@ -227,7 +229,7 @@ async def _send_notification_async(analysis_id: str, repo_full_name: str, pr_num
         ).scalar_one()
 
         await send_review_complete(
-            to=org.contact_email,
+            to=contact_email,
             repo=repo_full_name,
             pr_number=pr_number,
             risk_score=analysis.risk_score,

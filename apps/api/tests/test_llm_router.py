@@ -10,7 +10,10 @@ from anthropic import APITimeoutError
 
 def _claude_response(text: str = "Claude fallback response.", input_tokens: int = 100, output_tokens: int = 50):
     resp = MagicMock()
-    resp.content = [MagicMock(text=text)]
+    # Real Anthropic TextBlocks carry type="text"; the response content list
+    # is a union and only text blocks expose `.text`. Setting it here keeps
+    # the fake faithful to the SDK the code actually narrows against.
+    resp.content = [MagicMock(type="text", text=text)]
     resp.usage = MagicMock(input_tokens=input_tokens, output_tokens=output_tokens)
     return resp
 

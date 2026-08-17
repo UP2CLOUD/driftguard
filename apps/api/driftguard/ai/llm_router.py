@@ -19,6 +19,7 @@ import structlog
 from anthropic import AsyncAnthropic
 from openai import AsyncOpenAI
 
+from driftguard.ai.blocks import text_from_blocks
 from driftguard.core.config import settings
 
 log = structlog.get_logger(__name__)
@@ -95,7 +96,7 @@ async def _claude_fallback(*, system: str, user: str, max_tokens: int, tag: str)
         system=system,
         messages=[{"role": "user", "content": user}],
     )
-    text = response.content[0].text
+    text = text_from_blocks(response.content)
     log.info("llm.claude.ok", tag=tag, tokens=response.usage.output_tokens)
     _track_usage("claude", response.usage.input_tokens, response.usage.output_tokens)
     return text

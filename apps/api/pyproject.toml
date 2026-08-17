@@ -50,6 +50,7 @@ dev = [
     "pytest-asyncio>=0.24.0",
     "ruff>=0.7.0",
     "mypy>=1.13.0",
+    "types-PyYAML>=6.0",
     "aiosqlite>=0.20.0",
 ]
 
@@ -67,6 +68,22 @@ ignore = ["S101", "S104", "B008"]
 "driftguard/autonomy/context.py" = ["S603", "S607"]
 "driftguard/core/config.py" = ["S105"]
 "driftguard/services/email.py" = ["E501"]   # HTML strings in f-strings can't wrap
+
+[tool.mypy]
+python_version = "3.12"
+# Deliberately not --strict: this codebase was written untyped-first, and a
+# blanket strict flag would bury real findings under thousands of missing
+# annotations. These settings catch the class of bug that actually bites
+# (attribute access on None, wrong argument types) without that noise.
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+# Third-party packages that genuinely ship no type information. Scoped per
+# module rather than a global ignore_missing_imports, so a future dependency
+# without stubs shows up as a new error instead of being silently swallowed.
+[[tool.mypy.overrides]]
+module = ["boto3.*", "botocore.*", "hcl2.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

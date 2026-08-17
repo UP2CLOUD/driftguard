@@ -12,6 +12,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
+from driftguard.ai.blocks import text_from_blocks
 from driftguard.core.config import settings
 from driftguard.services.scanner.engine import ScanResult, Severity
 
@@ -152,7 +153,7 @@ async def run_ai_review(
             system=_SYSTEM,
             messages=[{"role": "user", "content": prompt}],
         )
-        narrative = response.content[0].text if response.content else ""
+        narrative = text_from_blocks(response.content)
         return AIReview(
             narrative=narrative,
             model=response.model,
