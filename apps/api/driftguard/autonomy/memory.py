@@ -9,10 +9,11 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 from driftguard.autonomy.schemas import AgentFinding
 
-_EMPTY_MEMORY = {"rejected": [], "history": {}}
+_EMPTY_MEMORY: dict[str, Any] = {"rejected": [], "history": {}}
 
 
 def default_memory_path(repo_root: Path) -> Path:

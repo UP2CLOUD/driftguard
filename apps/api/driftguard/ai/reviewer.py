@@ -2,6 +2,7 @@ import json
 
 from anthropic import AsyncAnthropic
 
+from driftguard.ai.blocks import text_from_blocks
 from driftguard.ai.findings import Finding
 from driftguard.compliance import control_summary
 from driftguard.core.config import settings
@@ -109,8 +110,7 @@ async def review(findings: list[Finding], pr_context: dict) -> str:
                 system=SYSTEM_PROMPT,
                 messages=[{"role": "user", "content": prompt}],
             )
-            parts = [b.text for b in msg.content if getattr(b, "type", None) == "text"]
-            return "\n".join(parts)
+            return text_from_blocks(msg.content)
         except Exception as exc:
             import logging
 
@@ -119,8 +119,8 @@ async def review(findings: list[Finding], pr_context: dict) -> str:
     # 2. Gemini fallback
     if settings.gemini_api_key:
         try:
-            from google import genai  # type: ignore
-            from google.genai import types  # type: ignore
+            from google import genai
+            from google.genai import types
 
             gemini_client = genai.Client(api_key=settings.gemini_api_key)
             resp = await gemini_client.aio.models.generate_content(

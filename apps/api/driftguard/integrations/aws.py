@@ -18,20 +18,33 @@ class AWSCredentials:
         }
 
 
-def assume_role(role_arn: str, region: str = "eu-west-1", session_name: str = "driftguard") -> AWSCredentials:
+def assume_role(
+    role_arn: str,
+    region: str = "eu-west-1",
+    session_name: str = "driftguard",
+    external_id: str | None = None,
+) -> AWSCredentials:
     """Assume a customer IAM role and return temporary credentials.
 
     Customer must create this role with:
     - Trust policy allowing sts:AssumeRole from Driftguard's AWS account
     - ReadOnlyAccess + sts:GetCallerIdentity permissions
+
+    `external_id` guards against the confused-deputy problem when the trust
+    policy requires it. The worker always had a configured external ID but
+    no parameter to pass it through, so it was being handed to `region`
+    positionally instead -- see the call site in workers/analyzer.py.
     """
     try:
         sts = boto3.client("sts", region_name=region)
-        resp = sts.assume_role(
-            RoleArn=role_arn,
-            RoleSessionName=session_name,
-            DurationSeconds=3600,
-        )
+        params: dict[str, object] = {
+            "RoleArn": role_arn,
+            "RoleSessionName": session_name,
+            "DurationSeconds": 3600,
+        }
+        if external_id:
+            params["ExternalId"] = external_id
+        resp = sts.assume_role(**params)
         creds = resp["Credentials"]
         return AWSCredentials(
             access_key=creds["AccessKeyId"],

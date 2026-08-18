@@ -123,7 +123,7 @@ async def _send(*, to: str, subject: str, html: str) -> None:
         import resend
 
         resend.api_key = settings.resend_api_key
-        payload = {
+        payload: resend.Emails.SendParams = {
             "from": settings.resend_from,
             "to": [to],
             "subject": subject,

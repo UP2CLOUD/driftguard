@@ -60,6 +60,13 @@ jobs:
         working-directory: apps/api
         run: uv run ruff format --check .
 
+      # Gated now that the codebase type-checks clean (was 106 errors).
+      # Keeping it green is far cheaper than paying that debt down twice --
+      # several of those errors turned out to be live bugs, not noise.
+      - name: Type check (mypy)
+        working-directory: apps/api
+        run: uv run mypy driftguard
+
       - name: Test (unit only, exclude eval)
         working-directory: apps/api
         env:

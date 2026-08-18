@@ -8,12 +8,20 @@ class DriftAnalyzer:
     """Detect drift between terraform plan and remote state."""
 
     @staticmethod
-    def from_plan_json(plan: dict) -> list[dict]:
-        """Extract resource addresses from plan for comparison."""
-        planned = set()
+    def from_plan_json(plan: dict) -> list[str]:
+        """Extract resource addresses from plan for comparison.
+
+        Was annotated `list[dict]`, but it has always returned address
+        strings -- which made the `set[str]` that detect_drift expects look
+        like a type error at the call site. A missing "address" also used to
+        put None into the set, so it is filtered here.
+        """
+        planned: set[str] = set()
         for rc in plan.get("resource_changes", []):
             if rc.get("change", {}).get("actions") != ["no-op"]:
-                planned.add(rc.get("address"))
+                address = rc.get("address")
+                if address:
+                    planned.add(address)
         return list(planned)
 
     @staticmethod

@@ -18,7 +18,7 @@ import tempfile
 import time
 from datetime import UTC
 from pathlib import Path
-from typing import Literal
+from typing import Literal, cast
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from pydantic import BaseModel
@@ -170,7 +170,7 @@ async def scan_upload(
         class _FallbackReview:
             narrative = "_AI review unavailable._"
 
-        ai_review = _FallbackReview()
+        ai_review = _FallbackReview()  # type: ignore[assignment]
 
     duration_ms = int((time.monotonic() - started) * 1000)
 
@@ -221,7 +221,10 @@ async def get_task_status(
         return {"state": "unknown", "error": str(exc)[:120]}
 
     if state == "SUCCESS":
-        task_result = result.result or {}
+        # Celery's .result is typed loosely enough to include BaseException;
+        # only treat it as a payload when it really is a mapping.
+        raw = result.result
+        task_result: dict = raw if isinstance(raw, dict) else {}
         return {
             "state": "completed",
             "analysis_id": task_result.get("analysis_id"),
@@ -441,7 +444,10 @@ async def get_scan(
 
     return ScanResultOut(
         scan_id=analysis.id,
-        status=analysis.status,
+        status=cast(
+            Literal["completed", "failed", "empty"],
+            analysis.status if analysis.status in ("completed", "failed", "empty") else "failed",
+        ),
         risk_score=analysis.risk_score or 0,
         files_scanned=analysis.files_scanned or 0,
         tf_files=analysis.tf_files or 0,

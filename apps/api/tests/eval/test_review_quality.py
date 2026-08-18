@@ -19,15 +19,20 @@ from pathlib import Path
 import pytest
 
 from driftguard.ai.findings import Finding
-from driftguard.ai.reviewer import review
+from driftguard.ai.reviewer import _static_fallback, review
 
 CASES_DIR = Path(__file__).parent / "cases"
 RUN_EVAL = os.getenv("DRIFTGUARD_RUN_EVAL") == "1"
-HAS_API_KEY = bool(os.getenv("ANTHROPIC_API_KEY", "").strip())
+# review() tries Anthropic, then Gemini, then a deterministic static
+# fallback. Gating on ANTHROPIC_API_KEY alone meant that with only
+# GEMINI_API_KEY configured -- the current setup, since Gemini is primary --
+# eval-suite.yml's gate passed and reported "✓ Eval suite completed" while
+# every test in this module silently skipped.
+HAS_API_KEY = bool(os.getenv("ANTHROPIC_API_KEY", "").strip() or os.getenv("GEMINI_API_KEY", "").strip())
 
 pytestmark = pytest.mark.skipif(
     not RUN_EVAL or not HAS_API_KEY,
-    reason="eval suite disabled — set DRIFTGUARD_RUN_EVAL=1 and ANTHROPIC_API_KEY",
+    reason="eval suite disabled — set DRIFTGUARD_RUN_EVAL=1 and ANTHROPIC_API_KEY or GEMINI_API_KEY",
 )
 
 
@@ -64,6 +69,18 @@ async def test_review_invariants(case: dict):
 
     md = await review(findings, pr_ctx)
     md_norm = md.lower()
+
+    # If every provider failed, review() returns the deterministic static
+    # summary. Asserting quality expectations against it produces confusing
+    # "missing required phrase" failures that read as model regressions --
+    # this is how a billing outage once looked like a quality problem. Fail
+    # with the real cause instead.
+    if md == _static_fallback(findings):
+        pytest.fail(
+            "review() fell back to the deterministic static summary — every LLM "
+            "provider failed (bad/expired key, billing, or network). This is an "
+            "availability failure, not a review-quality regression."
+        )
 
     assert md and "##" in md, f"output not markdown: {md!r}"
 

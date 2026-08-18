@@ -5,6 +5,11 @@ const OPERATOR = 'UP2CLOUD Unipessoal Lda. ("UP2CLOUD", "nós" ou "nosso"), oper
 const CONTACT_PRIVACY = "privacy@driftguard.io";
 const CONTACT_LEGAL = "legal@driftguard.io";
 
+// Mesma variável usada na versão em inglês (lib/legal-content.ts): sem
+// valor definido, a morada é simplesmente omitida em vez de se publicar um
+// marcador de posição -- uma morada é um facto legal.
+const REGISTERED_ADDRESS = process.env.NEXT_PUBLIC_LEGAL_ADDRESS?.trim() || "";
+
 export const privacyPolicyPtBR: LegalDocumentContent = {
   label: "Legal",
   title: "Política de Privacidade",
@@ -121,7 +126,9 @@ export const privacyPolicyPtBR: LegalDocumentContent = {
       paragraphs: [
         `Para questões relacionadas com privacidade: ${CONTACT_PRIVACY}`,
         `Para questões legais gerais: ${CONTACT_LEGAL}`,
-        "UP2CLOUD Unipessoal Lda., Portugal, União Europeia.",
+        REGISTERED_ADDRESS
+          ? `UP2CLOUD Unipessoal Lda. Morada registada: ${REGISTERED_ADDRESS}.`
+          : "UP2CLOUD Unipessoal Lda., Portugal, União Europeia.",
       ],
     },
   ],
@@ -234,6 +241,7 @@ export const termsOfServicePtBR: LegalDocumentContent = {
       title: "14. Contacto",
       paragraphs: [
         `Para questões legais: ${CONTACT_LEGAL}`,
+        ...(REGISTERED_ADDRESS ? [`Morada registada: ${REGISTERED_ADDRESS}.`] : []),
         "UP2CLOUD Unipessoal Lda., Portugal, União Europeia.",
       ],
     },

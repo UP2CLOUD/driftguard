@@ -241,7 +241,9 @@ class TestRunAiReviewNoApiKey:
 class TestRunAiReviewWithAnthropic:
     @pytest.mark.asyncio
     async def test_uses_anthropic_when_key_set(self):
-        mock_content = MagicMock()
+        # type="text" mirrors a real Anthropic TextBlock -- content is a
+        # union and only text blocks expose `.text`.
+        mock_content = MagicMock(type="text")
         mock_content.text = "## Summary\nGood analysis"
         mock_response = MagicMock()
         mock_response.content = [mock_content]
@@ -288,7 +290,7 @@ class TestRunAiReviewWithAnthropic:
 
         async def capture_create(**kwargs):
             captured["messages"] = kwargs["messages"]
-            mock_content = MagicMock()
+            mock_content = MagicMock(type="text")
             mock_content.text = "ok"
             resp = MagicMock()
             resp.content = [mock_content]

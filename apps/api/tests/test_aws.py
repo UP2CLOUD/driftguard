@@ -1,5 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
 from fastapi.testclient import TestClient
 
 from driftguard.core.db import get_db, get_session
@@ -284,3 +285,60 @@ class TestValidateAws:
             assert "denied" in data["error"]
         finally:
             _cleanup()
+
+
+# ── _get_aws_env — cross-account credential plumbing ──────────────────────────
+
+
+class TestGetAwsEnv:
+    """Regression tests for two bugs that silently disabled cross-account scans.
+
+    `assume_role` returns an AWSCredentials object, but the caller subscripted
+    it like a dict (`creds["AccessKeyId"]`), raising TypeError; and the
+    configured external ID was passed positionally into the `region`
+    parameter. Both were swallowed by a bare `except Exception` that logged
+    "sts_assume_role_failed", so the failure looked like an STS/permissions
+    problem on the customer's side.
+    """
+
+    @pytest.mark.asyncio
+    async def test_returns_env_mapping_from_credentials_object(self):
+        from driftguard.integrations.aws import AWSCredentials
+        from driftguard.workers.analyzer import _get_aws_env
+
+        creds = AWSCredentials(
+            access_key="AKIA_TEST",
+            secret_key="secret",
+            session_token="token",
+            region="eu-west-1",
+        )
+        with patch("driftguard.integrations.aws.assume_role", return_value=creds):
+            env = await _get_aws_env({"aws_role_arn": "arn:aws:iam::1:role/r"})
+
+        assert env is not None, "credentials were swallowed by the bare except"
+        assert env["AWS_ACCESS_KEY_ID"] == "AKIA_TEST"
+        assert env["AWS_SECRET_ACCESS_KEY"] == "secret"
+        assert env["AWS_SESSION_TOKEN"] == "token"
+
+    @pytest.mark.asyncio
+    async def test_external_id_is_not_passed_as_region(self):
+        from driftguard.integrations.aws import AWSCredentials
+        from driftguard.workers.analyzer import _get_aws_env
+
+        seen: dict = {}
+
+        def _capture(role_arn, region="eu-west-1", session_name="driftguard", external_id=None):
+            seen.update(role_arn=role_arn, region=region, external_id=external_id)
+            return AWSCredentials("a", "b", "c", region)
+
+        with patch("driftguard.integrations.aws.assume_role", side_effect=_capture):
+            await _get_aws_env({"aws_role_arn": "arn:aws:iam::1:role/r", "aws_external_id": "ext-123"})
+
+        assert seen["external_id"] == "ext-123"
+        assert seen["region"] != "ext-123", "external id leaked into the region parameter"
+
+    @pytest.mark.asyncio
+    async def test_returns_none_without_role_arn(self):
+        from driftguard.workers.analyzer import _get_aws_env
+
+        assert await _get_aws_env({}) is None

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Sequence
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -135,7 +136,7 @@ async def get_finops_review_by_analysis(
     return _review_detail(review, resource_costs)
 
 
-def _review_detail(review: FinOpsReview, resource_costs: list[FinOpsResourceCost]) -> dict[str, Any]:
+def _review_detail(review: FinOpsReview, resource_costs: Sequence[FinOpsResourceCost]) -> dict[str, Any]:
     return {
         "id": review.id,
         "analysis_id": review.analysis_id,
