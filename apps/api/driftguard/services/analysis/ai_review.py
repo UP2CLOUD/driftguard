@@ -167,16 +167,16 @@ async def run_ai_review(
     gemini_key = getattr(settings, "gemini_api_key", None)
     if gemini_key:
         try:
-            from google import genai  # type: ignore
-            from google.genai import types  # type: ignore
+            from google import genai
+            from google.genai import types
 
             client = genai.Client(api_key=gemini_key)
-            response = await client.aio.models.generate_content(
+            gemini_response = await client.aio.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=prompt,
                 config=types.GenerateContentConfig(system_instruction=_SYSTEM),
             )
-            narrative = response.text or ""
+            narrative = gemini_response.text or ""
             return AIReview(
                 narrative=narrative,
                 model="gemini-2.5-flash",

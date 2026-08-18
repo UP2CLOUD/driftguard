@@ -11,17 +11,19 @@ the overall policy verdict ("block" | "warn" | "pass").
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import structlog
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from driftguard.ai.findings import Finding
+from driftguard.ai.findings import Finding, Severity
 from driftguard.db.models import Organization, PolicyRule
 
 if TYPE_CHECKING:
     pass
+
+_SEVERITIES = ("info", "low", "medium", "high", "critical")
 
 log = structlog.get_logger(__name__)
 
@@ -107,7 +109,7 @@ async def apply_policies(
             policy_findings.append(
                 Finding(
                     type="policy",
-                    severity=rule.severity,
+                    severity=cast(Severity, rule.severity if rule.severity in _SEVERITIES else "medium"),
                     resource=f.resource,
                     message=f"Policy '{rule.name}' matched: {f.message[:120]}",
                     suggestion=rule.description,

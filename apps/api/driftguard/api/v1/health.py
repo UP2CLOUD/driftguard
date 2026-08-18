@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import json
 import time
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Response
 
 from driftguard.core.config import settings
 
@@ -38,7 +39,7 @@ async def health() -> dict:
 
 
 @router.get("/ready")
-async def ready() -> dict:
+async def ready() -> Response:
     """Readiness probe — checks DB + (optionally) Redis connectivity."""
     checks: dict[str, str] = {}
     overall = "ok"
@@ -82,13 +83,11 @@ async def ready() -> dict:
     checks["stripe"] = "ok" if settings.stripe_webhook_secret else "not_configured"
     checks["ai_review"] = "ok" if settings.anthropic_api_key else "not_configured"
 
-    from fastapi import Response
-
     content = {"status": overall, "checks": checks}
     # Return 503 if any check degraded — Cloud Run traffic routing will exclude this replica
     status_code = 200 if overall == "ok" else 503
     return Response(
-        content=__import__("json").dumps(content),
+        content=json.dumps(content),
         media_type="application/json",
         status_code=status_code,
     )
@@ -166,7 +165,7 @@ async def debug_analyze_steps(
         from driftguard.ai.formatter import format_comment
         from driftguard.integrations.github import post_pr_comment
 
-        findings = from_static_scan(result)
+        findings = from_static_scan(result.findings)
         body = format_comment(
             findings=findings,
             ai_review_md="_debug_",

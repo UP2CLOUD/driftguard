@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import time
 from collections import defaultdict
+from typing import Any
 
 from fastapi import Depends, HTTPException, Request, status
 
@@ -36,7 +37,7 @@ class _InProcBucket:
 _bucket = _InProcBucket()
 
 
-def rate_limit(requests_per_minute: int = 60, burst: int | None = None) -> None:
+def rate_limit(requests_per_minute: int = 60, burst: int | None = None) -> Any:
     """FastAPI dependency — raises 429 when limit exceeded.
 
     Keyed by X-Forwarded-For → real IP on Cloud Run (single proxy hop).

@@ -1,3 +1,5 @@
+from typing import Any
+
 import stripe
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,7 +19,7 @@ def require_stripe_configured() -> None:
         raise HTTPException(503, "Billing is not configured (missing STRIPE_API_KEY)")
 
 
-def _stripe() -> "stripe":
+def _stripe() -> Any:
     require_stripe_configured()
     stripe.api_key = settings.stripe_api_key
     stripe.api_version = "2026-05-27"

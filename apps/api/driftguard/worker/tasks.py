@@ -100,7 +100,14 @@ async def _store_embedding_async(analysis_id: str) -> None:
             (await session.execute(select(Finding).where(Finding.analysis_id == analysis_id))).scalars().all()
         )
 
-        findings_dicts = [{"severity": f.severity, "resource": f.resource, "message": f.message} for f in findings_rows]
+        # The ORM attribute is `resource_address`; the DB column it maps to
+        # is named "resource". Reading `f.resource` raised AttributeError,
+        # which store_embedding's `except Exception` logged as
+        # "store_embedding.failed" -- so no incident embedding was ever
+        # written and memory recall silently had nothing to match against.
+        findings_dicts = [
+            {"severity": f.severity, "resource": f.resource_address, "message": f.message} for f in findings_rows
+        ]
         text = intent_text(findings_dicts, analysis.summary_md or "")
         vec = await embed(text)
 
@@ -185,9 +192,9 @@ async def _send_policy_violation_async(
         if not repo:
             return
         org = await session.get(Organization, repo.org_id)
-        contact_email = org.contact_email if org else None
-        if not contact_email:
+        if org is None or not org.contact_email:
             return
+        contact_email = org.contact_email
 
         await send_policy_violation(
             to=contact_email,
@@ -220,9 +227,9 @@ async def _send_notification_async(analysis_id: str, repo_full_name: str, pr_num
 
         # Get org owner email
         org = await session.get(Organization, repo.org_id)
-        contact_email = org.contact_email if org else None
-        if not contact_email:
+        if org is None or not org.contact_email:
             return
+        contact_email = org.contact_email
 
         findings_count = (
             await session.execute(select(func.count()).select_from(Finding).where(Finding.analysis_id == analysis_id))

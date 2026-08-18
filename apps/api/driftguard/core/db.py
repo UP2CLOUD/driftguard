@@ -13,6 +13,6 @@ async def get_db() -> AsyncIterator[AsyncSession]:
         yield session
 
 
-async def get_session() -> AsyncSession:
+async def get_session() -> AsyncIterator[AsyncSession]:
     async with SessionLocal() as session:
         yield session

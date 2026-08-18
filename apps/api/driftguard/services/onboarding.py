@@ -25,8 +25,10 @@ async def upsert_installation(
         .first()
     )
 
+    # Narrow on `org` itself rather than via an `is_new` flag: the flag
+    # form left org as Organization | None for every access below it.
     is_new = org is None
-    if is_new:
+    if org is None:
         org = Organization(github_installation_id=installation_id, plan="free")
         db.add(org)
         await db.flush()

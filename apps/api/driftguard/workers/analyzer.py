@@ -580,7 +580,7 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
     except Exception as exc:
         log.warning("ai_review_failed", error=str(exc))
         scan_errors.append(f"AI review unavailable: {exc}")
-        sev_counts = {}
+        sev_counts: dict[str, int] = {}
         for f in findings:
             sev_counts[f.severity] = sev_counts.get(f.severity, 0) + 1
         summary = ", ".join(f"{v} {k}" for k, v in sorted(sev_counts.items()))

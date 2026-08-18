@@ -30,6 +30,7 @@ from __future__ import annotations
 import hashlib
 import logging
 import secrets
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC
 from enum import StrEnum
@@ -176,7 +177,7 @@ async def get_current_principal(
     return principal
 
 
-def require_role(minimum_role: str | Role) -> type:
+def require_role(minimum_role: str | Role) -> Callable[..., Awaitable[Principal]]:
     """
     FastAPI dependency factory.
     Returns a dependency that verifies the principal has at least `minimum_role`.

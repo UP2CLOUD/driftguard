@@ -6,6 +6,7 @@ import asyncio
 import random
 import uuid
 from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from driftguard.core.db import SessionLocal
 from driftguard.db.models import (
@@ -70,7 +71,7 @@ async def seed() -> None:
         await db.flush()
 
         # ── PRs + Analyses + Findings ─────────────────────────────────────────
-        pr_data = [
+        pr_data: list[tuple[Any, int, str, int, str, list[tuple[str, str, str, str, str | None]]]] = [
             (
                 repos[0],
                 847,
