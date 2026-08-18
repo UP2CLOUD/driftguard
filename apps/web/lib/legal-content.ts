@@ -20,6 +20,25 @@ const OPERATOR =
 const CONTACT_PRIVACY = "privacy@driftguard.io";
 const CONTACT_LEGAL = "legal@driftguard.io";
 
+/**
+ * Registered postal address of the operating entity.
+ *
+ * GDPR Art. 13(1)(a) expects a controller's identity *and contact details*;
+ * an email alone is thin for a privacy policy, and several DPAs read it as
+ * non-compliant. It is intentionally sourced from the environment and
+ * intentionally NOT defaulted: an address is a legal fact, so a placeholder
+ * would be worse than its absence. When unset, the address clause is simply
+ * omitted and the email contact stands alone -- exactly today's behaviour.
+ *
+ * Set NEXT_PUBLIC_LEGAL_ADDRESS (e.g. "Rua Example 1, 1000-001 Lisboa,
+ * Portugal") and it appears in the privacy policy, the terms, and the
+ * marketing footer at once.
+ */
+const REGISTERED_ADDRESS = process.env.NEXT_PUBLIC_LEGAL_ADDRESS?.trim() || "";
+
+/** " <address>." when configured, otherwise "". Keeps sentences well-formed. */
+const addressClause = REGISTERED_ADDRESS ? ` Registered address: ${REGISTERED_ADDRESS}.` : "";
+
 export const privacyPolicy: LegalDocumentContent = {
   label: "Legal",
   title: "Privacy Policy",
@@ -135,7 +154,9 @@ export const privacyPolicy: LegalDocumentContent = {
       paragraphs: [
         "UP2CLOUD Unipessoal Lda., DriftGuard Privacy, " +
           CONTACT_PRIVACY +
-          ". For data protection inquiries in the EU, include your organization name and the nature of your request.",
+          "." +
+          addressClause +
+          " For data protection inquiries in the EU, include your organization name and the nature of your request.",
       ],
     },
   ],
@@ -252,7 +273,10 @@ export const termsOfService: LegalDocumentContent = {
       id: "contact-terms",
       title: "14. Contact",
       paragraphs: [
-        "Questions about these Terms: UP2CLOUD Unipessoal Lda., DriftGuard Legal, " + CONTACT_LEGAL + ".",
+        "Questions about these Terms: UP2CLOUD Unipessoal Lda., DriftGuard Legal, " +
+          CONTACT_LEGAL +
+          "." +
+          addressClause,
       ],
     },
   ],

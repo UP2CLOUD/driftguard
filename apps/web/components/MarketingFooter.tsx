@@ -28,6 +28,11 @@ export async function MarketingFooter() {
           >
             UP2CLOUD
           </a>
+          {/* Rendered only when NEXT_PUBLIC_LEGAL_ADDRESS is configured --
+              an address is a legal fact, so no placeholder is shipped. */}
+          {process.env.NEXT_PUBLIC_LEGAL_ADDRESS ? (
+            <span className="ml-1 hidden sm:inline">· {process.env.NEXT_PUBLIC_LEGAL_ADDRESS}</span>
+          ) : null}
         </div>
         <div className="flex gap-4">
           <a href="https://github.com/UP2CLOUD/driftguard" className="transition hover:text-fg-muted active:text-fg-muted">
