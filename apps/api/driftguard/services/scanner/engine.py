@@ -139,11 +139,23 @@ async def scan_directory(root: Path) -> ScanResult:
     )
 
     for r in (tf_findings, k8s_findings, gha_findings):
-        if isinstance(r, Exception):
+        if isinstance(r, BaseException):
+            # BaseException, not Exception: gather(return_exceptions=True) can
+            # hand back CancelledError, which would otherwise fall through to
+            # the unpack below and raise a confusing TypeError.
             log.warning("scanner.error", extra={"error": str(r)})
             result.errors.append(str(r))
-        elif isinstance(r, list):
-            result.findings.extend(r)
+        else:
+            # Each scanner returns (findings, per-file errors). Those errors
+            # used to be discarded inside the scanner, so an unreadable file
+            # looked identical to a clean one.
+            file_findings, file_errors = r
+            result.findings.extend(file_findings)
+            for err in file_errors:
+                log.warning("scanner.file_error", extra={"error": err})
+            result.errors.extend(file_errors)
+            # Don't claim to have scanned a file we could not read.
+            result.files_scanned -= len(file_errors)
 
     log.info(
         "scanner.complete",

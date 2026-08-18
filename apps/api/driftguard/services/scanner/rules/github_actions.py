@@ -39,16 +39,29 @@ _SECRET_IN_ENV = re.compile(r"(?:^|\n)\s+([A-Z_]+)\s*:\s*\$\{\{\s*secrets\.(\w+)
 _UNTRUSTED_INPUT = re.compile(r"\$\{\{\s*github\.event\.(issue|pull_request|comment)\.\w+")
 
 
-def scan_gha_files(files: list[Path], root: Path) -> list[ScanFinding]:
+def scan_gha_files(files: list[Path], root: Path) -> tuple[list[ScanFinding], list[str]]:
+    """Scan GitHub Actions files, collecting per-file failures rather than dropping them.
+
+    A file that raises used to be swallowed by a bare `except: pass`, so it
+    contributed zero findings while `files_scanned` still counted it -- the
+    scan reported "clean" for a file it never actually read. For a security
+    scanner that false negative is the worst possible failure mode, so the
+    error is now surfaced to the caller and shows up in ScanResult.errors.
+    """
     findings: list[ScanFinding] = []
+    errors: list[str] = []
     for f in files:
         try:
             content = f.read_text(errors="replace")
             rel = str(f.relative_to(root))
             findings.extend(_scan_single(content, rel))
-        except Exception:  # noqa: S110
-            pass
-    return findings
+        except Exception as exc:  # noqa: BLE001 — one bad file must not abort the scan
+            try:
+                rel = str(f.relative_to(root))
+            except ValueError:
+                rel = str(f)
+            errors.append(f"{rel}: {exc}")
+    return findings, errors
 
 
 def _scan_single(content: str, rel_path: str) -> list[ScanFinding]:
