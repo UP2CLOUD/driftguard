@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { incidentRootCause, incidentSuggestedFix } from "./incident-i18n";
+import { incidentRootCause, incidentSuggestedFix, incidentTitle } from "./incident-i18n";
 
 /**
  * Reported from production: /dashboard/.../incidents/... showed English body
@@ -52,5 +52,38 @@ describe("incident prose translation", () => {
     expect(incidentRootCause("drift_detected", "de")).toBe(
       "Live cloud state diverged from the Terraform plan.",
     );
+  });
+});
+
+describe("incident title prefix", () => {
+  it("translates only the prefix and leaves the message verbatim", () => {
+    const t = incidentTitle("Drift detected: aws_s3_bucket.logs changed", "drift_detected", "pt-BR");
+    expect(t).toBe("Desvio detetado: aws_s3_bucket.logs changed");
+    // resource addresses are identifiers — never translated
+    expect(t).toContain("aws_s3_bucket.logs");
+  });
+
+  it("covers every locale for every prefix", () => {
+    const keys = ["policy_blocked", "drift_detected", "security_finding", "cost_alert", "pr_opened"];
+    for (const locale of ["en", "pt-BR", "es", "zh", "hi", "ar"]) {
+      for (const k of keys) {
+        const out = incidentTitle("PLACEHOLDER", k, locale);
+        expect(out, `${k}/${locale}`).toBe("PLACEHOLDER"); // no English prefix → untouched
+      }
+    }
+  });
+
+  it("leaves the title untouched when it lacks the expected English prefix", () => {
+    const original = "aws_db_instance.postgres: No encryption configured.";
+    expect(incidentTitle(original, "security_finding", "pt-BR")).toBe(original);
+  });
+
+  it("leaves the title untouched when the key is missing or unknown", () => {
+    expect(incidentTitle("Drift detected: x", null, "pt-BR")).toBe("Drift detected: x");
+    expect(incidentTitle("Drift detected: x", "nope", "pt-BR")).toBe("Drift detected: x");
+  });
+
+  it("falls back to English for an unknown locale", () => {
+    expect(incidentTitle("Cost alert: x", "cost_alert", "de")).toBe("Cost alert: x");
   });
 });

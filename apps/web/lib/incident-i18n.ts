@@ -127,3 +127,72 @@ export function incidentRootCause(key: string | null | undefined, locale: string
 export function incidentSuggestedFix(key: string | null | undefined, locale: string): string | null {
   return resolve(SUGGESTED_FIX, key, locale);
 }
+
+/**
+ * Title prefixes from `_title_from()` in api/v1/ingest.py. Incident titles
+ * are stored as "<prefix>: <message>"; only the prefix is static prose, so
+ * only the prefix is translated. The message half often carries resource
+ * addresses and is left verbatim.
+ */
+const TITLE_PREFIX: Record<string, { en: string } & Partial<Record<Locale, string>>> = {
+  policy_blocked: {
+    en: "Policy blocked",
+    "pt-BR": "Política bloqueou",
+    es: "Política bloqueó",
+    zh: "策略已阻止",
+    hi: "नीति ने रोका",
+    ar: "حظرت السياسة",
+  },
+  drift_detected: {
+    en: "Drift detected",
+    "pt-BR": "Desvio detetado",
+    es: "Desviación detectada",
+    zh: "检测到偏差",
+    hi: "ड्रिफ़्ट का पता चला",
+    ar: "تم اكتشاف انحراف",
+  },
+  security_finding: {
+    en: "Security finding",
+    "pt-BR": "Achado de segurança",
+    es: "Hallazgo de seguridad",
+    zh: "安全发现",
+    hi: "सुरक्षा निष्कर्ष",
+    ar: "نتيجة أمنية",
+  },
+  cost_alert: {
+    en: "Cost alert",
+    "pt-BR": "Alerta de custo",
+    es: "Alerta de coste",
+    zh: "成本警报",
+    hi: "लागत चेतावनी",
+    ar: "تنبيه تكلفة",
+  },
+  pr_opened: {
+    en: "Risky PR",
+    "pt-BR": "PR de risco",
+    es: "PR arriesgado",
+    zh: "高风险 PR",
+    hi: "जोखिम भरा PR",
+    ar: "طلب سحب محفوف بالمخاطر",
+  },
+};
+
+/**
+ * Translate the static prefix of an incident title, leaving the message
+ * half untouched. Returns the original title unchanged when the key is
+ * unknown or the stored title does not carry the expected English prefix —
+ * so a title written by any other path is never mangled.
+ */
+export function incidentTitle(
+  title: string,
+  key: string | null | undefined,
+  locale: string,
+): string {
+  if (!title || !key) return title;
+  const entry = TITLE_PREFIX[key];
+  if (!entry) return title;
+  const sep = `${entry.en}: `;
+  if (!title.startsWith(sep)) return title;
+  const translated = entry[locale as Locale] ?? entry.en;
+  return `${translated}: ${title.slice(sep.length)}`;
+}

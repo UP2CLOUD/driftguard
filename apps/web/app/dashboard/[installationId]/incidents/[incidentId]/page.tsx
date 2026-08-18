@@ -7,7 +7,7 @@ import { createTranslator } from "@/i18n/translator";
 import { beGet } from "@/lib/backend";
 import { formatDate, formatDateTime } from "@/lib/format-date";
 import { IncidentStatusForm } from "@/components/IncidentStatusForm";
-import { incidentRootCause, incidentSuggestedFix } from "@/lib/incident-i18n";
+import { incidentRootCause, incidentSuggestedFix, incidentTitle } from "@/lib/incident-i18n";
 
 async function fetchIncident(id: string) {
   return beGet<any>(`/api/v1/incidents/${id}`, { revalidate: 0, timeout: 4000 });
@@ -91,7 +91,7 @@ export default async function IncidentDetailPage({
             )}
           </div>
           <h1 className="font-sans text-2xl font-semibold text-[color:var(--dg-fg)]">
-            {incident.title}
+            {incidentTitle(incident.title, incident.root_cause_key, preferences.locale)}
           </h1>
         </div>
       </div>
