@@ -193,6 +193,7 @@ async def ingest_event(
             existing.last_seen_at = datetime.now(UTC)
             if body.severity == "critical" and not existing.suggested_fix:
                 existing.suggested_fix = _auto_fix_hint(body.event_type, body.message)
+                existing.suggested_fix_key = _auto_fix_key(body.message)
             recurrence = existing.recurrence_count
             incident_id = existing.id
         else:
@@ -207,6 +208,8 @@ async def ingest_event(
                 status="open",
                 root_cause=_root_cause_hint(body.event_type),
                 suggested_fix=_auto_fix_hint(body.event_type, body.message),
+                root_cause_key=_root_cause_key(body.event_type),
+                suggested_fix_key=_auto_fix_key(body.message),
                 fingerprint=fp,
                 first_seen_at=datetime.now(UTC),
                 last_seen_at=datetime.now(UTC),
@@ -265,24 +268,50 @@ def _title_from(event_type: str, message: str) -> str:
     return f"{prefix}: {message[:80]}"
 
 
+# Each hint carries a stable key next to its English text. The key is what
+# the dashboard translates per viewer; the English string stays as the
+# stored fallback so existing rows, and any event type without a catalog
+# entry, still render. See migration 019.
+_ROOT_CAUSE_HINTS: dict[str, str] = {
+    "policy_blocked": "A resource change violated a declared policy rule.",
+    "drift_detected": "Live cloud state diverged from the Terraform plan.",
+    "security_finding": "A misconfiguration or insecure default was detected.",
+    "cost_alert": "A resource change would exceed the configured cost threshold.",
+    "pr_opened": "An AI agent opened a PR with high-risk changes.",
+}
+_ROOT_CAUSE_FALLBACK = "Automated detection flagged this event."
+
+_AUTO_FIX_HINTS: dict[str, str] = {
+    "s3_public": ("Enable S3 Block Public Access: aws_s3_bucket_public_access_block { block_public_acls = true }"),
+    "iam_wildcard": "Restrict IAM policy resources to specific ARNs instead of wildcard.",
+    "rds_delete": "Add lifecycle { prevent_destroy = true } to protect production databases.",
+    "sg_open_ingress": "Restrict security group ingress to known CIDR ranges.",
+}
+
+
+def _root_cause_key(event_type: str) -> str:
+    """Stable identity of the root-cause hint, for per-viewer translation."""
+    return event_type if event_type in _ROOT_CAUSE_HINTS else "generic"
+
+
 def _root_cause_hint(event_type: str) -> str:
-    return {
-        "policy_blocked": "A resource change violated a declared policy rule.",
-        "drift_detected": "Live cloud state diverged from the Terraform plan.",
-        "security_finding": "A misconfiguration or insecure default was detected.",
-        "cost_alert": "A resource change would exceed the configured cost threshold.",
-        "pr_opened": "An AI agent opened a PR with high-risk changes.",
-    }.get(event_type, "Automated detection flagged this event.")
+    return _ROOT_CAUSE_HINTS.get(event_type, _ROOT_CAUSE_FALLBACK)
+
+
+def _auto_fix_key(message: str) -> str | None:
+    """Stable identity of the suggested-fix hint, or None when none applies."""
+    msg = message.lower()
+    if "public" in msg and "s3" in msg:
+        return "s3_public"
+    if "wildcard" in msg or 'resources = "*"' in msg:
+        return "iam_wildcard"
+    if "delete" in msg and "rds" in msg:
+        return "rds_delete"
+    if "0.0.0.0" in msg or "ingress" in msg:
+        return "sg_open_ingress"
+    return None
 
 
 def _auto_fix_hint(event_type: str, message: str) -> str | None:
-    msg = message.lower()
-    if "public" in msg and "s3" in msg:
-        return "Enable S3 Block Public Access: aws_s3_bucket_public_access_block { block_public_acls = true }"
-    if "wildcard" in msg or 'resources = "*"' in msg:
-        return "Restrict IAM policy resources to specific ARNs instead of wildcard."
-    if "delete" in msg and "rds" in msg:
-        return "Add lifecycle { prevent_destroy = true } to protect production databases."
-    if "0.0.0.0" in msg or "ingress" in msg:
-        return "Restrict security group ingress to known CIDR ranges."
-    return None
+    key = _auto_fix_key(message)
+    return _AUTO_FIX_HINTS.get(key) if key else None
