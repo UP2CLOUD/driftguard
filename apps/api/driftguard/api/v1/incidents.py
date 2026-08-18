@@ -144,6 +144,11 @@ def _serialize(inc: DriftIncident) -> dict:
         "status": inc.status,
         "root_cause": inc.root_cause,
         "suggested_fix": inc.suggested_fix,
+        # Translation keys — the dashboard prefers these and falls back to
+        # the English strings above when absent.
+        "rule_id": inc.rule_id,
+        "root_cause_key": inc.root_cause_key,
+        "suggested_fix_key": inc.suggested_fix_key,
         "recurrence_count": inc.recurrence_count,
         "fingerprint": inc.fingerprint,
         "first_seen_at": inc.first_seen_at.isoformat() if inc.first_seen_at else None,

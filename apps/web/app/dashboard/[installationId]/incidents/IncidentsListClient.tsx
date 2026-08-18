@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { formatDate } from "@/lib/format-date";
+import { incidentTitle } from "@/lib/incident-i18n";
 
 type SevBucket = "critical" | "high" | "medium" | "low";
 
@@ -27,6 +28,8 @@ export interface Incident {
   recurrence_count?: number | null;
   last_seen_at?: string | null;
   suggested_fix?: string | null;
+  /** Translation key for the title prefix; absent on pre-migration-019 rows. */
+  root_cause_key?: string | null;
 }
 
 const SEV_CHIP: Record<string, string> = {
@@ -165,7 +168,7 @@ export function IncidentsListClient({
                     {inc.severity}
                   </span>
                   <span className="font-sans text-[14px] sm:text-[13px] font-medium leading-snug text-[color:var(--dg-fg)] break-words min-w-0">
-                    {inc.title}
+                    {incidentTitle(inc.title, inc.root_cause_key, locale)}
                   </span>
                 </div>
 

@@ -175,6 +175,13 @@ class DriftIncident(Base):
     status: Mapped[str] = mapped_column(String(32), default="open")  # open | investigating | resolved | suppressed
     root_cause: Mapped[str | None] = mapped_column(Text, nullable=True)
     suggested_fix: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Stable identity of generated text so the UI can translate per viewer.
+    # The *_key / rule_id columns are the source of truth for display; the
+    # English columns above remain as the fallback for rows written before
+    # migration 019 and for messages with no catalog entry.
+    rule_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    root_cause_key: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    suggested_fix_key: Mapped[str | None] = mapped_column(String(64), nullable=True)
     recurrence_count: Mapped[int] = mapped_column(Integer, default=1)
     fingerprint: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)  # for dedup
     first_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)

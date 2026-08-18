@@ -790,6 +790,11 @@ async def analyze_pr(*, installation_id: int, repo_full_name: str, pr_number: in
                                 severity=_f.severity,
                                 status="open",
                                 suggested_fix=_f.suggestion,
+                                # Lets the dashboard translate this incident's
+                                # title/description per viewer via the rule
+                                # catalog; the English text above stays as the
+                                # fallback. See migration 019.
+                                rule_id=_f.rule_id,
                                 fingerprint=_fp,
                                 first_seen_at=now,
                                 last_seen_at=now,
