@@ -110,16 +110,29 @@ async def scan_directory(root: Path) -> ScanResult:
         result.errors.append(f"Directory not found: {root}")
         return result
 
-    # Collect files by type
+    # Collect files by type.
+    #
+    # Classification is judged from each file's own path rather than from the
+    # scan root or a substring of the absolute path. The previous check used
+    # `".github" not in str(f.parent)`, which tests the *absolute* path: a
+    # checkout under any directory containing ".github" would have silently
+    # excluded every YAML file from the Kubernetes scan. The CLI carried a
+    # matching root-relative bug that misfiled workflows as Kubernetes.
+    def _is_workflow(path: Path) -> bool:
+        parent = path.parent
+        return parent.name == "workflows" and parent.parent.name == ".github"
+
+    def _under_dot_github(path: Path, base: Path) -> bool:
+        try:
+            return ".github" in path.relative_to(base).parts
+        except ValueError:
+            return ".github" in path.parts
+
     tf_files = list(root.rglob("*.tf"))
-    k8s_files = [f for f in root.rglob("*.yaml") if ".github" not in str(f.parent)] + [
-        f for f in root.rglob("*.yml") if ".github" not in str(f.parent)
-    ]
-    gha_files = (
-        list((root / ".github" / "workflows").rglob("*.yml")) + list((root / ".github" / "workflows").rglob("*.yaml"))
-        if (root / ".github" / "workflows").exists()
-        else []
-    )
+    yaml_files = list(root.rglob("*.yaml")) + list(root.rglob("*.yml"))
+    gha_files = [f for f in yaml_files if _is_workflow(f)]
+    # Other .github config (dependabot, issue templates) is neither.
+    k8s_files = [f for f in yaml_files if not _under_dot_github(f, root)]
 
     result.tf_files = len(tf_files)
     result.k8s_files = len(k8s_files)

@@ -499,3 +499,79 @@ class TestEncryptionAndPublicAccessRules:
         """,
         )
         assert "TF017" not in strip_ansi(runner.invoke(app, ["scan", str(tmp_path)]).output)
+
+
+class TestWorkflowClassificationByScanRoot:
+    """GitHub Actions files must be recognised regardless of the scan root.
+
+    Classification used to be computed relative to the scan root, so
+    `dg scan .github` and `dg scan .github/workflows` -- both natural CI
+    invocations -- saw path parts like ("workflows",) instead of
+    (".github", "workflows"). Every workflow was then classified as
+    Kubernetes, the whole GHA ruleset never ran, and the scan printed
+    "No findings ... Safe to merge". Scanning the repo root happened to
+    work, which is exactly what hid it.
+    """
+
+    @staticmethod
+    def _workflow_repo(tmp_path):
+        wf = tmp_path / ".github" / "workflows"
+        wf.mkdir(parents=True)
+        # GHA002: ACTIONS_ALLOW_UNSECURE_COMMANDS is an unambiguous finding.
+        (wf / "ci.yml").write_text(
+            "name: ci\n"
+            "on: push\n"
+            "permissions: read-all\n"
+            "jobs:\n"
+            "  build:\n"
+            "    runs-on: ubuntu-latest\n"
+            "    env:\n"
+            "      ACTIONS_ALLOW_UNSECURE_COMMANDS: true\n"
+            "    steps:\n"
+            "      - run: echo hi\n"
+        )
+        return tmp_path
+
+    def _counts(self, path):
+        result = runner.invoke(app, ["scan", str(path), "-o", "json"])
+        assert result.exit_code == 0, result.output
+        return json.loads(result.output)
+
+    def test_repo_root_classifies_workflows_as_gha(self, tmp_path):
+        repo = self._workflow_repo(tmp_path)
+        d = self._counts(repo)
+        assert d["gha_files"] == 1
+        assert d["k8s_files"] == 0
+
+    def test_dot_github_root_classifies_workflows_as_gha(self, tmp_path):
+        repo = self._workflow_repo(tmp_path)
+        d = self._counts(repo / ".github")
+        assert d["gha_files"] == 1, "workflows misclassified when scanning .github"
+        assert d["k8s_files"] == 0
+
+    def test_workflows_dir_root_classifies_workflows_as_gha(self, tmp_path):
+        repo = self._workflow_repo(tmp_path)
+        d = self._counts(repo / ".github" / "workflows")
+        assert d["gha_files"] == 1, "workflows misclassified when scanning .github/workflows"
+        assert d["k8s_files"] == 0
+
+    def test_gha_rules_actually_fire_from_a_narrow_root(self, tmp_path):
+        """The point of the fix: the rules run, not merely that a count is right."""
+        repo = self._workflow_repo(tmp_path)
+        d = self._counts(repo / ".github" / "workflows")
+        rule_ids = {f["rule_id"] for f in d["findings"]}
+        assert "GHA002" in rule_ids, f"GHA ruleset did not run; got {rule_ids}"
+
+    def test_real_kubernetes_yaml_is_still_scanned_as_k8s(self, tmp_path):
+        (tmp_path / "deploy.yaml").write_text("apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: x\n")
+        d = self._counts(tmp_path)
+        assert d["k8s_files"] == 1
+        assert d["gha_files"] == 0
+
+    def test_non_workflow_github_config_is_not_scanned_as_k8s(self, tmp_path):
+        gh = tmp_path / ".github"
+        gh.mkdir()
+        (gh / "dependabot.yml").write_text("version: 2\nupdates: []\n")
+        d = self._counts(tmp_path)
+        assert d["k8s_files"] == 0, "dependabot.yml is neither Kubernetes nor a workflow"
+        assert d["gha_files"] == 0
