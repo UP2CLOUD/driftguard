@@ -117,20 +117,37 @@ async def scan_directory(root: Path) -> ScanResult:
 
     import os
 
+    gha_files: list[Path] = []
+
+    def _is_workflow(path: Path) -> bool:
+        """True when the file lives in a .github/workflows directory.
+
+        Judged from the file's own resolved path, never relative to the scan
+        root. The previous check was root-relative, so `dg scan .github` or
+        `dg scan .github/workflows` -- both natural CI invocations -- saw
+        parts like ("workflows",) instead of (".github", "workflows"). Every
+        workflow was then classified as Kubernetes, the entire GHA ruleset
+        never ran, and the scan reported "no findings, safe to merge".
+        Scanning the repo root happened to work, which is what hid it.
+        """
+        parent = path.parent
+        return parent.name == "workflows" and parent.parent.name == ".github"
+
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in _IGNORED_DIRS]
         dp = Path(dirpath)
-        rel_parts = dp.relative_to(root).parts
-        is_gha = rel_parts[:2] == (".github", "workflows")
         for fname in filenames:
             full = dp / fname
             if fname.endswith(".tf"):
                 tf_files.append(full)
-            elif fname.endswith((".yaml", ".yml")) and not is_gha and ".github" not in rel_parts:
-                k8s_files.append(full)
-
-    gha_dir = root / ".github" / "workflows"
-    gha_files = list(gha_dir.glob("*.yml")) + list(gha_dir.glob("*.yaml")) if gha_dir.exists() else []
+            elif fname.endswith((".yaml", ".yml")):
+                resolved = full.resolve()
+                if _is_workflow(resolved):
+                    gha_files.append(full)
+                elif ".github" not in resolved.parts:
+                    # Other .github config (issue templates, dependabot) is
+                    # neither Kubernetes nor a workflow — skip it entirely.
+                    k8s_files.append(full)
 
     result.tf_files = len(tf_files)
     result.k8s_files = len(k8s_files)
