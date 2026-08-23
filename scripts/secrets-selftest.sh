@@ -32,13 +32,40 @@ trap 'rm -rf "$WORK"' EXIT
 
 # Fixtures are generated, never committed -- a repository that ships realistic
 # fake credentials teaches the scanner's users to ignore realistic credentials.
-# High entropy matters: gitleaks drops low-entropy matches, so a fixture of
-# "aaaa..." would pass every test while proving nothing.
-rand_hex() { python3 -c "import secrets;print(secrets.token_hex($1))"; }
-rand_b62() { python3 -c "
-import secrets,string
-a=string.ascii_letters+string.digits
-print(''.join(secrets.choice(a) for _ in range($1)))"; }
+#
+# Generated, but NOT from real randomness. gitleaks' built-in rules gate on
+# more than a regex match -- github-pat requires Shannon entropy >= 3.0
+# bits/char (config/gitleaks.toml upstream), and 36 truly random samples from a
+# 62-character alphabet occasionally land below that purely by chance. This
+# cost a debugging cycle: the positive control failed in CI (real, not
+# reproduced in dozens of local runs) with "GitHub PAT in source -- expected a
+# finding, got none". A positive control that depends on chance is exactly the
+# kind of test this file exists to avoid building elsewhere -- it fails a green
+# CI run for no code reason, teaches people to re-run and ignore it, and is the
+# same failure mode as the allowlist silently going dark. Every fixture is
+# derived from a fixed label via SHA-256 instead: same value on every run, on
+# every machine, comfortably above any entropy floor gitleaks' rules apply.
+rand_hex() { # rand_hex <label> <bytes> -- deterministic hex, repeats the digest as needed
+  python3 -c "
+import hashlib, sys
+label, nbytes = sys.argv[1], int(sys.argv[2])
+buf = b''
+while len(buf) < nbytes:
+    buf += hashlib.sha256(f'driftguard-selftest:{label}:{len(buf)}'.encode()).digest()
+print(buf[:nbytes].hex())
+" "$1" "$2"
+}
+rand_b62() { # rand_b62 <label> <length> -- base62-encode a SHA-256 digest, repeats as needed
+  python3 -c "
+import hashlib, sys
+label, n = sys.argv[1], int(sys.argv[2])
+alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+buf = b''
+while len(buf) < n:
+    buf += hashlib.sha256(f'driftguard-selftest:{label}:{len(buf)}'.encode()).digest()
+print(''.join(alphabet[b % 62] for b in buf[:n]))
+" "$1" "$2"
+}
 
 fail=0
 check() { # check <expect: detect|ignore> <label> <relative-path> <content>
@@ -64,23 +91,21 @@ check() { # check <expect: detect|ignore> <label> <relative-path> <content>
 
 echo "Positive controls (these MUST be detected):"
 check detect "webhook secret in Markdown"      "DEPLOY.md" \
-  "secret driftguard-gh-webhook-secret \"$(rand_hex 32)\""
+  "secret driftguard-gh-webhook-secret \"$(rand_hex webhook 32)\""
 check detect "GitHub PAT in source"            "app/x.ts" \
-  "const t = \"ghp_$(rand_b62 36)\";"
+  "const t = \"ghp_$(rand_b62 ghp 36)\";"
 check detect "AWS access key id"               "infra/x.tf" \
-  "access_key = \"AKIA$(python3 -c "
-import secrets,string
-print(''.join(secrets.choice(string.ascii_uppercase+string.digits) for _ in range(16)))")\""
+  "access_key = \"AKIA$(rand_b62 akia 16 | tr 'a-z' 'A-Z')\""
 # The PEM banner is assembled from parts on purpose. Written as a literal, this
 # fixture makes the self-test script itself a gitleaks finding -- the scanner
 # cannot tell a test fixture from the real thing, and it is right not to try.
 SP=' '
 check detect "private key block"               "keys/id.pem" \
   "-----BEGIN RSA PRIVATE${SP}KEY-----
-$(rand_b62 64)
+$(rand_b62 pemkey 64)
 -----END RSA PRIVATE${SP}KEY-----"
 check detect "secret in a nested app dir"      "apps/api/driftguard/core/x.py" \
-  "SIGNING_SECRET = \"$(rand_hex 32)\""
+  "SIGNING_SECRET = \"$(rand_hex signing 32)\""
 
 echo "Negative controls (these must NOT be flagged):"
 check ignore "documented placeholder"          "DEPLOY.md" \
@@ -92,9 +117,9 @@ check ignore "truncated token in curl example" "app/Token.tsx" \
 check ignore "k8s existing-secret reference"   "infra/redis.tf" \
   'existingSecretPasswordKey = "password"'
 check ignore "sha256 digest, not a credential" "apps/web/lib/demo.ts" \
-  "export const GENESIS_HASH = \"sha256:$(rand_hex 32)\";"
+  "export const GENESIS_HASH = \"sha256:$(rand_hex genesis 32)\";"
 check ignore "lockfile integrity hash"         "uv.lock" \
-  "api_key = \"$(rand_hex 32)\"   # inside an allowlisted path"
+  "api_key = \"$(rand_hex lockfile 32)\"   # inside an allowlisted path"
 
 echo
 if [ "$fail" -ne 0 ]; then

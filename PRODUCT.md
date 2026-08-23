@@ -1,5 +1,8 @@
 # Product
 
+> Capability status is tracked in [`docs/FEATURE_MATRIX.md`](docs/FEATURE_MATRIX.md).
+> This document describes product intent; the matrix describes what ships.
+
 ## Register
 
 product
@@ -16,7 +19,7 @@ All three share one context: a dark terminal environment, keyboard-first workflo
 
 ## Product Purpose
 
-DriftGuard is a GitHub App that analyses every Terraform, Kubernetes, and GitHub Actions PR for security findings, cost delta, compliance mapping, and infrastructure drift — in under 2 seconds. It posts inline PR comments, blocks merges on critical findings, auto-creates incidents, and surfaces org-wide trends in a dashboard. Success looks like: engineers trust DriftGuard's signal enough to act on it without opening a second tool.
+DriftGuard is a GitHub App that analyses every Terraform, Kubernetes, and GitHub Actions PR for security findings, cost delta, compliance mapping, and infrastructure drift, before the merge button is available. It posts inline PR comments, blocks merges on critical findings, auto-creates incidents, and surfaces org-wide trends in a dashboard. Success looks like: engineers trust DriftGuard's signal enough to act on it without opening a second tool.
 
 ## Brand Personality
 

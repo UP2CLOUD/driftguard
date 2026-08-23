@@ -6,10 +6,20 @@ on:
     paths:
       - "apps/web/**"
       - ".github/workflows/ci-web.yml"
+      # lib/plan-claims.test.ts reads the plan quotas out of the API config and
+      # fails if the pricing copy disagrees. Without this path the gate has a
+      # hole exactly where it matters: raising a limit in config.py would not
+      # trigger the job that checks the copy still matches.
+      - "apps/api/driftguard/core/config.py"
   pull_request:
     paths:
       - "apps/web/**"
       - ".github/workflows/ci-web.yml"
+      # lib/plan-claims.test.ts reads the plan quotas out of the API config and
+      # fails if the pricing copy disagrees. Without this path the gate has a
+      # hole exactly where it matters: raising a limit in config.py would not
+      # trigger the job that checks the copy still matches.
+      - "apps/api/driftguard/core/config.py"
   workflow_dispatch:
 
 permissions:

@@ -1,6 +1,6 @@
 ---
 name: DriftGuard
-description: AI runtime safety for Terraform and Kubernetes — scans every PR for security findings in under 2 seconds.
+description: AI runtime safety for Terraform and Kubernetes — scans every PR for security findings before the merge button is available.
 colors:
   canvas: "#07080a"
   surface: "#0c0e12"

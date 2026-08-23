@@ -1,7 +1,7 @@
 # DriftGuard
 
 > AI runtime safety for Terraform and OpenTofu agents.
-> Reviews every PR for cost delta, security, drift, and compliance — in under 2 seconds.
+> Reviews every PR for cost delta, security, drift, and compliance, before the merge button is available.
 
 [![CI](https://github.com/UP2CLOUD/driftguard/actions/workflows/ci-api.yml/badge.svg)](https://github.com/UP2CLOUD/driftguard/actions)
 [![Web](https://github.com/UP2CLOUD/driftguard/actions/workflows/ci-web.yml/badge.svg)](https://github.com/UP2CLOUD/driftguard/actions)
@@ -18,9 +18,16 @@ DriftGuard is a GitHub App that reviews every Terraform / OpenTofu PR:
 | Engine | What it checks |
 |---|---|
 | **Static scanner** | IAM wildcards, public S3, open SGs, force_destroy, missing encryption, privileged K8s containers, unpinned GHA actions |
-| **Risk scorer** | Deterministic 0–100 score from 70 resource type weights |
+| **Risk scorer** | Deterministic 0–100 score from 46 resource type weights and 12 provider weights |
 | **AI review** | Claude summarises findings and generates remediation advice |
 | **Compliance** | DORA Art.11, NIS2 Art.21, ISO 27001 A.8.8 mapped to each finding |
+
+DriftGuard is in **early access**. For what is shipped, what is planned, and
+the enforced plan limits — with the file and test behind each row — see
+[`docs/FEATURE_MATRIX.md`](docs/FEATURE_MATRIX.md). Anything not listed there
+as Available is not shipped.
+
+Security policy and vulnerability reporting: [`SECURITY.md`](SECURITY.md).
 
 ---
 
