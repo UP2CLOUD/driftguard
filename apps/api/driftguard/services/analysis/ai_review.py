@@ -14,6 +14,7 @@ from typing import Any
 
 from driftguard.ai.blocks import text_from_blocks
 from driftguard.core.config import settings
+from driftguard.services.ai_health import record_ai_outcome
 from driftguard.services.scanner.engine import ScanResult, Severity
 
 log = logging.getLogger(__name__)
@@ -154,6 +155,7 @@ async def run_ai_review(
             messages=[{"role": "user", "content": prompt}],
         )
         narrative = text_from_blocks(response.content)
+        await record_ai_outcome(used="anthropic")
         return AIReview(
             narrative=narrative,
             model=response.model,
@@ -162,6 +164,7 @@ async def run_ai_review(
         )
     except Exception as exc:
         log.warning("ai_review.anthropic_failed", extra={"error": str(exc)})
+        anthropic_error = str(exc)
 
     # Gemini fallback
     gemini_key = getattr(settings, "gemini_api_key", None)
@@ -177,13 +180,18 @@ async def run_ai_review(
                 config=types.GenerateContentConfig(system_instruction=_SYSTEM),
             )
             narrative = gemini_response.text or ""
-            return AIReview(
-                narrative=narrative,
-                model="gemini-2.5-flash",
-                input_tokens=0,
-                output_tokens=0,
-            )
+            if narrative:
+                await record_ai_outcome(used="gemini")
+                return AIReview(
+                    narrative=narrative,
+                    model="gemini-2.5-flash",
+                    input_tokens=0,
+                    output_tokens=0,
+                )
         except Exception as exc2:
             log.warning("ai_review.gemini_failed", extra={"error": str(exc2)})
+            await record_ai_outcome(used="static", error=f"anthropic: {anthropic_error}; gemini: {exc2}")
+            return _static_fallback(result)
 
+    await record_ai_outcome(used="static", error=anthropic_error)
     return _static_fallback(result)

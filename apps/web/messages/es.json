@@ -1326,7 +1326,7 @@
     "components": "Componentes",
     "metrics": "Métricas",
     "uptime": "Uptime — últimos 90 días",
-    "p99": "P99 <2s",
+    "p99": "Motor de análisis y base de datos",
     "memory": "Índice de memoria",
     "pipeline": "Pipeline de revisión",
     "dashboard": "Dashboard",
@@ -1347,7 +1347,12 @@
     "prIngestion": "Ingesta de eventos de PR",
     "billing": "Facturación",
     "stripeWebhooks": "Procesamiento de webhooks de Stripe",
-    "webApp": "Aplicación web"
+    "webApp": "Aplicación web",
+    "aiReview": "Revisión con IA",
+    "aiReviewDesc": "Narrativas de PR generadas por IA",
+    "uptimeUnavailable": "Aún no registramos el historial de disponibilidad. Esta página refleja solo el estado actual, comprobado cada 30 segundos.",
+    "unreachableTitle": "Estado no disponible",
+    "unreachable": "No pudimos contactar con el backend de estado en este momento. Esto no significa necesariamente que algo esté caído — significa que ahora mismo no podemos saberlo. Inténtalo de nuevo en breve."
   },
   "security": {
     "eyebrow": "Confianza y seguridad",
@@ -1644,7 +1649,8 @@
     "degraded": "Degradado",
     "outage": "Fallo grave",
     "allOperational": "Todos los sistemas operativos",
-    "partialOutage": "Fallo parcial"
+    "partialOutage": "Fallo parcial",
+    "unknown": "Desconocido"
   },
   "tokens": {
     "title": "Tokens de API",

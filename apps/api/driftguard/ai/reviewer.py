@@ -6,6 +6,7 @@ from driftguard.ai.blocks import text_from_blocks
 from driftguard.ai.findings import Finding
 from driftguard.compliance import control_summary
 from driftguard.core.config import settings
+from driftguard.services.ai_health import record_ai_outcome
 
 _client: AsyncAnthropic | None = None
 
@@ -110,11 +111,16 @@ async def review(findings: list[Finding], pr_context: dict) -> str:
                 system=SYSTEM_PROMPT,
                 messages=[{"role": "user", "content": prompt}],
             )
-            return text_from_blocks(msg.content)
+            narrative = text_from_blocks(msg.content)
+            await record_ai_outcome(used="anthropic")
+            return narrative
         except Exception as exc:
             import logging
 
             logging.getLogger(__name__).warning("anthropic_review_failed: %s", exc)
+            anthropic_error = str(exc)
+    else:
+        anthropic_error = "ANTHROPIC_API_KEY not configured"
 
     # 2. Gemini fallback
     if settings.gemini_api_key:
@@ -128,11 +134,16 @@ async def review(findings: list[Finding], pr_context: dict) -> str:
                 contents=prompt,
                 config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT),
             )
-            return resp.text or _static_fallback(findings)
+            if resp.text:
+                await record_ai_outcome(used="gemini")
+                return resp.text
         except Exception as exc:
             import logging
 
             logging.getLogger(__name__).warning("gemini_review_failed: %s", exc)
+            await record_ai_outcome(used="static", error=f"anthropic: {anthropic_error}; gemini: {exc}")
+            return _static_fallback(findings)
 
-    # 3. Static deterministic fallback
+    # 3. Static deterministic fallback — no Gemini key, or Gemini returned no text.
+    await record_ai_outcome(used="static", error=anthropic_error)
     return _static_fallback(findings)

@@ -1356,7 +1356,7 @@
     "components": "Components",
     "metrics": "Metrics",
     "uptime": "Uptime — last 90 days",
-    "p99": "P99 <2s",
+    "p99": "Analysis engine and database",
     "memory": "Memory index",
     "pipeline": "Core review pipeline",
     "dashboard": "Dashboard",
@@ -1377,7 +1377,12 @@
     "prIngestion": "PR event ingestion",
     "billing": "Billing",
     "stripeWebhooks": "Stripe webhook processing",
-    "webApp": "Web application"
+    "webApp": "Web application",
+    "aiReview": "AI Review",
+    "aiReviewDesc": "AI-generated PR narratives",
+    "uptimeUnavailable": "We don't track historical uptime yet. This page reflects the current status only, checked every 30 seconds.",
+    "unreachableTitle": "Status unavailable",
+    "unreachable": "We couldn't reach the status backend just now. This doesn't necessarily mean anything is down — it means we can't currently tell. Try again shortly."
   },
   "security": {
     "eyebrow": "Trust & security",
@@ -1644,7 +1649,8 @@
     "degraded": "Degraded",
     "outage": "Major outage",
     "allOperational": "All systems operational",
-    "partialOutage": "Partial outage"
+    "partialOutage": "Partial outage",
+    "unknown": "Unknown"
   },
   "tokens": {
     "title": "API tokens",

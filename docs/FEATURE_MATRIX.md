@@ -30,7 +30,7 @@ appear here as **Available**, it is not shipped.
 | Cost delta (Infracost) | 🟡 Early access | `ai/findings.py::from_infracost` | Requires an Infracost API key. Without one, no cost findings are produced — the analysis does not fail, it is simply silent on cost |
 | Security scan (Checkov) | ✅ Available | `ai/findings.py::from_checkov` | Only `check_name`/`guideline` are carried through; `code_block` is deliberately dropped so source values never reach a PR comment |
 | Drift detection vs live state | 🟡 Early access | `integrations/drift.py`, `workers/analyzer.py::_safe_drift` | Needs a cross-account AWS role. Without credentials it degrades to plan-only |
-| AI review | 🟡 Early access | `ai/reviewer.py`, `services/analysis/ai_review.py` | Anthropic primary, Gemini fallback, deterministic static summary if both are unreachable. **As of 2026-08-23 both configured providers are exhausted** — `gemini.yml`'s own header notes ANTHROPIC_API_KEY hit a billing error, and the daily `eval-suite` cron has failed every run since 2026-08-01 on a Gemini `429 RESOURCE_EXHAUSTED: monthly spending cap`. The fallback chain is working as designed; there is currently nothing left to fall back *to*. Live PR reviews right now most likely return the static summary, not an AI-generated one. Requires the owner to raise the Gemini spend cap or fund/rotate ANTHROPIC_API_KEY — not fixable by a code change |
+| AI review | 🟡 Early access | `ai/reviewer.py`, `services/analysis/ai_review.py`, `services/ai_health.py` | Anthropic primary, Gemini fallback, deterministic static summary if both are unreachable. **As of 2026-08-23 both configured providers are exhausted** — `gemini.yml`'s own header notes ANTHROPIC_API_KEY hit a billing error, and the daily `eval-suite` cron has failed every run since 2026-08-01 on a Gemini `429 RESOURCE_EXHAUSTED: monthly spending cap`. The fallback chain is working as designed; there is currently nothing left to fall back *to*. Live PR reviews right now most likely return the static summary, not an AI-generated one. Requires the owner to raise the Gemini spend cap or fund/rotate ANTHROPIC_API_KEY — not fixable by a code change. **This is no longer silent**: every real attempt now records which tier answered, `/api/v1/ready` surfaces it as `ai_review: "error: falling back to static summary — …"`, and the public `/status` page shows it as a distinct row rather than the "Security" row it was previously (and incorrectly) mapped to |
 | Semantic memory / incident recall | ✅ Available | `api/v1/memory.py`, pgvector migration 002 | Isolated per organisation |
 | Compliance control mapping | ✅ Available | `compliance/mappings.py` | DORA Art.11, NIS2 Art.21, ISO 27001 A.8.8 mapped per finding |
 
@@ -52,6 +52,7 @@ appear here as **Available**, it is not shipped.
 | Multi-language UI | ✅ Available | `apps/web/messages/*.json` | 6 locales, 1751 keys, parity enforced in CI |
 | **SSO / SCIM provisioning** | 📋 **Planned** | — | **Nothing in `apps/api` implements SAML, OIDC SSO, or SCIM.** Was listed as an Enterprise plan feature; now labelled |
 | Self-hosting | ✅ Available | `docker-compose.yml`, `docs/DEPLOY.md` | |
+| Public status page | 🟡 Early access | `apps/web/app/status/page.tsx`, `apps/web/lib/status-page.ts` | Reflects the current `/api/v1/ready` snapshot only — every row is backed by a real check, an unreachable backend renders as "unknown" rather than "operational", and a fabricated 90-day uptime chart (it replayed the *current* check across all 90 bars) was replaced with an honest note. Historical uptime tracking does not exist — no `status_history` table, no snapshot job — so this stays Early access, not Available, until that's built |
 
 ## Plans and limits
 
@@ -97,10 +98,11 @@ website copy stops matching them.
 | Gap | Status | Where |
 |---|---|---|
 | GitHub App webhook secret rotation | 🔴 **Open P0** | `docs/SECRET_ROTATION.md` — requires the owner; not closable by code |
-| Both LLM providers exhausted (Anthropic billing error, Gemini spend cap) | 🔴 **Open** | AI review row above — live PR reviews likely degrade to the static summary right now; requires the owner's billing action |
+| Both LLM providers exhausted (Anthropic billing error, Gemini spend cap) | 🔴 **Open** | AI review row above — live PR reviews likely degrade to the static summary right now; requires the owner's billing action. As of this fix, `/status` will now actually show this as degraded instead of staying silent |
 | Memory retention enforcement | 📋 Planned | No purge job. Copy corrected to stop claiming windows |
 | OPA / Rego policy bundles | 📋 Planned | Custom rule engine ships today |
 | SSO / SCIM | 📋 Planned | |
+| Historical uptime tracking | 📋 Planned | `/status` shows current state only. No `status_history` table or snapshot job exists anywhere in the migration chain (`apps/api/driftguard/db/migrations/versions/`) |
 | Duplicate rate-limit implementations | ⚠️ Known | `PRODUCTION_READINESS.md` N-6 — left unfixed deliberately; unifying touches the webhook path |
 | Terraform ↔ runtime reconciliation | 🟡 Partial | `docs/INFRA_RECONCILIATION.md` |
 

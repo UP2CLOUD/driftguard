@@ -11,6 +11,8 @@
 
 Dos 12 itens do relatório original, **10 estão resolvidos**, 1 está **em aberto por decisão de custo** e 1 está **parcialmente resolvido**. Nenhuma regressão.
 
+Nesta revalidação foram encontrados e corrigidos mais dois defeitos críticos fora do relatório original: a página pública `/status` inventava dados e assumia "tudo operacional" quando não conseguia sequer contactar o backend (N-7), e o readiness check reportava a IA como saudável apenas por a chave estar configurada, sem nunca verificar se as chamadas reais estavam a ter sucesso — a mesma lacuna que deixou os dois providers falharem em produção durante três semanas sem qualquer sinal público (N-8).
+
 Existe **um P0 novo, e é o mais grave do documento**: um webhook secret real esteve commitado num repositório público e continua alcançável no histórico Git. Não é fechável por código — depende de rotação pelo proprietário. Ver [`SECRET_ROTATION.md`](SECRET_ROTATION.md).
 
 ---
@@ -59,6 +61,8 @@ Existe **um P0 novo, e é o mais grave do documento**: um webhook secret real es
 | N-4 | Sem secret scanning em CI ou pre-commit | Alta | ✅ Corrigido. Gitleaks em PR + pre-commit, `scripts/check-no-tfstate.sh`, e `scripts/secrets-selftest.sh` que prova que o allowlist não falhou em aberto |
 | N-5 | Sem `SECURITY.md` | Média | ✅ Corrigido. Canal de reporte, prazos de resposta, versões suportadas |
 | N-6 | Duas implementações paralelas de rate limiting | Baixa | ⚠️ Conhecido, não corrigido. `core/ratelimit.py` (usado por `webhooks.py`) e `core/rate_limit.py` (usado por `ingest`/`policies`/`scans`) têm buckets separados. Ambas funcionam; unificar mexe no caminho do webhook, o que é mais arriscado do que a duplicação. Registado, não escondido |
+| N-7 | **A página pública /status inventava dados e mentia por defeito** | Crítica | ✅ Corrigido. Três defeitos: (1) o gráfico de uptime de 90 dias era 100% fabricado — repetia o check *actual* em todas as 90 barras, sem nenhuma fonte de histórico real (não existe tabela `status_history` nem job de snapshot em nenhuma migração); (2) `ready === null ? true : ...` — quando o backend estava inalcançável, a página assumia "tudo operacional" em vez de "não sabemos", o único modo de falha que uma status page existe para não ter; (3) o sinal `checks.ai_review` estava mapeado a uma linha rotulada "Security" sem relação, enquanto duas linhas ("Cost analysis", "Dashboard") tinham estado fixo "operational" sem nenhum check real por trás. Corrigido: gráfico substituído por aviso honesto de que não há histórico; estado "unknown" distinto de "operational" quando o backend não responde; linhas removidas ou re-rotuladas para corresponder ao sinal real. `apps/web/lib/status-page.test.ts` (14 testes, com controlo negativo confirmando que apanha a forma exacta do bug original) |
+| N-8 | **`/api/v1/ready` reportava `ai_review: "ok"` mesmo com ambos os providers exaustos** | Crítica | ✅ Corrigido. O check só confirmava que uma chave estava configurada, nunca que as chamadas com essa chave estavam a funcionar — exactamente a lacuna que permitiu que os dois providers falhassem em produção durante três semanas sem nada o reportar (ver linha "AI review" em `FEATURE_MATRIX.md`). `services/ai_health.py` (novo) grava, a cada tentativa real em `ai/reviewer.py` e `services/analysis/ai_review.py`, qual camada respondeu de facto; `/ready` lê essa última observação em vez de re-derivar "ok" da presença da chave. Sem chamada viva ao provider no probe de readiness — seria lento, instável e cobrado |
 
 ---
 

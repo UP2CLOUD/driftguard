@@ -1326,7 +1326,7 @@
     "components": "组件",
     "metrics": "指标",
     "uptime": "正常运行时间 — 过去 90 天",
-    "p99": "P99 <2s",
+    "p99": "分析引擎与数据库",
     "memory": "记忆索引",
     "pipeline": "核心审查流水线",
     "dashboard": "仪表板",
@@ -1347,7 +1347,12 @@
     "prIngestion": "PR 事件摄取",
     "billing": "账单",
     "stripeWebhooks": "Stripe webhook 处理",
-    "webApp": "Web 应用"
+    "webApp": "Web 应用",
+    "aiReview": "AI 审查",
+    "aiReviewDesc": "AI 生成的 PR 叙述",
+    "uptimeUnavailable": "我们尚未追踪历史正常运行时间。此页面仅反映当前状态，每 30 秒检查一次。",
+    "unreachableTitle": "状态不可用",
+    "unreachable": "我们目前无法连接到状态后端。这并不一定意味着系统出现故障 —— 只是我们目前无法确认。请稍后重试。"
   },
   "security": {
     "eyebrow": "信任与安全",
@@ -1644,7 +1649,8 @@
     "degraded": "性能下降",
     "outage": "严重故障",
     "allOperational": "所有系统正常运行",
-    "partialOutage": "部分故障"
+    "partialOutage": "部分故障",
+    "unknown": "未知"
   },
   "tokens": {
     "title": "API 令牌",

@@ -6,6 +6,7 @@ import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
 import { BACKEND_URL } from "@/lib/backend";
+import { checkToStatus, deriveAllOperational, deriveBannerTone, type SystemStatus } from "@/lib/status-page";
 
 type HealthReady = {
   status: "ok" | "degraded";
@@ -18,26 +19,18 @@ type HealthReady = {
   };
 };
 
-type SystemStatus = "operational" | "degraded" | "outage";
-
-function checkToStatus(val: string | undefined): SystemStatus {
-  if (!val || val === "ok") return "operational";
-  // Backend returns "not_configured" or "not_configured: FIELD1, FIELD2"
-  if (val === "not_configured" || val.startsWith("not_configured:")) return "operational";
-  if (val.startsWith("error")) return "outage";
-  return "degraded";
-}
-
 const STATUS_COLOR: Record<SystemStatus, string> = {
   operational: "text-allowed border-allowed/30 bg-allowed/10",
   degraded:    "text-warned border-warned/30 bg-warned/10",
   outage:      "text-blocked border-blocked/30 bg-blocked/10",
+  unknown:     "text-[color:var(--dg-fg-subtle)] border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)]",
 };
 
 const DOT_COLOR: Record<SystemStatus, string> = {
   operational: "bg-allowed",
   degraded:    "bg-warned",
   outage:      "bg-blocked",
+  unknown:     "bg-[color:var(--dg-fg-subtle)]",
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -58,8 +51,13 @@ export default async function StatusPage() {
   const messages = await getMessages(preferences.locale);
   const t = createTranslator(messages);
 
-  // Fetch live readiness from backend — public endpoint, no auth needed
+  // Fetch live readiness from backend — public endpoint, no auth needed.
+  // `reachable` is tracked separately from `ready`: a successful fetch that
+  // returns a degraded body is a real, reportable state; a failed fetch is a
+  // *different* state (we don't know) and must never be rendered as if it
+  // were "operational" — see checkToStatus and the banner below.
   let ready: HealthReady | null = null;
+  let reachable = false;
   try {
     const res = await fetch(`${BACKEND_URL}/api/v1/ready`, {
       next: { revalidate: 30 },
@@ -67,48 +65,70 @@ export default async function StatusPage() {
     });
     if ((res.ok || res.status === 503) && (res.headers.get("content-type") ?? "").includes("application/json")) {
       ready = await res.json() as HealthReady;
+      reachable = true;
     }
   } catch {
-    // Backend unreachable — treat everything as operational (fail-open for status page)
+    // Backend unreachable. Leave `reachable` false — every row below renders
+    // "unknown", and the banner says so explicitly, rather than defaulting to
+    // "all systems operational" when we have no basis for that claim.
   }
 
   const checks = ready?.checks ?? {};
-  const SYSTEMS = [
-    { name: t("status.pipeline"),  description: t("status.p99"),       status: checkToStatus(checks.db) },
-    { name: t("status.webhooks"),      description: t("status.prIngestion"),       status: checkToStatus(checks.github_app) },
-    { name: t("status.memory"),        description: t("docs.memory.subtitle"),     status: checkToStatus(checks.db) },
-    { name: t("status.costAnalysis"),  description: t("status.infracost"),          status: "operational" as SystemStatus },
-    { name: t("docs.security.title"),  description: t("status.checkov"),            status: checkToStatus(checks.ai_review) },
-    { name: t("status.billing"),       description: t("status.stripeWebhooks"),     status: checkToStatus(checks.stripe) },
-    { name: t("status.dashboard"),     description: t("status.webApp"),             status: "operational" as SystemStatus },
+  // Every row here is backed by a real signal from /api/v1/ready. Two rows
+  // that previously existed — "Cost analysis" and "Dashboard" — had no check
+  // behind them at all and were hardcoded to "operational"; they're gone
+  // rather than fabricated. The row that read `checks.ai_review` used to be
+  // labelled "Security" (a Checkov description with an unrelated AI-review
+  // status badge); it's now its own correctly-labelled row.
+  const SYSTEMS: { name: string; description: string; status: SystemStatus }[] = [
+    { name: t("status.pipeline"), description: t("status.p99"),         status: checkToStatus(checks.db) },
+    { name: t("status.webhooks"), description: t("status.prIngestion"), status: checkToStatus(checks.github_app) },
+    { name: t("status.memory"),   description: t("docs.memory.subtitle"), status: checkToStatus(checks.db) },
+    { name: t("status.aiReview"), description: t("status.aiReviewDesc"), status: checkToStatus(checks.ai_review) },
+    { name: t("status.billing"),  description: t("status.stripeWebhooks"), status: checkToStatus(checks.stripe) },
   ];
 
-  const allOperational = ready === null
-    ? true
-    : ready.status === "ok";
+  const allOperational = deriveAllOperational(reachable, ready?.status ?? null);
+  const bannerTone = deriveBannerTone(reachable, allOperational);
 
   const now = new Date().toUTCString();
+
+  const BANNER_CLASSES: Record<typeof bannerTone, { border: string; dot: string; text: string }> = {
+    operational: { border: "border-allowed/30 bg-allowed/5", dot: "bg-allowed dg-pulse", text: "text-allowed" },
+    degraded:    { border: "border-warned/30 bg-warned/5",   dot: "bg-warned dg-pulse",  text: "text-warned" },
+    unknown:     {
+      border: "border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)]",
+      dot: "bg-[color:var(--dg-fg-subtle)]",
+      text: "text-[color:var(--dg-fg-subtle)]",
+    },
+  };
+  const banner = BANNER_CLASSES[bannerTone];
+  const bannerLabel = !reachable
+    ? t("status.unreachableTitle")
+    : allOperational
+      ? t("status_labels.allOperational")
+      : t("status_labels.partialOutage");
 
   return (
     <MarketingPageShell
       eyebrow={t("status.eyebrow")}
-      title={allOperational ? t("status.titleOk") : t("status.titleDegraded")}
+      title={!reachable ? t("status.unreachableTitle") : allOperational ? t("status.titleOk") : t("status.titleDegraded")}
       subtitle={`${t("status.lastChecked")} ${now}`}
       narrow
     >
       {/* Global indicator */}
-      <div className={`mb-10 flex items-center gap-3 rounded-md border px-4 py-3.5 ${
-        allOperational
-          ? "border-allowed/30 bg-allowed/5"
-          : "border-warned/30 bg-warned/5"
-      }`}>
-        <span className={`h-2 w-2 rounded-full ${allOperational ? "bg-allowed dg-pulse" : "bg-warned dg-pulse"}`} />
-        <span className={`font-mono text-[12px] font-semibold uppercase tracking-widest ${
-          allOperational ? "text-allowed" : "text-warned"
-        }`}>
-          {allOperational ? t("status_labels.allOperational") : t("status_labels.partialOutage")}
+      <div className={`mb-10 flex items-center gap-3 rounded-md border px-4 py-3.5 ${banner.border}`}>
+        <span className={`h-2 w-2 rounded-full ${banner.dot}`} />
+        <span className={`font-mono text-[12px] font-semibold uppercase tracking-widest ${banner.text}`}>
+          {bannerLabel}
         </span>
       </div>
+
+      {!reachable && (
+        <div className="mb-10 rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface-raised)] px-4 py-3.5">
+          <p className="text-[12px] text-[color:var(--dg-fg-muted)]">{t("status.unreachable")}</p>
+        </div>
+      )}
 
       {/* Systems table */}
       <div className="rounded-md border border-[color:var(--dg-border)] overflow-hidden mb-12">
@@ -135,25 +155,14 @@ export default async function StatusPage() {
         ))}
       </div>
 
-      {/* Uptime — static bars (all green when operational) */}
+      {/* No historical uptime store exists yet (no status_history table, no
+          snapshot job) — a 90-bar chart here previously repainted the *current*
+          check across all 90 days, which is fabricated history, not real
+          history. Say so plainly instead of inventing a track record. */}
       <div className="mb-10">
         <div className="dg-label mb-4">{t("status.uptime")}</div>
-        <div className="flex items-end gap-0.5 h-10">
-          {Array.from({ length: 90 }).map((_, i) => (
-            <div
-              key={i}
-              className={`flex-1 rounded-sm transition-colors cursor-default ${allOperational ? "bg-allowed/80 hover:bg-allowed" : "bg-warned/60 hover:bg-warned"}`}
-              style={{ height: "100%" }}
-              title={allOperational ? t("status_labels.operational") : t("status_labels.degraded")}
-            />
-          ))}
-        </div>
-        <div className="flex items-center justify-between mt-2 font-sans font-medium text-[10px] text-[color:var(--dg-fg-subtle)]">
-          <span>90 days ago</span>
-          <span className={allOperational ? "text-allowed" : "text-warned"}>
-            {allOperational ? t("status_labels.allOperational") : t("status_labels.partialOutage")}
-          </span>
-          <span>{t("status.today")}</span>
+        <div className="rounded-md border border-[color:var(--dg-border)] bg-[color:var(--dg-surface)] px-4 py-4">
+          <p className="text-[12px] text-[color:var(--dg-fg-subtle)]">{t("status.uptimeUnavailable")}</p>
         </div>
       </div>
 

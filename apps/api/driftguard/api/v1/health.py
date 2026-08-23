@@ -94,7 +94,29 @@ async def ready() -> Response:
     missing_gh = settings.missing_github_config()
     checks["github_app"] = "ok" if not missing_gh else f"not_configured: {', '.join(missing_gh)}"
     checks["stripe"] = "ok" if settings.stripe_webhook_secret else "not_configured"
-    checks["ai_review"] = "ok" if settings.anthropic_api_key else "not_configured"
+
+    # "A key is configured" and "calls made with that key are succeeding" are
+    # different facts, and only the second one is worth reporting on a status
+    # page. Both Anthropic and Gemini failed in production for three weeks —
+    # one on a billing error, one on a spend cap — while this check kept
+    # reporting "ok" because a key was present. record_ai_outcome() is written
+    # by ai/reviewer.py and services/analysis/ai_review.py on every real
+    # attempt; this reads that last observation instead of pinging a provider
+    # live, which would make a readiness probe slow, flaky, and billed.
+    if not settings.anthropic_api_key and not settings.gemini_api_key:
+        checks["ai_review"] = "not_configured"
+    else:
+        from driftguard.services.ai_health import get_ai_health
+
+        ai_health = await get_ai_health()
+        if ai_health is None:
+            # Configured, but no PR has triggered a review since this process
+            # (or Redis) last started. Not an error — just unobserved.
+            checks["ai_review"] = "ok"
+        elif ai_health.get("used") == "static":
+            checks["ai_review"] = f"error: falling back to static summary — {ai_health.get('error', '')[:120]}"
+        else:
+            checks["ai_review"] = "ok"
 
     content = {"status": overall, "checks": checks}
     # Return 503 if any check degraded — Cloud Run traffic routing will exclude this replica
