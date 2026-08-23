@@ -20,8 +20,10 @@ Reference:
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import re
+import secrets
 from typing import Any
 
 from driftguard.events.schemas import ChangeAction, ResourceChange
@@ -279,24 +281,77 @@ def _flatten_sensitive(d: dict, prefix: str = "") -> list[str]:
     return result
 
 
+# Attribute names whose *value* is a credential. Deliberately narrower than
+# _SENSITIVE_PATTERN, which is used to flag paths for human attention and can
+# afford to over-match. Redaction cannot: blanking `kms_key_id` or `key_name`
+# would destroy the before/after signal the risk scorer runs on, and neither
+# holds a secret -- they hold an ARN and a keypair name. So match whole
+# underscore-delimited tokens, and never on a bare "key", "cert", or "auth".
+_SECRET_VALUE_ATTR = re.compile(
+    r"(?:^|_)(password|passwd|secret|token|credential|credentials|private_key|"
+    r"api_key|access_key|secret_key|secret_access_key|client_secret)(?:$|_)",
+    re.IGNORECASE,
+)
+
+# Salt is per-process and never persisted, so a redaction digest is comparable
+# only within a single analysis run -- which is the only place it is needed.
+# Without it, `sha256("changeme")` is a lookup-table hit and the "redaction"
+# would leak every low-entropy secret it touched.
+_REDACTION_SALT = secrets.token_bytes(16)
+
+
+def _redaction_placeholder(value: Any) -> str:
+    """A stable, unreadable stand-in for one secret value.
+
+    Returning a bare '[REDACTED]' for everything loses information the risk
+    scorer needs: if `password` reads '[REDACTED]' both before and after, a
+    credential rotation compares equal and scores as no change. Deriving the
+    placeholder from the value keeps "did this change?" answerable while
+    leaving the value itself unrecoverable.
+    """
+    digest = hashlib.sha256(_REDACTION_SALT + repr(value).encode("utf-8", "replace")).hexdigest()
+    return f"[REDACTED:{digest[:12]}]"
+
+
 def _redact_sensitive(
     obj: dict | None,
     sensitive_map: dict | bool,
 ) -> dict | None:
-    """Replace sensitive attribute values with '[REDACTED]'."""
+    """Replace credential values with an opaque, change-detectable placeholder.
+
+    Two independent triggers, because neither alone is sufficient:
+
+      * Terraform's own `before_sensitive`/`after_sensitive` mask. Authoritative
+        where present, but a provider only sets it for attributes its schema
+        declares sensitive. Anything assembled in a `local`, injected through
+        `user_data`, or shipped by a provider that simply neglects to mark the
+        field arrives unmarked.
+      * The attribute name. The parser already trusts name matching enough to
+        list these paths in `sensitive_paths` -- it was reporting an attribute
+        as a secret while keeping its value in the clear.
+    """
     if obj is None:
         return None
     if sensitive_map is True:
-        return {k: "[REDACTED]" for k in obj}
-    if not isinstance(sensitive_map, dict):
-        return obj
+        return {k: _redaction_placeholder(v) for k, v in obj.items()}
 
     result = dict(obj)
-    for k, v in sensitive_map.items():
-        if v is True and k in result:
-            result[k] = "[REDACTED]"
-        elif isinstance(v, dict) and isinstance(result.get(k), dict):
-            result[k] = _redact_sensitive(result[k], v)
+
+    if isinstance(sensitive_map, dict):
+        for k, v in sensitive_map.items():
+            if v is True and k in result:
+                result[k] = _redaction_placeholder(result[k])
+            elif isinstance(v, dict) and isinstance(result.get(k), dict):
+                result[k] = _redact_sensitive(result[k], v)
+
+    for k, v in result.items():
+        if isinstance(v, str) and _SECRET_VALUE_ATTR.search(k) and not v.startswith("[REDACTED:"):
+            result[k] = _redaction_placeholder(v)
+        elif isinstance(v, dict):
+            # Nested blocks carry credentials too, and Terraform's mask does
+            # not always descend into them.
+            result[k] = _redact_sensitive(v, {}) or v
+
     return result
 
 

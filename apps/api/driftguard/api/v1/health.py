@@ -8,23 +8,36 @@ import time
 from fastapi import APIRouter, Depends, Header, HTTPException, Response
 
 from driftguard.core.config import settings
+from driftguard.core.rate_limit import rate_limit
 
 router = APIRouter()
 
 _started_at = time.time()
 
 
-def require_debug_access(x_debug_token: str | None = Header(None)) -> None:
-    """Gate debug endpoints.
+# Debug routes live on their own router, and production never mounts it
+# (see api/v1/__init__.py). They are absent from the route table and from the
+# OpenAPI schema in prod rather than being gated behind a token.
+#
+# This used to be a token check that 404'd on mismatch. That is a weaker
+# property than it looks: /debug/run-migrations shells out to `alembic upgrade
+# head`, and /debug/run-analyze returns a raw traceback. A route that exists is
+# a route that can be reached -- by a token that leaks, by a middleware
+# ordering mistake, or by a dependency that is accidentally dropped in a
+# refactor. Not registering it removes all three.
+debug_router = APIRouter()
 
-    Outside prod: always allowed.
-    In prod: only if DEBUG_ENDPOINT_TOKEN is configured AND the request matches it.
-    Closed by default — a missing/empty token in prod means 404 (don't reveal existence).
+
+def require_debug_access(x_debug_token: str | None = Header(None)) -> None:
+    """Second gate, for the non-prod environments where the routes do exist.
+
+    Staging and preview environments are not public, but they hold real-shaped
+    data and are reachable by more people than prod is. Defence in depth: if
+    DEBUG_ENDPOINT_TOKEN is set, it must match. Left unset, these routes stay
+    open in dev, which is the point of dev.
     """
-    if settings.environment != "prod":
-        return
     expected = settings.debug_endpoint_token
-    if not expected or x_debug_token != expected:
+    if expected and x_debug_token != expected:
         raise HTTPException(status_code=404, detail="Not Found")
 
 
@@ -93,7 +106,7 @@ async def ready() -> Response:
     )
 
 
-@router.get("/debug/run-analyze", dependencies=[Depends(require_debug_access)])
+@debug_router.get("/debug/run-analyze", dependencies=[Depends(require_debug_access)])
 async def debug_run_analyze(
     installation_id: int = 137862386,
     repo: str = "UP2CLOUD/driftguard-test-iac",
@@ -117,7 +130,7 @@ async def debug_run_analyze(
         return {"status": "error", "traceback": traceback.format_exc()[-2000:]}
 
 
-@router.get("/debug/analyze-steps", dependencies=[Depends(require_debug_access)])
+@debug_router.get("/debug/analyze-steps", dependencies=[Depends(require_debug_access)])
 async def debug_analyze_steps(
     installation_id: int = 1,
     repo: str = "UP2CLOUD/driftguard-test-iac",
@@ -133,7 +146,10 @@ async def debug_analyze_steps(
         from driftguard.integrations.github import installation_token
 
         token = await installation_token(installation_id)
-        steps["installation_token"] = f"OK ({token[:10]}...)"
+        # Report that a token was obtained, never any part of it. A prefix is
+        # not a redaction -- it narrows a brute force and it is enough to
+        # fingerprint the credential in a screenshot or a pasted log.
+        steps["installation_token"] = f"OK (len={len(token)})"
     except Exception:
         steps["installation_token"] = traceback.format_exc()[-500:]
         return {"steps": steps, "failed_at": "installation_token"}
@@ -180,7 +196,7 @@ async def debug_analyze_steps(
     return {"steps": steps, "failed_at": None}
 
 
-@router.get("/debug/run-migrations", dependencies=[Depends(require_debug_access)])
+@debug_router.get("/debug/run-migrations", dependencies=[Depends(require_debug_access)])
 async def debug_run_migrations() -> dict:
     """Manually trigger alembic upgrade head and return result or error."""
     import subprocess
@@ -199,7 +215,7 @@ async def debug_run_migrations() -> dict:
     }
 
 
-@router.get("/debug/schema", dependencies=[Depends(require_debug_access)])
+@debug_router.get("/debug/schema", dependencies=[Depends(require_debug_access)])
 async def debug_schema() -> dict:
     """Check if migration 010 columns exist and report alembic version."""
     from sqlalchemy import text
@@ -225,14 +241,21 @@ async def debug_schema() -> dict:
     }
 
 
-@router.get("/metrics")
+@router.get("/metrics", dependencies=[Depends(rate_limit(per_minute=60, per_hour=1200))])
 async def metrics() -> dict:
-    """Lightweight metrics for Grafana polling (no Prometheus dependency)."""
+    """Lightweight metrics for Grafana polling (no Prometheus dependency).
+
+    Unauthenticated by design -- a scrape endpoint that needs a credential
+    tends to get one hard-coded into a dashboard -- but rate limited, because
+    unauthenticated and unbounded is how a health endpoint becomes an
+    amplification target. 60/min is well above any sane scrape interval.
+
+    `pid` used to be reported here. It is of no use to a dashboard and it hands
+    an unauthenticated caller a process identifier, so it is gone.
+    """
     import gc
-    import os
 
     return {
         "uptime_s": round(time.time() - _started_at),
         "gc_counts": gc.get_count(),
-        "pid": os.getpid(),
     }

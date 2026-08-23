@@ -50,3 +50,12 @@ tf-bootstrap: ## one-time GCP foundations setup
 
 bootstrap: ## local environment bootstrap
 	./bootstrap.sh
+
+secrets-scan: ## scan the working tree for committed credentials
+	gitleaks detect --source . --config .gitleaks.toml --no-git --redact --exit-code 1
+
+secrets-selftest: ## prove .gitleaks.toml still catches real secrets and ignores placeholders
+	./scripts/secrets-selftest.sh
+
+no-tfstate: ## fail if Terraform state or plan artifacts are tracked by git
+	./scripts/check-no-tfstate.sh

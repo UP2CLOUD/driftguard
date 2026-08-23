@@ -104,7 +104,7 @@ secret driftguard-secret-key     "$(openssl rand -base64 32)"
 
 # GitHub App (from apps/api/.env.local)
 secret driftguard-gh-app-id       "3758793"
-secret driftguard-gh-webhook-secret "6c9d87b7b81954a463e1deb1a65f524aea3f755ac9d86202472e78836ecfeada"
+secret driftguard-gh-webhook-secret "<YOUR_GITHUB_APP_WEBHOOK_SECRET>"
 # Private key — keep newlines as \n
 secret driftguard-gh-app-pk       "$(cat path/to/driftguard-app-private-key.pem | awk 'NF {printf "%s\\n", $0}')"
 

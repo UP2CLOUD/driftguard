@@ -25,4 +25,25 @@ repos:
       - id: check-merge-conflict
       - id: trailing-whitespace
       - id: end-of-file-fixer
+      # Only catches PEM blocks. Kept because it is cheap, but it is not the
+      # secret gate -- gitleaks below is.
       - id: detect-private-key
+
+  # A real GitHub App webhook secret reached a public repo through a Markdown
+  # file that no existing hook read. Same rule set as CI, so a commit that
+  # would fail security-secrets.yml fails here first.
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+        args: ["--config", ".gitleaks.toml", "--redact"]
+
+  - repo: local
+    hooks:
+      - id: no-tfstate
+        name: no Terraform state or plan artifacts
+        entry: scripts/check-no-tfstate.sh
+        language: script
+        # Path-only check; never reads file contents.
+        files: '(\.tfstate($|\.)|\.tfplan$|^tfplan|(^|/)\.terraform/)'
+        pass_filenames: true

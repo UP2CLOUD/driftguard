@@ -1,0 +1,82 @@
+# Gitleaks configuration for DriftGuard.
+#
+# This exists because a real GitHub App webhook secret sat in DEPLOY.md, in a
+# public repository, from PR #32 until it was removed. Nothing in CI or in the
+# pre-commit hooks would have caught it: `detect-private-key` only looks for PEM
+# headers, and ruff does not read Markdown. A committed credential is not a
+# lint-class problem, so it gets its own gate.
+#
+# Extend the default rule set rather than replacing it -- the upstream rules
+# cover provider tokens (GitHub, Stripe, AWS, Anthropic, Google, Slack, ...)
+# far more thoroughly than a hand-written list would.
+#
+# NOTE ON SCHEMA: this file uses the singular `[allowlist]` table. gitleaks
+# 8.21.2 (the version pinned in CI and pre-commit) silently ignores top-level
+# `[[allowlists]]` array-of-tables -- no parse error, the entries simply never
+# apply. That failure mode cost a debugging cycle here; if you bump the
+# gitleaks version, re-verify with `make secrets-selftest` before trusting it.
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "driftguard-generic-hex-secret-assignment"
+description = "64-hex value assigned to a secret-shaped name (webhook secrets, signing keys)"
+# Deliberately narrow: it must be *assigned to* something that names itself a
+# secret/key/token. A bare 64-hex string is usually a SHA-256 digest, and
+# flagging every digest trains people to ignore the scanner.
+regex = '''(?i)(webhook[_-]?secret|signing[_-]?secret|secret[_-]?key|api[_-]?key|app[_-]?secret|client[_-]?secret)["'\s:=]{1,10}([a-f0-9]{64})'''
+secretGroup = 2
+keywords = [
+  "webhook_secret", "webhook-secret", "signing_secret", "signing-secret",
+  "secret_key", "secret-key", "api_key", "api-key",
+  "app_secret", "app-secret", "client_secret", "client-secret",
+]
+
+[allowlist]
+description = "Non-credential high-entropy content and named-but-empty placeholders"
+
+paths = [
+  # Dependency integrity digests -- thousands of SHA-256/SHA-512 hashes.
+  '''(^|/)uv\.lock$''',
+  '''(^|/)pnpm-lock\.yaml$''',
+  '''(^|/)package-lock\.json$''',
+  '''(^|/)skills-lock\.json$''',
+  # TypeScript incremental build cache: machine-generated, gitignored.
+  '''\.tsbuildinfo$''',
+  # Vendored third-party skill bundles -- not our code, not our secrets.
+  '''^\.agents/''',
+  # Generated knowledge-graph output.
+  '''^graphify-out/''',
+  # Installed dependencies and build output. Absent from a CI checkout, but
+  # present locally -- without these a developer run takes minutes and gets
+  # skipped, and a gate that is routinely skipped is not a gate.
+  '''(^|/)node_modules/''',
+  '''(^|/)\.venv/''',
+  '''(^|/)\.next/''',
+  '''(^|/)__pycache__/''',
+  '''(^|/)\.pytest_cache/''',
+]
+
+# Matched against the *extracted secret*, not the whole line. Keeping the
+# target narrow matters: an allowlist entry for the bare word "example"
+# evaluated against whole lines would suppress a real credential that happened
+# to sit on a line mentioning example.com.
+regexes = [
+  # Documentation and .env.example placeholders. These must stay obviously
+  # fake; if one of these ever holds real material the reviewer, not the
+  # scanner, is the last line of defence -- see SECURITY.md.
+  '''<YOUR_[A-Z0-9_]+>''',
+  '''(?i)(changeme|replace[_-]?me|your[_-]?(secret|token|key)[_-]?here|xxx+|placeholder|example|dev-only-change-me)''',
+  # PEM *headers with no body* -- used in the docs env table and in one health
+  # test to show the expected shape of GITHUB_APP_PRIVATE_KEY.
+  '''-----BEGIN [A-Z ]*PRIVATE KEY-----(…|\.\.\.)?["'\s]*$''',
+  # Truncated token in the copy-paste curl example on the token settings page
+  # (apps/web/.../TokenManager.tsx). The `...` is literal; there is no token.
+  '''^dg_live_\.\.\.$''',
+  # Bitnami chart convention in infra/terraform/modules/redis-ha:
+  # `existingSecretPasswordKey = "password"` names the *key inside* an existing
+  # Kubernetes Secret. The value lives in the cluster -- which is the pattern we
+  # want people using. Anchored so it only ever matches this exact literal.
+  '''^"password"$''',
+]
