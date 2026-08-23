@@ -48,7 +48,27 @@ make tf-fmt
 make tf-validate
 make tf-bootstrap
 make bootstrap
+make secrets-scan       # gitleaks over the working tree
+make secrets-selftest   # prove .gitleaks.toml still catches real secrets
+make no-tfstate         # fail if Terraform state or plan artifacts are tracked
 ```
+
+## Rules that are enforced, not advisory
+
+- **Never commit a credential.** `gitleaks` gates every PR and runs as a
+  pre-commit hook. A real webhook secret already reached this public repo once
+  through a Markdown file; see `docs/SECRET_ROTATION.md`. If you edit
+  `.gitleaks.toml`, run `make secrets-selftest` — a broken allowlist fails
+  open, so a green scan proves nothing on its own.
+- **Never commit Terraform state or plan binaries.** `sensitive = true` only
+  suppresses CLI output; state holds the value in cleartext.
+- **Never add a user-visible capability claim without updating
+  `docs/FEATURE_MATRIX.md`** in the same PR. Only mark a row Available when it
+  names a real file and a real test. Plan limits live in
+  `apps/api/driftguard/core/config.py` and are asserted against website copy by
+  `apps/web/lib/plan-claims.test.ts`.
+- **Debug routes must never be registered in production.** They live on
+  `health.debug_router`, which `api/v1/__init__.py` mounts only outside prod.
 
 ## Direct package commands
 

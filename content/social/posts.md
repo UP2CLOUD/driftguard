@@ -127,11 +127,11 @@ DriftGuard solves this.
 
 Every blocked deploy, every cost anomaly, every policy violation → stored as a vector embedding. The next time an agent opens a similar PR, the original incident surfaces automatically with a similarity score.
 
-Your agents learn from production. Permanently.
+Your agents learn from production.
 
 Plus: cost delta on every PR (Infracost), security scan (Checkov), live drift detection (STS AssumeRole), compliance evidence for DORA/NIS2.
 
-All in under 2 seconds. GitHub App. No code changes.
+All of it on the pull request, before merge. GitHub App. No code changes.
 
 Early access is open. Link in comments.
 

@@ -105,6 +105,9 @@ secret driftguard-secret-key     "$(openssl rand -base64 32)"
 # GitHub App (from apps/api/.env.local)
 secret driftguard-gh-app-id       "3758793"
 secret driftguard-gh-webhook-secret "<YOUR_GITHUB_APP_WEBHOOK_SECRET>"
+# Generate with: openssl rand -hex 32 — and never paste the real value
+# into this file. One was committed here once and is still in git
+# history; see docs/SECRET_ROTATION.md.
 # Private key — keep newlines as \n
 secret driftguard-gh-app-pk       "$(cat path/to/driftguard-app-private-key.pem | awk 'NF {printf "%s\\n", $0}')"
 

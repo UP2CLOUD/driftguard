@@ -76,6 +76,13 @@ GitHub PR ─►│  Webhook API │──► enqueue
 
 ## SLO targets
 
+> These are internal targets, not published guarantees, and not all are
+> measured yet. Nothing here may be quoted as a commitment to a customer — see
+> [`FEATURE_MATRIX.md`](FEATURE_MATRIX.md). Note that the MVP target for PR
+> review p95 is 90 seconds; marketing copy that claimed "under 2 seconds" was
+> contradicted by this table and has been corrected.
+
+
 | Metric | MVP | GA |
 |---|---|---|
 | PR review p95 | < 90s | < 30s |

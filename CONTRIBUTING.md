@@ -22,8 +22,9 @@ minimum required environment variables if you'd rather not run it.
 ## Before opening a PR
 
 ```bash
-cd apps/api  && uv run pytest -q --ignore=tests/eval && uv run ruff check . && uv run ruff format --check .
-cd apps/web  && npx tsc --noEmit && pnpm lint && pnpm validate-i18n && pnpm build
+cd apps/api  && uv run pytest -q --ignore=tests/eval && uv run ruff check . && uv run ruff format --check . && uv run mypy driftguard
+cd apps/web  && npx tsc --noEmit && pnpm lint && pnpm validate-i18n && pnpm test && pnpm build
+make secrets-scan && make no-tfstate
 ```
 
 (`make lint`, `make api-test`, `make web-build` run the equivalent
@@ -67,11 +68,41 @@ by itself satisfy the required-review check — a human collaborator still
 has to approve. Keep this in mind if you're relying on automation to get a
 PR to a mergeable state end-to-end.
 
+## Secrets and Terraform state
+
+Two rules, both enforced rather than trusted:
+
+**No credential may enter the tree.** `gitleaks` runs on every pull request and
+as a pre-commit hook, configured by `.gitleaks.toml`. Install the hooks with
+`pre-commit install` so you find out locally instead of in CI. If you need a
+placeholder in docs or `.env.example`, make it obviously fake —
+`<YOUR_TOKEN_HERE>` — and never a real value you have since rotated.
+
+If you change `.gitleaks.toml`, run `make secrets-selftest`. A misconfigured
+allowlist fails *open*: gitleaks still exits 0 and the gate quietly becomes
+decoration. The self-test proves it still catches real credentials.
+
+**No Terraform state or plan binaries, ever.** `make no-tfstate` fails if any
+`*.tfstate`, `*.tfstate.*`, `*.tfplan` or `.terraform/` path is tracked.
+`sensitive = true` suppresses CLI output only — the value is still written to
+state in cleartext — so treat state as a credential dump.
+
+## Claims about what the product does
+
+If your change adds, removes, or limits a user-visible capability, update
+[`docs/FEATURE_MATRIX.md`](docs/FEATURE_MATRIX.md) in the *same* pull request.
+A row may only be marked Available when it names a real file and a real test.
+
+Plan limits are enforced in `apps/api/driftguard/core/config.py` and asserted
+against the website copy by `apps/web/lib/plan-claims.test.ts`. Changing a
+quota will fail that test until the pricing copy is updated in all six
+locales — that is intentional, not an obstacle to route around.
+
 ## Reporting issues
 
-Open a GitHub issue with reproduction steps. For security-sensitive
-findings, see `SECURITY.md` if present, or contact the maintainers directly
-rather than filing a public issue.
+Open a GitHub issue with reproduction steps. For security-sensitive findings,
+follow [`SECURITY.md`](SECURITY.md) — email security@driftguard.io rather than
+filing a public issue.
 
 ## License
 
