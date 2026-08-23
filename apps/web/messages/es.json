@@ -198,7 +198,8 @@
     "eyebrow": "Acceso anticipado",
     "errorTooMany": "Demasiados intentos. Vuelve a intentarlo en un minuto.",
     "errorGeneric": "Algo salió mal. Inténtalo de nuevo.",
-    "errorNetwork": "Error de red. Verifica tu conexión e inténtalo de nuevo."
+    "errorNetwork": "Error de red. Verifica tu conexión e inténtalo de nuevo.",
+    "errorUnavailable": "Las inscripciones no están disponibles en este momento — inténtalo más tarde, o escribe a support@driftguard.io."
   },
   "footer": {
     "privacy": "Privacidad",
@@ -980,11 +981,11 @@
       "label": "Detección de drift",
       "eyebrow": "Docs · Conceptos",
       "title": "Detección de drift",
-      "subtitle": "Estado real de la cloud vs. lo que espera tu plan de Terraform.",
+      "subtitle": "Tu plan de Terraform vs. tu archivo de estado de Terraform.",
       "metaTitle": "Verificación de drift — DriftGuard",
-      "metaDescription": "Estado real de la nube frente a lo que espera tu plan de Terraform — integración de solo lectura con AWS STS, o alternativa basada solo en el plan.",
+      "metaDescription": "Tu plan de Terraform vs. tu archivo de estado de Terraform — integración de solo lectura con AWS STS, o alternativa solo de plan.",
       "howItWorksBodyPre": "DriftGuard compara los recursos de tu salida de",
-      "howItWorksBodyPost": "contra el estado real de tu cuenta de nube. Cualquier recurso que exista en el plan pero no en el estado real (o viceversa) se marca como drift.",
+      "howItWorksBodyPost": "output contra tu archivo de estado de Terraform. Cualquier recurso que exista en el plan pero no en el archivo de estado (o viceversa) se marca como drift.",
       "awsIntegrationBody": "Concede a DriftGuard acceso de solo lectura a tu cuenta de AWS mediante STS AssumeRole. DriftGuard obtiene el backend de estado en S3 y lo compara con el plan del PR. No se almacenan credenciales — solo tokens de sesión de corta duración de STS.",
       "withoutAwsBodyPre": "Sin integración con AWS, DriftGuard recurre a comparar el plan con cualquier archivo",
       "withoutAwsBodyPost": "confirmado en el repositorio. Esto es menos preciso pero no requiere configuración de IAM."
