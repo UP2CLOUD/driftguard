@@ -74,4 +74,7 @@ def test_metrics_ok():
     assert r.status_code == 200
     body = r.json()
     assert "uptime_s" in body
-    assert "pid" in body
+    assert "gc_counts" in body
+    # `pid` was removed: no dashboard needs it, and /metrics is unauthenticated,
+    # so it handed any caller a process identifier for nothing in return.
+    assert "pid" not in body

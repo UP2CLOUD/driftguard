@@ -21,9 +21,18 @@ from driftguard.api.v1 import (
     ws,
 )
 from driftguard.core.auth import verify_api_key
+from driftguard.core.config import settings
 
 router = APIRouter()
 router.include_router(health.router, tags=["health"])
+
+# Debug routes are never mounted in production. /debug/run-migrations shells
+# out to alembic and /debug/run-analyze returns a raw traceback; neither should
+# be reachable on a production deployment even with a valid token, so the
+# routes are simply not registered there. They are then absent from the route
+# table and from the OpenAPI schema, not merely rejected.
+if settings.environment != "prod":
+    router.include_router(health.debug_router, tags=["debug"])
 router.include_router(webhooks.router, prefix="/webhooks", tags=["webhooks"])
 router.include_router(stripe_webhooks.router, prefix="/webhooks", tags=["webhooks"])
 router.include_router(repos.router, prefix="/repos", tags=["repos"], dependencies=[Depends(verify_api_key)])
