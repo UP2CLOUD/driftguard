@@ -309,7 +309,8 @@
     "installFrom": "مثبَّت من",
     "paymentIssueTitle": "هناك مشكلة في دفعتك",
     "paymentIssueBody": "فشلت آخر عملية دفع. لا تزال خطتك نشطة حالياً — يرجى تحديث طريقة الدفع لتجنب فقدان الوصول.",
-    "updatePaymentMethod": "تحديث طريقة الدفع ←"
+    "updatePaymentMethod": "تحديث طريقة الدفع ←",
+    "planPendingPastDue": "لا يمكن عرض الخطة الحالية أثناء حل مشكلة الدفع — انظر أدناه."
   },
   "installApp": {
     "title": "تثبيت تطبيق GitHub",

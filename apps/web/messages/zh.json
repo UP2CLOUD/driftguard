@@ -309,7 +309,8 @@
     "installFrom": "安装来源",
     "paymentIssueTitle": "您的付款出现问题",
     "paymentIssueBody": "您上次的付款失败了。您的计划目前仍处于有效状态 — 请更新付款方式以避免失去访问权限。",
-    "updatePaymentMethod": "更新付款方式 →"
+    "updatePaymentMethod": "更新付款方式 →",
+    "planPendingPastDue": "在支付问题解决之前，无法显示当前计划 —— 详见下方。"
   },
   "installApp": {
     "title": "安装 GitHub 应用",

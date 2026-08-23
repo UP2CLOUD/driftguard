@@ -38,20 +38,34 @@ describe("checkToStatus", () => {
 });
 
 describe("deriveAllOperational", () => {
-  it("is false when the backend was unreachable, regardless of a stale ready value", () => {
-    expect(deriveAllOperational(false, "ok")).toBe(false);
+  it("is false when the backend was unreachable, regardless of the system statuses", () => {
+    expect(deriveAllOperational(false, ["operational", "operational"])).toBe(false);
   });
 
-  it("is true only when reachable and status is ok", () => {
-    expect(deriveAllOperational(true, "ok")).toBe(true);
+  it("is true only when reachable and every system is operational", () => {
+    expect(deriveAllOperational(true, ["operational", "operational", "operational"])).toBe(true);
   });
 
-  it("is false when reachable but degraded", () => {
-    expect(deriveAllOperational(true, "degraded")).toBe(false);
+  it("is false when any single system is degraded, outage, or unknown", () => {
+    expect(deriveAllOperational(true, ["operational", "degraded"])).toBe(false);
+    expect(deriveAllOperational(true, ["operational", "outage"])).toBe(false);
+    expect(deriveAllOperational(true, ["operational", "unknown"])).toBe(false);
   });
 
-  it("is false when reachable is true but no status was parsed", () => {
-    expect(deriveAllOperational(true, null)).toBe(false);
+  it("is true for an empty system list (vacuous truth is fine — SYSTEMS is never actually empty)", () => {
+    expect(deriveAllOperational(true, [])).toBe(true);
+  });
+
+  it("regression: the AI-review row going to outage must flip the banner, not just its own row", () => {
+    // This is the exact incident ai_health.py exists to surface: both LLM
+    // providers down. The backend's /ready still returns HTTP 200 with
+    // status "ok" for routing purposes (a third-party integration failing
+    // must not take the pod out of rotation) -- so the banner must be
+    // derived from the same per-row statuses the page renders, not from
+    // that routing-oriented field, or the banner and the AI Review row
+    // contradict each other on screen.
+    const systemStatuses = ["operational", "operational", "operational", "outage", "operational"] as const;
+    expect(deriveAllOperational(true, [...systemStatuses])).toBe(false);
   });
 });
 

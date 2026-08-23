@@ -46,6 +46,19 @@ export function deriveBannerTone(reachable: boolean, allOperational: boolean): B
   return allOperational ? "operational" : "degraded";
 }
 
-export function deriveAllOperational(reachable: boolean, readyStatus: "ok" | "degraded" | null): boolean {
-  return reachable && readyStatus === "ok";
+/**
+ * Deliberately does NOT use the backend's `ready.status` field. That field
+ * exists to answer a different question -- "should Cloud Run route traffic
+ * to this replica" -- and ai_review failing never flips it, by design (a
+ * third-party integration being unhealthy must not take the pod out of
+ * rotation; see api/v1/health.py). Reusing it here reproduced exactly the
+ * bug this page was built to fix: both LLM providers down produced a red
+ * "Outage" badge on the AI Review row directly under a green "All Systems
+ * Operational" banner, because the banner trusted `ready.status` while the
+ * row trusted `checks.ai_review`. Deriving the banner from the same
+ * per-system statuses the rows render makes that contradiction structurally
+ * impossible, for this check and any future one added to SYSTEMS.
+ */
+export function deriveAllOperational(reachable: boolean, systemStatuses: SystemStatus[]): boolean {
+  return reachable && systemStatuses.every((s) => s === "operational");
 }

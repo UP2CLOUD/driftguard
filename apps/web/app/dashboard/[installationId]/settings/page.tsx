@@ -189,6 +189,18 @@ export default async function Settings({
       {/* ── Billing ─────────────────────────────────────────────── */}
       {org && (
         <Section title={t("settings.billingTitle")} description={t("settings.billingDesc")}>
+          {pastDue && (
+            // `org.plan` is unrecoverably overwritten to "free" server-side
+            // during past_due, so which paid tier this org was actually on is
+            // not something the frontend can determine — not even Team vs.
+            // Enterprise can be told apart. Guessing would risk stating a
+            // tier that's wrong; leaving all three cards silently unmarked
+            // (the alternative) reads as a broken page. Say plainly that the
+            // real explanation is the warning below, rather than either.
+            <p className="mb-3 text-[11px] text-[color:var(--dg-fg-subtle)]">
+              {t("settings.planPendingPastDue") ?? "Current plan can't be shown while a payment issue is being resolved — see below."}
+            </p>
+          )}
           <div className="grid gap-px bg-[color:var(--dg-border)] rounded-md overflow-hidden border border-[color:var(--dg-border)] sm:grid-cols-3 mb-4">
             <PlanCard
               name={t("settings.planFree") ?? "Free"}
