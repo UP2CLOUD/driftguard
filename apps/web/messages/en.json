@@ -424,7 +424,8 @@
     "installFrom": "Install from",
     "paymentIssueTitle": "There's a problem with your payment",
     "paymentIssueBody": "Your last payment failed. Your plan is still active for now — update your payment method to avoid losing access.",
-    "updatePaymentMethod": "Update payment method →"
+    "updatePaymentMethod": "Update payment method →",
+    "planPendingPastDue": "Current plan can't be shown while a payment issue is being resolved — see below."
   },
   "installApp": {
     "title": "Install the GitHub App",

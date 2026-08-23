@@ -88,7 +88,7 @@ export default async function StatusPage() {
     { name: t("status.billing"),  description: t("status.stripeWebhooks"), status: checkToStatus(checks.stripe) },
   ];
 
-  const allOperational = deriveAllOperational(reachable, ready?.status ?? null);
+  const allOperational = deriveAllOperational(reachable, SYSTEMS.map((s) => s.status));
   const bannerTone = deriveBannerTone(reachable, allOperational);
 
   const now = new Date().toUTCString();
