@@ -58,6 +58,13 @@ class Settings(BaseSettings):
     openai_api_key: str = ""  # fallback
     openai_model: str = "gpt-4o-mini"
     llm_fallback_enabled: bool = True
+    # Voyage AI is a separate provider from Anthropic, with its own API and
+    # key format (`pa-...`), despite Anthropic recommending it as an
+    # embeddings partner. services/embeddings.py used to send
+    # `anthropic_api_key` as the Bearer token to api.voyageai.com — that
+    # call always fails auth, so every deployment silently fell back to the
+    # non-semantic hash-based dev embedding, in production, indefinitely.
+    voyage_api_key: str = ""
 
     # ── Infracost ──────────────────────────────────────────────
     infracost_api_key: str = ""

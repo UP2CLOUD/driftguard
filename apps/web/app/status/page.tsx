@@ -16,6 +16,7 @@ type HealthReady = {
     github_app?: string;
     stripe?: string;
     ai_review?: string;
+    embeddings?: string;
   };
 };
 
@@ -83,7 +84,11 @@ export default async function StatusPage() {
   const SYSTEMS: { name: string; description: string; status: SystemStatus }[] = [
     { name: t("status.pipeline"), description: t("status.p99"),         status: checkToStatus(checks.db) },
     { name: t("status.webhooks"), description: t("status.prIngestion"), status: checkToStatus(checks.github_app) },
-    { name: t("status.memory"),   description: t("docs.memory.subtitle"), status: checkToStatus(checks.db) },
+    // Was checks.db, which only says Postgres is reachable -- it stayed "ok"
+    // through the entire period embeddings silently ran on a non-semantic
+    // fallback (wrong API key for the provider). checks.embeddings is the
+    // signal that actually answers "is recall semantically meaningful."
+    { name: t("status.memory"),   description: t("docs.memory.subtitle"), status: checkToStatus(checks.embeddings) },
     { name: t("status.aiReview"), description: t("status.aiReviewDesc"), status: checkToStatus(checks.ai_review) },
     { name: t("status.billing"),  description: t("status.stripeWebhooks"), status: checkToStatus(checks.stripe) },
   ];

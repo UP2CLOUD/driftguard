@@ -47,6 +47,7 @@ Web → http://localhost:3000
 ## API keys
 
 - Anthropic: https://console.anthropic.com → put in `ANTHROPIC_API_KEY`
+- Voyage AI (separate account/key from Anthropic — semantic memory): https://dash.voyageai.com → `VOYAGE_API_KEY`. Unset means incident recall runs on a non-semantic fallback, not "disabled" — check `/api/v1/ready` → `checks.embeddings`
 - Infracost (free): https://www.infracost.io/ → `INFRACOST_API_KEY`
 
 ## Common tasks

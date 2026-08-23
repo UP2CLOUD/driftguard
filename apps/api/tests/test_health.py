@@ -140,6 +140,63 @@ def test_missing_github_config_empty_when_all_set(monkeypatch):
     assert settings.missing_github_config() == []
 
 
+class TestReadyEmbeddingHealth:
+    """Same class of bug as ai_review: `embeddings` used to report "ok" purely
+    from key presence, while _voyage_embed silently authenticated with the
+    wrong provider's key and fell back to a non-semantic embedding on every
+    single call. See services/embedding_health.py.
+    """
+
+    def test_no_voyage_key_configured(self, monkeypatch):
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "voyage_api_key", "")
+        r = client.get("/api/v1/ready")
+        assert r.json()["checks"]["embeddings"] == "not_configured"
+
+    def test_key_configured_but_no_embedding_run_yet_reports_ok(self, monkeypatch):
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "voyage_api_key", "pa-test-key")
+        with patch("driftguard.services.embedding_health.get_embedding_health", new=AsyncMock(return_value=None)):
+            r = client.get("/api/v1/ready")
+
+        assert r.json()["checks"]["embeddings"] == "ok"
+
+    def test_last_observation_was_real_voyage_embedding(self, monkeypatch):
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "voyage_api_key", "pa-test-key")
+        outcome = {"used": "voyage", "error": None, "at": 0}
+        with patch("driftguard.services.embedding_health.get_embedding_health", new=AsyncMock(return_value=outcome)):
+            r = client.get("/api/v1/ready")
+
+        assert r.json()["checks"]["embeddings"] == "ok"
+
+    def test_dev_fallback_is_reported_as_an_error(self, monkeypatch):
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "voyage_api_key", "pa-test-key")
+        outcome = {"used": "dev_fallback", "error": "401 Unauthorized", "at": 0}
+        with patch("driftguard.services.embedding_health.get_embedding_health", new=AsyncMock(return_value=outcome)):
+            r = client.get("/api/v1/ready")
+
+        assert r.json()["checks"]["embeddings"].startswith("error")
+        assert "401" in r.json()["checks"]["embeddings"]
+
+    def test_dev_fallback_does_not_fail_the_readiness_probe(self, monkeypatch):
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "voyage_api_key", "pa-test-key")
+        outcome = {"used": "dev_fallback", "error": "unauthorized", "at": 0}
+        with patch("driftguard.services.embedding_health.get_embedding_health", new=AsyncMock(return_value=outcome)):
+            r = client.get("/api/v1/ready")
+
+        if r.json()["checks"]["db"] == "ok" and r.json()["checks"]["redis"] in ("ok", "not_configured"):
+            assert r.json()["status"] == "ok"
+            assert r.status_code == 200
+
+
 def test_metrics_ok():
     r = client.get("/api/v1/metrics")
     assert r.status_code == 200

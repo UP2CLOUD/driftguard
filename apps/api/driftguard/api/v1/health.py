@@ -118,6 +118,26 @@ async def ready() -> Response:
         else:
             checks["ai_review"] = "ok"
 
+    # Same shape as ai_review, for the same reason: services/embeddings.py
+    # falls back to a non-semantic hash-based pseudo-embedding on any Voyage
+    # failure, and used to do so unconditionally — it sent the Anthropic key
+    # as the Voyage bearer token, which always fails auth. "A key is
+    # configured" said nothing about whether stored embeddings are actually
+    # semantically meaningful.
+    if not settings.voyage_api_key:
+        checks["embeddings"] = "not_configured"
+    else:
+        from driftguard.services.embedding_health import get_embedding_health
+
+        embedding_health = await get_embedding_health()
+        if embedding_health is None:
+            checks["embeddings"] = "ok"
+        elif embedding_health.get("used") == "dev_fallback":
+            reason = embedding_health.get("error", "")[:120]
+            checks["embeddings"] = f"error: falling back to non-semantic embedding — {reason}"
+        else:
+            checks["embeddings"] = "ok"
+
     content = {"status": overall, "checks": checks}
     # Return 503 if any check degraded — Cloud Run traffic routing will exclude this replica
     status_code = 200 if overall == "ok" else 503
