@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { openPortal, startCheckout } from "@/lib/api";
 import { useT } from "@/components/I18nProvider";
+import { deriveBillingActionVisibility } from "@/lib/billing-actions";
 
 const _BILLING_UNCONFIGURED = /billing is not configured|missing stripe/i;
 
@@ -12,17 +13,28 @@ export function BillingActions({
   hasCustomer,
   plan,
   billingEnabled = true,
+  subscriptionStatus,
 }: {
   orgId: string;
   installationId: string;
   hasCustomer: boolean;
   plan: string;
   billingEnabled?: boolean;
+  /** `services/billing.py::apply_subscription_event` resets `org.plan` to
+   * "free" for any Stripe status outside {active, trialing} — including
+   * `past_due`, `unpaid`, and `paused`, which `is_premium()` still grants
+   * full access for (subscription_status "premium_past_due" — a payment
+   * retry grace period, not a cancellation). That means `plan` alone cannot
+   * tell a genuinely-free org from a paying org mid dunning; without this,
+   * that org saw "Free plan" highlighted and an "Upgrade to Team" button,
+   * with no indication anything needed their attention. */
+  subscriptionStatus?: string;
 }) {
   const t = useT();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [billingUnavailable, setBillingUnavailable] = useState(!billingEnabled);
+  const visibility = deriveBillingActionVisibility({ plan, hasCustomer, subscriptionStatus });
 
   async function upgrade(targetPlan: string) {
     setLoading(targetPlan);
@@ -82,11 +94,36 @@ export function BillingActions({
 
   return (
     <div className="space-y-3">
+      {visibility.showPastDueWarning && (
+        <div className="rounded-md border border-warned/30 bg-warned/5 px-4 py-3.5 flex items-start gap-3">
+          <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-warned shrink-0" />
+          <div className="space-y-1">
+            <p className="font-mono text-[11px] font-semibold text-warned">
+              {t("settings.paymentIssueTitle") ?? "There's a problem with your payment"}
+            </p>
+            <p className="font-mono text-[11px] text-[color:var(--dg-fg-muted)]">
+              {t("settings.paymentIssueBody") ??
+                "Your last payment failed. Your plan is still active for now — update your payment method to avoid losing access."}
+            </p>
+          </div>
+        </div>
+      )}
       {error && (
         <p className="font-mono text-[11px] text-blocked">{error}</p>
       )}
       <div className="flex flex-wrap gap-2">
-        {plan === "free" && (
+        {visibility.showUpdatePaymentMethod && (
+          <button
+            onClick={manage}
+            disabled={loading !== null}
+            className="dg-button dg-button-primary text-[12px] disabled:opacity-40"
+          >
+            {loading === "portal"
+              ? (t("settings.openingPortal") ?? "Opening…")
+              : (t("settings.updatePaymentMethod") ?? "Update payment method →")}
+          </button>
+        )}
+        {visibility.showUpgradeToTeam && (
           <button
             onClick={() => upgrade("team")}
             disabled={loading !== null}
@@ -97,7 +134,7 @@ export function BillingActions({
               : (t("settings.upgradeToTeam") ?? "Upgrade to Team →")}
           </button>
         )}
-        {plan === "team" && (
+        {visibility.showUpgradeToEnterprise && (
           <a
             href="mailto:sales@driftguard.io"
             className="dg-button dg-button-ghost text-[12px]"
@@ -105,7 +142,7 @@ export function BillingActions({
             {t("settings.upgradeToEnterprise") ?? "Upgrade to Enterprise →"}
           </a>
         )}
-        {hasCustomer && (
+        {visibility.showManageBilling && (
           <button
             onClick={manage}
             disabled={loading !== null}
@@ -116,7 +153,7 @@ export function BillingActions({
               : (t("settings.manageBilling") ?? "Manage billing →")}
           </button>
         )}
-        {!hasCustomer && plan !== "free" && (
+        {visibility.showContactBillingNoCustomer && (
           <a
             href="mailto:billing@driftguard.io"
             className="dg-button dg-button-ghost text-[12px]"

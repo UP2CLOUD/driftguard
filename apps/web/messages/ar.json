@@ -306,7 +306,10 @@
     "resourceSupport": "اتصل بالدعم",
     "resourceSupportDesc": "أسئلة أو تقارير أخطاء أو طلبات ميزات.",
     "resourceOpen": "فتح →",
-    "installFrom": "مثبَّت من"
+    "installFrom": "مثبَّت من",
+    "paymentIssueTitle": "هناك مشكلة في دفعتك",
+    "paymentIssueBody": "فشلت آخر عملية دفع. لا تزال خطتك نشطة حالياً — يرجى تحديث طريقة الدفع لتجنب فقدان الوصول.",
+    "updatePaymentMethod": "تحديث طريقة الدفع ←"
   },
   "installApp": {
     "title": "تثبيت تطبيق GitHub",

@@ -47,6 +47,7 @@ appear here as **Available**, it is not shipped.
 | Slack notifications | ✅ Available | `services/slack.py` | |
 | Email notifications | ✅ Available | `services/email.py` | Requires `RESEND_API_KEY` |
 | REST API + API keys | ✅ Available | `api/v1/tokens.py`, `core/auth.py` | Keys stored as hashes |
+| Billing (Stripe subscriptions) | ✅ Available | `services/billing.py`, `api/v1/billing.py`, `api/v1/stripe_webhooks.py` | Checkout Sessions with `automatic_tax`, idempotent webhook processing. A `past_due` subscription keeps `is_premium()` access during payment retry, but `org.plan` resets to `"free"` for display — the settings page now surfaces the real state via `subscription_status` instead of silently showing "Free plan" (`PRODUCTION_READINESS.md` N-9) |
 | Rate limiting | ✅ Available | `core/rate_limit.py`, `core/ratelimit.py` | ⚠️ Two parallel implementations with separate buckets — see `PRODUCTION_READINESS.md` N-6 |
 | CLI (`driftguard-cli`) | ✅ Available | `apps/cli/` | Published to PyPI via Trusted Publishing |
 | Multi-language UI | ✅ Available | `apps/web/messages/*.json` | 6 locales, 1751 keys, parity enforced in CI |

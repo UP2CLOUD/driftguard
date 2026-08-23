@@ -306,7 +306,10 @@
     "resourceSupport": "सहायता से संपर्क करें",
     "resourceSupportDesc": "प्रश्न, बग रिपोर्ट या फ़ीचर अनुरोध।",
     "resourceOpen": "खोलें →",
-    "installFrom": "से इंस्टॉल करें"
+    "installFrom": "से इंस्टॉल करें",
+    "paymentIssueTitle": "आपके भुगतान में समस्या है",
+    "paymentIssueBody": "आपका पिछला भुगतान विफल हो गया। आपका प्लान अभी भी सक्रिय है — पहुँच खोने से बचने के लिए अपना भुगतान तरीका अपडेट करें।",
+    "updatePaymentMethod": "भुगतान तरीका अपडेट करें →"
   },
   "installApp": {
     "title": "GitHub App इंस्टॉल करें",

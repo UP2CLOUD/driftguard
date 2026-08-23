@@ -421,7 +421,10 @@
     "resourceSupport": "Contact support",
     "resourceSupportDesc": "Questions, bug reports, or feature requests.",
     "resourceOpen": "Open →",
-    "installFrom": "Install from"
+    "installFrom": "Install from",
+    "paymentIssueTitle": "There's a problem with your payment",
+    "paymentIssueBody": "Your last payment failed. Your plan is still active for now — update your payment method to avoid losing access.",
+    "updatePaymentMethod": "Update payment method →"
   },
   "installApp": {
     "title": "Install the GitHub App",
