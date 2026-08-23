@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isWaitlistConfigured } from "@/lib/waitlist";
 
 export const runtime = "edge";
 
@@ -27,9 +28,17 @@ export async function POST(req: Request) {
   const apiKey = process.env.RESEND_API_KEY;
   const audienceId = process.env.RESEND_AUDIENCE_ID;
 
-  if (!apiKey || !audienceId) {
-    console.log("waitlist signup (no resend configured):", email);
-    return NextResponse.json({ ok: true });
+  if (!isWaitlistConfigured(apiKey, audienceId)) {
+    // Nothing durable exists to write this signup to when Resend isn't
+    // configured -- there's no backend waitlist endpoint, no D1 table, just
+    // this one integration. `console.log` on an edge runtime is not a
+    // record: it isn't queryable, isn't retained reliably, and nobody is
+    // paged on it. Returning ok:true here means the "✓ In" the button shows
+    // is a straight lie -- the email exists nowhere. Fail loudly instead so
+    // it's fixed instead of silently losing every signup that lands while
+    // the env var is unset.
+    console.error("waitlist.misconfigured", { hasApiKey: !!apiKey, hasAudienceId: !!audienceId });
+    return NextResponse.json({ error: "not_configured" }, { status: 503 });
   }
 
   let r: Response;

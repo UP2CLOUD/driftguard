@@ -198,7 +198,8 @@
     "eyebrow": "Acceso anticipado",
     "errorTooMany": "Demasiados intentos. Vuelve a intentarlo en un minuto.",
     "errorGeneric": "Algo salió mal. Inténtalo de nuevo.",
-    "errorNetwork": "Error de red. Verifica tu conexión e inténtalo de nuevo."
+    "errorNetwork": "Error de red. Verifica tu conexión e inténtalo de nuevo.",
+    "errorUnavailable": "Las inscripciones no están disponibles en este momento — inténtalo más tarde, o escribe a support@driftguard.io."
   },
   "footer": {
     "privacy": "Privacidad",

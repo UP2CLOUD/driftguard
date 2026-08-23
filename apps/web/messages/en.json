@@ -198,7 +198,8 @@
     "eyebrow": "Early access",
     "errorTooMany": "Too many attempts. Try again in a minute.",
     "errorGeneric": "Something went wrong. Please try again.",
-    "errorNetwork": "Network error. Check your connection and try again."
+    "errorNetwork": "Network error. Check your connection and try again.",
+    "errorUnavailable": "Signups aren't accepting right now — try again later, or email support@driftguard.io."
   },
   "common": {
     "privacy": "Privacy",

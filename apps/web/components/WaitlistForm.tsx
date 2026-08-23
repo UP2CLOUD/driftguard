@@ -24,7 +24,13 @@ export function WaitlistForm({ theme = "light" }: { theme?: "light" | "dark" }) 
         return;
       }
       setStatus("err");
-      setErrorMessage(r.status === 429 ? t("waitlist.errorTooMany") : t("waitlist.errorGeneric"));
+      setErrorMessage(
+        r.status === 429
+          ? t("waitlist.errorTooMany")
+          : r.status === 503
+            ? t("waitlist.errorUnavailable")
+            : t("waitlist.errorGeneric")
+      );
     } catch {
       setStatus("err");
       setErrorMessage(t("waitlist.errorNetwork"));
