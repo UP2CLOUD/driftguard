@@ -20,29 +20,18 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-const CONFIG = `# .github/driftguard.yml
-compliance:
-  frameworks:
-    - dora            # EU Digital Operational Resilience Act
-  evidence:
-    emit: true        # attach an evidence record to every PR
-    retention_days: 365
-    export: audit-log # also stream to the append-only audit log`;
-
+// Real shape, from compliance/controls.py::CATALOG. Compliance citations are
+// only produced for Checkov-sourced findings (CKV_AWS_16, unencrypted RDS
+// storage, shown here) -- DriftGuard's own native scanner rules (TF00x,
+// K8S00x, GHA00x) are not in this lookup table yet and carry no citation.
 const EVIDENCE = `{
-  "framework": "dora",
-  "pr": "acme/platform#482",
-  "commit": "9f3c1ab",
-  "controls": ["ICT-RISK-8.2", "ICT-CHANGE-9.1"],
-  "checks": {
-    "security": "pass",     // Checkov, 0 high findings
-    "drift":    "pass",     // live state matches plan
-    "cost":     "warn",     // +$120/mo delta, under block threshold
-    "policy":   "pass"      // no blocking rule matched
-  },
-  "decision": "allow",
-  "reviewer": "github:octocat",
-  "signed_at": "2026-07-21T10:04:11Z"
+  "control_id": "encryption_at_rest",
+  "triggering_rule": "CKV_AWS_16",
+  "refs": [
+    { "framework": "DORA", "code": "Art.9", "title": "ICT risk protection and prevention" },
+    { "framework": "NIS2", "code": "Art.21(2)(h)", "title": "Cryptography and encryption policies" },
+    { "framework": "ISO27001", "code": "A.8.24", "title": "Use of cryptography" }
+  ]
 }`;
 
 export default async function Dora() {
@@ -78,25 +67,11 @@ export default async function Dora() {
         <section>
           <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.dora.enableTitle")}</h2>
           <p>{t("docs.dora.enableBody")}</p>
-          <div className="mt-3">
-            <CodeBlock code={CONFIG} filename=".github/driftguard.yml" />
-          </div>
         </section>
 
         <section>
           <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.dora.evidenceTitle")}</h2>
-          <p>
-            {(() => {
-              const [before, after] = t("docs.dora.evidenceBody").split("{code}");
-              return (
-                <>
-                  {before}
-                  <code className="font-mono text-[color:var(--dg-electric-bright)]">evidence.emit</code>
-                  {after}
-                </>
-              );
-            })()}
-          </p>
+          <p>{t("docs.dora.evidenceBody")}</p>
           <div className="mt-3">
             <CodeBlock code={EVIDENCE} filename="dora-evidence.json" />
           </div>

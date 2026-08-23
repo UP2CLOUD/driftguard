@@ -221,3 +221,86 @@ class TestReviewStaticFallback:
             result = await review([_f()], {"repo": "r", "pr_number": 1, "head_sha": "x"})
 
         assert "Risky PR." in result
+
+
+class TestReviewRecordsWhichTierServed:
+    """review() is what generates the actual PR comment. Both Anthropic and
+    Gemini failed silently in production for three weeks; these tests pin
+    that a real attempt now leaves a record of which tier answered, so
+    /api/v1/ready can tell "degraded gracefully once" from "degraded for
+    three weeks" without adding a live provider call to the readiness probe.
+    """
+
+    @pytest.mark.asyncio
+    async def test_anthropic_success_is_recorded(self, monkeypatch):
+        from driftguard.ai.reviewer import review
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "anthropic_api_key", "sk-ant-test")
+        monkeypatch.setattr(settings, "gemini_api_key", "")
+
+        fake_msg = MagicMock()
+        fake_msg.content = [MagicMock(type="text", text="## Summary\nok")]
+        fake_client = MagicMock()
+        fake_client.messages.create = AsyncMock(return_value=fake_msg)
+
+        recorded = AsyncMock()
+        with (
+            patch("driftguard.ai.reviewer.client", return_value=fake_client),
+            patch("driftguard.ai.reviewer.record_ai_outcome", recorded),
+        ):
+            await review([_f()], {"repo": "r", "pr_number": 1, "head_sha": "x"})
+
+        recorded.assert_awaited_once_with(used="anthropic")
+
+    @pytest.mark.asyncio
+    async def test_both_providers_failing_is_recorded_as_static(self, monkeypatch):
+        from driftguard.ai.reviewer import review
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "anthropic_api_key", "sk-ant-test")
+        monkeypatch.setattr(settings, "gemini_api_key", "gm-test")
+
+        fake_client = MagicMock()
+        fake_client.messages.create = AsyncMock(side_effect=RuntimeError("billing error"))
+
+        recorded = AsyncMock()
+        with (
+            patch("driftguard.ai.reviewer.client", return_value=fake_client),
+            patch("google.genai.Client", side_effect=RuntimeError("429 RESOURCE_EXHAUSTED")),
+            patch("driftguard.ai.reviewer.record_ai_outcome", recorded),
+        ):
+            result = await review([_f()], {"repo": "r", "pr_number": 1, "head_sha": "x"})
+
+        assert "## Summary" in result  # still produces a usable review
+        recorded.assert_awaited_once()
+        kwargs = recorded.await_args.kwargs
+        assert kwargs["used"] == "static"
+        assert "billing error" in kwargs["error"]
+        assert "RESOURCE_EXHAUSTED" in kwargs["error"]
+
+    @pytest.mark.asyncio
+    async def test_no_keys_configured_is_recorded_as_static_with_reason(self, monkeypatch):
+        from driftguard.ai.reviewer import review
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "anthropic_api_key", "")
+        monkeypatch.setattr(settings, "gemini_api_key", "")
+
+        recorded = AsyncMock()
+        with patch("driftguard.ai.reviewer.record_ai_outcome", recorded):
+            await review([_f()], {"repo": "r", "pr_number": 1, "head_sha": "x"})
+
+        recorded.assert_awaited_once_with(used="static", error="ANTHROPIC_API_KEY not configured")
+
+    @pytest.mark.asyncio
+    async def test_no_findings_short_circuit_records_nothing(self, monkeypatch):
+        """The empty-findings path never touches a provider, so it must not
+        pollute the health signal with a fake observation."""
+        from driftguard.ai.reviewer import review
+
+        recorded = AsyncMock()
+        with patch("driftguard.ai.reviewer.record_ai_outcome", recorded):
+            await review([], {"repo": "r", "pr_number": 1, "head_sha": "x"})
+
+        recorded.assert_not_awaited()

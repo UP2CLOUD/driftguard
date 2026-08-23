@@ -1,5 +1,7 @@
 """Tests for health, readiness and metrics endpoints."""
 
+from unittest.mock import AsyncMock, patch
+
 from fastapi.testclient import TestClient
 
 from driftguard.main import app
@@ -31,6 +33,75 @@ def test_ready_reports_integration_config():
     assert "github_app" in checks
     assert "stripe" in checks
     assert "ai_review" in checks
+
+
+class TestReadyAiReviewHealth:
+    """ "ai_review": "ok" used to mean only "a key is configured" — not "calls
+    with that key are succeeding". Both Anthropic and Gemini were failing in
+    production for three weeks while this check kept reporting ok. These pin
+    that /ready now reads the real last-observed outcome recorded by
+    services/ai_health.py.
+    """
+
+    def test_no_keys_configured(self, monkeypatch):
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "anthropic_api_key", "")
+        monkeypatch.setattr(settings, "gemini_api_key", "")
+
+        r = client.get("/api/v1/ready")
+        assert r.json()["checks"]["ai_review"] == "not_configured"
+
+    def test_key_configured_but_no_review_run_yet_reports_ok(self, monkeypatch):
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "anthropic_api_key", "sk-ant-test")
+        with patch("driftguard.services.ai_health.get_ai_health", new=AsyncMock(return_value=None)):
+            r = client.get("/api/v1/ready")
+
+        # None means "unobserved", not "known-good" -- but with no observation
+        # to contradict it, an unreached feature must not read as broken.
+        assert r.json()["checks"]["ai_review"] == "ok"
+
+    def test_last_observation_was_a_real_provider(self, monkeypatch):
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "anthropic_api_key", "sk-ant-test")
+        outcome = {"used": "anthropic", "error": None, "at": 0}
+        with patch("driftguard.services.ai_health.get_ai_health", new=AsyncMock(return_value=outcome)):
+            r = client.get("/api/v1/ready")
+
+        assert r.json()["checks"]["ai_review"] == "ok"
+
+    def test_degraded_to_static_is_reported_as_an_error(self, monkeypatch):
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "anthropic_api_key", "sk-ant-test")
+        monkeypatch.setattr(settings, "gemini_api_key", "gm-test")
+        outcome = {
+            "used": "static",
+            "error": "anthropic: billing error; gemini: 429 RESOURCE_EXHAUSTED",
+            "at": 0,
+        }
+        with patch("driftguard.services.ai_health.get_ai_health", new=AsyncMock(return_value=outcome)):
+            r = client.get("/api/v1/ready")
+
+        assert r.json()["checks"]["ai_review"].startswith("error")
+        assert "RESOURCE_EXHAUSTED" in r.json()["checks"]["ai_review"]
+
+    def test_degraded_ai_review_does_not_fail_the_readiness_probe(self, monkeypatch):
+        """Matches the existing design for github_app/stripe: a third-party
+        integration being unhealthy must not take the pod out of rotation."""
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "anthropic_api_key", "sk-ant-test")
+        outcome = {"used": "static", "error": "both providers down", "at": 0}
+        with patch("driftguard.services.ai_health.get_ai_health", new=AsyncMock(return_value=outcome)):
+            r = client.get("/api/v1/ready")
+
+        if r.json()["checks"]["db"] == "ok" and r.json()["checks"]["redis"] in ("ok", "not_configured"):
+            assert r.json()["status"] == "ok"
+            assert r.status_code == 200
 
 
 def test_ready_unconfigured_integrations_do_not_degrade(monkeypatch):

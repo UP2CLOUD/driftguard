@@ -5,8 +5,6 @@ import { MarketingPageShell } from "@/components/MarketingPageShell";
 import { getMessages } from "@/i18n/get-locale";
 import { createTranslator } from "@/i18n/translator";
 import { getUserPreferences } from "@/lib/preferences/server";
-import { CodeBlock } from "@/components/docs/CodeBlock";
-
 export async function generateMetadata(): Promise<Metadata> {
   const prefs  = await getUserPreferences();
   const locale = prefs.locale as Locale;
@@ -19,18 +17,6 @@ export async function generateMetadata(): Promise<Metadata> {
     description: t("docs.nis2.metaDescription"),
   });
 }
-
-const CONFIG = `# .github/driftguard.yml
-compliance:
-  frameworks:
-    - nis2            # EU Network & Information Systems Directive 2
-  evidence:
-    emit: true
-    export: audit-log
-policy:
-  block:
-    - aws_security_group.*.ingress.cidr_blocks=0.0.0.0/0   # no open ingress
-    - aws_s3_bucket_public_access_block.*.block_public_acls=false`;
 
 export default async function Nis2() {
   const prefs    = await getUserPreferences();
@@ -65,9 +51,6 @@ export default async function Nis2() {
         <section>
           <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.nis2.configTitle")}</h2>
           <p>{t("docs.nis2.configBody")}</p>
-          <div className="mt-3">
-            <CodeBlock code={CONFIG} filename=".github/driftguard.yml" />
-          </div>
         </section>
 
         <section>

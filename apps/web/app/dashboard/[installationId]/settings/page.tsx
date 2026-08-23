@@ -13,6 +13,7 @@ import { getUserPreferences } from "@/lib/preferences/server";
 import type { Org } from "@/lib/api";
 import { localizedPageMeta } from "@/lib/seo";
 import { beGet } from "@/lib/backend";
+import { isPastDue } from "@/lib/billing-actions";
 
 type PlanData = {
   plan: string;
@@ -63,6 +64,7 @@ export default async function Settings({
   } catch {
     /* API offline — still render preferences */
   }
+  const pastDue = isPastDue(planData?.subscription_status);
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-12 space-y-14">
@@ -198,7 +200,15 @@ export default async function Settings({
                       .replace("{limit}", String(planData.repos.limit ?? 3))
                   : (t("settings.planFreeDetail") ?? "Up to 3 repos · unlimited PR reviews")
               }
-              current={org.plan === "free" || (!planData?.is_premium && org.plan !== "team" && org.plan !== "enterprise")}
+              // `org.plan` is force-reset to "free" by the backend for any
+              // Stripe status outside {active, trialing} — including
+              // "past_due", which is_premium still grants access for (a
+              // payment-retry grace period, not a cancellation). Without the
+              // `!pastDue` guard, a paying Team org mid-dunning saw "Free"
+              // highlighted as their current plan with no explanation; the
+              // warning banner in BillingActions below is what actually
+              // tells them what's happening instead.
+              current={(org.plan === "free" && !pastDue) || (!planData?.is_premium && org.plan !== "team" && org.plan !== "enterprise")}
               activeLabel={t("settings.active")}
             />
             <PlanCard
@@ -276,6 +286,7 @@ export default async function Settings({
             hasCustomer={!!org.has_stripe_customer}
             plan={org.plan}
             billingEnabled={true}
+            subscriptionStatus={planData?.subscription_status}
           />
         </Section>
       )}

@@ -421,7 +421,10 @@
     "resourceSupport": "Contact support",
     "resourceSupportDesc": "Questions, bug reports, or feature requests.",
     "resourceOpen": "Open →",
-    "installFrom": "Install from"
+    "installFrom": "Install from",
+    "paymentIssueTitle": "There's a problem with your payment",
+    "paymentIssueBody": "Your last payment failed. Your plan is still active for now — update your payment method to avoid losing access.",
+    "updatePaymentMethod": "Update payment method →"
   },
   "installApp": {
     "title": "Install the GitHub App",
@@ -467,7 +470,7 @@
       "agentLabel": "AGENT",
       "agentSub": "LLM / code-gen",
       "memoryRecallSub": "384‑d semantic search",
-      "auditSub": "append-only, signed",
+      "auditSub": "append-only",
       "arrowIntent": "intent",
       "arrowAllow": "allow",
       "arrowBlock": "block",
@@ -1101,7 +1104,7 @@
     "item_iso_title": "ISO 27001 controls",
     "item_iso_desc": "Annex A control mapping",
     "item_audit_title": "Audit log",
-    "item_audit_desc": "Signed, append-only event stream",
+    "item_audit_desc": "Append-only event stream for every state-changing action",
     "item_aws_title": "AWS",
     "item_aws_desc": "STS AssumeRole + S3 state backend",
     "item_gcp_title": "GCP",
@@ -1147,17 +1150,17 @@
       "title": "DORA evidence",
       "subtitle": "Automatic evidence collection for the EU Digital Operational Resilience Act.",
       "metaTitle": "DORA evidence — DriftGuard",
-      "metaDescription": "Map DriftGuard's Terraform PR checks to DORA operational-resilience requirements and emit signed evidence per pull request.",
+      "metaDescription": "Map DriftGuard's Terraform PR checks to DORA operational-resilience requirements, with evidence emitted per pull request.",
       "mappingTitle": "Which checks map to DORA",
       "mappingBody": "DORA asks financial entities to manage ICT risk across change management, resilience testing, and incident handling. DriftGuard contributes evidence for the change-management and ICT-risk articles by gating every infrastructure PR through the same review pipeline:",
       "item1_desc": "Checkov security misconfig scan + policy gate on each change.",
       "item2_desc": "live-state drift detection proves the plan matches reality before merge.",
       "item3_desc": "semantic recall surfaces prior incidents linked to the same resources.",
-      "enableTitle": "Enable the compliance block",
-      "enableBody": "Turn on DORA evidence collection in your canonical config file:",
+      "enableTitle": "Availability",
+      "enableBody": "There is nothing to configure — every PR through the review pipeline produces this evidence automatically, for every repository you've enabled.",
       "evidenceTitle": "Evidence emitted per PR",
-      "evidenceBody": "When {code} is on, DriftGuard writes a signed record for each pull request — the checks that ran, the merge decision, and the reviewer. Records are exported to the tamper-evident audit log so auditors can reconstruct any change.",
-      "evidenceFooter": "DriftGuard is in early access — control identifiers are advisory and should be reviewed with your own compliance team. It is a source of evidence, not a certification."
+      "evidenceBody": "Every finding is mapped to the compliance controls it exercises (a real citation — DORA article, NIS2 measure, or ISO 27001 Annex A clause — from a fixed catalog, not generated text) and cited in the PR's AI review under \"Compliance notes\". The analysis outcome is also written to the append-only audit log so it can be looked up later.",
+      "evidenceFooter": "DriftGuard is early access — control identifiers come from a fixed catalog (compliance/controls.py) that should be reviewed with your own compliance team. It is a source of evidence, not a certification."
     },
     "nis2": {
       "eyebrow": "Docs · Compliance",
@@ -1170,8 +1173,8 @@
       "item1_desc": "Checkov + policy engine flag misconfigurations before merge.",
       "item2_desc": "a required GitHub Check gates merges; drift detection blocks stale plans.",
       "item3_desc": "the audit log records every decision for later assessment.",
-      "configTitle": "Configuration",
-      "configBody": "Enable NIS2 evidence and pin the network-exposure rules that most NIS2 assessments look for:",
+      "configTitle": "Policy rules",
+      "configBody": "The measures above run automatically — nothing to enable. To block a specific NIS2-relevant pattern (an open ingress rule, a public bucket) rather than just warn on it, create a policy rule from the dashboard's Policies page; rules match on severity, resource pattern, or rule ID and can be set to block, warn, or alert.",
       "evidenceTitle": "Evidence per PR",
       "evidenceBody": "Each pull request produces an evidence record referencing the NIS2 measures exercised, the check results, and the merge decision. Records flow into the append-only audit log. DriftGuard is early access and provides evidence to support a NIS2 program — it is not a substitute for a formal audit."
     },
@@ -1188,30 +1191,30 @@
       "control2_name": "Change management",
       "control2_check": "Required GitHub Check gates merges; drift detection blocks stale plans.",
       "control3_name": "Logging",
-      "control3_check": "Append-only audit log captures every review and override.",
-      "control4_name": "Threat intelligence",
-      "control4_check": "Semantic recall links changes to prior incidents.",
-      "enableTitle": "Enable ISO 27001 evidence",
+      "control3_check": "Append-only audit log records analysis outcomes, policy and settings changes, and token issuance.",
+      "control4_name": "Information backup",
+      "control4_check": "Checkov flags data stores missing backup or retention configuration.",
+      "enableTitle": "Availability",
       "evidenceTitle": "Evidence per PR",
-      "evidenceBody": "Every pull request emits a signed evidence record listing the Annex A controls exercised and the merge decision, then streams it to the append-only audit log. Export the log to attach change-management evidence to your Statement of Applicability. DriftGuard is in early access."
+      "evidenceBody": "Every pull request emits an evidence record listing the Annex A controls exercised, from the fixed catalog above — no configuration required. Export the audit log (dashboard → Audit log → Export CSV) to attach change-management evidence to your Statement of Applicability. DriftGuard is in early access."
     },
     "audit": {
       "eyebrow": "Docs · Compliance",
       "title": "Audit log",
-      "subtitle": "Signed, append-only event stream — every review, approval, and override, tamper-evident.",
+      "subtitle": "Every state-changing action across your organisation, recorded as it happens.",
       "metaTitle": "Audit log — DriftGuard",
-      "metaDescription": "DriftGuard's append-only, tamper-evident audit log records every review, approval, and override across your infrastructure pull requests.",
+      "metaDescription": "DriftGuard records every state-changing action — PR reviews, policy changes, token issuance, repo enable/disable — as a queryable log per organisation.",
       "whatRecordedTitle": "What gets recorded",
-      "enableTitle": "Enable the log",
+      "enableTitle": "Availability",
       "recordShapeTitle": "Record shape",
-      "whatRecordedBody": "The audit log is an append-only event stream. Every review, check result, approval, override, and merge decision produces a record. Records are chained by hash — each one references the hash of the previous record — so any deletion or edit breaks the chain and is detectable.",
-      "enableBody": "The audit log is populated whenever evidence export is turned on:",
-      "recordShapeBody": "Each record is JSON with a hash chain field. Export the full stream from the dashboard for auditors:",
-      "recordShapeFooter": "DriftGuard is early access; the export format may change. Treat the log as supporting evidence for your change-management process.",
-      "item1": "Analysis started / completed for a PR",
-      "item2": "Check result posted (security, drift, cost, policy)",
-      "item3": "Merge decision — allow, warn, or block, with the triggering rule",
-      "item4": "Manual override, with the actor who performed it"
+      "whatRecordedBody": "Every write is an insert — the application never updates or deletes a record once written. That is application discipline today, not a database-enforced guarantee: there is no cryptographic signing and no hash chain linking records, so treat the log as a reliable operational record, not as tamper-evident evidence on its own.",
+      "enableBody": "There is nothing to enable — the actions above are recorded automatically for every organisation, with no configuration file or opt-in step. View the log in the dashboard under Settings → Audit log, or in the sample below.",
+      "recordShapeBody": "Every record has the same six fields. `payload` varies by action and is never redacted for you — it can contain your own configuration values, so treat exports accordingly.",
+      "recordShapeFooter": "DriftGuard is early access. The dashboard view paginates 100 records at a time; the \"Export CSV\" button downloads up to the 500 most recent records in one file. Treat the log as supporting evidence for your change-management process, not as a certified compliance artifact on its own.",
+      "item1": "PR analysis completed, or blocked by policy",
+      "item2": "Policy created, updated, or deleted",
+      "item3": "Repository enabled or disabled, API token issued or revoked",
+      "item4": "Incident status changed, org notification or AWS settings updated"
     },
     "aws": {
       "eyebrow": "Docs · Integrations",
@@ -1356,7 +1359,7 @@
     "components": "Components",
     "metrics": "Metrics",
     "uptime": "Uptime — last 90 days",
-    "p99": "P99 <2s",
+    "p99": "Analysis engine and database",
     "memory": "Memory index",
     "pipeline": "Core review pipeline",
     "dashboard": "Dashboard",
@@ -1377,7 +1380,12 @@
     "prIngestion": "PR event ingestion",
     "billing": "Billing",
     "stripeWebhooks": "Stripe webhook processing",
-    "webApp": "Web application"
+    "webApp": "Web application",
+    "aiReview": "AI Review",
+    "aiReviewDesc": "AI-generated PR narratives",
+    "uptimeUnavailable": "We don't track historical uptime yet. This page reflects the current status only, checked every 30 seconds.",
+    "unreachableTitle": "Status unavailable",
+    "unreachable": "We couldn't reach the status backend just now. This doesn't necessarily mean anything is down — it means we can't currently tell. Try again shortly."
   },
   "security": {
     "eyebrow": "Trust & security",
@@ -1436,7 +1444,7 @@
     "frameworks": {
       "dora": {
         "fullName": "EU Digital Operational Resilience Act",
-        "desc": "DriftGuard provides an audit-ready trail of every infrastructure change reviewed, blocked, or approved. Findings and policy decisions are timestamped, signed, and exportable as DORA evidence packs."
+        "desc": "DriftGuard provides an audit-ready trail of every infrastructure change reviewed, blocked, or approved. Findings and policy decisions are timestamped and recorded in the append-only audit log, exportable as CSV to support your DORA evidence file."
       },
       "nis2": {
         "fullName": "Network and Information Security Directive 2",
@@ -1644,7 +1652,8 @@
     "degraded": "Degraded",
     "outage": "Major outage",
     "allOperational": "All systems operational",
-    "partialOutage": "Partial outage"
+    "partialOutage": "Partial outage",
+    "unknown": "Unknown"
   },
   "tokens": {
     "title": "API tokens",
