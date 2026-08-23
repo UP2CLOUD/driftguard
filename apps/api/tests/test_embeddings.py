@@ -1,14 +1,24 @@
-"""Unit tests for driftguard.services.embeddings — pure/deterministic functions."""
+"""Unit tests for driftguard.services.embeddings — pure/deterministic
+functions, plus embed() itself: `_voyage_embed` used to authenticate with
+`settings.anthropic_api_key`, a Claude key, against api.voyageai.com — a
+separate provider with its own key format. That call always failed, so
+`embed()` had zero test coverage over the branch that was actually broken;
+these tests exist to close that gap and pin the fix.
+"""
 
 from __future__ import annotations
 
 import math
+from unittest.mock import AsyncMock, patch
+
+import pytest
 
 from driftguard.services.embeddings import (
     EMBED_DIM,
     _dev_embed,
     _truncate_normalize,
     cosine_similarity,
+    embed,
     intent_text,
     vec_to_pg,
 )
@@ -197,3 +207,99 @@ class TestIntentText:
     def test_returns_string(self):
         result = intent_text([], "")
         assert isinstance(result, str)
+
+
+# ── embed() ──────────────────────────────────────────────────────────────────
+
+
+class TestEmbed:
+    @pytest.mark.asyncio
+    async def test_no_voyage_key_uses_dev_fallback_and_records_it(self, monkeypatch):
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "voyage_api_key", "")
+        recorded = AsyncMock()
+        with patch("driftguard.services.embeddings.record_embedding_outcome", recorded):
+            vec = await embed("aws_s3_bucket public access")
+
+        assert len(vec) == EMBED_DIM
+        assert vec == _dev_embed("aws_s3_bucket public access")
+        recorded.assert_awaited_once_with(used="dev_fallback", error="VOYAGE_API_KEY not configured")
+
+    @pytest.mark.asyncio
+    async def test_voyage_success_uses_the_voyage_key_not_anthropic(self, monkeypatch):
+        # Regression test for the actual bug: _voyage_embed authenticated
+        # with settings.anthropic_api_key. Set both to different values so a
+        # call using the wrong one is caught, not accidentally passed by
+        # coincidence.
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "voyage_api_key", "pa-voyage-test-key")
+        monkeypatch.setattr(settings, "anthropic_api_key", "sk-ant-should-not-be-used")
+
+        captured_headers = {}
+
+        class FakeResponse:
+            def raise_for_status(self):
+                pass
+
+            def json(self):
+                return {"data": [{"embedding": [1.0] * 1024}]}
+
+        class FakeAsyncClient:
+            def __init__(self, timeout=None):
+                pass
+
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, *a):
+                return False
+
+            async def post(self, url, headers=None, json=None):
+                captured_headers.update(headers or {})
+                return FakeResponse()
+
+        recorded = AsyncMock()
+        with (
+            patch("driftguard.services.embeddings.httpx.AsyncClient", FakeAsyncClient),
+            patch("driftguard.services.embeddings.record_embedding_outcome", recorded),
+        ):
+            vec = await embed("terraform drift detected")
+
+        assert len(vec) == EMBED_DIM
+        assert captured_headers.get("Authorization") == "Bearer pa-voyage-test-key"
+        assert "sk-ant-should-not-be-used" not in captured_headers.get("Authorization", "")
+        recorded.assert_awaited_once_with(used="voyage")
+
+    @pytest.mark.asyncio
+    async def test_voyage_failure_falls_back_to_dev_embed_and_records_the_reason(self, monkeypatch):
+        from driftguard.core.config import settings
+
+        monkeypatch.setattr(settings, "voyage_api_key", "pa-voyage-test-key")
+
+        class FakeAsyncClient:
+            def __init__(self, timeout=None):
+                pass
+
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, *a):
+                return False
+
+            async def post(self, *a, **kw):
+                raise RuntimeError("401 Unauthorized")
+
+        recorded = AsyncMock()
+        with (
+            patch("driftguard.services.embeddings.httpx.AsyncClient", FakeAsyncClient),
+            patch("driftguard.services.embeddings.record_embedding_outcome", recorded),
+        ):
+            vec = await embed("some incident text")
+
+        assert vec == _dev_embed("some incident text")
+        recorded.assert_awaited_once()
+        kwargs = recorded.await_args.kwargs
+        assert kwargs["used"] == "dev_fallback"
+        assert "401" in kwargs["error"]

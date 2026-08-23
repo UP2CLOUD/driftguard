@@ -15,6 +15,7 @@ import httpx
 import structlog
 
 from driftguard.core.config import settings
+from driftguard.services.embedding_health import record_embedding_outcome
 
 if TYPE_CHECKING:
     pass
@@ -26,20 +27,30 @@ EMBED_DIM = 384
 
 async def embed(text: str) -> list[float]:
     """Return a 384-d embedding for text."""
-    if settings.anthropic_api_key:
+    if settings.voyage_api_key:
         try:
-            return await _voyage_embed(text)
+            vec = await _voyage_embed(text)
+            await record_embedding_outcome(used="voyage")
+            return vec
         except Exception as exc:
             log.warning("embed.voyage.failed", error=str(exc))
+            await record_embedding_outcome(used="dev_fallback", error=str(exc))
+            return _dev_embed(text)
+    await record_embedding_outcome(used="dev_fallback", error="VOYAGE_API_KEY not configured")
     return _dev_embed(text)
 
 
 async def _voyage_embed(text: str) -> list[float]:
-    """Voyage-3-lite — cheap, 1024-d, truncated to 384 for our schema."""
+    """Voyage-3-lite — cheap, 1024-d, truncated to 384 for our schema.
+
+    Voyage AI is a separate provider from Anthropic with its own API and key
+    format (`pa-...`) — this used to send `settings.anthropic_api_key` here,
+    which always fails auth against api.voyageai.com.
+    """
     async with httpx.AsyncClient(timeout=15) as client:
         resp = await client.post(
             "https://api.voyageai.com/v1/embeddings",
-            headers={"Authorization": f"Bearer {settings.anthropic_api_key}"},
+            headers={"Authorization": f"Bearer {settings.voyage_api_key}"},
             json={"model": "voyage-3-lite", "input": [text[:8192]]},
         )
         resp.raise_for_status()
