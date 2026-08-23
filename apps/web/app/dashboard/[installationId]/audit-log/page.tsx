@@ -98,7 +98,7 @@ export default async function AuditLogPage({
           </h1>
           <p className="mt-1 text-[13px] text-[color:var(--dg-fg-muted)]">
             {t("auditLog.subtitle") ??
-              "Append-only record of all actions — signed, tamper-evident. Used for DORA, NIS2 and ISO 27001 evidence."}
+              "Append-only record of all actions — used for DORA, NIS2 and ISO 27001 evidence."}
           </p>
         </div>
 

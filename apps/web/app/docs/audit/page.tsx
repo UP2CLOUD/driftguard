@@ -20,23 +20,16 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-const CONFIG = `# .github/driftguard.yml
-compliance:
-  evidence:
-    emit: true
-    export: audit-log     # required to populate the audit log
-    retention_days: 365`;
-
+// Matches driftguard.db.models.AuditLog exactly: {id, org_id, actor, action,
+// target, payload, created_at}. No seq/hash fields exist anywhere in the
+// schema — see the note in whatRecordedBody about why that matters.
 const RECORD = `{
-  "seq": 10482,
-  "prev_hash": "sha256:0f1a…c93",   // chained to the previous record
-  "hash": "sha256:7b22…e10",
-  "event": "merge_decision",
-  "pr": "acme/platform#482",
-  "decision": "block",
-  "reason": "policy: aws_rds_cluster.prod.delete",
-  "actor": "github:octocat",
-  "at": "2026-07-21T10:04:11Z"
+  "id": "3f9b7c2a-...",
+  "actor": "api",
+  "action": "repo.enabled",
+  "target": "9c1a4e70-...",
+  "payload": { "full_name": "acme/platform" },
+  "created_at": "2026-07-21T10:04:11Z"
 }`;
 
 export default async function Audit() {
@@ -73,9 +66,6 @@ export default async function Audit() {
         <section>
           <h2 className="mb-2 text-[15px] font-semibold text-[color:var(--dg-fg)]">{t("docs.audit.enableTitle")}</h2>
           <p>{t("docs.audit.enableBody")}</p>
-          <div className="mt-3">
-            <CodeBlock code={CONFIG} filename=".github/driftguard.yml" />
-          </div>
         </section>
 
         <section>
