@@ -99,8 +99,13 @@ class TestParsePlan:
         raw["resource_changes"][0]["change"]["after_sensitive"] = {"bucket": True}
         raw["resource_changes"][0]["change"]["after"] = {"bucket": "secret-bucket"}
         plan = parse_plan(raw)
-        # Sensitive attributes should be redacted in the parsed output
-        assert plan.changes[0].after.get("bucket") == "[REDACTED]"
+        # The placeholder now carries a salted digest of the value rather than a
+        # fixed literal, so that rotating a secret still compares as a change
+        # instead of "[REDACTED]" == "[REDACTED]". Assert the property that
+        # matters -- the value is gone -- not the exact spelling.
+        redacted = plan.changes[0].after.get("bucket")
+        assert redacted.startswith("[REDACTED:")
+        assert "secret-bucket" not in redacted
 
     def test_tf_version_captured(self):
         plan = parse_plan(_plan())
