@@ -96,7 +96,42 @@ def test_coverage_stats_has_all_providers():
     assert stats["azure"] > 0
     assert stats["gcp"] > 0
     assert stats["k8s"] > 0
-    assert stats["total"] == stats["aws"] + stats["azure"] + stats["gcp"] + stats["k8s"]
+    assert stats["native"] > 0
+    assert stats["total"] == stats["aws"] + stats["azure"] + stats["gcp"] + stats["k8s"] + stats["native"]
+
+
+def test_native_terraform_rule_maps_to_access_control():
+    """TF001 (IAM Resource: "*") is DriftGuard's own scanner, not Checkov."""
+    assert "access_control" in controls_for_rule("TF001")
+
+
+def test_native_terraform_rule_maps_to_public_exposure():
+    assert "public_exposure" in controls_for_rule("TF007")
+
+
+def test_native_terraform_rule_maps_to_encryption_at_rest():
+    assert "encryption_at_rest" in controls_for_rule("TF010")
+
+
+def test_native_kubernetes_rule_maps_to_container_security():
+    assert "container_security" in controls_for_rule("K8S001")
+
+
+def test_native_github_actions_rule_maps_to_access_control():
+    """GHA004: missing permissions: block defaults to write-all."""
+    assert "access_control" in controls_for_rule("GHA004")
+
+
+def test_native_rule_without_compliance_scope_stays_unmapped():
+    """K8S002 (missing resource limits) is reliability, not a CATALOG control — must not be forced."""
+    assert controls_for_rule("K8S002") == ()
+
+
+def test_native_rule_enriches_to_real_citations():
+    controls = enrich_finding_with_controls("TF013")
+    assert len(controls) == 1
+    assert controls[0].id == "public_exposure"
+    assert any(r.framework == "DORA" for r in controls[0].refs)
 
 
 def test_summarize_frameworks_empty_list():

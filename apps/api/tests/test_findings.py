@@ -153,6 +153,18 @@ class TestFromStaticScan:
         findings = from_static_scan([_sf(rule_id="CKV_AWS_3")])
         assert "encryption_at_rest" in findings[0].controls
 
+    def test_controls_populated_for_native_scanner_rule(self):
+        """Regression: TF001 is DriftGuard's own rule, not Checkov's.
+
+        Before mappings.py gained a `_NATIVE` table, controls_for_rule()
+        only recognised CKV_* IDs, so every finding from
+        services/scanner/rules/*.py carried controls=() all the way into
+        the PR comment's "Compliance notes" — silently, for every native
+        finding, since the day the scanner shipped.
+        """
+        findings = from_static_scan([_sf(rule_id="TF001")])
+        assert "access_control" in findings[0].controls
+
     def test_no_controls_for_unknown_rule(self):
         findings = from_static_scan([_sf(rule_id="UNKNOWN_RULE_XYZ")])
         assert findings[0].controls == ()

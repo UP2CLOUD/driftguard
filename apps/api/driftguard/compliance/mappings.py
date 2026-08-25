@@ -1,7 +1,28 @@
-"""Checkov rule IDs mapped to compliance control categories.
+"""Scanner rule IDs mapped to compliance control categories.
 
-Coverage: ~200 rules across AWS, Azure, GCP, Kubernetes. Extend as needed.
-Source: https://www.checkov.io/5.Policy%20Index/terraform.html
+Two independent sources feed `RULE_TO_CONTROLS`, kept in separate dicts below
+because they're maintained against different upstreams:
+
+  - `_AWS` / `_AZURE` / `_GCP` / `_K8S`: ~200 Checkov rules across AWS, Azure,
+    GCP, Kubernetes. Source: https://www.checkov.io/5.Policy%20Index/terraform.html
+  - `_NATIVE`: DriftGuard's own scanner rules (TF00x, K8S00x, GHA00x — see
+    `services/scanner/rules/*.py`). Every finding those files produce already
+    carries a `controls=[...]` tag (e.g. `["access_control", "least_privilege"]`)
+    set at the point the rule fires, but that tag uses an ad-hoc vocabulary
+    that was never wired to this module — `from_static_scan()` in
+    `ai/findings.py` calls `controls_for_rule(sf.rule_id)` exactly like it
+    does for Checkov findings, and until this dict existed that lookup always
+    returned `()` for TF00x/K8S00x/GHA00x, so no native finding ever cited a
+    compliance article. `_NATIVE` maps directly to `CATALOG` control IDs
+    (see `controls.py`), not to the scanner's own ad-hoc tags.
+
+Coverage is intentionally partial in `_NATIVE`, same as it already is for
+Checkov: a rule is mapped only when its finding genuinely matches a
+`CATALOG` control's stated scope. Rules about reliability/operability rather
+than security or compliance (missing readiness probes, unpinned Lambda
+concurrency, missing resource limits) are left unmapped rather than forced
+into a category that doesn't fit — an inexact citation is worse than none in
+a PR comment a customer may cite as compliance evidence.
 """
 
 # fmt: off
@@ -301,15 +322,50 @@ _K8S: dict[str, tuple[str, ...]] = {
     "CKV_K8S_39": ("container_security",),
     "CKV_K8S_41": ("container_security",),
 }
+# fmt: off
+# DriftGuard's own scanner rules (services/scanner/rules/{terraform,kubernetes,github_actions}.py).
+# Each comment names the rule; see those files for the exact finding text.
+_NATIVE: dict[str, tuple[str, ...]] = {
+    # -- terraform.py --
+    "TF001": ("access_control",),        # IAM policy Resource: "*"
+    "TF002": ("public_exposure",),        # S3 bucket missing public access block
+    "TF003": ("backup_retention",),       # force_destroy=true on storage — accidental data loss
+    "TF004": ("backup_retention",),       # RDS skip_final_snapshot
+    "TF005": ("backup_retention",),       # RDS missing deletion_protection
+    "TF007": ("public_exposure",),        # security group open to 0.0.0.0/0
+    "TF008": ("backup_retention",),       # KMS key deletion window < 7 days
+    "TF009": ("change_management",),      # missing required_providers version pins
+    "TF010": ("encryption_at_rest",),     # EBS volume not encrypted
+    "TF012": ("access_control",),         # IAM policy Action: "*"
+    "TF013": ("public_exposure",),        # S3 bucket public ACL
+    "TF014": ("public_exposure",),        # RDS publicly_accessible
+
+    # -- kubernetes.py --
+    "K8S001": ("container_security",),    # privileged: true
+    "K8S003": ("container_security",),    # hostPID / hostNetwork
+    "K8S004": ("container_security",),    # runAsNonRoot not set
+    "K8S005": ("container_security",),    # allowPrivilegeEscalation not disabled
+    "K8S006": ("vulnerability_management",),  # :latest / untagged image — can't audit deployed patch level
+    "K8S008": ("container_security",),    # missing securityContext
+    "K8S009": ("container_security",),    # readOnlyRootFilesystem not set
+    "K8S010": ("container_security",),    # capabilities.add includes ALL
+
+    # -- github_actions.py --
+    "GHA001": ("change_management",),     # action pinned to mutable ref, not a SHA
+    "GHA002": ("change_management",),     # ACTIONS_ALLOW_UNSECURE_COMMANDS
+    "GHA004": ("access_control",),        # missing permissions: block (defaults write-all)
+    "GHA005": ("access_control",),        # pull_request_target with unsafe checkout of PR head
+}
 # fmt: on
 
 CHECKOV_RULE_TO_CONTROLS: dict[str, tuple[str, ...]] = {**_AWS, **_AZURE, **_GCP, **_K8S}
+RULE_TO_CONTROLS: dict[str, tuple[str, ...]] = {**CHECKOV_RULE_TO_CONTROLS, **_NATIVE}
 
 
 def controls_for_rule(rule_id: str | None) -> tuple[str, ...]:
     if not rule_id:
         return ()
-    return CHECKOV_RULE_TO_CONTROLS.get(rule_id, ())
+    return RULE_TO_CONTROLS.get(rule_id, ())
 
 
 def coverage_stats() -> dict[str, int]:
@@ -318,5 +374,6 @@ def coverage_stats() -> dict[str, int]:
         "azure": len(_AZURE),
         "gcp": len(_GCP),
         "k8s": len(_K8S),
-        "total": len(CHECKOV_RULE_TO_CONTROLS),
+        "native": len(_NATIVE),
+        "total": len(RULE_TO_CONTROLS),
     }
