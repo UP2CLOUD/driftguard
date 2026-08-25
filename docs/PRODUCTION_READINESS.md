@@ -1,7 +1,14 @@
 # DriftGuard — Production Readiness Report
 
-**Revalidated:** 2026-08-23 (original assessment 2026-06-10)
+**Revalidated:** 2026-08-25 (previous: 2026-08-23; original assessment 2026-06-10)
 **Método:** re-verificação item a item contra o código actual, não releitura do relatório anterior. Cada linha abaixo tem a evidência que a sustenta.
+
+Este documento é a fonte única de verdade sobre prontidão para produção e é
+actualizado, não substituído, em cada auditoria: novos achados somam-se à
+tabela abaixo com um novo `N-#`; nenhum achado é apagado quando corrigido,
+apenas passa a **✅ Resolvido**, para que o histórico de riscos já cobertos
+não se perca. Ver [Histórico de revalidações](#histórico-de-revalidações)
+no final.
 
 > Como ler: **Resolvido** = verificado no código, com teste. **Em aberto** = confirmado ainda presente. **Regressão** = estava resolvido e voltou. **Bloqueado** = a acção não é de código.
 
@@ -66,6 +73,7 @@ Existe **um P0 novo, e é o mais grave do documento**: um webhook secret real es
 | N-9 | **Cliente pagante em retry de pagamento via visto como "Free plan" sem qualquer aviso** | Alta | ✅ Corrigido. `services/billing.py::apply_subscription_event` reinicia `org.plan` para `"free"` em qualquer status Stripe fora de `{active, trialing}` — incluindo `past_due`, que `is_premium()` continua a tratar como acesso válido via `subscription_status = "premium_past_due"` (período de retry de pagamento, não um cancelamento). Isto **não foi alterado** — os testes existentes (`test_subscription_updated_non_active_statuses`, `test_subscription_updated_past_due_keeps_plan_free`) fixam-no explicitamente e é uma decisão de produto sobre a qual não é minha função decidir sozinho. O que era um bug claro, sem ambiguidade: a página de settings usava só `org.plan` para decidir o que mostrar, então um cliente Team pagante em `past_due` via o cartão "Free" destacado como plano actual, um botão "Upgrade to Team" (como se fosse gratuito), e nenhuma indicação de que o pagamento falhou. `apps/web/lib/billing-actions.ts` (nova lógica pura, testável) deriva a visibilidade das acções a partir de `subscription_status`, não só `plan`; agora mostra um aviso claro de problema de pagamento com CTA directo para o portal Stripe. `apps/web/lib/billing-actions.test.ts` (7 testes, com controlo negativo) |
 | N-10 | **Seis páginas anunciavam um audit log "assinado" e "à prova de adulteração" com cadeia de hashes — nada disso existe** | **Crítica** | ✅ Corrigido. `db/models.py::AuditLog` não tem coluna `seq`, `prev_hash` ou `hash`, e não existe lógica de encadeamento de hashes em lado nenhum de `apps/api` — confirmado por grep, não por inferência. `/docs/audit`, `/docs/dora`, `/docs/nis2`, `/docs/iso-27001`, a página de audit log do dashboard, e `/security` descreviam o log como "signed"/"tamper-evident"/"hash chain", incluindo um exemplo JSON inventado com campos `seq`, `prev_hash`, `hash`, `signed_at`, `decision`, `reviewer` que não correspondem ao schema real (`{id, actor, action, target, payload, created_at}`). Quatro páginas também mostravam um ficheiro de configuração `.github/driftguard.yml` (`compliance.frameworks`, `compliance.evidence.emit/retention_days/export`, e no NIS2 uma DSL YAML fictícia `policy.block: [...]`) que não é lido em lado nenhum — toda a gravação de auditoria é automática e incondicional, não há nada para activar. Corrigido em todas as seis superfícies; exemplos JSON substituídos por dados reais usando códigos de controlo genuínos de `compliance/controls.py::CATALOG` (confirmados um a um, não copiados às cegas — a primeira tentativa usou `TF006`, que **não** está na tabela de mapeamento; só `CKV_AWS_*` está). Encontrado também: um 4º controlo ISO 27001 citava `A.5.7` ("Threat intelligence"), que não existe no catálogo real — substituído por `A.8.13` (Information backup), e a alegação "Dependabot + Snyk on every PR" e "Bandit (Python)" em `/security` — nenhum dos dois está configurado em lado nenhum do repositório — corrigidas para o que é real (Checkov + ruff + ESLint). O demo interactivo `/evidence` (marketing.evidence.*) **não precisou de correcção** — já divulgava explicitamente que hasheia um dataset sintético no browser e que o DriftGuard não reclama assinaturas criptográficas reais; é o único lugar do site que já estava a tratar este tema com o rigor correcto. Confirmado antes de corrigir: exportação CSV do audit log **é real** (`apps/web/app/api/audit-log/route.ts`), limitada aos 500 registos mais recentes por download — a descrição foi ajustada para não apagar uma capacidade real ao corrigir as fabricadas |
 | N-11 | **Memória semântica corria sempre no fallback não-semântico — em toda e qualquer instalação, não só nas mal configuradas** | **Crítica** | ✅ Corrigido. `services/embeddings.py::_voyage_embed` autenticava contra `api.voyageai.com` (um fornecedor separado da Anthropic, com o seu próprio formato de chave `pa-...`) usando `settings.anthropic_api_key` — uma chave Claude. Essa chamada falha sempre a autenticação, e o `try/except` à volta caía para `_dev_embed`, um pseudo-embedding hash-based explicitamente **não semântico** segundo o seu próprio docstring, registando apenas um `log.warning`. Isto significa que **todo o "incident embedding" alguma vez armazenado, em qualquer organização, correu neste fallback** — não havia sequer uma variável `VOYAGE_API_KEY` no código para configurar correctamente. Zero cobertura de testes sobre o caminho real (`embed()`/`_voyage_embed`) confirmou que isto nunca foi verificado end-to-end. Corrigido: nova definição `voyage_api_key`, cabeçalho de autenticação corrigido, e `services/embedding_health.py` (novo, espelha `ai_health.py`) grava qual caminho respondeu de facto; `/api/v1/ready` → `checks.embeddings` e a linha "Memory" em `/status` agora reflectem isto — a linha Memory lia antes `checks.db`, que se manteve "ok" durante toda a falha porque o Postgres nunca foi o problema. `tests/test_embedding_health.py` (4 testes) e `tests/test_embeddings.py::TestEmbed` (3 testes, com controlo negativo confirmando que apanha exactamente o bug original — reverti a chave para `anthropic_api_key` e o teste `test_voyage_success_uses_the_voyage_key_not_anthropic` falhou como esperado) |
+| N-12 | **Mapeamento de compliance (DORA/NIS2/ISO27001) só cobre findings do Checkov** | Baixa | ⚠️ Conhecido, não corrigido. `compliance/controls.py::CATALOG` / `CHECKOV_RULE_TO_CONTROLS` mapeia ~200 regras Checkov para citações reais de artigo/cláusula. As regras nativas do scanner do próprio DriftGuard (`TF00x`, `K8S00x`, `GHA00x`) não estão nesta tabela e não citam nenhum controlo no "Compliance notes" do PR review — não é um bug de exibição, é cobertura real em falta. Registado em `FEATURE_MATRIX.md` linha "DORA / NIS2 / ISO 27001 evidence in PR review". Corrigi-lo exige decidir o mapeamento regra-a-regra para cada framework, o que é trabalho de produto/compliance, não uma correcção mecânica — por isso fica registado e não escondido, tal como N-6 |
 
 ---
 
@@ -87,3 +95,47 @@ Existe **um P0 novo, e é o mais grave do documento**: um webhook secret real es
 - **P0-0 rotação:** exige acesso às definições da GitHub App. É a única remediação real; remover do tree não invalida a credencial.
 - **P0-3 apply real:** sem credenciais GCP/Render nem state backend nesta sessão.
 - **P2-4 mudança de tier:** decisão de custo do proprietário.
+
+---
+
+## Histórico de revalidações
+
+Cada entrada é um checkpoint independente: o que foi corrido, contra que
+commit, e o resultado. Uma revalidação futura acrescenta uma entrada nova
+no topo desta lista — não reescreve as anteriores.
+
+### 2026-08-25 — verificação de fecho pós-merge
+
+Todos os PRs desta auditoria (#137–#143) já estavam mesclados em `main`
+(`2b0c6a2`). Suite completa corrida contra `main`, não contra a branch de
+trabalho, para confirmar o estado real após o merge:
+
+| Gate | Resultado |
+|---|---|
+| `ruff check` / `ruff format --check` (`apps/api`) | limpo |
+| `mypy driftguard` | 0 problemas, 137 ficheiros |
+| `pytest` (`apps/api`, exclui `tests/eval`) | 1201 passed |
+| `node scripts/validate-i18n.mjs` | 6 locales, 1762 chaves, 0 avisos |
+| `tsc --noEmit` (`apps/web`) | limpo |
+| `vitest run` (`apps/web`) | 103 passed |
+| `eslint` (`apps/web`) | 0 avisos/erros |
+| `pnpm build` (`apps/web`) | exit 0, "Compiled successfully" |
+
+Nenhuma regressão encontrada. Nenhum item novo além de N-12 (acima). O
+único bloqueador que continua aberto é P0-0 — rotação externa do webhook
+secret — que por definição não é fechável nesta revalidação nem em
+nenhuma futura que não envolva o proprietário do repositório.
+
+**Como actualizar este documento numa próxima revalidação:**
+1. Não reler apenas este ficheiro como fonte de verdade — verificar cada
+   linha `Estado` contra o código actual, exactamente como o método
+   descrito no topo do documento.
+2. Achados novos entram como `N-#` seguinte (não reutilizar números);
+   achados corrigidos mudam de estado, não são removidos.
+3. Correr a suite completa (tabela de gates acima) e acrescentar uma nova
+   entrada nesta secção com a data e o resultado.
+4. Actualizar a linha `**Revalidated:**` no topo do documento e o TL;DR
+   se a contagem de itens resolvidos/abertos mudou.
+5. Se `docs/SECRET_ROTATION.md` ainda não tiver a rotação confirmada,
+   P0-0 mantém-se `EM ABERTO` — não marcar como resolvido por decisão
+   unilateral de código.
