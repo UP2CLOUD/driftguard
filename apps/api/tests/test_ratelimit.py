@@ -100,6 +100,28 @@ def _app_with_ratelimit(requests_per_minute: int = 60) -> FastAPI:
 
 
 class TestRateLimitDependency:
+    """Exercises the FastAPI dependency's in-process fallback specifically.
+
+    These tests predate the Redis-backed path and assert exact-count
+    behavior driven entirely by the mocked `time.monotonic()` clock — they
+    are about `_InProcBucket`'s wiring through `rate_limit()`, not about
+    Redis. Force `_get_redis` to fail so they exercise the fallback
+    deterministically: without this, a real Redis reachable in the
+    environment (as in CI, unlike a Redis-less local sandbox) makes these
+    tests flaky, since a stale module-level Redis client surviving across
+    test functions with different event loops can succeed on one request
+    and fall back on another, splitting a single test's two requests
+    across two independent counters.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _force_redis_unavailable(self):
+        with patch(
+            "driftguard.core.ratelimit._get_redis",
+            side_effect=ConnectionError("no redis in this test"),
+        ):
+            yield
+
     def test_first_request_allowed(self):
         client = TestClient(_app_with_ratelimit())
         r = client.get("/test")
