@@ -107,7 +107,7 @@ website copy stops matching them.
 | OPA / Rego policy bundles | 📋 Planned | Custom rule engine ships today |
 | SSO / SCIM | 📋 Planned | |
 | Historical uptime tracking | 📋 Planned | `/status` shows current state only. No `status_history` table or snapshot job exists anywhere in the migration chain (`apps/api/driftguard/db/migrations/versions/`) |
-| Duplicate rate-limit implementations | ⚠️ Known | `PRODUCTION_READINESS.md` N-6 — left unfixed deliberately; unifying touches the webhook path |
+| Duplicate rate-limit implementations | ⚠️ Known (partially addressed) | `PRODUCTION_READINESS.md` N-6 — the two files are still separate, left unfixed deliberately; unifying touches the webhook path. What *was* fixed: `core/ratelimit.py`'s false "Redis when available, shared across workers" claim — it only ever used an in-process bucket, so multi-instance deployments enforced `configured_limit × instance_count`, not the documented limit. Now genuinely Redis-backed with an in-process fallback |
 | Terraform ↔ runtime reconciliation | 🟡 Partial | `docs/INFRA_RECONCILIATION.md` |
 
 ## Claims we deliberately do not make

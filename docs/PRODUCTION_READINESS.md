@@ -67,7 +67,7 @@ Existe **um P0 novo, e é o mais grave do documento**: um webhook secret real es
 | N-3 | Debug step reporter ecoava prefixo do installation token | Média | ✅ Corrigido. `token[:10]` não é redacção — estreita um brute force e chega para identificar a credencial num screenshot. Passou a reportar só o comprimento |
 | N-4 | Sem secret scanning em CI ou pre-commit | Alta | ✅ Corrigido. Gitleaks em PR + pre-commit, `scripts/check-no-tfstate.sh`, e `scripts/secrets-selftest.sh` que prova que o allowlist não falhou em aberto |
 | N-5 | Sem `SECURITY.md` | Média | ✅ Corrigido. Canal de reporte, prazos de resposta, versões suportadas |
-| N-6 | Duas implementações paralelas de rate limiting | Baixa | ⚠️ Conhecido, não corrigido. `core/ratelimit.py` (usado por `webhooks.py`) e `core/rate_limit.py` (usado por `ingest`/`policies`/`scans`) têm buckets separados. Ambas funcionam; unificar mexe no caminho do webhook, o que é mais arriscado do que a duplicação. Registado, não escondido |
+| N-6 | Duas implementações paralelas de rate limiting | Baixa | 🟡 Parcialmente corrigido. `core/ratelimit.py` (usado por `webhooks.py`) e `core/rate_limit.py` (usado por `ingest`/`policies`/`scans`) continuam a existir como dois ficheiros separados com buckets independentes — **isso não foi alterado**: unificá-los mexe no caminho do webhook, o que continua a ser mais arriscado do que a duplicação em si, e essa decisão de 2026-08-23 mantém-se. O que foi corrigido em 2026-08-25: `core/ratelimit.py` tinha uma reivindicação falsa no seu próprio docstring — "Uses Redis when available (shared across workers)" — que nunca foi implementada; o código só tocava o bucket em memória do processo. Numa instância única isso é invisível; em Cloud Run/Render com mais de uma instância, o limite efetivo por cliente era `limite_configurado × nº_instâncias`, não o limite documentado. Corrigido com um contador Redis de janela fixa (`INCR`+`EXPIRE`, sem Lua, sem race de leitura-escrita), com fallback para o bucket em memória em qualquer falha do Redis — a promessa original do docstring, agora real. `core/rate_limit.py` já era honesto sobre isto no seu próprio docstring ("No Redis dependency for MVP") e não foi tocado. `tests/test_ratelimit.py::TestRedisAllowed` (5 testes novos, incluindo um que prova que uma falha do Redis não devolve 500 ao endpoint) |
 | N-7 | **A página pública /status inventava dados e mentia por defeito** | Crítica | ✅ Corrigido. Três defeitos: (1) o gráfico de uptime de 90 dias era 100% fabricado — repetia o check *actual* em todas as 90 barras, sem nenhuma fonte de histórico real (não existe tabela `status_history` nem job de snapshot em nenhuma migração); (2) `ready === null ? true : ...` — quando o backend estava inalcançável, a página assumia "tudo operacional" em vez de "não sabemos", o único modo de falha que uma status page existe para não ter; (3) o sinal `checks.ai_review` estava mapeado a uma linha rotulada "Security" sem relação, enquanto duas linhas ("Cost analysis", "Dashboard") tinham estado fixo "operational" sem nenhum check real por trás. Corrigido: gráfico substituído por aviso honesto de que não há histórico; estado "unknown" distinto de "operational" quando o backend não responde; linhas removidas ou re-rotuladas para corresponder ao sinal real. `apps/web/lib/status-page.test.ts` (14 testes, com controlo negativo confirmando que apanha a forma exacta do bug original) |
 | N-8 | **`/api/v1/ready` reportava `ai_review: "ok"` mesmo com ambos os providers exaustos** | Crítica | ✅ Corrigido. O check só confirmava que uma chave estava configurada, nunca que as chamadas com essa chave estavam a funcionar — exactamente a lacuna que permitiu que os dois providers falhassem em produção durante três semanas sem nada o reportar (ver linha "AI review" em `FEATURE_MATRIX.md`). `services/ai_health.py` (novo) grava, a cada tentativa real em `ai/reviewer.py` e `services/analysis/ai_review.py`, qual camada respondeu de facto; `/ready` lê essa última observação em vez de re-derivar "ok" da presença da chave. Sem chamada viva ao provider no probe de readiness — seria lento, instável e cobrado |
 | N-9 | **Cliente pagante em retry de pagamento via visto como "Free plan" sem qualquer aviso** | Alta | ✅ Corrigido. `services/billing.py::apply_subscription_event` reinicia `org.plan` para `"free"` em qualquer status Stripe fora de `{active, trialing}` — incluindo `past_due`, que `is_premium()` continua a tratar como acesso válido via `subscription_status = "premium_past_due"` (período de retry de pagamento, não um cancelamento). Isto **não foi alterado** — os testes existentes (`test_subscription_updated_non_active_statuses`, `test_subscription_updated_past_due_keeps_plan_free`) fixam-no explicitamente e é uma decisão de produto sobre a qual não é minha função decidir sozinho. O que era um bug claro, sem ambiguidade: a página de settings usava só `org.plan` para decidir o que mostrar, então um cliente Team pagante em `past_due` via o cartão "Free" destacado como plano actual, um botão "Upgrade to Team" (como se fosse gratuito), e nenhuma indicação de que o pagamento falhou. `apps/web/lib/billing-actions.ts` (nova lógica pura, testável) deriva a visibilidade das acções a partir de `subscription_status`, não só `plan`; agora mostra um aviso claro de problema de pagamento com CTA directo para o portal Stripe. `apps/web/lib/billing-actions.test.ts` (7 testes, com controlo negativo) |
@@ -103,6 +103,27 @@ Existe **um P0 novo, e é o mais grave do documento**: um webhook secret real es
 Cada entrada é um checkpoint independente: o que foi corrido, contra que
 commit, e o resultado. Uma revalidação futura acrescenta uma entrada nova
 no topo desta lista — não reescreve as anteriores.
+
+### 2026-08-25 — N-6 parcialmente corrigido: `core/ratelimit.py` passou a usar Redis de facto
+
+Continuação do mesmo trabalho de auditoria. N-6 estava marcado como
+conhecido/não corrigido porque unificar as duas implementações de rate
+limiting mexe no caminho do webhook — essa parte da decisão original
+mantém-se, deliberadamente. O que mudou: `core/ratelimit.py` reivindicava
+no seu próprio docstring "Uses Redis when available (shared across
+workers)", mas nunca tinha sido implementado — só o bucket em memória do
+processo era usado. Numa instância só, invisível; com mais de uma
+instância (Cloud Run/Render), o limite efetivo por cliente era
+`limite_configurado × nº_instâncias`. Corrigido com um contador Redis de
+janela fixa, `INCR`+`EXPIRE`, atómico sem Lua; fallback para o bucket em
+memória em qualquer falha do Redis, provado por teste a não devolver 500
+ao endpoint. Ver a linha N-6 acima para o detalhe completo.
+
+| Gate | Resultado |
+|---|---|
+| `ruff check` / `ruff format --check` | limpo |
+| `mypy driftguard` | 0 problemas |
+| `pytest` (`apps/api`, exclui `tests/eval`) | 1214 passed (+5 vs. checkpoint anterior) |
 
 ### 2026-08-25 — N-12 corrigido: cobertura de compliance para regras nativas
 

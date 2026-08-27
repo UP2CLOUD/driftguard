@@ -5,6 +5,7 @@ from __future__ import annotations
 import time
 from unittest.mock import patch
 
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -165,3 +166,101 @@ class TestRateLimitDependency:
             r_b = client.get("/b")
         assert r_a.status_code == 429
         assert r_b.status_code == 200
+
+
+# ── _redis_allowed — the Redis-backed path ─────────────────────────────────────
+#
+# Regression coverage for the fix to N-6 in docs/PRODUCTION_READINESS.md: the
+# module's own docstring claimed "Redis when available, shared across
+# workers" while the implementation only ever touched the in-process bucket.
+# These tests exercise the actual Redis-backed counter (via a hand-rolled
+# fake, same pattern as tests/test_ai_health.py) rather than relying on the
+# connection-refused fallback that test_ratelimit.py above exercises
+# incidentally because no Redis server runs in this sandbox.
+
+
+class _FakeRedis:
+    """Minimal INCR/EXPIRE double — enough to exercise _redis_allowed's logic."""
+
+    def __init__(self) -> None:
+        self.store: dict[str, int] = {}
+        self.expiries: dict[str, int] = {}
+
+    async def incr(self, key: str) -> int:
+        self.store[key] = self.store.get(key, 0) + 1
+        return self.store[key]
+
+    async def expire(self, key: str, ttl: int) -> None:
+        self.expiries[key] = ttl
+
+
+class _BrokenRedis:
+    async def incr(self, key: str) -> int:
+        raise ConnectionError("redis unreachable")
+
+
+class TestRedisAllowed:
+    @pytest.mark.asyncio
+    async def test_allows_under_both_limits(self):
+        from driftguard.core.ratelimit import _redis_allowed
+
+        with patch("driftguard.core.ratelimit._get_redis", return_value=_FakeRedis()):
+            allowed = await _redis_allowed("1.2.3.4:/x", requests_per_minute=60, burst=5)
+        assert allowed is True
+
+    @pytest.mark.asyncio
+    async def test_rejects_once_minute_window_exceeded(self):
+        from driftguard.core.ratelimit import _redis_allowed
+
+        fake = _FakeRedis()
+        with patch("driftguard.core.ratelimit._get_redis", return_value=fake):
+            for _ in range(2):
+                await _redis_allowed("1.2.3.4:/x", requests_per_minute=2, burst=100)
+            allowed = await _redis_allowed("1.2.3.4:/x", requests_per_minute=2, burst=100)
+        assert allowed is False
+
+    @pytest.mark.asyncio
+    async def test_rejects_once_second_window_exceeded(self):
+        from driftguard.core.ratelimit import _redis_allowed
+
+        fake = _FakeRedis()
+        with patch("driftguard.core.ratelimit._get_redis", return_value=fake):
+            for _ in range(2):
+                await _redis_allowed("1.2.3.4:/x", requests_per_minute=1000, burst=2)
+            allowed = await _redis_allowed("1.2.3.4:/x", requests_per_minute=1000, burst=2)
+        assert allowed is False
+
+    @pytest.mark.asyncio
+    async def test_different_keys_are_independent(self):
+        from driftguard.core.ratelimit import _redis_allowed
+
+        fake = _FakeRedis()
+        with patch("driftguard.core.ratelimit._get_redis", return_value=fake):
+            await _redis_allowed("1.2.3.4:/x", requests_per_minute=1, burst=1)
+            # Second call, same key: minute window already at 1/1 → rejected
+            same_key = await _redis_allowed("1.2.3.4:/x", requests_per_minute=1, burst=1)
+            other_key = await _redis_allowed("9.9.9.9:/x", requests_per_minute=1, burst=1)
+        assert same_key is False
+        assert other_key is True
+
+    @pytest.mark.asyncio
+    async def test_check_falls_back_to_in_process_bucket_on_redis_error(self):
+        """The FastAPI dependency must not 500 when Redis is unreachable.
+
+        This reproduces the exact failure mode the fix addresses: before it,
+        the code path being tested here (a try/except around the Redis call)
+        did not exist at all, so any Redis error would propagate as a 500
+        instead of degrading to the documented in-process fallback.
+        """
+        from driftguard.core.ratelimit import rate_limit
+
+        app = FastAPI()
+
+        @app.get("/broken-redis", dependencies=[rate_limit(requests_per_minute=60, burst=5)])
+        async def endpoint():
+            return {"ok": True}
+
+        with patch("driftguard.core.ratelimit._get_redis", return_value=_BrokenRedis()):
+            client = TestClient(app, raise_server_exceptions=False)
+            r = client.get("/broken-redis")
+        assert r.status_code == 200
